@@ -4,6 +4,12 @@
              xmlns:local="clr-namespace:LifeLine"
              StartupUri="MVVM/View/Windows/AuthWindow.xaml">
     <Application.Resources>
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MVVM\View\Styles\ButtonStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
          
     </Application.Resources>
 </Application>

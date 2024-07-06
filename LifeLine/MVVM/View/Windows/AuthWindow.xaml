@@ -3,10 +3,265 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LifeLine.MVVM.View.Windows"
+        xmlns:local="clr-namespace:LifeLine.MVVM.View.Windows" 
+        xmlns:fa="http://schemas.fontawesome.com/icons/" 
+        xmlns:viewmodel="clr-namespace:LifeLine.MVVM.ViewModel" 
+        d:DataContext="{d:DesignInstance Type=viewmodel:AuthWindowVM}"
         mc:Ignorable="d"
-        Title="AuthWindow" Height="500" Width="400">
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Title="Вход" Height="400" Width="400">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" />
+    </WindowChrome.WindowChrome>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Close" />
+        <!--<CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />-->
+        <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Minimize" />
+        <!--<CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Restore" />-->
+    </Window.CommandBindings>
+
+    <Window.Resources>
+
+        <!--#region Стили для кнопок в строке заголовка -->
+
+        <Style x:Key="CaptionButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="LayoutRoot" Background="Transparent" Width="50" Height="auto">
+                            <TextBlock x:Name="txt" Text="{TemplateBinding Content}" FontFamily="Segoe MDL2 Assets" FontSize="10" 
+                                   Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   RenderOptions.ClearTypeHint="Auto" TextOptions.TextRenderingMode="Aliased" TextOptions.TextFormattingMode="Display"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="LayoutRoot" Property="Background" Value="#E5E5E5"/>
+                                <Setter TargetName="txt" Property="Foreground" Value="#000000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MinimizeButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE949;"/>
+        </Style>
+
+        <Style x:Key="MaximizeButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE739;"/>
+        </Style>
+
+        <Style x:Key="RestoreButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE923;"/>
+        </Style>
+
+        <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE106;"/>
+        </Style>
+
+        <!--#endregion-->
+
+        <!--#region TextBlock || TextBox -->
+
+        <Style x:Key="TextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontFamily" Value="Bahnschrift SemiBold SemiCondensed"/>
+            <Setter Property="Margin" Value="0 15 0 15"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontFamily" Value="Bahnschrift SemiBold SemiCondensed"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+
+
+        <Style x:Key="SettingTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Margin" Value="20 15 0 15"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="CaretBrush" Value="Black"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <ControlTemplate x:Key="SettingTextBoxTemplate" TargetType="TextBox">
+
+            <Border x:Name="border" 
+            BorderBrush="White"
+            CornerRadius="0"
+            BorderThickness="0,0,0,2">
+
+                <ScrollViewer x:Name="PART_ContentHost" 
+                      Focusable="false"
+                      Foreground="#F0F1F3"
+                      HorizontalScrollBarVisibility="Hidden" 
+                      VerticalScrollBarVisibility="Hidden"/>
+
+            </Border>
+
+            <ControlTemplate.Triggers>
+
+                <!--<Trigger Property="IsFocused" Value="True">
+                    <Setter TargetName="border" Property="Background" Value="#FFA8CFD9"/>
+                    -->
+                <!--<Setter TargetName="border" Property="Margin" Value="-2,-2,-2,2"/>-->
+                <!--<Setter TargetName="border" Property="BorderThickness" Value="2,2,2,2"/>-->
+                <!--
+                    <Setter TargetName="border" Property="BorderBrush" Value="Gray"/>
+                </Trigger>-->
+
+                <Trigger Property="IsMouseOver" Value="True">
+                    <!--<Setter TargetName="border" Property="Background" Value="#787C84"/>-->
+                    <!--<Setter TargetName="border" Property="Margin" Value="-2,-2,-2,2"/>-->
+                    <!--<Setter TargetName="border" Property="BorderThickness" Value="2,2,2,2"/>-->
+                    <Setter TargetName="border" Property="BorderBrush" Value="Black"/>
+                </Trigger>
+
+            </ControlTemplate.Triggers>
+
+        </ControlTemplate>
+
+        <!--#endregion-->
+
+    </Window.Resources>
+
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height ="39"/>
+            <RowDefinition Height ="*"/>
+        </Grid.RowDefinitions>
+
+        <!--#region Разметка для Window chrome -->
+
+        <Grid Grid.Row="0" Height="40" Background="#FF7B8C98" Grid.ColumnSpan="2">
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+
+                <Image Source="/Res/Kotozila.jpg"
+                   Width="35" Margin="2"
+                   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                <TextBlock Text="Вход" 
+                       FontSize="20" Margin="20 0 0 0"
+                       VerticalAlignment="Center"/>
+
+            </StackPanel>
+
+
+            <!-- Кнопки для управления окном -->
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+
+                <Button Command="{x:Static SystemCommands.MinimizeWindowCommand}"
+                    Style="{StaticResource MinimizeButtonStyle}" 
+                    WindowChrome.IsHitTestVisibleInChrome="True" 
+                    ToolTip="Minimize"/>
+
+                <!--<Button x:Name="RestoreButton" 
+                    Command="{Binding RestoreAppCommand}" 
+                    Style="{StaticResource RestoreButtonStyle}"  
+                    WindowChrome.IsHitTestVisibleInChrome="True" 
+                    ToolTip="Restore"
+                    Visibility="Collapsed" />
+
+                <Button x:Name="MaximizeButton"
+                    Command="{Binding MaximizeAppCommand}" 
+                    Style="{StaticResource MaximizeButtonStyle}" 
+                    Visibility="Visible"   
+                    WindowChrome.IsHitTestVisibleInChrome="True" 
+                    ToolTip="Maximize" />-->
+
+                <Button Command="{x:Static SystemCommands.CloseWindowCommand}"
+                    Style="{StaticResource CloseButtonStyle}"
+                    WindowChrome.IsHitTestVisibleInChrome="True" 
+                    ToolTip="Close"/>
+
+            </StackPanel>
+
+        </Grid>
+
+        <!--#endregion-->
+
+
+        <!--#region Контент окна -->
+
+        <Image Grid.Row="1" Source="C:\Users\texno\Downloads\meditsinskii-fon-3.webp" Stretch="UniformToFill"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" 
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <Border CornerRadius="0 20 0 20" Background="#FFA0C5D1">
+                <!--#FFA0C5D1-->
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Direction="300"/>
+                </Border.Effect>
+
+                <StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <StackPanel Margin="15" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                            <TextBlock Text="Login" Style="{StaticResource TextBlockStyle}"/>
+
+                            <TextBlock Text="Password" Style="{StaticResource TextBlockStyle}"/>
+
+                        </StackPanel>
+
+
+                        <StackPanel Margin="15" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                            <TextBox Text="{Binding UserLogin}" Style="{StaticResource SettingTextBoxStyle}" Template="{StaticResource SettingTextBoxTemplate}"/>
+                            <TextBox Text="{Binding UserPass}" Style="{StaticResource SettingTextBoxStyle}" Template="{StaticResource SettingTextBoxTemplate}"/>
+
+                        </StackPanel>
+
+                    </StackPanel>
+
+
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+
+                        <Button Content="Вход" Height="30" Width="120" 
+                                Foreground="White"
+                                FontSize="20" FontFamily="Bahnschrift SemiBold SemiCondensed"
+                                Command="{Binding LoginButtonCommand}"
+                                Template="{StaticResource MainButtonTemplate}" >
+
+                            <Button.Effect>
+                                <DropShadowEffect BlurRadius="10" Direction="300"/>
+                            </Button.Effect>
+
+                        </Button>
+
+                    </StackPanel>
+
+                </StackPanel>
+
+            </Border>
+
+
+
+        </StackPanel>
+
+        <!--#endregion-->
+
     </Grid>
+
 </Window>
