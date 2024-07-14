@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace LifeLine.MVVM.Models.MSSQL_DB;
+
+public partial class TimeTable
+{
+    public int IdTimeTable { get; set; }
+
+    public int IdEmployee { get; set; }
+
+    public DateOnly? Date { get; set; }
+
+    public string TimeStart { get; set; }
+
+    public string TimeEnd { get; set; }
+
+    public string IdShift { get; set; }
+
+    public string Notes { get; set; }
+}

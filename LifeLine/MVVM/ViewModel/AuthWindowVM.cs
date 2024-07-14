@@ -34,6 +34,20 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+
+        private Visibility _authWindowVisibility;
+        public Visibility AuthWindowVisibility
+        {
+            get => _authWindowVisibility;
+            set
+            {
+                _authWindowVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
         public AuthWindowVM()
         {
 
@@ -54,6 +68,7 @@ namespace LifeLine.MVVM.ViewModel
                 }
                 else
                 {
+                    //AuthWindowVisibility = Visibility.Collapsed;
                     MainWindow mainWindow = new MainWindow();
                     mainWindow.Show();
                 }

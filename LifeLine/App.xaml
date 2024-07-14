@@ -2,12 +2,13 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:LifeLine"
-             StartupUri="MVVM/View/Windows/AuthWindow.xaml">
+             StartupUri="MVVM/View/Windows/MainWindow.xaml">
     <Application.Resources>
 
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="MVVM\View\Styles\ButtonStyle.xaml"/>
+                <ResourceDictionary Source="MVVM\View\Styles\TextBlockStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
          

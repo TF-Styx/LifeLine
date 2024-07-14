@@ -1,12 +1,172 @@
-﻿using System;
+﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.Services.NavigationPage;
+using MasterAnalyticsDeadByDaylight.Command;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Navigation;
 
 namespace LifeLine.MVVM.ViewModel
 {
-    internal class MainWindowVM
+    internal class MainWindowVM : BaseViewModel
     {
+
+        NavigationServices navigateS;
+        Employee CurrentUser;
+
+        public MainWindowVM(NavigationServices navigationServices)
+        {
+            StackPanelMainContentVisibility = Visibility.Collapsed;
+            GridMainTopButtonContentVisibility = Visibility.Collapsed;
+            TextBlockMainWindowContentVisibility = Visibility.Collapsed;
+
+            UserLogin = "pika";
+            UserPass = "pika";
+
+            navigateS = navigationServices;
+        }
+
+        #region Свойства
+
+        private Visibility _stackPanelAuthVisibility;
+        public Visibility StackPanelAuthVisibility
+        {
+            get => _stackPanelAuthVisibility;
+            set
+            {
+                _stackPanelAuthVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _stackPanelMainContentVisibility;
+        public Visibility StackPanelMainContentVisibility
+        {
+            get => _stackPanelMainContentVisibility;
+            set
+            {
+                _stackPanelMainContentVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _gridMainTopButtonContentVisibility;
+        public Visibility GridMainTopButtonContentVisibility
+        {
+            get => _gridMainTopButtonContentVisibility;
+            set
+            {
+                _gridMainTopButtonContentVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _textBlockAuthVisibility;
+        public Visibility TextBlockAuthVisibility
+        {
+            get => _textBlockAuthVisibility;
+            set
+            {
+                _textBlockAuthVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _textBlockMainWindowContentVisibility;
+        public Visibility TextBlockMainWindowContentVisibility
+        {
+            get => _textBlockMainWindowContentVisibility;
+            set
+            {
+                _textBlockMainWindowContentVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
+        private string _userLogin;
+        public string UserLogin
+        {
+            get => _userLogin;
+            set
+            {
+                _userLogin = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _userPass;
+        public string UserPass
+        {
+            get => _userPass;
+            set
+            {
+                _userPass = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
+
+
+        #region Команды
+
+        /// <summary>
+        /// Команда проверки пользователя
+        /// </summary>
+        private RelayCommand _loginButtonCommand;
+        public RelayCommand LoginButtonCommand { get => _loginButtonCommand ??= new(obj => { Authorization(); }); }
+
+        /// <summary>
+        /// Команда загрузи Frame
+        /// </summary>
+        private RelayCommand _openProfileEmployeePageCommand;
+        public RelayCommand OpenProfileEmployeePageCommand { get => _openProfileEmployeePageCommand ??= new(obj => { OpenProfileEmployeePage(); }); }
+
+        #endregion
+
+
+        #region Методы
+
+        /// <summary>
+        /// Метод входа
+        /// </summary>
+        private void Authorization()
+        {
+            using (EmployeeManagementContext context = new())
+            {
+                var id_user = context.Employees.FirstOrDefault(u => u.Login == UserLogin && u.Password == UserPass);
+
+                if (id_user == null)
+                {
+                    MessageBox.Show("Не правльный логин или пароль!!");
+                }
+                else
+                {
+                    CurrentUser = id_user;
+
+                    StackPanelAuthVisibility = Visibility.Collapsed;
+                    StackPanelMainContentVisibility = Visibility.Visible;
+                    GridMainTopButtonContentVisibility = Visibility.Visible;
+                    TextBlockAuthVisibility = Visibility.Collapsed;
+                    TextBlockMainWindowContentVisibility = Visibility.Visible;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Метод загрузки странички в Frame
+        /// </summary>
+        private void OpenProfileEmployeePage()
+        {
+            navigateS.NavigateTo("ProfileEmployee", CurrentUser);
+        }
+
+        #endregion
     }
 }

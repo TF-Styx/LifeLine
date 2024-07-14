@@ -13,11 +13,15 @@ public partial class Employee
 
     public string LastName { get; set; }
 
-    public int? IdPosition { get; set; }
+    public int IdPosition { get; set; }
 
-    public int? IdDocument { get; set; }
+    public int IdGender { get; set; }
 
     public string Login { get; set; }
 
     public string Password { get; set; }
+
+    public byte[] Avatar { get; set; }
+
+    public decimal? Salary { get; set; }
 }
