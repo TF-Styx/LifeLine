@@ -128,8 +128,8 @@ namespace LifeLine.MVVM.ViewModel
                     else 
                     {
                         updateDepartament.DepartmentName = TextBoxDepartment;
-                        //context.Update(updateDepartament); Не понятно зачем есть
                         context.SaveChanges();
+
                         DepartmentList.Clear();
                         TextBoxDepartment = string.Empty;
                         GetDataDepartment();
@@ -196,6 +196,7 @@ namespace LifeLine.MVVM.ViewModel
                         {
                             context.Remove(deleteDepartment);
                             context.SaveChanges();
+
                             DepartmentList.Clear();
                             GetDataDepartment();
                         }

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LifeLine.MVVM.View.Windows" 
         xmlns:viewmodel="clr-namespace:LifeLine.MVVM.ViewModel" 
         
-        xmlns:fa="http://schemas.fontawesome.com/icons/"
+        xmlns:fa="http://schemas.fontawesome.com/icons/" 
         
         d:DataContext="{d:DesignInstance Type=viewmodel:AddDepartmentWindowVM}"
         

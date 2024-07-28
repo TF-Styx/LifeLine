@@ -120,12 +120,13 @@ namespace LifeLine.MVVM.ViewModel
                 {
                     if (context.PositionLists.Any(pl => pl.PositionListName.ToLower() == TextBoxPositionLists.ToLower()) || string.IsNullOrEmpty(TextBoxPositionLists))
                     {
-                        MessageBox.Show($"Такой {SelectPositionList.PositionListName} уже есть!!\nИли пустой");
+                        MessageBox.Show($"Такой {SelectPositionList.PositionListName} уже есть!!\nИли пустой!!");
                     }
                     else
                     {
                         updatePositionLists.PositionListName = TextBoxPositionLists;
                         context.SaveChanges();
+
                         PositionLists.Clear();
                         TextBoxPositionLists = string.Empty;
                         GetPositionList();
@@ -152,6 +153,7 @@ namespace LifeLine.MVVM.ViewModel
                         {
                             context.Remove(positionLists);
                             context.SaveChanges();
+
                             PositionLists.Clear();
                             GetPositionList();
                         }

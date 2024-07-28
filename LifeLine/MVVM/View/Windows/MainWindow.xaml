@@ -296,6 +296,7 @@
                     <MenuItem Header="Добавить сотрудника"/>
                     <MenuItem Header="Добавить пациента"/>
                     <Separator/>
+                    <MenuItem Header="Добавить тип документа" Command="{Binding OpenAddTypeDocumentWindowCommand}"/>
                     <MenuItem Header="Добавить документы сотрудника"/>
                     <MenuItem Header="Добавить документы пациента"/>
                     <Separator/>
@@ -305,8 +306,6 @@
                     <Separator/>
                     <MenuItem Header="Добавить смену"/>
                     <MenuItem Header="Добавить расписание"/>
-                    <Separator/>
-                    <MenuItem Header="Добавить тип документа"/>
 
                 </MenuItem>
                 
