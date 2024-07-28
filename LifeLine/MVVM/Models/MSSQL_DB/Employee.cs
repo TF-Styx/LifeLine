@@ -24,4 +24,14 @@ public partial class Employee
     public byte[] Avatar { get; set; }
 
     public decimal? Salary { get; set; }
+
+    public virtual ICollection<Document> Documents { get; set; } = new List<Document>();
+
+    public virtual Gender IdGenderNavigation { get; set; }
+
+    public virtual Position IdPositionNavigation { get; set; }
+
+    public virtual ICollection<Patient> Patients { get; set; } = new List<Patient>();
+
+    public virtual ICollection<TimeTable> TimeTables { get; set; } = new List<TimeTable>();
 }

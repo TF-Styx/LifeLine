@@ -15,7 +15,11 @@ public partial class TimeTable
 
     public string TimeEnd { get; set; }
 
-    public string IdShift { get; set; }
+    public int? IdShift { get; set; }
 
     public string Notes { get; set; }
+
+    public virtual Employee IdEmployeeNavigation { get; set; }
+
+    public virtual Shift IdShiftNavigation { get; set; }
 }

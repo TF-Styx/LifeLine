@@ -9,6 +9,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="MVVM\View\Styles\ButtonStyle.xaml"/>
                 <ResourceDictionary Source="MVVM\View\Styles\TextBlockStyle.xaml"/>
+                <ResourceDictionary Source="MVVM\View\Styles\MenuStyle.xaml"/>
+                <ResourceDictionary Source="MVVM\View\Styles\WindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
          

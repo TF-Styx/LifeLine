@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LifeLine" 
         
-        xmlns:viewmodel="clr-namespace:LifeLine.MVVM.ViewModel" xmlns:fa="http://schemas.fontawesome.com/icons/"
+        xmlns:viewmodel="clr-namespace:LifeLine.MVVM.ViewModel" 
+        xmlns:fa="http://schemas.fontawesome.com/icons/"
         d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowVM}"
         
         mc:Ignorable="d"
@@ -13,6 +14,8 @@
         Title="MainWindow" 
         
         WindowStartupLocation="CenterScreen"
+        
+        Style="{StaticResource Window}"
         
         Height="600" 
         Width="1000">
@@ -155,6 +158,7 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height ="39"/>
+                <RowDefinition Height ="30"/>
                 <RowDefinition Height ="*"/>
             </Grid.RowDefinitions>
 
@@ -218,9 +222,9 @@
 
             <!--#region Вход -->
 
-            <Image Grid.Row="1" Source="C:\Users\texno\Downloads\meditsinskii-fon-3.webp" Stretch="UniformToFill"/>
+            <Image Grid.Row="1" Grid.RowSpan="3" Source="C:\Users\texno\Downloads\meditsinskii-fon-3.webp" Stretch="UniformToFill"/>
 
-            <StackPanel Grid.Row="1" Orientation="Horizontal" 
+            <StackPanel Grid.Row="2" Orientation="Horizontal" 
                         HorizontalAlignment="Center" VerticalAlignment="Center"
                         d:Visibility="Collapsed"
                         Visibility="{Binding StackPanelAuthVisibility}">
@@ -281,6 +285,36 @@
             <!--#endregion-->
 
 
+            <!--#region Меню -->
+
+            <Menu Grid.Row="1" Background="#FFA0C5D1" Height="30"
+                  FontSize="20" FontFamily="Bahnschrift SemiBold SemiCondensed"
+                  HorizontalAlignment="Left" VerticalAlignment="Center">
+                
+                <MenuItem Style="{DynamicResource MenuItemStyle}" Header="Добавить">
+                    
+                    <MenuItem Header="Добавить сотрудника"/>
+                    <MenuItem Header="Добавить пациента"/>
+                    <Separator/>
+                    <MenuItem Header="Добавить документы сотрудника"/>
+                    <MenuItem Header="Добавить документы пациента"/>
+                    <Separator/>
+                    <MenuItem Header="Добавить отдел" Command="{Binding OpenAddDepartmentWindowCommand}"/>
+                    <MenuItem Header="Добавить должность"/>
+                    <MenuItem Header="Добавить список должностей" Command="{Binding OpenAddPositionListWindowCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Добавить смену"/>
+                    <MenuItem Header="Добавить расписание"/>
+                    <Separator/>
+                    <MenuItem Header="Добавить тип документа"/>
+
+                </MenuItem>
+                
+            </Menu>
+            
+            <!--#endregion-->
+
+
             <!--#region Основной контент окна -->
 
             <!--<StackPanel Grid.Row="1" 
@@ -301,7 +335,7 @@
 
             </StackPanel>-->
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>

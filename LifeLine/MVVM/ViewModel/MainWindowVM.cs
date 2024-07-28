@@ -1,4 +1,5 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.MVVM.View.Windows;
 using LifeLine.Services.NavigationPage;
 using MasterAnalyticsDeadByDaylight.Command;
 using System;
@@ -127,6 +128,12 @@ namespace LifeLine.MVVM.ViewModel
         private RelayCommand _openProfileEmployeePageCommand;
         public RelayCommand OpenProfileEmployeePageCommand { get => _openProfileEmployeePageCommand ??= new(obj => { OpenProfileEmployeePage(); }); }
 
+        private RelayCommand _openAddDepartmentWindowCommand;
+        public RelayCommand OpenAddDepartmentWindowCommand { get => _openAddDepartmentWindowCommand ??= new(obj => { OpenAddDepartmentWindow(); }); }
+
+        private RelayCommand _openAddPositionListWindowCommand;
+        public RelayCommand OpenAddPositionListWindowCommand { get => _openAddPositionListWindowCommand ??= new(obj => { OpenAddPositionListWindow(); }); }
+
         #endregion
 
 
@@ -165,6 +172,18 @@ namespace LifeLine.MVVM.ViewModel
         private void OpenProfileEmployeePage()
         {
             navigateS.NavigateTo("ProfileEmployee", CurrentUser);
+        }
+
+        private void OpenAddDepartmentWindow()
+        {
+            AddDepartmentWindow addDepartmentWindow = new AddDepartmentWindow();
+            addDepartmentWindow.Show();
+        }
+
+        private void OpenAddPositionListWindow()
+        {
+            AddPositionListWindow addPositionListWindow = new AddPositionListWindow();
+            addPositionListWindow.Show();
         }
 
         #endregion

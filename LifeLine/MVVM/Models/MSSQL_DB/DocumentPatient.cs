@@ -20,4 +20,8 @@ public partial class DocumentPatient
     public byte[] DocumentImage { get; set; }
 
     public string DocumentFile { get; set; }
+
+    public virtual Patient IdPatientNavigation { get; set; }
+
+    public virtual TypeDocument IdTypeDocumentNavigation { get; set; }
 }

@@ -7,5 +7,7 @@ public partial class PositionList
 {
     public int IdPositionList { get; set; }
 
-    public string Position { get; set; }
+    public string PositionListName { get; set; }
+
+    public virtual ICollection<Position> Positions { get; set; } = new List<Position>();
 }

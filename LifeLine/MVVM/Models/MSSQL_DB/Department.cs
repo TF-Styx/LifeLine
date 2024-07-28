@@ -7,5 +7,9 @@ public partial class Department
 {
     public int IdDepartment { get; set; }
 
-    public string Department1 { get; set; }
+    public string DepartmentName { get; set; }
+
+    public virtual ICollection<Patient> Patients { get; set; } = new List<Patient>();
+
+    public virtual ICollection<Position> Positions { get; set; } = new List<Position>();
 }

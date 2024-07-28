@@ -7,5 +7,7 @@ public partial class Status
 {
     public int IdStatus { get; set; }
 
-    public string Status1 { get; set; }
+    public string StatusName { get; set; }
+
+    public virtual ICollection<Analysis> Analyses { get; set; } = new List<Analysis>();
 }

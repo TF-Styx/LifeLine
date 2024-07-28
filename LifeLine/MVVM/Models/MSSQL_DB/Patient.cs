@@ -11,6 +11,8 @@ public partial class Patient
 
     public int IdEmployee { get; set; }
 
+    public int IdGender { get; set; }
+
     public string SecondName { get; set; }
 
     public string FirstName { get; set; }
@@ -18,4 +20,14 @@ public partial class Patient
     public string LastName { get; set; }
 
     public int? RoomNumber { get; set; }
+
+    public virtual ICollection<Analysis> Analyses { get; set; } = new List<Analysis>();
+
+    public virtual ICollection<DocumentPatient> DocumentPatients { get; set; } = new List<DocumentPatient>();
+
+    public virtual Department IdDepartmentNavigation { get; set; }
+
+    public virtual Employee IdEmployeeNavigation { get; set; }
+
+    public virtual Gender IdGenderNavigation { get; set; }
 }

@@ -7,5 +7,7 @@ public partial class TypeOfPersone
 {
     public int IdTypeOfPersone { get; set; }
 
-    public string TypeOfPersone1 { get; set; }
+    public string TypeOfPersoneName { get; set; }
+
+    public virtual ICollection<TypeDocument> TypeDocuments { get; set; } = new List<TypeDocument>();
 }

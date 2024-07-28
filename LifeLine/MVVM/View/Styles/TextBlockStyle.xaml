@@ -38,15 +38,15 @@
     <ControlTemplate x:Key="SettingTextBoxTemplate" TargetType="TextBox">
 
         <Border x:Name="border" 
-BorderBrush="White"
-CornerRadius="0"
-BorderThickness="0,0,0,2">
+                BorderBrush="White"
+                CornerRadius="0"
+                BorderThickness="0,0,0,2">
 
             <ScrollViewer x:Name="PART_ContentHost" 
-          Focusable="false"
-          Foreground="#F0F1F3"
-          HorizontalScrollBarVisibility="Hidden" 
-          VerticalScrollBarVisibility="Hidden"/>
+                      Focusable="false"
+                      Foreground="#F0F1F3"
+                      HorizontalScrollBarVisibility="Hidden" 
+                      VerticalScrollBarVisibility="Hidden"/>
 
         </Border>
 

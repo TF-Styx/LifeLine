@@ -7,5 +7,7 @@ public partial class Shift
 {
     public int IdShift { get; set; }
 
-    public string Shift1 { get; set; }
+    public string ShiftName { get; set; }
+
+    public virtual ICollection<TimeTable> TimeTables { get; set; } = new List<TimeTable>();
 }
