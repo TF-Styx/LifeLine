@@ -84,9 +84,14 @@ namespace LifeLine.MVVM.ViewModel
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                if (context.PositionLists.Any(pl => pl.PositionListName.ToLower() == TextBoxPositionLists.ToLower() || string.IsNullOrWhiteSpace(TextBoxPositionLists)))
+                if (string.IsNullOrWhiteSpace(TextBoxPositionLists))
                 {
-                    MessageBox.Show("Вы не заполнили поле!\nТакое поле уже есть!");
+                    MessageBox.Show("Вы не заполнили поле!!");
+                    return;
+                }
+                if (context.PositionLists.Any(pl => pl.PositionListName.ToLower() == TextBoxPositionLists.ToLower()))
+                {
+                    MessageBox.Show("Такое поле уже есть!!");
                 }
                 else
                 {

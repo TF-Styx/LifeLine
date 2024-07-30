@@ -222,7 +222,7 @@ BorderThickness="0,0,0,2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="100"/>
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -257,6 +257,8 @@ BorderThickness="0,0,0,2">
 
                                 <TextBlock Text="{Binding TypeDocumentName}"  Margin="5 0 5 0"/>
 
+                                <TextBlock Text="{Binding IdTypeOfPersoneNavigation.TypeOfPersoneName}"  Margin="5 0 5 0"/>
+
                                 <Button Background="#00DDDDDD" BorderBrush="#00707070">
 
                                     <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
@@ -276,9 +278,13 @@ BorderThickness="0,0,0,2">
 
                     <Grid HorizontalAlignment="Center">
 
-                        <!--<StackPanel VerticalAlignment="Center">
-                            <TextBox Width="250" Height="20" Text="{Binding TextBoxDepartment}"/>
-                        </StackPanel>-->
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBox Width="560" Height="25" Margin="0 0 0 50" 
+                                     VerticalContentAlignment="Center" 
+                                     Text="{Binding TextBoxTypeDocuments}" 
+                                     Style="{StaticResource SettingTextBoxStyle}" 
+                                     Template="{StaticResource SettingTextBoxTemplate}"/>
+                        </StackPanel>
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0 0 0 15">
 
@@ -286,13 +292,13 @@ BorderThickness="0,0,0,2">
                                     Command="{Binding UpdateTypeDocumentsCommand}"
                                     Template="{StaticResource MainButtonTemplate}"/>
 
-                            <TextBox Width="250" Height="25" Margin="10 0 10 0" 
-                                     VerticalContentAlignment="Center" 
-                                     Text="{Binding TextBoxTypeDocuments}" 
-                                     Style="{StaticResource SettingTextBoxStyle}" 
-                                     Template="{StaticResource SettingTextBoxTemplate}"/>
+                            <ComboBox Width="250" Height="25" Margin="10 0 10 0" 
+                                      VerticalContentAlignment="Center"
+                                      ItemsSource="{Binding TypeOfPersoneList}"
+                                      SelectedItem="{Binding ComboBoxTypeOfPersone}"
+                                      DisplayMemberPath="TypeOfPersoneName"/>
 
-                            <Button Content="Добавить отдел" Width="150" Height="25" 
+                            <Button Content="Добавить тип документа" Width="160" Height="25" 
                                     Command="{Binding AddTypeDocumentsCommand}" 
                                     Template="{StaticResource MainButtonTemplate}"/>
 

@@ -295,7 +295,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="100"/>
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -349,9 +349,15 @@
 
                     <Grid HorizontalAlignment="Center">
 
-                        <!--<StackPanel VerticalAlignment="Center">
-                            <TextBox Width="250" Height="20" Text="{Binding TextBoxDepartment}"/>
-                        </StackPanel>-->
+                        <StackPanel VerticalAlignment="Center">
+                            
+                            <TextBox Width="560" Height="25" Margin="0 0 0 50" 
+                                     VerticalContentAlignment="Center" 
+                                     Text="{Binding TextBoxDepartment}"
+                                     Style="{StaticResource SettingTextBoxStyle}" 
+                                     Template="{StaticResource SettingTextBoxTemplate}"/>
+                            
+                        </StackPanel>
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0 0 0 15">
                             
@@ -360,12 +366,14 @@
                                     Template="{StaticResource MainButtonTemplate}"/>
                             
                             <TextBox Width="250" Height="25" Margin="10 0 10 0" 
+                                     Visibility="Hidden"
                                      VerticalContentAlignment="Center" 
                                      Text="{Binding TextBoxDepartment}" 
                                      Style="{StaticResource SettingTextBoxStyle}" 
                                      Template="{StaticResource SettingTextBoxTemplate}"/>
                             
                             <Button Content="Добавить отдел" Width="150" Height="25" 
+                                    HorizontalAlignment="Right"
                                     Command="{Binding AddDepartmentCommand}" 
                                     Template="{StaticResource MainButtonTemplate}"/>
                             

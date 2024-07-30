@@ -135,7 +135,7 @@ namespace LifeLine.MVVM.ViewModel
         public RelayCommand OpenAddPositionListWindowCommand { get => _openAddPositionListWindowCommand ??= new(obj => { OpenAddPositionListWindow(); }); }
 
         private RelayCommand _openAddTypeDocumentWindowCommand;
-        public RelayCommand OpenAddTypeDocumentWindowCommand { get => _openAddTypeDocumentWindowCommand ??= new(obj => { OpenAddPositionListWindow(); }); }
+        public RelayCommand OpenAddTypeDocumentWindowCommand { get => _openAddTypeDocumentWindowCommand ??= new(obj => { OpenAddTypeDocumentWindow(); }); }
 
         #endregion
 
@@ -187,6 +187,12 @@ namespace LifeLine.MVVM.ViewModel
         {
             AddPositionListWindow addPositionListWindow = new AddPositionListWindow();
             addPositionListWindow.Show();
+        }
+
+        private void OpenAddTypeDocumentWindow()
+        {
+            AddTypeDocumentWindow addTypeDocumentWindow = new AddTypeDocumentWindow();
+            addTypeDocumentWindow.Show();
         }
 
         #endregion

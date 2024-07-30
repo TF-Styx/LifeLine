@@ -1,5 +1,6 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using MasterAnalyticsDeadByDaylight.Command;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,7 +16,11 @@ namespace LifeLine.MVVM.ViewModel
         public AddTypeDocumentVM()
         {
             TypeDocumentList = [];
+            TypeOfPersoneList = [];
+            GetTypeOfPersonOnComboBox();
             GetTypeDocument();
+
+            ComboBoxTypeOfPersone = TypeOfPersoneList.First();
         }
 
 
@@ -28,6 +33,17 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _textBoxTypeDocuments = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private TypeOfPersone _comboBoxTypeOfPersone;
+        public TypeOfPersone ComboBoxTypeOfPersone
+        {
+            get => _comboBoxTypeOfPersone;
+            set
+            {
+                _comboBoxTypeOfPersone = value;
                 OnPropertyChanged();
             }
         }
@@ -58,11 +74,14 @@ namespace LifeLine.MVVM.ViewModel
                 }
 
                 TextBoxTypeDocuments = value.TypeDocumentName;
+                ComboBoxTypeOfPersone = TypeOfPersoneList.FirstOrDefault(cbtop => cbtop.IdTypeOfPersone == SelectTypeDocumentLists.IdTypeOfPersone);
                 OnPropertyChanged();
             }
         }
 
         public ObservableCollection<TypeDocument> TypeDocumentList { get; set; }
+
+        public ObservableCollection<TypeOfPersone> TypeOfPersoneList { get; set; }
 
         #endregion
 
@@ -87,15 +106,27 @@ namespace LifeLine.MVVM.ViewModel
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                if (context.TypeDocuments.Any(tdl => tdl.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower() || string.IsNullOrWhiteSpace(TextBoxTypeDocuments)))
+                if (string.IsNullOrWhiteSpace(TextBoxTypeDocuments))
                 {
-                    MessageBox.Show("Вы не заполнили поле!!\nТакое поле уже есть!!");
+                    MessageBox.Show("Вы не заполнили поле!!");
+                    return;
+                }
+                if (context.TypeDocuments.Any(tdl => tdl.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()))
+                {
+                    MessageBox.Show("Такое поле уже есть!!");
                 }
                 else
                 {
+                    if (ComboBoxTypeOfPersone.IdTypeOfPersone == 0)
+                    {
+                        MessageBox.Show("Вы не выбрали на кого будут записываться документы!!");
+                        return;
+                    }
+
                     TypeDocument typeDocument = new TypeDocument()
                     {
                         TypeDocumentName = TextBoxTypeDocuments,
+                        IdTypeOfPersone = ComboBoxTypeOfPersone.IdTypeOfPersone,
                     };
 
                     context.TypeDocuments.Add(typeDocument);
@@ -112,7 +143,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                if (SelectTypeDocumentLists == null)
+                if (SelectTypeDocumentLists == null || ComboBoxTypeOfPersone.IdTypeOfPersone == 0)
                 {
                     return;
                 }
@@ -128,6 +159,7 @@ namespace LifeLine.MVVM.ViewModel
                     else
                     {
                         updateTypeDocumentLists.TypeDocumentName = TextBoxTypeDocuments;
+                        updateTypeDocumentLists.IdTypeOfPersone = ComboBoxTypeOfPersone.IdTypeOfPersone;
                         context.SaveChanges();
 
                         TypeDocumentList.Clear();
@@ -166,7 +198,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                var typeDocuments = context.TypeDocuments.ToList();
+                var typeDocuments = context.TypeDocuments.Include(x => x.IdTypeOfPersoneNavigation).OrderBy(x => x.IdTypeOfPersone).ToList();
 
                 foreach (var item in typeDocuments)
                 {
@@ -175,11 +207,26 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+        private void GetTypeOfPersonOnComboBox()
+        {
+            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            {
+                var typeOfPersone = context.TypeOfPersones.ToList();
+
+                TypeOfPersoneList.Insert(0, new TypeOfPersone { TypeOfPersoneName = "Выберите чиь документы будут добавлятся!!" });
+
+                foreach (var item in typeOfPersone)
+                {
+                    TypeOfPersoneList.Add(item);
+                }
+            }
+        }
+
         private void SearchTypeDocumentListName()
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                var searchTypeDocumentListName = context.TypeDocuments.Where(stdl => stdl.TypeDocumentName.ToLower().Contains(SearchTypeDocumentLists.ToLower())).ToList();
+                var searchTypeDocumentListName = context.TypeDocuments.Include(x => x.IdTypeOfPersoneNavigation).Where(stdl => stdl.TypeDocumentName.ToLower().Contains(SearchTypeDocumentLists.ToLower())).OrderBy(x => x.IdTypeOfPersone).ToList();
 
                 TypeDocumentList.Clear();
 

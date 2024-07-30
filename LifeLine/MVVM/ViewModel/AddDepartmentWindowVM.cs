@@ -84,9 +84,14 @@ namespace LifeLine.MVVM.ViewModel
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                if (context.Departments.Any(dl => dl.DepartmentName.ToLower() == TextBoxDepartment.ToLower()) || string.IsNullOrWhiteSpace(TextBoxDepartment)) 
+                if (string.IsNullOrWhiteSpace(TextBoxDepartment))
                 {
-                    MessageBox.Show("Вы не заполнили поле!\nТакое поле уже есть!!");
+                    MessageBox.Show("Вы не заполнили поле!!");
+                    return;
+                }
+                if (context.Departments.Any(dl => dl.DepartmentName.ToLower() == TextBoxDepartment.ToLower())) 
+                {
+                    MessageBox.Show("Такое поле уже есть!!");
                 }
                 else
                 {
@@ -198,6 +203,7 @@ namespace LifeLine.MVVM.ViewModel
                             context.SaveChanges();
 
                             DepartmentList.Clear();
+                            TextBoxDepartment = string.Empty;
                             GetDataDepartment();
                         }
                     }
