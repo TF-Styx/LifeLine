@@ -301,7 +301,7 @@
                     <MenuItem Header="Добавить документы пациента"/>
                     <Separator/>
                     <MenuItem Header="Добавить отдел" Command="{Binding OpenAddDepartmentWindowCommand}"/>
-                    <MenuItem Header="Добавить должность"/>
+                    <MenuItem Header="Добавить должность" Command="{Binding OpenAddPositionWindowCommand}"/>
                     <MenuItem Header="Добавить список должностей" Command="{Binding OpenAddPositionListWindowCommand}"/>
                     <Separator/>
                     <MenuItem Header="Добавить смену"/>

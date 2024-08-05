@@ -16,7 +16,7 @@
         
         Style="{StaticResource Window}"
 
-        Height="450" Width="650"
+        Height="550" Width="750"
 
         ResizeMode="NoResize">
 
@@ -226,51 +226,110 @@ BorderThickness="0,0,0,2">
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-
                     <TextBlock Text="Поиск:  " Margin="0" Style="{StaticResource TextBlockStyle}"/>
-
                     <TextBox Width="250" Height="25" Margin="0"
                              VerticalContentAlignment="Center" 
                              Text="{Binding SearchPositionList, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource SettingTextBoxStyle}" 
                              Template="{StaticResource SettingTextBoxTemplate}"/>
-
                 </StackPanel>
 
                 <ListView Grid.Column="0" Grid.Row="1" 
                           ItemsSource="{Binding PositionLists}" 
                           SelectedItem="{Binding SelectPositionList}"
-                          d:ItemsSource="{d:SampleData ItemCount=5}">
+                          d:ItemsSource="{d:SampleData ItemCount=5}"
+                          ScrollViewer.CanContentScroll="True"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingStackPanel.VirtualizationMode="Recycling"
+                          VirtualizingPanel.CacheLength="15, 15"
+                          VirtualizingPanel.CacheLengthUnit="Item"
+                          VirtualizingPanel.ScrollUnit="Pixel">
+
+                    <!--<ListView.View>
+                        <GridView>
+                            <GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Background="#00DDDDDD" BorderBrush="#00707070" Command="{Binding DataContext.DeletePositionListCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                            <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Должность">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding PositionListName}" 
+                                                       Margin="5 0 5 0"
+                                                       TextWrapping="WrapWithOverflow"
+                                                       TextAlignment="Center"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+
+                                            <TextBlock Text="{Binding IdDepartmentNavigation.DepartmentName}" 
+                                                       Margin="5 0 5 0" 
+                                                       TextAlignment="Center"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Background="#00DDDDDD" BorderBrush="#00707070">
+                                            <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                        </GridView>
+                    </ListView.View>-->
 
                     <ListView.ItemTemplate>
 
                         <DataTemplate>
 
-                            <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="Black" BorderThickness="0" CornerRadius="0 10 0 10">
 
-                                <Button Background="#00DDDDDD" BorderBrush="#00707070"
-                                        Command="{Binding DataContext.DeletePositionListCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
 
-                                    <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
+                                    <Button Background="#00DDDDDD" BorderBrush="#00707070" Margin="5 0 0 0"
+                                            Command="{Binding DataContext.DeletePositionListCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                        <fa:ImageAwesome Icon="Solid_TrashAlt" Width="15" Foreground="#FFDD3D3D"/>
+                                    </Button>
 
-                                </Button>
+                                    <Button Background="#00DDDDDD" BorderBrush="#00707070" Margin="10 0 20 0">
+                                        <fa:ImageAwesome Icon="Solid_InfoCircle" Width="15" Foreground="#FF3053C2"/>
+                                    </Button>
 
-                                <TextBlock Text="{Binding PositionListName}"  Margin="5 0 5 0"/>
+                                    <StackPanel Orientation="Horizontal">
 
-                                <Button Background="#00DDDDDD" BorderBrush="#00707070">
+                                        <StackPanel>
+                                            <TextBlock Text="Должность: " Margin="0 0 10 10"/>
+                                            <TextBlock Text="Отдел: "/>
+                                        </StackPanel>
 
-                                    <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
+                                        <StackPanel Margin="10 0 0 0">
+                                            <TextBlock Text="{Binding PositionListName}" Margin="0 0 0 10" Foreground="#FFDA5C5C" />
+                                            <TextBlock Text="{Binding IdDepartmentNavigation.DepartmentName}" TextDecorations="Baseline" Foreground="#FF43ABCC"/>
+                                        </StackPanel>
 
-                                </Button>
+                                    </StackPanel>
 
-                            </StackPanel>
+                                </StackPanel>
+
+                            </Border>
 
                         </DataTemplate>
 
                     </ListView.ItemTemplate>
-
                 </ListView>
-
 
                 <Border Grid.Row="2">
 
@@ -278,7 +337,7 @@ BorderThickness="0,0,0,2">
 
                         <StackPanel VerticalAlignment="Center">
 
-                            <TextBox Width="560" Height="25" Margin="0 0 0 50" 
+                            <TextBox Width="700" Height="25" Margin="0 0 0 50" 
                                      VerticalContentAlignment="Center"
                                      Text="{Binding TextBoxPositionLists}" 
                                      Style="{StaticResource SettingTextBoxStyle}" 
@@ -291,14 +350,13 @@ BorderThickness="0,0,0,2">
                             <Button Content="Сохранить и обновить" Width="150" Height="25" 
                                     Command="{Binding UpdatePositionListsCommand}"
                                     Template="{StaticResource MainButtonTemplate}"/>
-                            
-                            <TextBox Width="250" Height="25" Margin="10 0 10 0" 
-                                     VerticalContentAlignment="Center" 
-                                     Visibility="Hidden"
-                                     Text="{Binding TextBoxPositionLists}" 
-                                     Style="{StaticResource SettingTextBoxStyle}" 
-                                     Template="{StaticResource SettingTextBoxTemplate}"/>
-                            
+
+                            <ComboBox Width="380" Height="25" Margin="10 0 10 0"
+                                      VerticalContentAlignment="Center"
+                                      ItemsSource="{Binding DepartmentLists}"
+                                      SelectedItem="{Binding SelectedDepartmentList}"
+                                      DisplayMemberPath="DepartmentName"/>
+
                             <Button Content="Добавить должность" Width="150" Height="25" 
                                     Command="{Binding AddPositionListsCommand}" 
                                     Template="{StaticResource MainButtonTemplate}"/>

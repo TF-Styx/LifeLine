@@ -328,7 +328,7 @@
 
                                 </Button>
 
-                                <TextBlock Text="{Binding DepartmentName}"  Margin="5 0 5 0"/>
+                                <TextBlock Text="{Binding DepartmentName}" Margin="5 0 5 0" Width="150" Height="auto" TextWrapping="WrapWithOverflow"/>
 
                                 <Button Background="#00DDDDDD" BorderBrush="#00707070">
 

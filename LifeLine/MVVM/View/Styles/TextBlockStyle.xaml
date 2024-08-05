@@ -3,7 +3,7 @@
 
     <Style x:Key="TextBlockStyle" TargetType="TextBlock">
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontSize" Value="17"/>
         <Setter Property="FontFamily" Value="Bahnschrift SemiBold SemiCondensed"/>
         <Setter Property="Margin" Value="0 15 0 15"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -11,7 +11,7 @@
     </Style>
 
     <Style x:Key="TextBoxStyle" TargetType="TextBox">
-        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontSize" Value="17"/>
         <Setter Property="FontFamily" Value="Bahnschrift SemiBold SemiCondensed"/>
         <Setter Property="Margin" Value="10"/>
         <Setter Property="Height" Value="25"/>

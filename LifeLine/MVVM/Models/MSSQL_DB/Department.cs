@@ -11,5 +11,5 @@ public partial class Department
 
     public virtual ICollection<Patient> Patients { get; set; } = new List<Patient>();
 
-    public virtual ICollection<Position> Positions { get; set; } = new List<Position>();
+    public virtual ICollection<PositionList> PositionLists { get; set; } = new List<PositionList>();
 }

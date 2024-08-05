@@ -270,17 +270,11 @@ public partial class EmployeeManagementContext : DbContext
 
             entity.Property(e => e.IdPosition).HasColumnName("id_position");
             entity.Property(e => e.IdAccessLevel).HasColumnName("id_access_level");
-            entity.Property(e => e.IdDepartament).HasColumnName("id_departament");
             entity.Property(e => e.IdPositionList).HasColumnName("id_position_list");
 
             entity.HasOne(d => d.IdAccessLevelNavigation).WithMany(p => p.Positions)
                 .HasForeignKey(d => d.IdAccessLevel)
                 .HasConstraintName("FK_Position_Access_level");
-
-            entity.HasOne(d => d.IdDepartamentNavigation).WithMany(p => p.Positions)
-                .HasForeignKey(d => d.IdDepartament)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Position_Department");
 
             entity.HasOne(d => d.IdPositionListNavigation).WithMany(p => p.Positions)
                 .HasForeignKey(d => d.IdPositionList)
@@ -295,10 +289,15 @@ public partial class EmployeeManagementContext : DbContext
             entity.ToTable("Position_list");
 
             entity.Property(e => e.IdPositionList).HasColumnName("id_position_list");
+            entity.Property(e => e.IdDepartment).HasColumnName("id_department");
             entity.Property(e => e.PositionListName)
                 .IsRequired()
                 .HasMaxLength(255)
                 .HasColumnName("position_list_name");
+
+            entity.HasOne(d => d.IdDepartmentNavigation).WithMany(p => p.PositionLists)
+                .HasForeignKey(d => d.IdDepartment)
+                .HasConstraintName("FK_Position_list_Department");
         });
 
         modelBuilder.Entity<Shift>(entity =>
