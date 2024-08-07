@@ -240,7 +240,7 @@ BorderThickness="0,0,0,2">
 
                 <ListView Grid.Column="0" Grid.Row="1" 
                           ItemsSource="{Binding PositionMainList}"
-                          SelectedItem="{Binding SelectTypeDocumentLists}"
+                          SelectedItem="{Binding SelectedPosition}"
                           d:ItemsSource="{d:SampleData ItemCount=5}"
                           VerticalContentAlignment="Center"
                           ScrollViewer.CanContentScroll="True"
@@ -261,19 +261,19 @@ BorderThickness="0,0,0,2">
                                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5" VerticalAlignment="Center" HorizontalAlignment="Center">
 
                                         <Button Background="#00DDDDDD" BorderBrush="#00707070"
-                                                Command="{Binding DataContext.DeleteDepartmentCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                                Command="{Binding DataContext.DeletePositionCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
 
                                             <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
 
                                         </Button>
 
-                                        <TextBlock Text="{Binding IdPositionListNavigation.PositionListName}" 
+                                        <TextBlock Text="{Binding IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}" 
                                                    Margin="5 0 5 0" Width="192" Height="auto" 
                                                    TextWrapping="WrapWithOverflow" 
                                                    TextAlignment="Center"
                                                    VerticalAlignment="Center"/>
 
-                                        <TextBlock Text="{Binding IdDepartamentNavigation.DepartmentName}" 
+                                        <TextBlock Text="{Binding IdPositionListNavigation.PositionListName}" 
                                                    Margin="5 0 5 0" Width="192" Height="auto" 
                                                    TextWrapping="WrapWithOverflow" 
                                                    TextAlignment="Center"
@@ -308,7 +308,7 @@ BorderThickness="0,0,0,2">
 
                     <Grid HorizontalAlignment="Center">
 
-                        <StackPanel VerticalAlignment="Center" Visibility="Collapsed">
+                        <!--<StackPanel VerticalAlignment="Center">
 
                             <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 
@@ -351,7 +351,7 @@ BorderThickness="0,0,0,2">
 
                             </StackPanel>
 
-                        </StackPanel>
+                        </StackPanel>-->
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 
@@ -364,12 +364,12 @@ BorderThickness="0,0,0,2">
                                 <ComboBox Width="175" Height="25" Margin="0 0 10 5"
                                           VerticalContentAlignment="Center"
                                           ItemsSource="{Binding DepartmentList}"
-                                          SelectedItem="{Binding SelectedDepartmentList}"
+                                          SelectedItem="{Binding ComboBoxSelectedDepartment}"
                                           DisplayMemberPath="DepartmentName"/>
 
                                 <Button Content="Сохранить и обновить" 
                                         Width="175" Height="25" Margin="0 5 10 0"
-                                        Command="{Binding UpdateTypeDocumentsCommand}"
+                                        Command="{Binding UpdatePositionCommand}"
                                         Template="{StaticResource MainButtonTemplate}"/>
 
                             </StackPanel>
@@ -383,7 +383,7 @@ BorderThickness="0,0,0,2">
                                 <ComboBox Width="175" Height="25" Margin="10 0 10 0"
                                           VerticalContentAlignment="Center"
                                           ItemsSource="{Binding PositionList}"
-                                          SelectedItem="{Binding SelectedPositionList}"
+                                          SelectedItem="{Binding ComboBoxSelectedPosition}"
                                           DisplayMemberPath="PositionListName"/>
 
                             </StackPanel>
@@ -397,10 +397,10 @@ BorderThickness="0,0,0,2">
                                 <ComboBox Width="175" Height="25" Margin="10 0 0 5" 
                                           VerticalContentAlignment="Center"
                                           ItemsSource="{Binding AccessList}"
-                                          SelectedItem="{Binding SelectedAccessList}"
+                                          SelectedItem="{Binding ComboBoxSelectedAccess}"
                                           DisplayMemberPath="AccessLevelName"/>
 
-                                <Button Content="Добавить тип документа" 
+                                <Button Content="Добавить должность" 
                                         Width="175" Height="25" Margin="10 5 0 0"
                                         Command="{Binding AddPositionCommand}" 
                                         Template="{StaticResource MainButtonTemplate}"/>

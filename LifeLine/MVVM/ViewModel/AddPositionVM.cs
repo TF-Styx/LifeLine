@@ -21,44 +21,63 @@ namespace LifeLine.MVVM.ViewModel
             DepartmentList = [];
             AccessList = [];
 
-            GetPositionMainList();
-            GetPositionList();
-            GetDepartmentList();
-            GetAccessList();
+            GetPositionMainData();
+            GetPositionData();
+            GetDepartmentData();
+            GetAccessData();
         }
 
         #region Свойства
 
 
-        private Department _selectedDepartmentList;
-        public Department SelectedDepartmentList
+        private Department _comboBoxSelectedDepartment;
+        public Department ComboBoxSelectedDepartment
         {
-            get => _selectedDepartmentList;
+            get => _comboBoxSelectedDepartment;
             set
             {
-                _selectedDepartmentList = value;
+                _comboBoxSelectedDepartment = value;
+                GetPositionData();
                 OnPropertyChanged();
             }
         }
 
-        private PositionList _selectedPositionList;
-        public PositionList SelectedPositionList
+        private PositionList _comboBoxSelectedPosition;
+        public PositionList ComboBoxSelectedPosition
         {
-            get => _selectedPositionList;
+            get => _comboBoxSelectedPosition;
             set
             {
-                _selectedPositionList = value;
+                _comboBoxSelectedPosition = value;
                 OnPropertyChanged();
             }
         }
 
-        private AccessLevel _selectedAccessList;
-        public AccessLevel SelectedAccessList
+        private AccessLevel _comboBoxSelectedAccess;
+        public AccessLevel ComboBoxSelectedAccess
         {
-            get => _selectedAccessList;
+            get => _comboBoxSelectedAccess;
             set
             {
-                _selectedAccessList = value;
+                _comboBoxSelectedAccess = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Position _selectedPosition;
+        public Position SelectedPosition
+        {
+            get => _selectedPosition;
+            set
+            {
+                if (value == null) { return; }
+
+                _selectedPosition = value;
+
+                ComboBoxSelectedDepartment = DepartmentList.FirstOrDefault(x => x.IdDepartment == value.IdPositionListNavigation.IdDepartment);
+                ComboBoxSelectedPosition = PositionList.FirstOrDefault(x => x.IdPositionList == value.IdPositionList);
+                ComboBoxSelectedAccess = AccessList.FirstOrDefault(x => x.IdAccessLevel == value.IdAccessLevel);
+
                 OnPropertyChanged();
             }
         }
@@ -79,6 +98,12 @@ namespace LifeLine.MVVM.ViewModel
         private RelayCommand _addPositionCommand;
         public RelayCommand AddPositionCommand { get => _addPositionCommand ??= new(obj => { AddPosition(); }); }
 
+        private RelayCommand _updatePositionCommand;
+        public RelayCommand UpdatePositionCommand { get => _updatePositionCommand ??= new(obj => { UpdatePosition(); }); }
+
+        private RelayCommand _deletePositionCommand;
+        public RelayCommand DeletePositionCommand => _deletePositionCommand ??= new RelayCommand(DeletePosition);
+
         #endregion
 
 
@@ -88,30 +113,73 @@ namespace LifeLine.MVVM.ViewModel
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                if (SelectedDepartmentList == null) { MessageBox.Show("Вы не выбрали отдел"); return; }
-                if (SelectedPositionList == null) { MessageBox.Show("Вы не выбрали должность"); return; }
-                if (SelectedAccessList == null) { MessageBox.Show("Вы не выбрали уровень доступа"); return; }
+                if (ComboBoxSelectedDepartment == null) { MessageBox.Show("Вы не выбрали отдел"); return; }
+                if (ComboBoxSelectedPosition == null) { MessageBox.Show("Вы не выбрали должность"); return; }
+                if (ComboBoxSelectedAccess == null) { MessageBox.Show("Вы не выбрали уровень доступа"); return; }
 
                 Position position = new Position()
                 {
-                    IdPositionList = SelectedPositionList.IdPositionList,
-                    IdAccessLevel = SelectedAccessList.IdAccessLevel
+                    IdPositionList = ComboBoxSelectedPosition.IdPositionList,
+                    IdAccessLevel = ComboBoxSelectedAccess.IdAccessLevel
                 };
 
                 context.Positions.Add(position);
                 context.SaveChanges();
 
-                GetPositionMainList();
+                GetPositionMainData();
             }
         }
 
-        private void GetPositionMainList()
+        private void UpdatePosition()
+        {
+            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            {
+                if (SelectedPosition == null) { return; }
+
+                var entityToUpdate = context.Positions.Find(SelectedPosition.IdPosition);
+
+                if (entityToUpdate != null)
+                {
+                    if (MessageBox.Show($"Вы точно хотите изменить: \n{SelectedPosition.IdPositionListNavigation.PositionListName}\nна\n{ComboBoxSelectedPosition.PositionListName}", "Предупреждение!!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        entityToUpdate.IdPositionList = ComboBoxSelectedPosition.IdPositionList;
+                        entityToUpdate.IdAccessLevel = ComboBoxSelectedAccess.IdAccessLevel;
+
+                        context.SaveChanges();
+
+                        GetPositionMainData();
+                    }
+                }
+                else { return; }
+            }
+        }
+
+        private void DeletePosition(object parametr)
+        {
+            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            {
+                if (parametr is Position position)
+                {
+                    //context.Positions.Find(position.IdPosition);
+
+                    if (MessageBox.Show($"Вы точно хотиде удалить:\nДолжность: {position.IdPositionListNavigation.PositionListName}", "Предупреждение!!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        context.Remove(position);
+                        context.SaveChanges(); 
+                        
+                        GetPositionMainData();
+                    }
+                }
+            }
+        }
+
+        private void GetPositionMainData()
         {
             PositionMainList.Clear();
 
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                var positionMainList = context.Positions.Include(x => x.IdPositionListNavigation).Include(x => x.IdAccessLevelNavigation).ToList();
+                var positionMainList = context.Positions.Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation).Include(x => x.IdAccessLevelNavigation).ToList();
 
                 foreach (var item in positionMainList)
                 {
@@ -120,20 +188,38 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private void GetPositionList()
+        private void GetPositionData()
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                var positionList = context.PositionLists.ToList();
+                PositionList.Clear();
 
-                foreach (var item in positionList)
+                if (ComboBoxSelectedDepartment == null)
                 {
-                    PositionList.Add(item);
+                    var positionList = context.PositionLists.ToList();
+
+                    foreach (var item in positionList)
+                    {
+                        PositionList.Add(item);
+                    }
+
+                    PositionList.FirstOrDefault();
+                }
+                else
+                {
+                    var positionList = context.PositionLists.Where(x => x.IdDepartment == ComboBoxSelectedDepartment.IdDepartment).ToList();
+
+                    foreach (var item in positionList)
+                    {
+                        PositionList.Add(item);
+                    }
+
+                    PositionList.FirstOrDefault();
                 }
             }
         }
 
-        private void GetDepartmentList()
+        private void GetDepartmentData()
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
@@ -146,7 +232,7 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private void GetAccessList()
+        private void GetAccessData()
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {

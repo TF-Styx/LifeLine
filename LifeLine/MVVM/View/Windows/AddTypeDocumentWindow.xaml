@@ -255,7 +255,7 @@ BorderThickness="0,0,0,2">
 
                                 </Button>
 
-                                <TextBlock Text="{Binding TypeDocumentName}" Margin="5 0 5 0" Width="150" Height="auto" TextWrapping="WrapWithOverflow"/>
+                                <TextBlock Text="{Binding TypeDocumentName}" Margin="5 0 5 0" Width="300" Height="auto" TextWrapping="WrapWithOverflow"/>
 
                                 <TextBlock Text="{Binding IdTypeOfPersoneNavigation.TypeOfPersoneName}" Margin="5 0 5 0" Width="150" Height="auto" TextWrapping="WrapWithOverflow"/>
 
