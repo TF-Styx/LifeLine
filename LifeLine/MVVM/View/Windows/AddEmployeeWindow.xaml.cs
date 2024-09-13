@@ -17,17 +17,17 @@ using System.Windows.Shapes;
 namespace LifeLine.MVVM.View.Windows
 {
     /// <summary>
-    /// Логика взаимодействия для AddDepartmentWindow.xaml
+    /// Логика взаимодействия для AddEmployeeWindow.xaml
     /// </summary>
-    public partial class AddDepartmentWindow : Window
+    public partial class AddEmployeeWindow : Window
     {
-        public AddDepartmentWindow()
+        public AddEmployeeWindow()
         {
             InitializeComponent();
 
             IDialogService service = new DialogService();
 
-            DataContext = new AddDepartmentWindowVM(service);
+            DataContext = new AddEmployeeVM(service);
         }
 
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)

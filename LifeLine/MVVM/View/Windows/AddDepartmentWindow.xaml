@@ -313,7 +313,17 @@
                 <ListView Grid.Column="0" Grid.Row="1" 
                           ItemsSource="{Binding DepartmentList}" 
                           SelectedItem="{Binding SelectedDepartment}"
-                          d:ItemsSource="{d:SampleData ItemCount=5}">
+                          d:ItemsSource="{d:SampleData ItemCount=5}"
+                          
+                          Background="#FF8AC1D2"   
+                          
+                          VerticalContentAlignment="Center"
+                          ScrollViewer.CanContentScroll="True"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingStackPanel.VirtualizationMode="Recycling"
+                          VirtualizingPanel.CacheLength="15, 15"
+                          VirtualizingPanel.CacheLengthUnit="Item"
+                          VirtualizingPanel.ScrollUnit="Pixel">
                     
                     <ListView.ItemTemplate>
                         
@@ -328,7 +338,7 @@
 
                                 </Button>
 
-                                <TextBlock Text="{Binding DepartmentName}" Margin="5 0 5 0" Width="150" Height="auto" TextWrapping="WrapWithOverflow"/>
+                                <TextBlock Text="{Binding DepartmentName}" Margin="15 0 5 0" Width="300" Height="auto" TextWrapping="WrapWithOverflow"/>
 
                                 <Button Background="#00DDDDDD" BorderBrush="#00707070">
 

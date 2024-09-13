@@ -292,8 +292,8 @@
                   HorizontalAlignment="Left" VerticalAlignment="Center">
                 
                 <MenuItem Style="{DynamicResource MenuItemStyle}" Header="Добавить">
-                    
-                    <MenuItem Header="Добавить сотрудника"/>
+
+                    <MenuItem Header="Добавить сотрудника" Command="{Binding OpenAddEmployeeWindowCommand}"/>
                     <MenuItem Header="Добавить пациента"/>
                     <Separator/>
                     <MenuItem Header="Добавить тип документа" Command="{Binding OpenAddTypeDocumentWindowCommand}"/>
@@ -305,7 +305,7 @@
                     <MenuItem Header="Добавить список должностей" Command="{Binding OpenAddPositionListWindowCommand}"/>
                     <Separator/>
                     <MenuItem Header="Добавить смену"/>
-                    <MenuItem Header="Добавить расписание"/>
+                    <MenuItem Header="Добавить расписание" Command="{Binding OpenAddGraphWindowCommand}"/>
 
                 </MenuItem>
                 

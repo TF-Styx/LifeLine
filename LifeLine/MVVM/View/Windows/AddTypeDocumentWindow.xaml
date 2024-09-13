@@ -240,7 +240,17 @@ BorderThickness="0,0,0,2">
                 <ListView Grid.Column="0" Grid.Row="1" 
                           ItemsSource="{Binding TypeDocumentList}"
                           SelectedItem="{Binding SelectTypeDocumentLists}"
-                          d:ItemsSource="{d:SampleData ItemCount=5}">
+                          d:ItemsSource="{d:SampleData ItemCount=5}"
+                          
+                          Background="#FF8AC1D2"   
+                          
+                          VerticalContentAlignment="Center"
+                          ScrollViewer.CanContentScroll="True"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingStackPanel.VirtualizationMode="Recycling"
+                          VirtualizingPanel.CacheLength="15, 15"
+                          VirtualizingPanel.CacheLengthUnit="Item"
+                          VirtualizingPanel.ScrollUnit="Pixel">
 
                     <ListView.ItemTemplate>
 

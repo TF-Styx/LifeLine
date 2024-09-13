@@ -159,9 +159,8 @@ BorderThickness="0,0,0,2">
     <!--#endregion-->
 
     <Border x:Name="MainWindowBorder" BorderBrush="LightCoral" BorderThickness="0">
-
         <Grid>
-
+            
             <Grid.RowDefinitions>
                 <RowDefinition Height="39"/>
                 <RowDefinition Height="*"/>
@@ -232,7 +231,7 @@ BorderThickness="0,0,0,2">
 
                     <TextBox Width="250" Height="25" Margin="0"
                              VerticalContentAlignment="Center" 
-                             Text="{Binding SearchTypeDocumentLists, UpdateSourceTrigger=PropertyChanged}"
+                             Text="{Binding SearchPositionTB, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource SettingTextBoxStyle}" 
                              Template="{StaticResource SettingTextBoxTemplate}"/>
 
@@ -242,6 +241,9 @@ BorderThickness="0,0,0,2">
                           ItemsSource="{Binding PositionMainList}"
                           SelectedItem="{Binding SelectedPosition}"
                           d:ItemsSource="{d:SampleData ItemCount=5}"
+                          
+                          Background="#FF8AC1D2"
+                          
                           VerticalContentAlignment="Center"
                           ScrollViewer.CanContentScroll="True"
                           VirtualizingPanel.IsVirtualizing="True"
@@ -251,61 +253,48 @@ BorderThickness="0,0,0,2">
                           VirtualizingPanel.ScrollUnit="Pixel">
 
                     <ListView.ItemTemplate>
-
                         <DataTemplate>
-
                             <StackPanel Orientation="Horizontal">
-
                                 <Border BorderBrush="Black" BorderThickness="1" CornerRadius="0 10 0 10">
-
                                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5" VerticalAlignment="Center" HorizontalAlignment="Center">
 
                                         <Button Background="#00DDDDDD" BorderBrush="#00707070"
                                                 Command="{Binding DataContext.DeletePositionCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
-
                                             <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
-
                                         </Button>
 
                                         <TextBlock Text="{Binding IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}" 
-                                                   Margin="5 0 5 0" Width="192" Height="auto" 
+                                                   Margin="5 0 5 0" Width="190" Height="auto" 
                                                    TextWrapping="WrapWithOverflow" 
                                                    TextAlignment="Center"
                                                    VerticalAlignment="Center"/>
 
                                         <TextBlock Text="{Binding IdPositionListNavigation.PositionListName}" 
-                                                   Margin="5 0 5 0" Width="192" Height="auto" 
+                                                   Margin="5 0 5 0" Width="190" Height="auto" 
                                                    TextWrapping="WrapWithOverflow" 
                                                    TextAlignment="Center"
                                                    VerticalAlignment="Center"/>
 
                                         <TextBlock Text="{Binding IdAccessLevelNavigation.AccessLevelName}" 
-                                                   Margin="5 0 5 0" Width="192" Height="auto" 
+                                                   Margin="5 0 5 0" Width="175" Height="auto" 
                                                    TextWrapping="WrapWithOverflow" 
                                                    TextAlignment="Center"
                                                    VerticalAlignment="Center"/>
 
                                         <Button Background="#00DDDDDD" BorderBrush="#00707070">
-
                                             <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
-
                                         </Button>
 
                                     </StackPanel>
-
                                 </Border>
-
                             </StackPanel>
-
                         </DataTemplate>
-
                     </ListView.ItemTemplate>
 
                 </ListView>
 
 
                 <Border Grid.Row="2">
-
                     <Grid HorizontalAlignment="Center">
 
                         <!--<StackPanel VerticalAlignment="Center">
@@ -354,7 +343,6 @@ BorderThickness="0,0,0,2">
                         </StackPanel>-->
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-
                             <StackPanel>
 
                                 <TextBlock Text="Отдел" FontSize="17" 
@@ -408,15 +396,10 @@ BorderThickness="0,0,0,2">
                             </StackPanel>
 
                         </StackPanel>
-
                     </Grid>
-
                 </Border>
-
             </Grid>
-
         </Grid>
-
     </Border>
 
 </Window>

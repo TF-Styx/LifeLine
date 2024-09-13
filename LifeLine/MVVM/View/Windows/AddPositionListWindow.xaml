@@ -18,7 +18,7 @@
 
         Height="550" Width="750"
 
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"> 
 
     <!--#region Настройка окна -->
 
@@ -226,24 +226,69 @@ BorderThickness="0,0,0,2">
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="Поиск:  " Margin="0" Style="{StaticResource TextBlockStyle}"/>
+
+                    <!--<TextBlock Text="Поиск отдела:  " Margin="0" Style="{StaticResource TextBlockStyle}"/>
+                    <TextBox Width="250" Height="25" Margin="0"
+                             VerticalContentAlignment="Center" 
+                             Text="{Binding SearchDepartmentName, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource SettingTextBoxStyle}" 
+                             Template="{StaticResource SettingTextBoxTemplate}"/>-->
+
+                    <TextBlock Text="Поиск должности:  " Margin="10 0 0 0" Style="{StaticResource TextBlockStyle}"/>
                     <TextBox Width="250" Height="25" Margin="0"
                              VerticalContentAlignment="Center" 
                              Text="{Binding SearchPositionList, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource SettingTextBoxStyle}" 
                              Template="{StaticResource SettingTextBoxTemplate}"/>
+                    
                 </StackPanel>
 
                 <ListView Grid.Column="0" Grid.Row="1" 
                           ItemsSource="{Binding PositionLists}" 
                           SelectedItem="{Binding SelectPositionList}"
                           d:ItemsSource="{d:SampleData ItemCount=5}"
+                          
+                          Background="#FF8AC1D2"   
+                          
                           ScrollViewer.CanContentScroll="True"
+                          ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                           VirtualizingPanel.IsVirtualizing="True"
                           VirtualizingStackPanel.VirtualizationMode="Recycling"
                           VirtualizingPanel.CacheLength="15, 15"
                           VirtualizingPanel.CacheLengthUnit="Item"
                           VirtualizingPanel.ScrollUnit="Pixel">
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Border BorderBrush="Black" BorderThickness="1" CornerRadius="0 10 0 10">
+                                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5" VerticalAlignment="Center" HorizontalAlignment="Center">
+
+                                        <Button Background="#00DDDDDD" BorderBrush="#00707070" Command="{Binding DataContext.DeletePositionListCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                            <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
+                                        </Button>
+                                        
+                                        <TextBlock Text="{Binding IdDepartmentNavigation.DepartmentName}" 
+                                                   Margin="15 0 5 0" Width="170" Height="auto" 
+                                                   TextWrapping="WrapWithOverflow" 
+                                                   TextAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+
+                                        <TextBlock Text="{Binding PositionListName}" 
+                                                   Margin="5 0 5 0" Width="490" Height="auto" 
+                                                   TextWrapping="WrapWithOverflow" 
+                                                   TextAlignment="Left"
+                                                   VerticalAlignment="Center"/>
+
+                                        <Button Background="#00DDDDDD" BorderBrush="#00707070">
+                                            <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
+                                        </Button>
+                                        
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
 
                     <!--<ListView.View>
                         <GridView>
@@ -291,7 +336,7 @@ BorderThickness="0,0,0,2">
                         </GridView>
                     </ListView.View>-->
 
-                    <ListView.ItemTemplate>
+                    <!--<ListView.ItemTemplate>
 
                         <DataTemplate>
 
@@ -328,7 +373,7 @@ BorderThickness="0,0,0,2">
 
                         </DataTemplate>
 
-                    </ListView.ItemTemplate>
+                    </ListView.ItemTemplate>-->
                 </ListView>
 
                 <Border Grid.Row="2">

@@ -1,4 +1,5 @@
 ﻿using LifeLine.MVVM.ViewModel;
+using LifeLine.Services.DialogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,10 @@ namespace LifeLine.MVVM.View.Windows
         {
             InitializeComponent();
 
-            DataContext = new AddPositionListVM();
+            IDialogService dialogService = new DialogService();
+
+            DataContext = new AddPositionListVM(dialogService);
+
         }
 
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
