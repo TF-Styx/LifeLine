@@ -29,6 +29,18 @@ namespace LifeLine.MVVM.ViewModel
 
         #region Свойства
 
+        private string _searchPositionTB;
+        public string SearchPositionTB
+        {
+            get => _searchPositionTB;
+            set
+            {
+                _searchPositionTB = value;
+                Task.Run(SearchPositionAsync);
+                //SearchPosition();
+                OnPropertyChanged();
+            }
+        }
 
         private Department _comboBoxSelectedDepartment;
         public Department ComboBoxSelectedDepartment
@@ -179,7 +191,9 @@ namespace LifeLine.MVVM.ViewModel
 
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                var positionMainList = context.Positions.Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation).Include(x => x.IdAccessLevelNavigation).ToList();
+                var positionMainList = context.Positions
+                    .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation)
+                    .Include(x => x.IdAccessLevelNavigation).ToList();
 
                 foreach (var item in positionMainList)
                 {
@@ -242,6 +256,34 @@ namespace LifeLine.MVVM.ViewModel
                 {
                     AccessList.Add(item);
                 }
+            }
+        }
+
+        private async void SearchPositionAsync()
+        {
+            using (EmployeeManagementContext context = new())
+            {
+                var searchPosition = await 
+                    context.Positions
+                        .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation).Include(x => x.IdAccessLevelNavigation)
+                            .Where(x => x.IdPositionListNavigation.PositionListName.ToLower().Contains(SearchPositionTB.ToLower()))
+                    .Union(context.Positions
+                        .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation).Include(x => x.IdAccessLevelNavigation)
+                            .Where(x => x.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchPositionTB.ToLower())))
+                    .Union(context.Positions
+                        .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation).Include(x => x.IdAccessLevelNavigation)
+                            .Where(x => x.IdAccessLevelNavigation.AccessLevelName.ToLower().Contains(SearchPositionTB.ToLower())))
+                    .ToListAsync();
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    PositionMainList.Clear();
+
+                    foreach (var item in searchPosition)
+                    {
+                        PositionMainList.Add(item);
+                    }
+                });
             }
         }
 

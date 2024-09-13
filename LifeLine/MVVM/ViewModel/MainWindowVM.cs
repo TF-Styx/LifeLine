@@ -140,6 +140,12 @@ namespace LifeLine.MVVM.ViewModel
         private RelayCommand _openAddPositionWindowCommand;
         public RelayCommand OpenAddPositionWindowCommand { get => _openAddPositionWindowCommand ??= new(obj => { OpenAddPositionWindow(); }); }
 
+        private RelayCommand _openAddEmployeeWindowCommand;
+        public RelayCommand OpenAddEmployeeWindowCommand { get => _openAddEmployeeWindowCommand ??= new(obj => { OpenAddEmployeeWindow(); }); }
+        
+        private RelayCommand _openAddGraphWindowCommand;
+        public RelayCommand OpenAddGraphWindowCommand { get => _openAddGraphWindowCommand ??= new(obj => { OpenAddGraphWindow(); }); }
+
         #endregion
 
 
@@ -202,6 +208,18 @@ namespace LifeLine.MVVM.ViewModel
         {
             AddPositionWindow addPositionWindow = new AddPositionWindow();
             addPositionWindow.Show();
+        }
+
+        private void OpenAddEmployeeWindow()
+        {
+            AddEmployeeWindow addEmployeeWindow = new AddEmployeeWindow();
+            addEmployeeWindow.Show();
+        }
+
+        private void OpenAddGraphWindow()
+        {
+            AddGraphWindow addGraphWindow = new AddGraphWindow();
+            addGraphWindow.Show();
         }
 
         #endregion

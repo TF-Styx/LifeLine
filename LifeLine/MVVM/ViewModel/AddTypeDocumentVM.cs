@@ -1,4 +1,6 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.Services.DialogService;
+using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,8 +15,10 @@ namespace LifeLine.MVVM.ViewModel
 {
     class AddTypeDocumentVM : BaseViewModel
     {
-        public AddTypeDocumentVM()
+        public AddTypeDocumentVM(IDialogService dialogService)
         {
+            _dialogService = dialogService;
+
             TypeDocumentList = [];
             TypeOfPersoneList = [];
             GetTypeOfPersonOnComboBox();
@@ -25,6 +29,8 @@ namespace LifeLine.MVVM.ViewModel
 
 
         #region Свойства
+
+        private readonly IDialogService _dialogService;
 
         private string _textBoxTypeDocuments;
         public string TextBoxTypeDocuments
@@ -55,7 +61,7 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _searchTypeDocumentLists = value;
-                SearchTypeDocumentListName();
+                Task.Run(SearchTypeDocumentListName);
                 OnPropertyChanged();
             }
         }
@@ -108,18 +114,21 @@ namespace LifeLine.MVVM.ViewModel
             {
                 if (string.IsNullOrWhiteSpace(TextBoxTypeDocuments))
                 {
-                    MessageBox.Show("Вы не заполнили поле!!");
+                    _dialogService.ShowMessage("Вы не заполнили поле!!");
+                    //MessageBox.Show("Вы не заполнили поле!!");
                     return;
                 }
                 if (context.TypeDocuments.Any(tdl => tdl.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()))
                 {
-                    MessageBox.Show("Такое поле уже есть!!");
+                    _dialogService.ShowMessage("Такое поле уже есть!!");
+                    //MessageBox.Show("Такое поле уже есть!!");
                 }
                 else
                 {
                     if (ComboBoxTypeOfPersone.IdTypeOfPersone == 0)
                     {
-                        MessageBox.Show("Вы не выбрали на кого будут записываться документы!!");
+                        _dialogService.ShowMessage("Вы не выбрали на кого будут записываться документы!!");
+                        //MessageBox.Show("Вы не выбрали на кого будут записываться документы!!");
                         return;
                     }
 
@@ -154,7 +163,8 @@ namespace LifeLine.MVVM.ViewModel
                 {
                     if (context.TypeDocuments.Any(tdl => tdl.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()) || string.IsNullOrWhiteSpace(TextBoxTypeDocuments))
                     {
-                        MessageBox.Show($"Такой {SelectTypeDocumentLists.TypeDocumentName} уже есть!!\nИли пустой!!");
+                        _dialogService.ShowMessage($"Такой {SelectTypeDocumentLists.TypeDocumentName} уже есть!!\nИли пустой!!");
+                        //MessageBox.Show($"Такой {SelectTypeDocumentLists.TypeDocumentName} уже есть!!\nИли пустой!!");
                     }
                     else
                     {
@@ -181,8 +191,8 @@ namespace LifeLine.MVVM.ViewModel
                 if (parametr is TypeDocument typeDocumentLists)
                 {
                     var deleteTypeDocumentLists = context.TypeDocuments.Find(typeDocumentLists.IdTypeDocument);
-
-                    if (MessageBox.Show($"Вы точно хотите удалить {typeDocumentLists.TypeDocumentName}?", "Предупреждение!!!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    
+                    if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {typeDocumentLists.TypeDocumentName}?", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
                     {
                         context.Remove(typeDocumentLists);
                         context.SaveChanges();
@@ -222,18 +232,24 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private void SearchTypeDocumentListName()
+        private async void SearchTypeDocumentListName()
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                var searchTypeDocumentListName = context.TypeDocuments.Include(x => x.IdTypeOfPersoneNavigation).Where(stdl => stdl.TypeDocumentName.ToLower().Contains(SearchTypeDocumentLists.ToLower())).OrderBy(x => x.IdTypeOfPersone).ToList();
+                var searchTypeDocumentListName = await 
+                    context.TypeDocuments
+                        .Include(x => x.IdTypeOfPersoneNavigation)
+                            .Where(stdl => stdl.TypeDocumentName.ToLower().Contains(SearchTypeDocumentLists.ToLower())).OrderBy(x => x.IdTypeOfPersone).ToListAsync();
 
-                TypeDocumentList.Clear();
-
-                foreach (var item in searchTypeDocumentListName)
+                App.Current.Dispatcher.Invoke(() =>
                 {
-                    TypeDocumentList.Add(item);
-                }
+                    TypeDocumentList.Clear();
+
+                    foreach (var item in searchTypeDocumentListName)
+                    {
+                        TypeDocumentList.Add(item);
+                    }
+                });
             }
         }
 

@@ -1,4 +1,6 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.Services.DialogService;
+using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
@@ -9,12 +11,17 @@ namespace LifeLine.MVVM.ViewModel
 {
     class AddPositionListVM : BaseViewModel
     {
-        public AddPositionListVM()
+        private readonly IDialogService _dialogService;
+
+        public AddPositionListVM(IDialogService dialogService)
         {
             PositionLists = [];
             DepartmentLists = [];
+
             GetPositionList();
             GetDepartmentList();
+
+            _dialogService = dialogService;
         }
 
         #region Свойства
@@ -37,7 +44,8 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _searchPositionList = value;
-                SearchPositionListName();
+                Task.Run(SearchPositionListNameAsync);
+                //SearchPositionListName();
                 OnPropertyChanged();
             }
         }
@@ -73,7 +81,6 @@ namespace LifeLine.MVVM.ViewModel
                 }
 
                 _selectedDepartmentList = value;
-
                 OnPropertyChanged();
             }
         }
@@ -110,17 +117,20 @@ namespace LifeLine.MVVM.ViewModel
             {
                 if (string.IsNullOrWhiteSpace(TextBoxPositionLists))
                 {
-                    MessageBox.Show("Вы не заполнили поле!!");
+                    _dialogService.ShowMessage("Вы не заполнили поле!!", "Предупреждение!!!");
+                    //MessageBox.Show("Вы не заполнили поле!!");
                     return;
                 }
                 if (SelectedDepartmentList == null)
                 {
-                    MessageBox.Show("Вы не выбрали отдел!!");
+                    _dialogService.ShowMessage("Вы не выбрали отдел!!", "Предупреждение!!!");
+                    //MessageBox.Show("Вы не выбрали отдел!!");
                     return;
                 }
                 if (context.PositionLists.Any(pl => pl.PositionListName.ToLower() == TextBoxPositionLists.ToLower()))
                 {
-                    MessageBox.Show("Такое поле уже есть!!");
+                    _dialogService.ShowMessage("Такое поле уже есть!!", "Предупреждение!!!");
+                    //MessageBox.Show("Такое поле уже есть!!");
                 }
                 else
                 {
@@ -149,13 +159,14 @@ namespace LifeLine.MVVM.ViewModel
                     return;
                 }
 
-                var a = context.PositionLists.Where(x => x.IdPositionList != SelectPositionList.IdPositionList);
+                var warning = context.PositionLists.Where(x => x.IdPositionList != SelectPositionList.IdPositionList);
 
-                foreach (var item in a)
+                foreach (var item in warning)
                 {
                     if (item.PositionListName == SelectPositionList.PositionListName)
                     {
-                        MessageBox.Show("Такая должность уже есть!!");
+                        _dialogService.ShowMessage("Такая должность уже есть!!", "Предупреждение!!!");
+                        //MessageBox.Show("Такая должность уже есть!!");
                         return;
                     }
                 }
@@ -164,11 +175,11 @@ namespace LifeLine.MVVM.ViewModel
 
                 if (updatePositionLists != null)
                 {
-                    if (MessageBox.Show($"Вы точно хотите изменить {SelectPositionList.PositionListName}\nна\n{TextBoxPositionLists}", "Предупреждение!!!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    if (_dialogService.ShowMessageButton($"Вы точно хотите изменить {SelectPositionList.PositionListName}\nна\n{TextBoxPositionLists}", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
                     {
                         if (SelectedDepartmentList == null)
                         {
-                            MessageBox.Show("Text");
+                            //MessageBox.Show("Text");
                             return;
                         }
 
@@ -199,7 +210,8 @@ namespace LifeLine.MVVM.ViewModel
                 }
                 else
                 {
-                    MessageBox.Show("srgdtgadRG");
+                    _dialogService.ShowMessage("TEST", "Предупреждение!!!");
+                    //MessageBox.Show("srgdtgadRG");
                 }
             }
         }
@@ -214,10 +226,13 @@ namespace LifeLine.MVVM.ViewModel
 
                     if (deletePositionLists != null)
                     {
-                        if (MessageBox.Show($"Вы точно хотите удалить {positionLists.PositionListName}?", "Предупреждение!!!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {positionLists.PositionListName}?", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
                         {
-                            context.Remove(positionLists);
+                            //MessageBox.Show($"Вы точно хотите удалить {positionLists.PositionListName}?", "Предупреждение!!!", MessageBoxButtons.YesNo) == DialogResult.Yes
+                            context.Remove(deletePositionLists);
                             context.SaveChanges();
+
+                            // TODO: Ошибка с удалением списка должностей : РЕШЕНА
 
                             PositionLists.Clear();
                             GetPositionList();
@@ -268,18 +283,28 @@ namespace LifeLine.MVVM.ViewModel
         /// <summary>
         /// Метод поиска по названию должности
         /// </summary>
-        private void SearchPositionListName()
+        private async void SearchPositionListNameAsync()
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                var searchPositionListName = context.PositionLists.Include(x => x.IdDepartmentNavigation).Where(spl => spl.PositionListName.ToLower().Contains(SearchPositionList.ToLower())).ToList();
+                var searchPositionListName = await
+                    context.PositionLists
+                        .Include(x => x.IdDepartmentNavigation)
+                            .Where(x => x.PositionListName.ToLower().Contains(SearchPositionList.ToLower()))
+                    .Union(context.PositionLists
+                        .Include(x => x.IdDepartmentNavigation)
+                            .Where(x => x.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchPositionList.ToLower())))
+                    .ToListAsync();
 
-                PositionLists.Clear();
-
-                foreach (var item in searchPositionListName)
+                App.Current.Dispatcher.Invoke(() => 
                 {
-                    PositionLists.Add(item);
-                }
+                    PositionLists.Clear();
+
+                    foreach (var item in searchPositionListName)
+                    {
+                        PositionLists.Add(item);
+                    }
+                });
             }
         }
 

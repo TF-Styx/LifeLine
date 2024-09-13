@@ -1,4 +1,6 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.Services.DialogService;
+using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
@@ -7,13 +9,17 @@ namespace LifeLine.MVVM.ViewModel
 {
     class AddDepartmentWindowVM : BaseViewModel
     {
-        public AddDepartmentWindowVM()
+        public AddDepartmentWindowVM(IDialogService dialogService)
         {
+            _dialogService = dialogService;
+
             DepartmentList = [];
             GetDataDepartment();
         }
 
         #region Свойства
+
+        private readonly IDialogService _dialogService;
 
         private string _textBoxDepartment;
         public string TextBoxDepartment
@@ -86,12 +92,14 @@ namespace LifeLine.MVVM.ViewModel
             {
                 if (string.IsNullOrWhiteSpace(TextBoxDepartment))
                 {
-                    MessageBox.Show("Вы не заполнили поле!!");
+                    _dialogService.ShowMessage("Вы не заполнили поле!!");
+                    //MessageBox.Show("Вы не заполнили поле!!");
                     return;
                 }
                 if (context.Departments.Any(dl => dl.DepartmentName.ToLower() == TextBoxDepartment.ToLower())) 
                 {
-                    MessageBox.Show("Такое поле уже есть!!");
+                    _dialogService.ShowMessage("Такое поле уже есть!!");
+                    //MessageBox.Show("Такое поле уже есть!!");
                 }
                 else
                 {
@@ -128,7 +136,8 @@ namespace LifeLine.MVVM.ViewModel
                 {
                     if (context.Departments.Any(dl => dl.DepartmentName.ToLower() == TextBoxDepartment.ToLower()) || string.IsNullOrEmpty(TextBoxDepartment))
                     {
-                        MessageBox.Show($"Такой {SelectedDepartment.DepartmentName} уже есть!!\nИли пустой!!");
+                        _dialogService.ShowMessage($"Такой {SelectedDepartment.DepartmentName} уже есть!!\nИли пустой!!");
+                        //MessageBox.Show($"Такой {SelectedDepartment.DepartmentName} уже есть!!\nИли пустой!!");
                     }
                     else 
                     {
@@ -197,7 +206,8 @@ namespace LifeLine.MVVM.ViewModel
 
                     if (deleteDepartment != null)
                     {
-                        if (MessageBox.Show($"Вы точно хотите удалить {department.DepartmentName}?", "Предупреждение!!!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        
+                        if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {department.DepartmentName}?", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
                         {
                             context.Remove(deleteDepartment);
                             context.SaveChanges();
