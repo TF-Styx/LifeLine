@@ -20,7 +20,6 @@
   <ItemGroup>
     <Folder Include="MVVM\Models\AppModel\" />
     <Folder Include="MVVM\Models\MSSQL_DB\" />
-    <Folder Include="Utils\" />
   </ItemGroup>
 
   <ItemGroup>
