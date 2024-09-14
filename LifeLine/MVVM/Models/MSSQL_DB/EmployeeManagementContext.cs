@@ -332,7 +332,9 @@ public partial class EmployeeManagementContext : DbContext
             entity.ToTable("Time_table");
 
             entity.Property(e => e.IdTimeTable).HasColumnName("id_time_table");
-            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.Date)
+                .HasColumnType("datetime")
+                .HasColumnName("date");
             entity.Property(e => e.IdEmployee).HasColumnName("id_employee");
             entity.Property(e => e.IdShift).HasColumnName("id_shift");
             entity.Property(e => e.Notes).HasColumnName("notes");
