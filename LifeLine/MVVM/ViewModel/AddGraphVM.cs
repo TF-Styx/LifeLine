@@ -1,5 +1,6 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DialogService;
+using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace LifeLine.MVVM.ViewModel
             _dialogService = dialogService;
 
             GetDepartmentData();
+            GetShiftData();
             //GetEmployeeData();
 
             SelectedDepartment = Departments.FirstOrDefault();
@@ -25,7 +27,6 @@ namespace LifeLine.MVVM.ViewModel
         #region Свойства
 
         private readonly IDialogService _dialogService;
-
 
         private Department _selectedDepartment;
         public Department SelectedDepartment
@@ -47,6 +48,65 @@ namespace LifeLine.MVVM.ViewModel
             {
                 _selectedEmployee = value;
                 OnPropertyChanged();
+            }
+        }
+
+        private Shift _selectedShift;
+        public Shift SelectedShift
+        {
+            get => _selectedShift;
+            set
+            {
+                _selectedShift = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime? _dateWork;
+        public DateTime? DateWork
+        {
+            get => _dateWork;
+            set
+            {
+                _dateWork = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime? _startTimeWork;
+        public DateTime? StartTimeWork
+        {
+            get => _startTimeWork;
+            set
+            {
+                _startTimeWork = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime? _endTimeWork;
+        public DateTime? EndTimeWork
+        {
+            get => _endTimeWork;
+            set
+            {
+                _endTimeWork = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime? _selectedTime;
+
+        public DateTime? SelectedTime
+        {
+            get => _selectedTime;
+            set
+            {
+                if (_selectedTime != value)
+                {
+                    _selectedTime = value;
+                    OnPropertyChanged(nameof(SelectedTime));
+                }
             }
         }
 
@@ -74,9 +134,22 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+        private string _noteForGraphik;
+        public string NoteForGraphik
+        {
+            get => _noteForGraphik;
+            set
+            {
+                _noteForGraphik = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ObservableCollection<Department> Departments { get; set; } = [];
 
         public ObservableCollection<Employee> Employees { get; set; } = [];
+
+        public ObservableCollection<Shift> Shifts { get; set; } = [];
 
         #endregion
 
@@ -84,13 +157,44 @@ namespace LifeLine.MVVM.ViewModel
 
         #region Команды
 
-
+        private RelayCommand _addTimeTableCommand;
+        public RelayCommand AddTimeTableCommand { get => _addTimeTableCommand ??= new(obj => { AddTimeTable(); }); }
 
         #endregion
 
         //---------------------------------------------------------------------------------------------------------
 
         #region Методы
+
+        private void AddTimeTable()
+        {
+            TimeTable timeTable = new TimeTable()
+            {
+                IdEmployee = SelectedEmployee.IdEmployee,
+                Date = DateWork.Value.Date,
+                TimeStart = StartTimeWork.ToString(),
+                TimeEnd = EndTimeWork.ToString(),
+                IdShift = SelectedShift.IdShift,
+                Notes = NoteForGraphik
+            };
+
+            using (EmployeeManagementContext context = new())
+            {
+                if (SelectedEmployee == null)
+                {
+                    _dialogService.ShowMessage("Не был выбран сотрудник!!");
+                    return;
+                }
+                if (SelectedShift == null)
+                {
+                    _dialogService.ShowMessage("Не была выбрана смена!!");
+                    return;
+                }
+
+                context.TimeTables.Add(timeTable);
+                context.SaveChanges();
+            }
+        }
 
         private void GetSelectedEmployee()
         {
@@ -118,6 +222,21 @@ namespace LifeLine.MVVM.ViewModel
                 foreach (var item in departaments)
                 {
                     Departments.Add(item);
+                }
+            }
+        }
+
+        private void GetShiftData()
+        {
+            Shifts.Clear();
+
+            using (EmployeeManagementContext context = new())
+            {
+                var shifts = context.Shifts.ToList();
+
+                foreach (var item in shifts)
+                {
+                    Shifts.Add(item);
                 }
             }
         }

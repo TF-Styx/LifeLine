@@ -6,8 +6,10 @@
         xmlns:local="clr-namespace:LifeLine.MVVM.View.Windows"
         mc:Ignorable="d"
         xmlns:fa="http://schemas.fontawesome.com/icons/" 
+        xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:viewmodel="clr-namespace:LifeLine.MVVM.ViewModel" 
         d:DataContext="{d:DesignInstance Type=viewmodel:AddGraphVM}"
+        xmlns:convertor="clr-namespace:LifeLine.Utils.ValueConverter"
         Title="AddGraphWindow" 
         Style="{StaticResource Window}"
         Height="500" Width="800"
@@ -28,6 +30,13 @@
     </Window.CommandBindings>
 
     <Window.Resources>
+
+        <!--#region Конверторы -->
+
+        <convertor:FullNameConverter x:Key="FullNameConvertor"/>
+        <convertor:SecondNameToForegroundConverter x:Key="SecondNameToForegroundConverter"/>
+
+        <!--#endregion-->
 
         <!--#region Стили для кнопок в строке заголовка -->
 
@@ -219,43 +228,36 @@ BorderThickness="0,0,0,2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="250"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
+
+                <!--#region Основной поиск-->
+                
                 <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
 
                     <TextBlock Text="Поиск: " Margin="0" Style="{StaticResource TextBlockStyle}"/>
 
                     <TextBox Width="250" Height="25" Margin="0"
                              VerticalContentAlignment="Center" 
-                             Text="{Binding SearchEmployeeTB, UpdateSourceTrigger=PropertyChanged}"
+                             Text="{Binding SearchAllTB, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource SettingTextBoxStyle}" 
                              Template="{StaticResource SettingTextBoxTemplate}"/>
 
                 </StackPanel>
 
+                <!--#endregion-->
+
+                <!--#region Левая колонка с <<Департамент>> и <<Сотрудники>> -->
+
                 <Grid Grid.Row="1" Grid.Column="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="100" MinHeight="100" MaxHeight="300"/>
+                        <RowDefinition Height="105" MinHeight="105" MaxHeight="300"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="*" MinHeight="100"/>
                     </Grid.RowDefinitions>
 
-                    <!--#region Департамент -->
-                    
-                    <!--<ListView Grid.Row="0" 
-                              ItemsSource="{Binding Departments}"
-                              SelectedItem="{Binding SelectedDepartment}"
-                              d:ItemsSource="{d:SampleData ItemCount=5}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn DisplayMemberBinding="{Binding DepartmentName}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>-->
-
-                    <!--#region Список таблиц-->
+                    <!--#region ListView Департамент-->
 
                     <Border Grid.Row="0" Grid.Column="0" CornerRadius="0 20 0 20" Background="#FFA0C5D1" Margin="5,0,5,0">
                         <Border.Effect>
@@ -263,6 +265,8 @@ BorderThickness="0,0,0,2">
                         </Border.Effect>
 
                         <ListView ItemsSource="{Binding Departments}" SelectedItem="{Binding SelectedDepartment}" d:ItemsSource="{d:SampleData ItemCount=15}" FontSize="15">
+                            <!--#region ListView.Resources-->
+                            
                             <ListView.Resources>
 
                                 <LinearGradientBrush x:Key="ListViewItemSelectedAndMousOver" EndPoint="1,0" StartPoint="1,0">
@@ -286,16 +290,16 @@ BorderThickness="0,0,0,2">
                                                         <ColumnDefinition Width="5"/>
                                                     </Grid.ColumnDefinitions>
                                                     <Border Background="{TemplateBinding Background}" 
-                                                            BorderBrush="{TemplateBinding BorderBrush}" 
+                                                            BorderBrush="#FF8AC1D2" 
                                                             BorderThickness="0,0,1,0" 
                                                             Padding="5" 
                                                             Grid.Column="0">
                                                         <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" RecognizesAccessKey="True" />
                                                     </Border>
-                                                    <Thumb Grid.Column="1" 
+                                                    <!--<Thumb Grid.Column="1" 
                                                            Width="5" 
                                                            Background="#FF8AC1D2" 
-                                                           Cursor="SizeWE"/>
+                                                           Cursor="SizeWE"/>-->
                                                 </Grid>
                                             </ControlTemplate>
                                         </Setter.Value>
@@ -312,8 +316,7 @@ BorderThickness="0,0,0,2">
 
                                 <!--#endregion-->
 
-
-                                <!--#endregion-->
+                                <!--#region Стиль ListView-->
 
                                 <Style TargetType="ListView">
                                     <Setter Property="Foreground" Value="Black" />
@@ -322,9 +325,14 @@ BorderThickness="0,0,0,2">
                                     <Setter Property="BorderThickness" Value="0"/>
                                 </Style>
 
+                                <!--#endregion-->
+
+                                <!--#region Стиль ListViewItem-->
+
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="Background" Value="#FFA0C5D1"/>
                                     <Setter Property="BorderBrush" Value="#2A2A2A"/>
+                                    <Setter Property="Margin" Value="0 0 0 5"/>
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Setter Property="Background" Value="{StaticResource ListViewItemSelectedAndMousOver}"/>
@@ -337,7 +345,11 @@ BorderThickness="0,0,0,2">
                                     </Style.Triggers>
                                 </Style>
 
+                                <!--#endregion-->
+
                             </ListView.Resources>
+                            
+                            <!--#endregion-->
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Департамент" Width="217">
@@ -354,11 +366,9 @@ BorderThickness="0,0,0,2">
 
                     <!--#endregion-->
 
+                    <GridSplitter Grid.Row="1" Height="2" Background="Black" Margin="0 15 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
 
-                    <GridSplitter Grid.Row="1" Height="2" Background="Black" Margin="0 10 0 10" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-
-
-                    <!--#region Сотрудник -->
+                    <!--#region ListView Поиск сотрудника-->
                     
                     <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
 
@@ -372,22 +382,168 @@ BorderThickness="0,0,0,2">
 
                     </StackPanel>
 
-                    <ListView Grid.Row="3"
-                              ItemsSource="{Binding Employees}" 
-                              SelectedItem="{Binding SelectedEmployee}"
-                              d:ItemsSource="{d:SampleData ItemCount=5}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn DisplayMemberBinding="{Binding SecondName}"/>
-                                <GridViewColumn DisplayMemberBinding="{Binding FirstName}"/>
-                                <GridViewColumn DisplayMemberBinding="{Binding LastName}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+                    <!--#endregion-->
+
+                    <!--#region ListView Сотрудники-->
+
+                    <Border Grid.Row="3" Grid.Column="0" Background="#FFA0C5D1" Margin="5,0,5,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10" Direction="300"/>
+                        </Border.Effect>
+
+                        <ListView ItemsSource="{Binding Employees}" SelectedItem="{Binding SelectedEmployee}" d:ItemsSource="{d:SampleData ItemCount=15}" FontSize="15">
+                            <!--#region ListView.Resources-->
+
+                            <ListView.Resources>
+
+                                <LinearGradientBrush x:Key="ListViewItemSelectedAndMousOver" EndPoint="1,0" StartPoint="1,0">
+                                    <GradientStop Color="#FFA0C5D1" Offset="1.0"/>
+                                    <GradientStop Color="#FF8AC1D2" Offset="0.0"/>
+                                </LinearGradientBrush>
+
+                                <!--#region Шаблон для заголовка GridViewColumnHeader-->
+
+                                <Style TargetType="GridViewColumnHeader">
+                                    <Setter Property="Background" Value="#FF8AC1D2"/>
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="GridViewColumnHeader">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="5"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Background="{TemplateBinding Background}" 
+                                                            BorderBrush="#FF8AC1D2" 
+                                                            BorderThickness="0,0,1,0" 
+                                                            Padding="5" 
+                                                            Grid.Column="0">
+                                                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                                                    </Border>
+                                                    <!--<Thumb Grid.Column="1" 
+                                                               Width="5" 
+                                                               Background="#FF8AC1D2" 
+                                                               Cursor="SizeWE"/>-->
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#FF8AC1D2"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Background" Value="#FF8AC1D2"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+
+                                <!--#endregion-->
+
+                                <!--#region Стиль ListView-->
+
+                                <Style TargetType="ListView">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="Background" Value="#FF8AC1D2" />
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+
+                                <!--#endregion-->
+
+                                <!--#region Стиль ListViewItem-->
+
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Background" Value="#FFA0C5D1"/>
+                                    <Setter Property="BorderBrush" Value="#2A2A2A"/>
+                                    <Setter Property="Margin" Value="0 0 0 5"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource ListViewItemSelectedAndMousOver}"/>
+                                            <Setter Property="BorderBrush" Value="#FF595958"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource ListViewItemSelectedAndMousOver}"/>
+                                            <Setter Property="BorderBrush" Value="#FF595958"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+
+                                <!--#endregion-->
+
+                            </ListView.Resources>
+
+                            <!--#endregion-->
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Департамент" Width="217">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding SecondName}" Margin="0 0 2 0" Foreground="{Binding SecondName, Converter={StaticResource SecondNameToForegroundConverter}}"/>
+                                                    <TextBlock Text="{Binding FirstName}" Margin="0 0 2 0" Foreground="{Binding SecondName, Converter={StaticResource SecondNameToForegroundConverter}}"/>
+                                                    <TextBlock Text="{Binding LastName}" Foreground="{Binding SecondName, Converter={StaticResource SecondNameToForegroundConverter}}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Border>
 
                     <!--#endregion-->
                     
                 </Grid>
+
+                <!--#endregion-->
+
+
+
+
+                <Border Grid.Row="1" Grid.Column="1" MaxWidth="1200" Margin="10 0 10 10"
+                        CornerRadius="0 20 0 20" Background="#FFA0C5D1">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" Direction="300"/>
+                    </Border.Effect>
+
+                    <StackPanel>
+                        <TextBlock Text="{Binding SelectedEmployee, Converter={StaticResource FullNameConvertor}}"/>
+                        <TextBlock Text="Выберите смену"/>
+                        <ComboBox ItemsSource="{Binding Shifts}" DisplayMemberPath="ShiftName"
+                                  SelectedItem="{Binding SelectedShift}"
+                                  Template="{StaticResource ComboBoxTemplate}"/>
+                        <TextBlock Text="Выберите дату"/>
+                        <DatePicker SelectedDate="{Binding DateWork}"/>
+
+
+                        <!--#region TimePiker работает через одно место, если менять свойства, если не будет работать, открыть и закрыть форму-->
+
+                        <TextBlock Text="{Binding StartTimeWork, StringFormat='Время начала: {0:HH:mm}'}" />
+                        <toolkit:TimePicker Value="{Binding StartTimeWork, Mode=TwoWay}" />
+
+                        <TextBlock Text="{Binding EndTimeWork, StringFormat='Время окончания: {0:HH:mm}'}" />
+                        <toolkit:TimePicker Value="{Binding EndTimeWork, Mode=TwoWay}" />
+
+                        <!--#endregion-->
+
+                        <TextBlock Text="Записка к графику"/>
+                        <TextBox Width="250" Height="100" Margin="0 0 0 20"
+                                 VerticalContentAlignment="Center" 
+                                 Text="{Binding NoteForGraphik}"
+                                 Style="{StaticResource SettingTextBoxStyle}" 
+                                 Template="{StaticResource SettingTextBoxTemplate}"/>
+
+                        <Button Content="Сохранить график" Width="150" Height="25"
+                                Command="{Binding AddTimeTableCommand}"
+                                Template="{StaticResource MainButtonTemplate}"/>
+                    </StackPanel>
+                </Border>
+                
+                
             </Grid>
             
         </Grid>
