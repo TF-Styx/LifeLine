@@ -154,7 +154,6 @@
     </Window.Resources>
 
     <Border x:Name="MainWindowBorder" BorderBrush="LightCoral" BorderThickness="0">
-
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height ="39"/>
@@ -250,8 +249,8 @@
 
                             <StackPanel Margin="15" HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                                <TextBox Text="{Binding UserPass}" Style="{StaticResource SettingTextBoxStyle}" Template="{StaticResource SettingTextBoxTemplate}"/>
                                 <TextBox Text="{Binding UserLogin}" Style="{StaticResource SettingTextBoxStyle}" Template="{StaticResource SettingTextBoxTemplate}"/>
+                                <TextBox Text="{Binding UserPass}" Style="{StaticResource SettingTextBoxStyle}" Template="{StaticResource SettingTextBoxTemplate}"/>
 
                             </StackPanel>
 
@@ -289,23 +288,53 @@
 
             <Menu Grid.Row="1" Background="#FFA0C5D1" Height="30"
                   FontSize="20" FontFamily="Bahnschrift SemiBold SemiCondensed"
-                  HorizontalAlignment="Left" VerticalAlignment="Center">
+                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                  Visibility="{Binding MainMenu}">
                 
                 <MenuItem Style="{DynamicResource MenuItemStyle}" Header="Добавить">
 
-                    <MenuItem Header="Добавить сотрудника" Command="{Binding OpenAddEmployeeWindowCommand}"/>
-                    <MenuItem Header="Добавить пациента"/>
+                    <MenuItem Header="Добавить сотрудника" 
+                              Visibility="{Binding AddEmployeeVisibility}"
+                              Command="{Binding OpenAddEmployeeWindowCommand}"/>
+                    <MenuItem Header="Добавить пациента"
+                              Visibility="{Binding AddPatientVisibility}"/>
+                    
                     <Separator/>
-                    <MenuItem Header="Добавить тип документа" Command="{Binding OpenAddTypeDocumentWindowCommand}"/>
-                    <MenuItem Header="Добавить документы сотрудника"/>
-                    <MenuItem Header="Добавить документы пациента"/>
+                    
+                    <MenuItem Header="Добавить тип документа" 
+                              Visibility="{Binding AddTypeDocumentVisibility}"
+                              Command="{Binding OpenAddTypeDocumentWindowCommand}"/>
+                    <MenuItem Header="Добавить документы сотрудника"
+                              Visibility="{Binding AddDocumentEmployee}"/>
+                    <MenuItem Header="Добавить документы пациента"
+                              Visibility="{Binding AddDocumentPatientVisibility}"/>
+                    
                     <Separator/>
-                    <MenuItem Header="Добавить отдел" Command="{Binding OpenAddDepartmentWindowCommand}"/>
-                    <MenuItem Header="Добавить должность" Command="{Binding OpenAddPositionWindowCommand}"/>
-                    <MenuItem Header="Добавить список должностей" Command="{Binding OpenAddPositionListWindowCommand}"/>
+                    
+                    <MenuItem Header="Добавить отдел" 
+                              Visibility="{Binding AddDepartmentVisibility}"
+                              Command="{Binding OpenAddDepartmentWindowCommand}"/>
+                    <MenuItem Header="Добавить должность" 
+                              Visibility="{Binding AddPositionVisibility}"
+                              Command="{Binding OpenAddPositionWindowCommand}"/>
+                    <MenuItem Header="Добавить список должностей" 
+                              Visibility="{Binding AddPositionListVisibility}"
+                              Command="{Binding OpenAddPositionListWindowCommand}"/>
+                    
                     <Separator/>
-                    <MenuItem Header="Добавить смену"/>
-                    <MenuItem Header="Добавить расписание" Command="{Binding OpenAddGraphWindowCommand}"/>
+                    
+                    <MenuItem Header="Добавить смену"
+                              Visibility="{Binding AddShiftVisibility}"/>
+                    <MenuItem Header="Добавить расписание" 
+                              Visibility="{Binding AddGraphVisibility}"
+                              Command="{Binding OpenAddGraphWindowCommand}"/>
+                    
+                    <Separator/>
+
+                    <MenuItem Header="Выйти из аккаунта"
+                              Command="{Binding LogOutOfAccountCommand}"/>
+                    <MenuItem Header="Выйти из приложения"
+                              Command="{Binding ExitApplication}"/>
 
                 </MenuItem>
                 
@@ -316,25 +345,7 @@
 
             <!--#region Основной контент окна -->
 
-            <!--<StackPanel Grid.Row="1" 
-                        HorizontalAlignment="Left" VerticalAlignment="Top"
-                        Visibility="{Binding StackPanelMainContentVisibility}">
-
-                <Button Content="Профиль" 
-                        Height="50" Width="150" 
-                        Background="Black" Foreground="White"
-                        FontSize="20" Margin="5"
-                        Template="{StaticResource MainButtonTemplate}"/>
-
-                <Button Content="График работы" 
-                        Height="50" Width="150" 
-                        Background="Black" Foreground="White"
-                        FontSize="20" Margin="5"
-                        Template="{StaticResource MainButtonTemplate}"/>
-
-            </StackPanel>-->
-
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="2" Visibility="{Binding MainGridVisibility}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
@@ -436,8 +447,8 @@
                 </TabControl>-->
 
 
-                <Grid Visibility="Collapsed">
-                    <!--Visibility="{Binding GridMainTopButtonContentVisibility}"-->
+                <!--<Grid Visibility="Collapsed">
+                    Visibility="{Binding GridMainTopButtonContentVisibility}"
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="165"/>
@@ -569,21 +580,23 @@
 
                     </Button>
 
-                </Grid>
+                </Grid>-->
 
 
-                <Grid Grid.Row="1" Visibility="{Binding GridMainTopButtonContentVisibility}">
-                    
+                <Grid Grid.Row="1">
+
+                    <!--Visibility="{Binding GridMainTopButtonContentVisibility}"-->
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="180"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    
+
 
                     <!--#region Боковая панель -->
 
                     <ScrollViewer>
-                        
+
                         <Border>
 
                             <StackPanel>
@@ -648,26 +661,6 @@
                                     </StackPanel>
 
                                 </Button>
-                                
-                                <Button Grid.Column="4" Grid.Row="1"
-                                        HorizontalAlignment="Center"
-                                        Height="100"
-                                        Width="150"
-                                        Margin="10"
-                                        Command="{Binding NavigateToImageConvertPageCommand}"
-                                        Template="{StaticResource MainButtonTemplate}"
-                                        ToolTip="Конвертор изображений">
-
-                                    <Button.Effect>
-                                        <DropShadowEffect BlurRadius="10" Direction="300"/>
-                                    </Button.Effect>
-
-                                    <StackPanel Orientation="Vertical">
-                                        <fa:ImageAwesome Icon="Solid_ChartLine" Foreground="White" Height="50"/>
-                                        <TextBlock Text="Должность" Margin="0 10 0 0" Style="{StaticResource TextBlockStyle}"/>
-                                    </StackPanel>
-
-                                </Button>
 
                                 <Button Grid.Column="3" Grid.Row="1"
                                         HorizontalAlignment="Center"
@@ -710,22 +703,20 @@
                                 </Button>
 
                             </StackPanel>
-                            
+
                         </Border>
-                        
+
                     </ScrollViewer>
 
                     <!--#endregion-->
 
                     <Frame Grid.Column="1" x:Name="MainFrame"/>
-                    
+
                 </Grid>
 
 
             </Grid>
-            
-            
-            
+
             <!--#endregion-->
 
         </Grid>

@@ -1,7 +1,9 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.MVVM.View.Windows;
+using LifeLine.Services.DialogService;
 using LifeLine.Services.NavigationPage;
 using MasterAnalyticsDeadByDaylight.Command;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,23 +16,30 @@ namespace LifeLine.MVVM.ViewModel
 {
     internal class MainWindowVM : BaseViewModel
     {
-
         NavigationServices navigateS;
         Employee CurrentUser;
 
-        public MainWindowVM(NavigationServices navigationServices)
+        public MainWindowVM(NavigationServices navigationServices, IDialogService dialogService)
         {
-            StackPanelMainContentVisibility = Visibility.Collapsed;
-            GridMainTopButtonContentVisibility = Visibility.Collapsed;
-            TextBlockMainWindowContentVisibility = Visibility.Collapsed;
+            _dialogService = dialogService;
 
-            UserLogin = "pika";
-            UserPass = "pika";
+            TextBlockMainWindowContentVisibility = Visibility.Collapsed;
+            MainMenu = Visibility.Collapsed;
+            MainGridVisibility = Visibility.Collapsed;
+
+            //UserLogin = "pika";
+            //UserPass = "pika";
 
             navigateS = navigationServices;
         }
 
+
         #region Свойства
+
+        private readonly IDialogService _dialogService;
+
+
+            #region Visibility
 
         private Visibility _stackPanelAuthVisibility;
         public Visibility StackPanelAuthVisibility
@@ -39,28 +48,6 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _stackPanelAuthVisibility = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private Visibility _stackPanelMainContentVisibility;
-        public Visibility StackPanelMainContentVisibility
-        {
-            get => _stackPanelMainContentVisibility;
-            set
-            {
-                _stackPanelMainContentVisibility = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private Visibility _gridMainTopButtonContentVisibility;
-        public Visibility GridMainTopButtonContentVisibility
-        {
-            get => _gridMainTopButtonContentVisibility;
-            set
-            {
-                _gridMainTopButtonContentVisibility = value;
                 OnPropertyChanged();
             }
         }
@@ -87,6 +74,153 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+        private Visibility _mainGridVisibility;
+        public Visibility MainGridVisibility
+        {
+            get => _mainGridVisibility;
+            set
+            {
+                _mainGridVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+                #region MenuVisibility
+
+        private Visibility _mainMenu;
+        public Visibility MainMenu
+        {
+            get => _mainMenu;
+            set
+            {
+                _mainMenu = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
+        private Visibility _addEmployeeVisibility;
+        public Visibility AddEmployeeVisibility
+        {
+            get => _addEmployeeVisibility;
+            set
+            {
+                _addEmployeeVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _addPatientVisibility;
+        public Visibility AddPatientVisibility
+        {
+            get => _addPatientVisibility;
+            set
+            {
+                _addPatientVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
+        private Visibility _addTypeDocumentVisibility;
+        public Visibility AddTypeDocumentVisibility
+        {
+            get => _addTypeDocumentVisibility;
+            set
+            {
+                _addTypeDocumentVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _addDocumentEmployee;
+        public Visibility AddDocumentEmployee
+        {
+            get => _addDocumentEmployee;
+            set
+            {
+                _addDocumentEmployee = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _addDocumentPatientVisibility;
+        public Visibility AddDocumentPatientVisibility
+        {
+            get => _addDocumentPatientVisibility;
+            set
+            {
+                _addDocumentPatientVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
+        private Visibility _addDepartmentVisibility;
+        public Visibility AddDepartmentVisibility
+        {
+            get => _addDepartmentVisibility;
+            set
+            {
+                _addDepartmentVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _addPositionVisibility;
+        public Visibility AddPositionVisibility
+        {
+            get => _addPositionVisibility;
+            set
+            {
+                _addPositionVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _addPositionListVisibility;
+        public Visibility AddPositionListVisibility
+        {
+            get => _addDepartmentVisibility;
+            set
+            {
+                _addDepartmentVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
+        private Visibility _addShiftVisibility;
+        public Visibility AddShiftVisibility
+        {
+            get => _addShiftVisibility;
+            set
+            {
+                _addShiftVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _addGraphVisibility;
+        public Visibility AddGraphVisibility
+        {
+            get => _addDepartmentVisibility;
+            set
+            {
+                _addDepartmentVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+                #endregion
+
+
+            #endregion
 
 
         private string _userLogin;
@@ -146,6 +280,9 @@ namespace LifeLine.MVVM.ViewModel
         private RelayCommand _openAddGraphWindowCommand;
         public RelayCommand OpenAddGraphWindowCommand { get => _openAddGraphWindowCommand ??= new(obj => { OpenAddGraphWindow(); }); }
 
+        private RelayCommand _logOutOfAccountCommand;
+        public RelayCommand LogOutOfAccountCommand { get => _logOutOfAccountCommand ??= new(obj => { LogOutOfAccount(); }); }
+
         #endregion
 
 
@@ -158,7 +295,10 @@ namespace LifeLine.MVVM.ViewModel
         {
             using (EmployeeManagementContext context = new())
             {
-                var id_user = context.Employees.FirstOrDefault(u => u.Login == UserLogin && u.Password == UserPass);
+                var id_user = 
+                    context.Employees
+                    .Include(x => x.IdPositionNavigation.IdAccessLevelNavigation)
+                    .FirstOrDefault(u => u.Login == UserLogin && u.Password == UserPass);
 
                 if (id_user == null)
                 {
@@ -169,10 +309,140 @@ namespace LifeLine.MVVM.ViewModel
                     CurrentUser = id_user;
 
                     StackPanelAuthVisibility = Visibility.Collapsed;
-                    StackPanelMainContentVisibility = Visibility.Visible;
-                    GridMainTopButtonContentVisibility = Visibility.Visible;
                     TextBlockAuthVisibility = Visibility.Collapsed;
+
                     TextBlockMainWindowContentVisibility = Visibility.Visible;
+                    MainMenu = Visibility.Visible;
+                    MainGridVisibility = Visibility.Visible;
+
+                    CheckAccessLevel(id_user);
+                }
+            }
+        }
+
+        private void LogOutOfAccount()
+        {
+            StackPanelAuthVisibility = Visibility.Visible;
+            TextBlockAuthVisibility = Visibility.Visible;
+
+            TextBlockMainWindowContentVisibility = Visibility.Collapsed;
+            MainMenu = Visibility.Collapsed;
+            MainGridVisibility = Visibility.Collapsed;
+        }
+
+        private void CheckAccessLevel(Employee employee)
+        {
+            using (EmployeeManagementContext context = new())
+            {
+                var accessLevel = context.AccessLevels.ToList();
+
+                var admin = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 1);
+                var glavVrach = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 2);
+                var zamestitel = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 3);
+                var zaveduyshiy = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 4);
+                var vrach = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 5);
+                var glavMedBrat = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 6);
+                var starshaiMedSestra = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 7);
+                var medsestra_medbrat = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 8);
+                var mladshiymedpersonal = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 9);
+
+                //Func<Employee, AccessLevel> chek = employee switch
+                //{
+                //    employee.IdPositionNavigation.IdAccessLevel == adminAccessLevel.IdAccessLevel => employeeAccess => adminAccessLevel,
+                //};
+
+                if (employee.IdPositionNavigation.IdAccessLevel == admin.IdAccessLevel)
+                {
+                    return;
+                }
+
+                if (employee.IdPositionNavigation.IdAccessLevel == glavVrach.IdAccessLevel)
+                {
+                    return;
+                }
+
+                if (employee.IdPositionNavigation.IdAccessLevel == zamestitel.IdAccessLevel)
+                {
+                    AddEmployeeVisibility = Visibility.Collapsed;
+                    AddTypeDocumentVisibility = Visibility.Collapsed;
+                    AddDepartmentVisibility = Visibility.Collapsed;
+                    AddPositionListVisibility = Visibility.Collapsed;
+                    AddShiftVisibility = Visibility.Collapsed;
+
+                    return;
+                }
+
+                if (employee.IdPositionNavigation.IdAccessLevel == zaveduyshiy.IdAccessLevel)
+                {
+                    AddEmployeeVisibility = Visibility.Collapsed;
+                    AddTypeDocumentVisibility = Visibility.Collapsed;
+                    AddDepartmentVisibility = Visibility.Collapsed;
+                    AddPositionListVisibility = Visibility.Collapsed;
+                    AddShiftVisibility = Visibility.Collapsed;
+
+                    return;
+                }
+
+                if (employee.IdPositionNavigation.IdAccessLevel == vrach.IdAccessLevel)
+                {
+                    AddEmployeeVisibility = Visibility.Collapsed;
+                    AddTypeDocumentVisibility = Visibility.Collapsed;
+                    AddDepartmentVisibility = Visibility.Collapsed;
+                    AddPositionVisibility = Visibility.Collapsed;
+                    AddPositionListVisibility = Visibility.Collapsed;
+                    AddShiftVisibility = Visibility.Collapsed;
+
+                    return;
+                }
+
+                if (employee.IdPositionNavigation.IdAccessLevel == glavMedBrat.IdAccessLevel)
+                {
+                    AddEmployeeVisibility = Visibility.Collapsed;
+                    AddTypeDocumentVisibility = Visibility.Collapsed;
+                    AddDepartmentVisibility = Visibility.Collapsed;
+                    AddPositionVisibility = Visibility.Collapsed;
+                    AddPositionListVisibility = Visibility.Collapsed;
+                    AddShiftVisibility = Visibility.Collapsed;
+
+                    return;
+                }
+
+                if (employee.IdPositionNavigation.IdAccessLevel == starshaiMedSestra.IdAccessLevel)
+                {
+                    AddEmployeeVisibility = Visibility.Collapsed;
+                    AddTypeDocumentVisibility = Visibility.Collapsed;
+                    AddDepartmentVisibility = Visibility.Collapsed;
+                    AddPositionVisibility = Visibility.Collapsed;
+                    AddPositionListVisibility = Visibility.Collapsed;
+                    AddShiftVisibility = Visibility.Collapsed;
+
+                    return;
+                }
+
+                if (employee.IdPositionNavigation.IdAccessLevel == medsestra_medbrat.IdAccessLevel)
+                {
+                    AddEmployeeVisibility = Visibility.Collapsed;
+                    AddTypeDocumentVisibility = Visibility.Collapsed;
+                    AddDepartmentVisibility = Visibility.Collapsed;
+                    AddPositionVisibility = Visibility.Collapsed;
+                    AddPositionListVisibility = Visibility.Collapsed;
+                    AddGraphVisibility = Visibility.Collapsed;
+                    AddShiftVisibility = Visibility.Collapsed;
+
+                    return;
+                }
+
+                if (employee.IdPositionNavigation.IdAccessLevel == mladshiymedpersonal.IdAccessLevel)
+                {
+                    AddEmployeeVisibility = Visibility.Collapsed;
+                    AddTypeDocumentVisibility = Visibility.Collapsed;
+                    AddDepartmentVisibility = Visibility.Collapsed;
+                    AddPositionVisibility = Visibility.Collapsed;
+                    AddPositionListVisibility = Visibility.Collapsed;
+                    AddGraphVisibility = Visibility.Collapsed;
+                    AddShiftVisibility = Visibility.Collapsed;
+
+                    return;
                 }
             }
         }

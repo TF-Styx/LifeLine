@@ -1,4 +1,5 @@
 ﻿using LifeLine.MVVM.ViewModel;
+using LifeLine.Services.DialogService;
 using LifeLine.Services.NavigationPage;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -24,9 +25,11 @@ namespace LifeLine
         {
             InitializeComponent();
 
+            IDialogService service = new DialogService();
+
             NavigationServices navigationServices = new(MainFrame);
 
-            DataContext = new MainWindowVM(navigationServices);
+            DataContext = new MainWindowVM(navigationServices, service);
 
             StateChanged += MainWindowStateChangeRaised;
         }
