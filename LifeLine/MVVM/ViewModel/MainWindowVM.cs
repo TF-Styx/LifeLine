@@ -217,6 +217,117 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+
+
+                    #region Словарь и методы сокрытия
+
+        private void SetVisibility(string nameAccessLevel)
+        {
+            Dictionary<string, Action> dictionaryCollapsedInterface = new Dictionary<string, Action>
+            {
+                { "Администратор", () => AdminCollapsed() },
+                { "Глав. Врач", () => GlavVrachCollapsed() },
+                { "Заместитель", () => ZamestitelCollapsed() },
+                { "Заведующий", () => ZaveduyshiylCollapsed() },
+                { "Врач", () => VrachlCollapsed() },
+                { "Главный мед брат", () => GlavMedBratCollapsed() },
+                { "Старшая медсестра", () => StarshaiMedSestraCollapsed() },
+                { "Медсестра / Медбрат", () => Medsestra_medbratCollapsed() },
+                { "Младший мед. персонал", () => MladshiymedpersonalCollapsed() }
+            };
+
+            foreach (var item in dictionaryCollapsedInterface)
+            {
+                if (dictionaryCollapsedInterface.TryGetValue(nameAccessLevel, out Action action))
+                {
+                    action();
+                }
+            }
+        }
+
+        private void AdminCollapsed()
+        {
+
+        }
+
+        private void GlavVrachCollapsed()
+        {
+
+        }
+
+        private void ZamestitelCollapsed()
+        {
+            AddEmployeeVisibility = Visibility.Collapsed;
+            AddTypeDocumentVisibility = Visibility.Collapsed;
+            AddDepartmentVisibility = Visibility.Collapsed;
+            AddPositionListVisibility = Visibility.Collapsed;
+            AddShiftVisibility = Visibility.Collapsed;
+        }
+
+        private void ZaveduyshiylCollapsed()
+        {
+            AddEmployeeVisibility = Visibility.Collapsed;
+            AddTypeDocumentVisibility = Visibility.Collapsed;
+            AddDepartmentVisibility = Visibility.Collapsed;
+            AddPositionListVisibility = Visibility.Collapsed;
+            AddShiftVisibility = Visibility.Collapsed;
+        }
+
+        private void VrachlCollapsed()
+        {
+            AddEmployeeVisibility = Visibility.Collapsed;
+            AddTypeDocumentVisibility = Visibility.Collapsed;
+            AddDepartmentVisibility = Visibility.Collapsed;
+            AddPositionVisibility = Visibility.Collapsed;
+            AddPositionListVisibility = Visibility.Collapsed;
+            AddShiftVisibility = Visibility.Collapsed;
+        }
+
+        private void GlavMedBratCollapsed()
+        {
+            AddEmployeeVisibility = Visibility.Collapsed;
+            AddTypeDocumentVisibility = Visibility.Collapsed;
+            AddDepartmentVisibility = Visibility.Collapsed;
+            AddPositionVisibility = Visibility.Collapsed;
+            AddPositionListVisibility = Visibility.Collapsed;
+            AddShiftVisibility = Visibility.Collapsed;
+        }
+
+        private void StarshaiMedSestraCollapsed()
+        {
+            AddEmployeeVisibility = Visibility.Collapsed;
+            AddTypeDocumentVisibility = Visibility.Collapsed;
+            AddDepartmentVisibility = Visibility.Collapsed;
+            AddPositionVisibility = Visibility.Collapsed;
+            AddPositionListVisibility = Visibility.Collapsed;
+            AddShiftVisibility = Visibility.Collapsed;
+        }
+
+        private void Medsestra_medbratCollapsed()
+        {
+            AddEmployeeVisibility = Visibility.Collapsed;
+            AddTypeDocumentVisibility = Visibility.Collapsed;
+            AddDepartmentVisibility = Visibility.Collapsed;
+            AddPositionVisibility = Visibility.Collapsed;
+            AddPositionListVisibility = Visibility.Collapsed;
+            AddGraphVisibility = Visibility.Collapsed;
+            AddShiftVisibility = Visibility.Collapsed;
+        }
+
+        private void MladshiymedpersonalCollapsed()
+        {
+            AddEmployeeVisibility = Visibility.Collapsed;
+            AddTypeDocumentVisibility = Visibility.Collapsed;
+            AddDepartmentVisibility = Visibility.Collapsed;
+            AddPositionVisibility = Visibility.Collapsed;
+            AddPositionListVisibility = Visibility.Collapsed;
+            AddGraphVisibility = Visibility.Collapsed;
+            AddShiftVisibility = Visibility.Collapsed;
+        }
+
+                    #endregion
+
+
                 #endregion
 
 
@@ -315,7 +426,7 @@ namespace LifeLine.MVVM.ViewModel
                     MainMenu = Visibility.Visible;
                     MainGridVisibility = Visibility.Visible;
 
-                    CheckAccessLevel(id_user);
+                    SetVisibility(id_user.IdPositionNavigation.IdAccessLevelNavigation.AccessLevelName);
                 }
             }
         }
@@ -329,124 +440,6 @@ namespace LifeLine.MVVM.ViewModel
             MainMenu = Visibility.Collapsed;
             MainGridVisibility = Visibility.Collapsed;
         }
-
-        private void CheckAccessLevel(Employee employee)
-        {
-            using (EmployeeManagementContext context = new())
-            {
-                var accessLevel = context.AccessLevels.ToList();
-
-                var admin = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 1);
-                var glavVrach = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 2);
-                var zamestitel = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 3);
-                var zaveduyshiy = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 4);
-                var vrach = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 5);
-                var glavMedBrat = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 6);
-                var starshaiMedSestra = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 7);
-                var medsestra_medbrat = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 8);
-                var mladshiymedpersonal = accessLevel.FirstOrDefault(x => x.IdAccessLevel == 9);
-
-                //Func<Employee, AccessLevel> chek = employee switch
-                //{
-                //    employee.IdPositionNavigation.IdAccessLevel == adminAccessLevel.IdAccessLevel => employeeAccess => adminAccessLevel,
-                //};
-
-                if (employee.IdPositionNavigation.IdAccessLevel == admin.IdAccessLevel)
-                {
-                    return;
-                }
-
-                if (employee.IdPositionNavigation.IdAccessLevel == glavVrach.IdAccessLevel)
-                {
-                    return;
-                }
-
-                if (employee.IdPositionNavigation.IdAccessLevel == zamestitel.IdAccessLevel)
-                {
-                    AddEmployeeVisibility = Visibility.Collapsed;
-                    AddTypeDocumentVisibility = Visibility.Collapsed;
-                    AddDepartmentVisibility = Visibility.Collapsed;
-                    AddPositionListVisibility = Visibility.Collapsed;
-                    AddShiftVisibility = Visibility.Collapsed;
-
-                    return;
-                }
-
-                if (employee.IdPositionNavigation.IdAccessLevel == zaveduyshiy.IdAccessLevel)
-                {
-                    AddEmployeeVisibility = Visibility.Collapsed;
-                    AddTypeDocumentVisibility = Visibility.Collapsed;
-                    AddDepartmentVisibility = Visibility.Collapsed;
-                    AddPositionListVisibility = Visibility.Collapsed;
-                    AddShiftVisibility = Visibility.Collapsed;
-
-                    return;
-                }
-
-                if (employee.IdPositionNavigation.IdAccessLevel == vrach.IdAccessLevel)
-                {
-                    AddEmployeeVisibility = Visibility.Collapsed;
-                    AddTypeDocumentVisibility = Visibility.Collapsed;
-                    AddDepartmentVisibility = Visibility.Collapsed;
-                    AddPositionVisibility = Visibility.Collapsed;
-                    AddPositionListVisibility = Visibility.Collapsed;
-                    AddShiftVisibility = Visibility.Collapsed;
-
-                    return;
-                }
-
-                if (employee.IdPositionNavigation.IdAccessLevel == glavMedBrat.IdAccessLevel)
-                {
-                    AddEmployeeVisibility = Visibility.Collapsed;
-                    AddTypeDocumentVisibility = Visibility.Collapsed;
-                    AddDepartmentVisibility = Visibility.Collapsed;
-                    AddPositionVisibility = Visibility.Collapsed;
-                    AddPositionListVisibility = Visibility.Collapsed;
-                    AddShiftVisibility = Visibility.Collapsed;
-
-                    return;
-                }
-
-                if (employee.IdPositionNavigation.IdAccessLevel == starshaiMedSestra.IdAccessLevel)
-                {
-                    AddEmployeeVisibility = Visibility.Collapsed;
-                    AddTypeDocumentVisibility = Visibility.Collapsed;
-                    AddDepartmentVisibility = Visibility.Collapsed;
-                    AddPositionVisibility = Visibility.Collapsed;
-                    AddPositionListVisibility = Visibility.Collapsed;
-                    AddShiftVisibility = Visibility.Collapsed;
-
-                    return;
-                }
-
-                if (employee.IdPositionNavigation.IdAccessLevel == medsestra_medbrat.IdAccessLevel)
-                {
-                    AddEmployeeVisibility = Visibility.Collapsed;
-                    AddTypeDocumentVisibility = Visibility.Collapsed;
-                    AddDepartmentVisibility = Visibility.Collapsed;
-                    AddPositionVisibility = Visibility.Collapsed;
-                    AddPositionListVisibility = Visibility.Collapsed;
-                    AddGraphVisibility = Visibility.Collapsed;
-                    AddShiftVisibility = Visibility.Collapsed;
-
-                    return;
-                }
-
-                if (employee.IdPositionNavigation.IdAccessLevel == mladshiymedpersonal.IdAccessLevel)
-                {
-                    AddEmployeeVisibility = Visibility.Collapsed;
-                    AddTypeDocumentVisibility = Visibility.Collapsed;
-                    AddDepartmentVisibility = Visibility.Collapsed;
-                    AddPositionVisibility = Visibility.Collapsed;
-                    AddPositionListVisibility = Visibility.Collapsed;
-                    AddGraphVisibility = Visibility.Collapsed;
-                    AddShiftVisibility = Visibility.Collapsed;
-
-                    return;
-                }
-            }
-        }
-
 
         /// <summary>
         /// Метод загрузки странички в Frame

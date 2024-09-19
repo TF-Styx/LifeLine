@@ -221,7 +221,7 @@
 
             <!--#region Вход -->
 
-            <Image Grid.Row="1" Grid.RowSpan="3" Source="C:\Users\texno\Downloads\meditsinskii-fon-3.webp" Stretch="UniformToFill"/>
+            <Image Grid.Row="1" Grid.RowSpan="3" Source="/Res/MainImage.png" Stretch="UniformToFill"/>
 
             <StackPanel Grid.Row="2" Orientation="Horizontal" 
                         HorizontalAlignment="Center" VerticalAlignment="Center"
