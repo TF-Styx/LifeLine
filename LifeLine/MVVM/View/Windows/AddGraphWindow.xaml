@@ -352,7 +352,7 @@ BorderThickness="0,0,0,2">
                             <!--#endregion-->
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Департамент" Width="217">
+                                    <GridViewColumn Header="Департамент">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding DepartmentName}"/>
@@ -479,7 +479,7 @@ BorderThickness="0,0,0,2">
                             <!--#endregion-->
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Департамент" Width="217">
+                                    <GridViewColumn Header="Сотрудники">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal">

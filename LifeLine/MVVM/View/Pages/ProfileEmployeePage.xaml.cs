@@ -22,11 +22,11 @@ namespace LifeLine.MVVM.View.Pages
     /// </summary>
     public partial class ProfileEmployeePage : Page
     {
-        public ProfileEmployeePage(object obj)
+        public ProfileEmployeePage(object user)
         {
             InitializeComponent();
 
-            DataContext = new ProfileEmployeePageVM(obj);
+            DataContext = new ProfileEmployeePageVM(user);
         }
     }
 }

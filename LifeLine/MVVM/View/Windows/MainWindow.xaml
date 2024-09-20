@@ -710,7 +710,7 @@
 
                     <!--#endregion-->
 
-                    <Frame Grid.Column="1" x:Name="MainFrame"/>
+                    <Frame Grid.Column="1" x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
 
                 </Grid>
 

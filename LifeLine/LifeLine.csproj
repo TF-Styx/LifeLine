@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Res\Kiany.jpg" />
     <None Remove="Res\Kotozila.jpg" />
     <None Remove="Res\MainImage.png" />
   </ItemGroup>
@@ -41,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Res\Kiany.jpg" />
     <Resource Include="Res\MainImage.png" />
     <Resource Include="Res\Kotozila.jpg" />
   </ItemGroup>

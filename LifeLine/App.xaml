@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="MVVM\View\Styles\TextBlockStyle.xaml"/>
                 <ResourceDictionary Source="MVVM\View\Styles\MenuStyle.xaml"/>
                 <ResourceDictionary Source="MVVM\View\Styles\WindowStyle.xaml"/>
+                <ResourceDictionary Source="MVVM\View\Styles\PageStyle.xaml"/>
                 <ResourceDictionary Source="MVVM\View\Styles\ComboBoxStyle.xaml"/>
                 <ResourceDictionary Source="MVVM\View\Styles\ScrollViewerStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>

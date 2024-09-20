@@ -27,8 +27,8 @@ namespace LifeLine.MVVM.ViewModel
             MainMenu = Visibility.Collapsed;
             MainGridVisibility = Visibility.Collapsed;
 
-            //UserLogin = "pika";
-            //UserPass = "pika";
+            UserLogin = "pika";
+            UserPass = "pika";
 
             navigateS = navigationServices;
         }
@@ -247,12 +247,24 @@ namespace LifeLine.MVVM.ViewModel
 
         private void AdminCollapsed()
         {
-
+            AddEmployeeVisibility = Visibility.Visible;
+            AddTypeDocumentVisibility = Visibility.Visible;
+            AddDepartmentVisibility = Visibility.Visible;
+            AddPositionVisibility = Visibility.Visible;
+            AddPositionListVisibility = Visibility.Visible;
+            AddGraphVisibility = Visibility.Visible;
+            AddShiftVisibility = Visibility.Visible;
         }
 
         private void GlavVrachCollapsed()
         {
-
+            AddEmployeeVisibility = Visibility.Visible;
+            AddTypeDocumentVisibility = Visibility.Visible;
+            AddDepartmentVisibility = Visibility.Visible;
+            AddPositionVisibility = Visibility.Visible;
+            AddPositionListVisibility = Visibility.Visible;
+            AddGraphVisibility = Visibility.Visible;
+            AddShiftVisibility = Visibility.Visible;
         }
 
         private void ZamestitelCollapsed()
@@ -408,7 +420,10 @@ namespace LifeLine.MVVM.ViewModel
             {
                 var id_user = 
                     context.Employees
+                    .Include(x => x.IdGenderNavigation)
                     .Include(x => x.IdPositionNavigation.IdAccessLevelNavigation)
+                    .Include(x => x.IdPositionNavigation.IdPositionListNavigation)
+                    .Include(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation)
                     .FirstOrDefault(u => u.Login == UserLogin && u.Password == UserPass);
 
                 if (id_user == null)
