@@ -95,9 +95,11 @@ public partial class EmployeeManagementContext : DbContext
             entity.ToTable("Department");
 
             entity.Property(e => e.IdDepartment).HasColumnName("id_department");
+            entity.Property(e => e.Address).HasColumnName("address");
             entity.Property(e => e.DepartmentName)
                 .IsRequired()
                 .HasColumnName("department_name");
+            entity.Property(e => e.Description).HasColumnName("description");
         });
 
         modelBuilder.Entity<Document>(entity =>
@@ -338,12 +340,8 @@ public partial class EmployeeManagementContext : DbContext
             entity.Property(e => e.IdEmployee).HasColumnName("id_employee");
             entity.Property(e => e.IdShift).HasColumnName("id_shift");
             entity.Property(e => e.Notes).HasColumnName("notes");
-            entity.Property(e => e.TimeEnd)
-                .HasMaxLength(5)
-                .HasColumnName("time_end");
-            entity.Property(e => e.TimeStart)
-                .HasMaxLength(5)
-                .HasColumnName("time_start");
+            entity.Property(e => e.TimeEnd).HasColumnName("time_end");
+            entity.Property(e => e.TimeStart).HasColumnName("time_start");
 
             entity.HasOne(d => d.IdEmployeeNavigation).WithMany(p => p.TimeTables)
                 .HasForeignKey(d => d.IdEmployee)
