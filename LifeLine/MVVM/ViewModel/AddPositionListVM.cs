@@ -1,10 +1,12 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogService;
 using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq.Expressions;
 using System.Windows.Forms;
 
 namespace LifeLine.MVVM.ViewModel
@@ -13,15 +15,18 @@ namespace LifeLine.MVVM.ViewModel
     {
         private readonly IDialogService _dialogService;
 
-        public AddPositionListVM(IDialogService dialogService)
+        private readonly IDataBaseServices _dataBaseServices;
+
+        public AddPositionListVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
         {
             PositionLists = [];
             DepartmentLists = [];
 
+            _dialogService = dialogService;
+            _dataBaseServices = dataBaseServices;
+
             GetPositionList();
             GetDepartmentList();
-
-            _dialogService = dialogService;
         }
 
         #region Свойства
@@ -111,132 +116,68 @@ namespace LifeLine.MVVM.ViewModel
         /// <summary>
         /// Метод добавления списка должностей
         /// </summary>
-        private void AddPositionLists()
+        private async void AddPositionLists()
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            if (string.IsNullOrEmpty(TextBoxPositionLists))
             {
-                if (string.IsNullOrWhiteSpace(TextBoxPositionLists))
+                _dialogService.ShowMessage("Вы не заполнили поле!!", "Предупреждение!!!");
+                //MessageBox.Show("Вы не заполнили поле!!");
+                return;
+            }
+            if (SelectedDepartmentList == null)
+            {
+                _dialogService.ShowMessage("Вы не выбрали отдел!!", "Предупреждение!!!");
+                //MessageBox.Show("Вы не выбрали отдел!!");
+                return;
+            }
+            else
+            {
+                PositionList positionList = new PositionList
                 {
-                    _dialogService.ShowMessage("Вы не заполнили поле!!", "Предупреждение!!!");
-                    //MessageBox.Show("Вы не заполнили поле!!");
-                    return;
-                }
-                if (SelectedDepartmentList == null)
-                {
-                    _dialogService.ShowMessage("Вы не выбрали отдел!!", "Предупреждение!!!");
-                    //MessageBox.Show("Вы не выбрали отдел!!");
-                    return;
-                }
-                if (context.PositionLists.Any(pl => pl.PositionListName.ToLower() == TextBoxPositionLists.ToLower()))
-                {
-                    _dialogService.ShowMessage("Такое поле уже есть!!", "Предупреждение!!!");
-                    //MessageBox.Show("Такое поле уже есть!!");
-                }
-                else
-                {
-                    PositionList positionLists = new PositionList
-                    {
-                        PositionListName = TextBoxPositionLists,
-                        IdDepartment = SelectedDepartmentList.IdDepartment,
-                    };
+                    PositionListName = TextBoxPositionLists,
+                    IdDepartment = SelectedDepartmentList.IdDepartment,
+                };
 
-                    context.PositionLists.Add(positionLists);
-                    context.SaveChanges();
+                await _dataBaseServices.AddAsync(positionList);
 
-                    PositionLists.Clear();
-                    TextBoxPositionLists = string.Empty;
-                    GetPositionList();
-                }
+                GetPositionList();
             }
         }
 
-        private void UpdatePositionLists()
+        private async void UpdatePositionLists()
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            if (SelectPositionList == null) { return; }
+
+            var positionList = await _dataBaseServices.FindIdAsync<PositionList>(SelectPositionList.IdPositionList);
+
+            if (positionList != null)
             {
-                if (SelectPositionList == null)
+                if (_dialogService.ShowMessageButton($"Вы точно хотите изменить {SelectPositionList.PositionListName}\nна\n{TextBoxPositionLists}",
+                    "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
                 {
-                    return;
-                }
+                    positionList.PositionListName = TextBoxPositionLists;
+                    positionList.IdDepartment = SelectedDepartmentList.IdDepartment;
 
-                var warning = context.PositionLists.Where(x => x.IdPositionList != SelectPositionList.IdPositionList);
+                    await _dataBaseServices.UpdateAsync(positionList);
 
-                foreach (var item in warning)
-                {
-                    if (item.PositionListName == SelectPositionList.PositionListName)
-                    {
-                        _dialogService.ShowMessage("Такая должность уже есть!!", "Предупреждение!!!");
-                        //MessageBox.Show("Такая должность уже есть!!");
-                        return;
-                    }
-                }
+                    PositionLists.Clear();
+                    TextBoxPositionLists = string.Empty;
 
-                var updatePositionLists = context.PositionLists.Find(SelectPositionList.IdPositionList);
-
-                if (updatePositionLists != null)
-                {
-                    if (_dialogService.ShowMessageButton($"Вы точно хотите изменить {SelectPositionList.PositionListName}\nна\n{TextBoxPositionLists}", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
-                    {
-                        if (SelectedDepartmentList == null)
-                        {
-                            //MessageBox.Show("Text");
-                            return;
-                        }
-
-                        updatePositionLists.PositionListName = TextBoxPositionLists;
-                        updatePositionLists.IdDepartment = SelectedDepartmentList.IdDepartment;
-                        context.SaveChanges();
-
-                        PositionLists.Clear();
-                        TextBoxPositionLists = string.Empty;
-                        GetPositionList();
-                    }
-
-
-                    //if (context.PositionLists.Any(pl => pl.PositionListName.ToLower() == SelectPositionList.PositionListName.ToLower()) || string.IsNullOrEmpty(TextBoxPositionLists))
-                    //{
-                    //    MessageBox.Show($"Такой {SelectPositionList.PositionListName} уже есть!!\nИли пустой!!");
-                    //}
-                    //else
-                    //{
-                    //    updatePositionLists.PositionListName = TextBoxPositionLists;
-                    //    updatePositionLists.IdDepartment = SelectedDepartmentList.IdDepartment;
-                    //    context.SaveChanges();
-
-                    //    PositionLists.Clear();
-                    //    TextBoxPositionLists = string.Empty;
-                    //    GetPositionList();
-                    //}
-                }
-                else
-                {
-                    _dialogService.ShowMessage("TEST", "Предупреждение!!!");
-                    //MessageBox.Show("srgdtgadRG");
+                    GetPositionList();
                 }
             }
         }
 
         private void DeletePositionLists(object parametr)
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            if (parametr != null)
             {
-                if (parametr is PositionList positionLists)
+                if (parametr is PositionList positionList)
                 {
-                    var deletePositionLists = context.PositionLists.Find(positionLists.IdPositionList);
-
-                    if (deletePositionLists != null)
+                    if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {positionList.PositionListName}?", 
+                        "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
                     {
-                        if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {positionLists.PositionListName}?", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
-                        {
-                            //MessageBox.Show($"Вы точно хотите удалить {positionLists.PositionListName}?", "Предупреждение!!!", MessageBoxButtons.YesNo) == DialogResult.Yes
-                            context.Remove(deletePositionLists);
-                            context.SaveChanges();
-
-                            // TODO: Ошибка с удалением списка должностей : РЕШЕНА
-
-                            PositionLists.Clear();
-                            GetPositionList();
-                        }
+                        _dataBaseServices.DeleteAsync(positionList);
                     }
                 }
             }
@@ -245,39 +186,34 @@ namespace LifeLine.MVVM.ViewModel
         /// <summary>
         /// Метод получения списка должностей
         /// </summary>
-        private void GetPositionList()
+        private async void GetPositionList()
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
-            {
-                var positionList = context.PositionLists.Include(x => x.IdDepartmentNavigation).OrderBy(x => x.IdDepartmentNavigation.DepartmentName).ToList();
+            PositionLists.Clear();
 
-                foreach (var item in positionList)
-                {
-                    PositionLists.Add(item);
-                }
+            var positionList = 
+                await _dataBaseServices.GetDataTableAsync<PositionList>(x => x
+                    .Include(x => x.IdDepartmentNavigation)
+                        .OrderBy(x => x.IdDepartmentNavigation.DepartmentName));
+
+            foreach (var item in positionList)
+            {
+                PositionLists.Add(item);
             }
         }
 
         /// <summary>
         /// Метод получения и заполнения данных для отделов
         /// </summary>
-        private void GetDepartmentList()
+        private async void GetDepartmentList()
         {
-            new Thread(() =>
-            {
-                using (EmployeeManagementContext context = new EmployeeManagementContext())
-                {
-                    var departmentList = context.Departments.ToList();
+            var departmentList = 
+                await _dataBaseServices.GetDataTableAsync<Department>(x => x
+                    .OrderBy(x => x.DepartmentName));
 
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        foreach (var item in departmentList)
-                        {
-                            DepartmentLists.Add(item);
-                        }
-                    });
-                }
-            }).Start();
+            foreach (var item in departmentList)
+            {
+                DepartmentLists.Add(item);
+            }
         }
 
         /// <summary>
@@ -285,27 +221,21 @@ namespace LifeLine.MVVM.ViewModel
         /// </summary>
         private async void SearchPositionListNameAsync()
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            var searchPositionListName = 
+                await _dataBaseServices.GetDataTableAsync<PositionList>(x => x
+                        .Include(x => x.IdDepartmentNavigation)
+                            .Where(x => x.PositionListName.ToLower().Contains(SearchPositionList.ToLower()) ||
+                                        x.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchPositionList.ToLower())));
+
+            App.Current.Dispatcher.Invoke(() =>
             {
-                var searchPositionListName = await
-                    context.PositionLists
-                        .Include(x => x.IdDepartmentNavigation)
-                            .Where(x => x.PositionListName.ToLower().Contains(SearchPositionList.ToLower()))
-                    .Union(context.PositionLists
-                        .Include(x => x.IdDepartmentNavigation)
-                            .Where(x => x.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchPositionList.ToLower())))
-                    .ToListAsync();
+                PositionLists.Clear();
 
-                App.Current.Dispatcher.Invoke(() => 
+                foreach (var item in searchPositionListName)
                 {
-                    PositionLists.Clear();
-
-                    foreach (var item in searchPositionListName)
-                    {
-                        PositionLists.Add(item);
-                    }
-                });
-            }
+                    PositionLists.Add(item);
+                }
+            });
         }
 
         #endregion

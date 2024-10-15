@@ -1,4 +1,5 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogService;
 using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
@@ -15,12 +16,11 @@ namespace LifeLine.MVVM.ViewModel
 {
     class AddTypeDocumentVM : BaseViewModel
     {
-        public AddTypeDocumentVM(IDialogService dialogService)
+        public AddTypeDocumentVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
         {
             _dialogService = dialogService;
+            _dataBaseServices = dataBaseServices;
 
-            TypeDocumentList = [];
-            TypeOfPersoneList = [];
             GetTypeOfPersonOnComboBox();
             GetTypeDocument();
 
@@ -31,6 +31,7 @@ namespace LifeLine.MVVM.ViewModel
         #region Свойства
 
         private readonly IDialogService _dialogService;
+        private readonly IDataBaseServices _dataBaseServices;
 
         private string _textBoxTypeDocuments;
         public string TextBoxTypeDocuments
@@ -85,9 +86,9 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        public ObservableCollection<TypeDocument> TypeDocumentList { get; set; }
+        public ObservableCollection<TypeDocument> TypeDocumentList { get; set; } = [];
 
-        public ObservableCollection<TypeOfPersone> TypeOfPersoneList { get; set; }
+        public ObservableCollection<TypeOfPersone> TypeOfPersoneList { get; set; } = [];
 
         #endregion
 
@@ -95,10 +96,10 @@ namespace LifeLine.MVVM.ViewModel
         #region Команды
 
         private RelayCommand _addTypeDocumentsCommand;
-        public RelayCommand AddTypeDocumentsCommand { get => _addTypeDocumentsCommand ??= new(obj => { AddTypeDocuments(); }); }
+        public RelayCommand AddTypeDocumentsCommand { get => _addTypeDocumentsCommand ??= new(obj => { AddTypeDocumentsAsync(); }); }
 
         private RelayCommand _updateTypeDocumentsCommand;
-        public RelayCommand UpdateTypeDocumentsCommand { get => _updateTypeDocumentsCommand ??= new(obj => { UpdateDepartament(); }); }
+        public RelayCommand UpdateTypeDocumentsCommand { get => _updateTypeDocumentsCommand ??= new(obj => { UpdateDepartamentAsync(); }); }
 
         private RelayCommand _deleteDepartmentCommand;
         public RelayCommand DeleteDepartmentCommand => _deleteDepartmentCommand ??= new RelayCommand(DeleteDepartment);
@@ -108,7 +109,7 @@ namespace LifeLine.MVVM.ViewModel
 
         #region Методы
 
-        private void AddTypeDocuments()
+        private async void AddTypeDocumentsAsync()
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
@@ -118,7 +119,7 @@ namespace LifeLine.MVVM.ViewModel
                     //MessageBox.Show("Вы не заполнили поле!!");
                     return;
                 }
-                if (context.TypeDocuments.Any(tdl => tdl.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()))
+                if (await _dataBaseServices.ExistsAsync<TypeDocument>(x => x.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()))
                 {
                     _dialogService.ShowMessage("Такое поле уже есть!!");
                     //MessageBox.Show("Такое поле уже есть!!");
@@ -138,42 +139,53 @@ namespace LifeLine.MVVM.ViewModel
                         IdTypeOfPersone = ComboBoxTypeOfPersone.IdTypeOfPersone,
                     };
 
-                    context.TypeDocuments.Add(typeDocument);
-                    context.SaveChanges();
+                    await _dataBaseServices.AddAsync(typeDocument);
 
                     TypeDocumentList.Clear();
                     TextBoxTypeDocuments = string.Empty;
+
                     GetTypeDocument();
                 }
             }
         }
 
-        private void UpdateDepartament()
+        private async void UpdateDepartamentAsync()
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                if (SelectTypeDocumentLists == null || ComboBoxTypeOfPersone.IdTypeOfPersone == 0)
-                {
-                    return;
-                }
+                if (SelectTypeDocumentLists == null || ComboBoxTypeOfPersone.IdTypeOfPersone == 0) { return; }
 
-                var updateTypeDocumentLists = context.TypeDocuments.Find(SelectTypeDocumentLists.IdTypeDocument);
+                var updateTypeDocumentLists = await _dataBaseServices.FindIdAsync<TypeDocument>(SelectTypeDocumentLists.IdTypeDocument);
 
                 if (updateTypeDocumentLists != null)
                 {
-                    if (context.TypeDocuments.Any(tdl => tdl.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()) || string.IsNullOrWhiteSpace(TextBoxTypeDocuments))
+                    bool exists = await _dataBaseServices.ExistsAsync<TypeDocument>(x => x.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()) || string.IsNullOrWhiteSpace(TextBoxTypeDocuments);
+                    
+                    if (exists)
                     {
-                        _dialogService.ShowMessage($"Такой {SelectTypeDocumentLists.TypeDocumentName} уже есть!!\nИли пустой!!");
-                        //MessageBox.Show($"Такой {SelectTypeDocumentLists.TypeDocumentName} уже есть!!\nИли пустой!!");
+                        if (_dialogService.ShowMessageButton($"Такой {SelectTypeDocumentLists.TypeDocumentName} уже есть!!\nИли пустой!!", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                        {
+                            updateTypeDocumentLists.TypeDocumentName = TextBoxTypeDocuments;
+                            updateTypeDocumentLists.IdTypeOfPersone = ComboBoxTypeOfPersone.IdTypeOfPersone;
+
+                            await _dataBaseServices.UpdateAsync(updateTypeDocumentLists);
+
+                            TypeDocumentList.Clear();
+                            TextBoxTypeDocuments = string.Empty;
+
+                            GetTypeDocument();
+                        }
                     }
                     else
                     {
                         updateTypeDocumentLists.TypeDocumentName = TextBoxTypeDocuments;
                         updateTypeDocumentLists.IdTypeOfPersone = ComboBoxTypeOfPersone.IdTypeOfPersone;
-                        context.SaveChanges();
+
+                        await _dataBaseServices.UpdateAsync(updateTypeDocumentLists);
 
                         TypeDocumentList.Clear();
                         TextBoxTypeDocuments = string.Empty;
+
                         GetTypeDocument();
                     }
                 }
@@ -184,31 +196,40 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private void DeleteDepartment(object parametr)
+        private async void DeleteDepartment(object parametr)
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                if (parametr is TypeDocument typeDocumentLists)
+                if (parametr != null)
                 {
-                    var deleteTypeDocumentLists = context.TypeDocuments.Find(typeDocumentLists.IdTypeDocument);
-                    
-                    if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {typeDocumentLists.TypeDocumentName}?", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                    if (parametr is TypeDocument typeDocumentLists)
                     {
-                        context.Remove(typeDocumentLists);
-                        context.SaveChanges();
+                       if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {typeDocumentLists.TypeDocumentName}?", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                        {
+                            await _dataBaseServices.DeleteAsync(typeDocumentLists);
 
-                        TypeDocumentList.Clear();
-                        GetTypeDocument();
+                            TypeDocumentList.Clear();
+                            GetTypeDocument();
+                        }
                     }
                 }
             }
         }
 
-        private void GetTypeDocument()
+        private async void GetTypeDocument()
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                var typeDocuments = context.TypeDocuments.Include(x => x.IdTypeOfPersoneNavigation).OrderBy(x => x.IdTypeOfPersone).ToList();
+                var query = await _dataBaseServices.GetDataTableAsync<TypeDocument>(x => x.Include(x => x.IdTypeOfPersoneNavigation).OrderBy(x => x.IdTypeOfPersone));
+
+                if (!string.IsNullOrWhiteSpace(SearchTypeDocumentLists))
+                {
+                    string searchLover = SearchTypeDocumentLists.ToLower();
+
+                    query = query.Where(stdl => stdl.TypeDocumentName.ToLower().Contains(searchLover)).OrderBy(x => x.IdTypeOfPersone);
+                }
+
+                List<TypeDocument> typeDocuments = query.ToList();
 
                 foreach (var item in typeDocuments)
                 {
@@ -223,7 +244,7 @@ namespace LifeLine.MVVM.ViewModel
             {
                 var typeOfPersone = context.TypeOfPersones.ToList();
 
-                TypeOfPersoneList.Insert(0, new TypeOfPersone { TypeOfPersoneName = "Выберите чиь документы будут добавлятся!!" });
+                TypeOfPersoneList.Insert(0, new TypeOfPersone { TypeOfPersoneName = "Выберите чьи документы будут добавлятся!!" });
 
                 foreach (var item in typeOfPersone)
                 {

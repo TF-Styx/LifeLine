@@ -28,6 +28,31 @@
         <WindowChrome CaptionHeight="40" />
     </WindowChrome.WindowChrome>
 
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="E" Command="{Binding OpenAddEmployeeWindowCommand}"/>
+
+        <KeyBinding Modifiers="Ctrl" Key="T" Command="{Binding AddTypeDocumentVisibility}"/>
+        <KeyBinding Modifiers="Ctrl" Key="D" Command="{Binding AddDocumentEmployee}"/>
+
+        <KeyBinding Modifiers="Ctrl" Key="O" Command="{Binding OpenAddDepartmentWindowCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="P" Command="{Binding OpenAddPositionWindowCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="L" Command="{Binding OpenAddPositionListWindowCommand}"/>
+
+        <KeyBinding Modifiers="Ctrl" Key="G" Command="{Binding OpenAddGraphWindowCommand}"/>
+
+        <KeyBinding Modifiers="Alt" Key="Q" Command="{Binding LogOutOfAccountCommand}"/>
+        <KeyBinding Modifiers="Alt" Key="F4" Command="{Binding ExitApplication}"/>
+
+        <KeyBinding Key="Enter" Command="{Binding LoginButtonCommand}"/>
+    </Window.InputBindings>
+
+    <!--
+
+    <MenuItem Header="Выйти из аккаунта"
+          Command="{Binding LogOutOfAccountCommand}"/>
+    <MenuItem Header="Выйти из приложения"
+          Command="{Binding ExitApplication}"/>-->
+
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Close" />
         <CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />
@@ -263,7 +288,7 @@
                                     Foreground="White" Margin="0 0 0 5"
                                     FontSize="20" FontFamily="Bahnschrift SemiBold SemiCondensed"
                                     Command="{Binding LoginButtonCommand}"
-                                    Template="{StaticResource MainButtonTemplate}" >
+                                    Template="{StaticResource MainButtonTemplate}">
 
                                 <Button.Effect>
                                     <DropShadowEffect BlurRadius="10" Direction="300"/>
@@ -286,6 +311,20 @@
 
             <!--#region Меню -->
 
+            <!--"Ctrl" Key="E"
+            
+            "Ctrl" Key="T"
+            "Ctrl" Key="D"
+            
+            "Ctrl" Key="O"
+            "Ctrl" Key="P"
+            "Ctrl" Key="L"
+            
+            "Ctrl" Key="G"
+            
+            "Alt" Key="Q" 
+            "Alt" Key="F4"-->
+
             <Menu Grid.Row="1" Background="#FFA0C5D1" Height="30"
                   FontSize="20" FontFamily="Bahnschrift SemiBold SemiCondensed"
                   HorizontalAlignment="Left" VerticalAlignment="Center"
@@ -295,46 +334,55 @@
 
                     <MenuItem Header="Добавить сотрудника" 
                               Visibility="{Binding AddEmployeeVisibility}"
-                              Command="{Binding OpenAddEmployeeWindowCommand}"/>
+                              Command="{Binding OpenAddEmployeeWindowCommand}"
+                              InputGestureText="Ctrl + E"/>
                     <MenuItem Header="Добавить пациента"
                               Visibility="{Binding AddPatientVisibility}"/>
                     
                     <Separator/>
-                    
+
                     <MenuItem Header="Добавить тип документа" 
                               Visibility="{Binding AddTypeDocumentVisibility}"
-                              Command="{Binding OpenAddTypeDocumentWindowCommand}"/>
+                              Command="{Binding OpenAddTypeDocumentWindowCommand}"
+                              InputGestureText="Ctrl + T"/>
                     <MenuItem Header="Добавить документы сотрудника"
-                              Visibility="{Binding AddDocumentEmployee}"/>
+                              Visibility="{Binding AddDocumentEmployee}"
+                              InputGestureText="Ctrl + D"/>
                     <MenuItem Header="Добавить документы пациента"
                               Visibility="{Binding AddDocumentPatientVisibility}"/>
                     
                     <Separator/>
-                    
+
                     <MenuItem Header="Добавить отдел" 
                               Visibility="{Binding AddDepartmentVisibility}"
-                              Command="{Binding OpenAddDepartmentWindowCommand}"/>
+                              Command="{Binding OpenAddDepartmentWindowCommand}"
+                              InputGestureText="Ctrl + O"/>
                     <MenuItem Header="Добавить должность" 
                               Visibility="{Binding AddPositionVisibility}"
-                              Command="{Binding OpenAddPositionWindowCommand}"/>
+                              Command="{Binding OpenAddPositionWindowCommand}"
+                              InputGestureText="Ctrl + P"/>
                     <MenuItem Header="Добавить список должностей" 
                               Visibility="{Binding AddPositionListVisibility}"
-                              Command="{Binding OpenAddPositionListWindowCommand}"/>
-                    
+                              Command="{Binding OpenAddPositionListWindowCommand}"
+                              InputGestureText="Ctrl + L"/>
+
                     <Separator/>
                     
                     <MenuItem Header="Добавить смену"
                               Visibility="{Binding AddShiftVisibility}"/>
                     <MenuItem Header="Добавить расписание" 
                               Visibility="{Binding AddGraphVisibility}"
-                              Command="{Binding OpenAddGraphWindowCommand}"/>
+                              Command="{Binding OpenAddGraphWindowCommand}"
+                              InputGestureText="Ctrl + G"/>
                     
                     <Separator/>
 
                     <MenuItem Header="Выйти из аккаунта"
-                              Command="{Binding LogOutOfAccountCommand}"/>
+                              Command="{Binding LogOutOfAccountCommand}"
+                              InputGestureText="Alt + Q"/>
                     <MenuItem Header="Выйти из приложения"
-                              Command="{Binding ExitApplication}"/>
+                              Command="{Binding ExitApplication}"
+                              InputGestureText="Alt + F4"/>
 
                 </MenuItem>
                 

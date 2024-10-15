@@ -4,21 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LifeLine.MVVM.View.Windows" 
-       
         xmlns:fa="http://schemas.fontawesome.com/icons/" 
-        
         xmlns:viewmodel="clr-namespace:LifeLine.MVVM.ViewModel" 
-        
         d:DataContext="{d:DesignInstance Type=viewmodel:AddPositionVM}"
-        
         mc:Ignorable="d"
-        
         Title="AddPositionWindow" 
-        
         Style="{StaticResource Window}"
-        
         Height="450" Width="650"
-        
         ResizeMode="NoResize">
 
     <!--#region Настройка окна -->
@@ -256,8 +248,8 @@ BorderThickness="0,0,0,2">
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <Border BorderBrush="Black" BorderThickness="1" CornerRadius="0 10 0 10">
-                                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5" VerticalAlignment="Center" HorizontalAlignment="Center">
-
+                                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5" 
+                                                VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <Button Background="#00DDDDDD" BorderBrush="#00707070"
                                                 Command="{Binding DataContext.DeletePositionCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
                                             <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
@@ -268,13 +260,11 @@ BorderThickness="0,0,0,2">
                                                    TextWrapping="WrapWithOverflow" 
                                                    TextAlignment="Center"
                                                    VerticalAlignment="Center"/>
-
                                         <TextBlock Text="{Binding IdPositionListNavigation.PositionListName}" 
                                                    Margin="5 0 5 0" Width="190" Height="auto" 
                                                    TextWrapping="WrapWithOverflow" 
                                                    TextAlignment="Center"
                                                    VerticalAlignment="Center"/>
-
                                         <TextBlock Text="{Binding IdAccessLevelNavigation.AccessLevelName}" 
                                                    Margin="5 0 5 0" Width="175" Height="auto" 
                                                    TextWrapping="WrapWithOverflow" 
@@ -284,7 +274,6 @@ BorderThickness="0,0,0,2">
                                         <Button Background="#00DDDDDD" BorderBrush="#00707070">
                                             <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
                                         </Button>
-
                                     </StackPanel>
                                 </Border>
                             </StackPanel>

@@ -1,4 +1,7 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.Services.DataBaseServices;
+using LifeLine.Services.DialogService;
+using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -6,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,12 +18,14 @@ namespace LifeLine.MVVM.ViewModel
 {
     class AddPositionVM : BaseViewModel
     {
-        public AddPositionVM()
+        private readonly IDialogService _dialogService;
+
+        private readonly IDataBaseServices _dataBaseServices;
+
+        public AddPositionVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
         {
-            PositionMainList = [];
-            PositionList = [];
-            DepartmentList = [];
-            AccessList = [];
+            _dialogService = dialogService;
+            _dataBaseServices = dataBaseServices;
 
             GetPositionMainData();
             GetPositionData();
@@ -94,13 +100,13 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        public ObservableCollection<Position> PositionMainList { get; set; }
+        public ObservableCollection<Position> PositionMainList { get; set; } = [];
 
-        public ObservableCollection<PositionList> PositionList { get; set; }
+        public ObservableCollection<PositionList> PositionList { get; set; } = [];
 
-        public ObservableCollection<Department> DepartmentList { get; set; }
+        public ObservableCollection<Department> DepartmentList { get; set; } = [];
 
-        public ObservableCollection<AccessLevel> AccessList { get; set; }
+        public ObservableCollection<AccessLevel> AccessList { get; set; } = [];
 
         #endregion
 
@@ -121,170 +127,151 @@ namespace LifeLine.MVVM.ViewModel
 
         #region Методы
 
-        private void AddPosition()
+        private async void AddPosition()
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            if (ComboBoxSelectedDepartment == null) { _dialogService.ShowMessage("Вы не выбрали отдел", "Предупреждение!!!"); return; }
+            if (ComboBoxSelectedPosition == null) { _dialogService.ShowMessage("Вы не выбрали должность", "Предупреждение!!!"); return; }
+            if (ComboBoxSelectedAccess == null) { _dialogService.ShowMessage("Вы не выбрали уровень доступа", "Предупреждение!!!"); return; }
+
+            Position position = new Position()
             {
-                if (ComboBoxSelectedDepartment == null) { MessageBox.Show("Вы не выбрали отдел"); return; }
-                if (ComboBoxSelectedPosition == null) { MessageBox.Show("Вы не выбрали должность"); return; }
-                if (ComboBoxSelectedAccess == null) { MessageBox.Show("Вы не выбрали уровень доступа"); return; }
+                IdPositionList = ComboBoxSelectedPosition.IdPositionList,
+                IdAccessLevel = ComboBoxSelectedAccess.IdAccessLevel
+            };
 
-                Position position = new Position()
-                {
-                    IdPositionList = ComboBoxSelectedPosition.IdPositionList,
-                    IdAccessLevel = ComboBoxSelectedAccess.IdAccessLevel
-                };
+            await _dataBaseServices.AddAsync(position);
 
-                context.Positions.Add(position);
-                context.SaveChanges();
-
-                GetPositionMainData();
-            }
+            GetPositionMainData();
         }
 
-        private void UpdatePosition()
+        private async void UpdatePosition()
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            if (SelectedPosition == null) { return; }
+
+            var departmetn = await _dataBaseServices.FindIdAsync<Position>(SelectedPosition.IdPosition);
+
+            if (departmetn != null)
             {
-                if (SelectedPosition == null) { return; }
-
-                var entityToUpdate = context.Positions.Find(SelectedPosition.IdPosition);
-
-                if (entityToUpdate != null)
+                if (_dialogService.ShowMessageButton($"Вы точно хотите изменить: \n{SelectedPosition.IdPositionListNavigation.PositionListName}\nна\n{ComboBoxSelectedPosition.PositionListName}",
+                                                     "Предупреждение!!",
+                                                     MessageButtons.YesNo) == MessageButtons.Yes)
                 {
-                    if (MessageBox.Show($"Вы точно хотите изменить: \n{SelectedPosition.IdPositionListNavigation.PositionListName}\nна\n{ComboBoxSelectedPosition.PositionListName}", "Предупреждение!!", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                    {
-                        entityToUpdate.IdPositionList = ComboBoxSelectedPosition.IdPositionList;
-                        entityToUpdate.IdAccessLevel = ComboBoxSelectedAccess.IdAccessLevel;
+                    departmetn.IdPositionList = ComboBoxSelectedPosition.IdPositionList;
+                    departmetn.IdAccessLevel = ComboBoxSelectedAccess.IdAccessLevel;
 
-                        context.SaveChanges();
+                    await _dataBaseServices.UpdateAsync(departmetn);
 
-                        GetPositionMainData();
-                    }
+                    ComboBoxSelectedDepartment = null;
+                    ComboBoxSelectedPosition = null;
+                    ComboBoxSelectedAccess = null;
+
+                    GetPositionMainData();
                 }
-                else { return; }
             }
         }
 
         private void DeletePosition(object parametr)
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            if (parametr != null)
             {
                 if (parametr is Position position)
                 {
-                    //context.Positions.Find(position.IdPosition);
-
-                    if (MessageBox.Show($"Вы точно хотиде удалить:\nДолжность: {position.IdPositionListNavigation.PositionListName}", "Предупреждение!!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    if (_dialogService.ShowMessageButton($"Вы точно хотиде удалить:" +
+                                                         $"\nДолжность: {position.IdPositionListNavigation.PositionListName}",
+                                                         "Предупреждение!!",
+                                                         MessageButtons.YesNo) == MessageButtons.Yes)
                     {
-                        context.Remove(position);
-                        context.SaveChanges(); 
-                        
+                        _dataBaseServices.DeleteAsync(position);
+
                         GetPositionMainData();
                     }
                 }
             }
         }
 
-        private void GetPositionMainData()
+        private async void GetPositionMainData()
         {
             PositionMainList.Clear();
 
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
-            {
-                var positionMainList = context.Positions
+            var positionMainList = 
+                await _dataBaseServices.GetDataTableAsync<Position>(x => x
                     .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation)
-                    .Include(x => x.IdAccessLevelNavigation).ToList();
+                    .Include(x => x.IdAccessLevelNavigation)
+                    .OrderBy(x => x.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName)); 
 
-                foreach (var item in positionMainList)
-                {
-                    PositionMainList.Add(item);
-                }
+            foreach (var item in positionMainList)
+            {
+                PositionMainList.Add(item);
             }
         }
 
-        private void GetPositionData()
+        private async void GetPositionData()
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            PositionList.Clear();
+
+            if (ComboBoxSelectedDepartment == null)
             {
-                PositionList.Clear();
+                var positionList = await _dataBaseServices.GetDataTableAsync<PositionList>(x => x.OrderBy(x => x.PositionListName));
 
-                if (ComboBoxSelectedDepartment == null)
+                foreach (var item in positionList)
                 {
-                    var positionList = context.PositionLists.ToList();
-
-                    foreach (var item in positionList)
-                    {
-                        PositionList.Add(item);
-                    }
-
-                    PositionList.FirstOrDefault();
+                    PositionList.Add(item);
                 }
-                else
+
+                PositionList.FirstOrDefault();
+            }
+            else
+            {
+                var positionList = await _dataBaseServices.GetDataTableAsync<PositionList>(x => x.Where(x => x.IdDepartment == ComboBoxSelectedDepartment.IdDepartment));
+
+                foreach (var item in positionList)
                 {
-                    var positionList = context.PositionLists.Where(x => x.IdDepartment == ComboBoxSelectedDepartment.IdDepartment).ToList();
-
-                    foreach (var item in positionList)
-                    {
-                        PositionList.Add(item);
-                    }
-
-                    PositionList.FirstOrDefault();
+                    PositionList.Add(item);
                 }
+
+                PositionList.FirstOrDefault();
             }
         }
 
-        private void GetDepartmentData()
+        private async void GetDepartmentData()
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
-            {
-                var departmentList = context.Departments.ToList();
+            var departmentList = await _dataBaseServices.GetDataTableAsync<Department>(x => x.OrderBy(x => x.DepartmentName));
 
-                foreach (var item in departmentList)
-                {
-                    DepartmentList.Add(item);
-                }
+            foreach (var item in departmentList)
+            {
+                DepartmentList.Add(item);
             }
         }
 
-        private void GetAccessData()
+        private async void GetAccessData()
         {
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
-            {
-                var accessList = context.AccessLevels.ToList();
+            var accessList = await _dataBaseServices.GetDataTableAsync<AccessLevel>(x => x.OrderBy(x => x.AccessLevelName));
 
-                foreach(var item in accessList)
-                {
-                    AccessList.Add(item);
-                }
+            foreach (var item in accessList)
+            {
+                AccessList.Add(item);
             }
         }
 
         private async void SearchPositionAsync()
         {
-            using (EmployeeManagementContext context = new())
+            var searchPosition =
+                    await _dataBaseServices.GetDataTableAsync<Position>(x => x
+                        .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation).Include(x => x.IdAccessLevelNavigation)
+                            .Where(x => x.IdPositionListNavigation.PositionListName.ToLower().Contains(SearchPositionTB.ToLower()) ||
+                                        x.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchPositionTB.ToLower()) ||
+                                        x.IdPositionListNavigation.PositionListName.ToLower().Contains(SearchPositionTB.ToLower()) ||
+                                        x.IdAccessLevelNavigation.AccessLevelName.ToLower().Contains(SearchPositionTB.ToLower())));
+
+            App.Current.Dispatcher.Invoke(() =>
             {
-                var searchPosition = await 
-                    context.Positions
-                        .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation).Include(x => x.IdAccessLevelNavigation)
-                            .Where(x => x.IdPositionListNavigation.PositionListName.ToLower().Contains(SearchPositionTB.ToLower()))
-                    .Union(context.Positions
-                        .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation).Include(x => x.IdAccessLevelNavigation)
-                            .Where(x => x.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchPositionTB.ToLower())))
-                    .Union(context.Positions
-                        .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation).Include(x => x.IdAccessLevelNavigation)
-                            .Where(x => x.IdAccessLevelNavigation.AccessLevelName.ToLower().Contains(SearchPositionTB.ToLower())))
-                    .ToListAsync();
+                PositionMainList.Clear();
 
-                App.Current.Dispatcher.Invoke(() =>
+                foreach (var item in searchPosition)
                 {
-                    PositionMainList.Clear();
-
-                    foreach (var item in searchPosition)
-                    {
-                        PositionMainList.Add(item);
-                    }
-                });
-            }
+                    PositionMainList.Add(item);
+                }
+            });
         }
 
         #endregion

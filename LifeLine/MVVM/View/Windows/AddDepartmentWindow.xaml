@@ -5,19 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LifeLine.MVVM.View.Windows" 
         xmlns:viewmodel="clr-namespace:LifeLine.MVVM.ViewModel" 
-        
         xmlns:fa="http://schemas.fontawesome.com/icons/" 
-        
-        d:DataContext="{d:DesignInstance Type=viewmodel:AddDepartmentWindowVM}"
-        
+        xmlns:convertor="clr-namespace:LifeLine.Utils.ValueConverter"
+        d:DataContext="{d:DesignInstance Type=viewmodel:AddDepartmentVM}"
         mc:Ignorable="d"
-        
         Title="AddDepartmentWindow"
-        
         Style="{StaticResource Window}"
-        
         Height="450" Width="650"
-        
         ResizeMode="NoResize">
 
     <!--#region Настройка окна -->
@@ -28,12 +22,19 @@
 
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Close" />
-        <!--<CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />-->
-        <!--<CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Minimize" />-->
-        <!--<CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Restore" />-->
+        <!--<CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />
+        <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Minimize" />
+        <CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Restore" />-->
     </Window.CommandBindings>
 
     <Window.Resources>
+
+        <!--#region Конверторы -->
+
+        <convertor:FullNameConverter x:Key="FullNameConvertor"/>
+        <!--<convertor:SecondNameToForegroundConverter x:Key="SecondNameToForegroundConverter"/>-->
+
+        <!--#endregion-->
 
         <!--#region Стили для кнопок в строке заголовка -->
 
@@ -291,7 +292,6 @@
             </TabControl>-->
 
             <Grid Grid.Row="1">
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="*"/>
@@ -299,102 +299,111 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                    
                     <TextBlock Text="Поиск:  " Margin="0" Style="{StaticResource TextBlockStyle}"/>
-                    
                     <TextBox Width="250" Height="25" Margin="0"
                              VerticalContentAlignment="Center" 
                              Text="{Binding SearchDepartment, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource SettingTextBoxStyle}" 
                              Template="{StaticResource SettingTextBoxTemplate}"/>
-                    
                 </StackPanel>
 
-                <ListView Grid.Column="0" Grid.Row="1" 
-                          ItemsSource="{Binding DepartmentList}" 
-                          SelectedItem="{Binding SelectedDepartment}"
-                          d:ItemsSource="{d:SampleData ItemCount=5}"
-                          
-                          Background="#FF8AC1D2"   
-                          
-                          VerticalContentAlignment="Center"
-                          ScrollViewer.CanContentScroll="True"
-                          VirtualizingPanel.IsVirtualizing="True"
-                          VirtualizingStackPanel.VirtualizationMode="Recycling"
-                          VirtualizingPanel.CacheLength="15, 15"
-                          VirtualizingPanel.CacheLengthUnit="Item"
-                          VirtualizingPanel.ScrollUnit="Pixel">
-                    
-                    <ListView.ItemTemplate>
-                        
-                        <DataTemplate>
+                <Border Grid.Row="1" MaxWidth="1200" Background="#FFA0C5D1" Margin="10">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" Direction="300"/>
+                    </Border.Effect>
 
-                            <StackPanel Orientation="Horizontal">
+                    <ListView Grid.Column="0" Grid.Row="1" 
+                              ItemsSource="{Binding DepartmentList}" 
+                              SelectedItem="{Binding SelectedDepartment}"
+                              d:ItemsSource="{d:SampleData ItemCount=5}"
+                              
+                              HorizontalAlignment="Center"
+                              Background="#FF8AC1D2"   
+          
+                              VerticalContentAlignment="Center"
+                              ScrollViewer.CanContentScroll="True"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingStackPanel.VirtualizationMode="Recycling"
+                              VirtualizingPanel.CacheLength="15, 15"
+                              VirtualizingPanel.CacheLengthUnit="Item"
+                              VirtualizingPanel.ScrollUnit="Pixel">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Border BorderBrush="Black" BorderThickness="1" CornerRadius="0 10 0 10">
+                                        <StackPanel Orientation="Horizontal" Margin="0 0 0 5"
+                                                    VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Button Background="#00DDDDDD" BorderBrush="#00707070"
+                                                    Command="{Binding DataContext.DeleteDepartmentCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                                <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
+                                            </Button>
 
-                                <Button Background="#00DDDDDD" BorderBrush="#00707070"
-                                        Command="{Binding DataContext.DeleteDepartmentCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
-
-                                    <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
-
-                                </Button>
-
-                                <TextBlock Text="{Binding DepartmentName}" Margin="15 0 5 0" Width="300" Height="auto" TextWrapping="WrapWithOverflow"/>
-
-                                <Button Background="#00DDDDDD" BorderBrush="#00707070">
-
-                                    <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
-
-                                </Button>
-
-                            </StackPanel>
-
-                        </DataTemplate>
-                        
-                    </ListView.ItemTemplate>
-                    
-                </ListView>
-                
-
-                <Border Grid.Row="2">
-
-                    <Grid HorizontalAlignment="Center">
-
-                        <StackPanel VerticalAlignment="Center">
-                            
-                            <TextBox Width="560" Height="25" Margin="0 0 0 50" 
-                                     VerticalContentAlignment="Center" 
-                                     Text="{Binding TextBoxDepartment}"
-                                     Style="{StaticResource SettingTextBoxStyle}" 
-                                     Template="{StaticResource SettingTextBoxTemplate}"/>
-                            
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0 0 0 15">
-                            
-                            <Button Content="Сохранить и обновить" Width="150" Height="25" 
-                                    Command="{Binding UpdateDepartmentCommand}"
-                                    Template="{StaticResource MainButtonTemplate}"/>
-                            
-                            <TextBox Width="250" Height="25" Margin="10 0 10 0" 
-                                     Visibility="Hidden"
-                                     VerticalContentAlignment="Center" 
-                                     Text="{Binding TextBoxDepartment}" 
-                                     Style="{StaticResource SettingTextBoxStyle}" 
-                                     Template="{StaticResource SettingTextBoxTemplate}"/>
-                            
-                            <Button Content="Добавить отдел" Width="150" Height="25" 
-                                    HorizontalAlignment="Right"
-                                    Command="{Binding AddDepartmentCommand}" 
-                                    Template="{StaticResource MainButtonTemplate}"/>
-                            
-                        </StackPanel>
-
-                    </Grid>
-                    
+                                            <TextBlock Text="{Binding DepartmentName}" 
+                                                       Margin="5 0 5 0" 
+                                                       Width="170" Height="auto" 
+                                                       TextWrapping="WrapWithOverflow" 
+                                                       TextAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Address}" 
+                                                       Margin="5 0 5 0" 
+                                                       Width="180" Height="auto" 
+                                                       TextWrapping="WrapWithOverflow" 
+                                                       TextAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Description}" 
+                                                       Margin="5 0 5 0" 
+                                                       Width="200" Height="auto" 
+                                                       TextWrapping="WrapWithOverflow" 
+                                                       TextAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                            
+                                            <Button Background="#00DDDDDD" BorderBrush="#00707070">
+                                                <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </Border>
 
+                <Border Grid.Row="2">
+                    <Grid HorizontalAlignment="Center">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <TextBox Width="250" Height="25" Margin="0 10 35 0" 
+                                         VerticalContentAlignment="Center" 
+                                         Text="{Binding TextBoxDepartment}"
+                                         Style="{StaticResource SettingTextBoxStyle}" 
+                                         Template="{StaticResource SettingTextBoxTemplate}"/>
+                                <TextBox Width="250" Height="25" Margin="35 10 0 0" 
+                                         VerticalContentAlignment="Center" 
+                                         Text="{Binding TextBoxAddress}"
+                                         Style="{StaticResource SettingTextBoxStyle}" 
+                                         Template="{StaticResource SettingTextBoxTemplate}"/>
+                            </StackPanel>
+                            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0 25 0 0">
+                                <Button Content="Сохранить и обновить" Width="150" Height="25" 
+                                        HorizontalAlignment="Left"
+                                        Command="{Binding UpdateDepartmentCommand}"
+                                        Template="{StaticResource MainButtonTemplate}"/>
+                                <TextBox Width="250" Height="25" Margin="10 0 10 0" 
+                                         VerticalContentAlignment="Center" 
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Text="{Binding TextBoxDescription}"
+                                         Style="{StaticResource SettingTextBoxStyle}" 
+                                         Template="{StaticResource SettingTextBoxTemplate}"/>
+                                <Button Content="Добавить отдел" Width="150" Height="25" 
+                                        HorizontalAlignment="Right"
+                                        Command="{Binding AddDepartmentCommand}" 
+                                        Template="{StaticResource MainButtonTemplate}"/>
+                            </DockPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
             </Grid>
-
             <!--<Grid Grid.Row="1" Visibility="Collapsed">
 
                 <Grid.RowDefinitions>
@@ -450,9 +459,6 @@
                 </Border>
                 
             </Grid>-->
-            
         </Grid>
-        
     </Border>
-
 </Window>

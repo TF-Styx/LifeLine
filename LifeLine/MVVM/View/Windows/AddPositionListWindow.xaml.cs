@@ -1,4 +1,6 @@
-﻿using LifeLine.MVVM.ViewModel;
+﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.MVVM.ViewModel;
+using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogService;
 using System;
 using System.Collections.Generic;
@@ -27,7 +29,11 @@ namespace LifeLine.MVVM.View.Windows
 
             IDialogService dialogService = new DialogService();
 
-            DataContext = new AddPositionListVM(dialogService);
+            Func<EmployeeManagementContext> ContextFactory = () => new EmployeeManagementContext();
+
+            IDataBaseServices dataBaseServices = new DataBaseServices(ContextFactory);
+
+            DataContext = new AddPositionListVM(dialogService, dataBaseServices);
 
         }
 

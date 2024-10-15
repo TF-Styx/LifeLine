@@ -1,4 +1,5 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogService;
 using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
@@ -12,20 +13,20 @@ namespace LifeLine.MVVM.ViewModel
 {
     internal class AddEmployeeVM : BaseViewModel
     {
-        public AddEmployeeVM(IDialogService dialogService)
+        public AddEmployeeVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
         {
             _dialogService = dialogService;
+            _dataBaseServices = dataBaseServices;
 
-            EmployeeList = [];
-            PositionList = [];
-            GenderList = [];
-            
+
             GetEmployeeData();
             GetPositionData();
             GetGenderData();
         }
 
         private readonly IDialogService _dialogService;
+
+        private readonly IDataBaseServices _dataBaseServices;
 
         #region Свойства
 
@@ -159,11 +160,11 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        public ObservableCollection<Employee> EmployeeList { get; set; }
+        public ObservableCollection<Employee> EmployeeList { get; set; } = [];
 
-        public ObservableCollection<Position> PositionList { get; set; }
+        public ObservableCollection<Position> PositionList { get; set; } = [];
 
-        public ObservableCollection<Gender> GenderList { get; set; }
+        public ObservableCollection<Gender> GenderList { get; set; } = [];
 
         #endregion
 
@@ -172,13 +173,13 @@ namespace LifeLine.MVVM.ViewModel
         #region Команды
 
         private RelayCommand _addEmployeeCommand;
-        public RelayCommand AddEmployeeCommand { get => _addEmployeeCommand ??= new(obj => { AddEmployee(); }); }
+        public RelayCommand AddEmployeeCommand { get => _addEmployeeCommand ??= new(obj => { AddEmployeeAsync(); }); }
 
         private RelayCommand _updateEmployeeCommand;
-        public RelayCommand UpdateEmployeeCommand { get => _updateEmployeeCommand ??= new(obj => { UpdateEmployee(); }); }
+        public RelayCommand UpdateEmployeeCommand { get => _updateEmployeeCommand ??= new(obj => { UpdateEmployeeAsync(); }); }
 
         private RelayCommand _deleteEmployeeCommand;
-        public RelayCommand DeleteEmployeeCommand => _deleteEmployeeCommand ??= new RelayCommand(DeleteEmployee);
+        public RelayCommand DeleteEmployeeCommand => _deleteEmployeeCommand ??= new RelayCommand(DeleteEmployeeAsync);
 
         #endregion
 
@@ -186,8 +187,39 @@ namespace LifeLine.MVVM.ViewModel
 
         #region Методы
 
-        private void AddEmployee()
+        private async void AddEmployeeAsync()
         {
+            if (string.IsNullOrEmpty(TextBoxSecondName) && string.IsNullOrEmpty(TextBoxFirstName) && string.IsNullOrEmpty(TextBoxLastName))
+            {
+                _dialogService.ShowMessage("Вы не заполнили поля ФИО сотрудника!");
+                return;
+            }
+            if (ComboBoxSelectedPositionList == null)
+            {
+                _dialogService.ShowMessage("Вы не выбрали должность сотрудника!");
+                return;
+            }
+            if (TextBoxSalary == 0)
+            {
+                _dialogService.ShowMessage("Вы не назначили зароботную плату сотрудника!");
+                return;
+            }
+            if (ComboBoxSelectedGender == null)
+            {
+                _dialogService.ShowMessage("Вы не указали пол сотрудника!");
+                return;
+            }
+            if (string.IsNullOrEmpty(TextBoxLogin) && string.IsNullOrEmpty(TextBoxPassword))
+            {
+                _dialogService.ShowMessage("Вы не назначили логин и пароль сотрудника!");
+                return;
+            }
+            if (await _dataBaseServices.ExistsAsync<Employee>(x => x.Login.ToLower() == TextBoxLogin.ToLower()))
+            {
+                _dialogService.ShowMessage("Такой логин уже занят!");
+                return;
+            }
+
             Employee employee = new()
             {
                 SecondName = TextBoxSecondName,
@@ -204,67 +236,49 @@ namespace LifeLine.MVVM.ViewModel
                 Password = TextBoxPassword,
             };
 
-            using (EmployeeManagementContext context = new())
-            {
-                if (string.IsNullOrEmpty(TextBoxSecondName) && string.IsNullOrEmpty(TextBoxFirstName) && string.IsNullOrEmpty(TextBoxLastName))
-                {
-                    _dialogService.ShowMessage("Вы не заполнили поля ФИО сотрудника!");
-                    return;
-                }
-                if (ComboBoxSelectedPositionList == null)
-                {
-                    _dialogService.ShowMessage("Вы не выбрали должность сотрудника!");
-                    return;
-                }
-                if (TextBoxSalary == 0)
-                {
-                    _dialogService.ShowMessage("Вы не назначили зароботную плату сотрудника!");
-                    return;
-                }
-                if (ComboBoxSelectedGender == null)
-                {
-                    _dialogService.ShowMessage("Вы не указали пол сотрудника!");
-                    return;
-                }
-                if (string.IsNullOrEmpty(TextBoxLogin) && string.IsNullOrEmpty(TextBoxPassword))
-                {
-                    _dialogService.ShowMessage("Вы не назначили логин и пароль сотрудника!");
-                    return;
-                }
+            await _dataBaseServices.AddAsync(employee);
 
-                context.Add(employee);
-                context.SaveChanges();
-
-                ClearingDataEntry();
-                GetEmployeeData();
-            }
+            ClearingDataEntry();
+            GetEmployeeData();
         }
 
-        private void UpdateEmployee()
+        private async void UpdateEmployeeAsync()
         {
             using (EmployeeManagementContext context = new())
             {
                 if (SelectedEmployee == null) { return; }
 
-                var warning = context.Employees.Where(x => x.IdEmployee != SelectedEmployee.IdEmployee);
-
-                foreach (var item in warning)
-                {
-                    if (item.Login == SelectedEmployee.Login)
-                    {
-                        _dialogService.ShowMessage("Такой «логин» уже есть!!");
-                        return;
-                    }
-                }
-
-                var employeeToUpdate = context.Employees.Find(SelectedEmployee.IdEmployee);
+                var employeeToUpdate = await _dataBaseServices.FindIdAsync<Employee>(SelectedEmployee.IdEmployee);
 
                 if (employeeToUpdate != null)
                 {
-                    if (_dialogService.ShowMessageButton($"Вы точно хотите изменить данные «{SelectedEmployee.SecondName} {SelectedEmployee.FirstName} {SelectedEmployee.LastName}»!", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
-                    {
-                        if (SelectedEmployee == null) { return; }
+                    bool exists = await _dataBaseServices.ExistsAsync<Employee>(x => x.Login.ToLower() == employeeToUpdate.Login.ToLower());
 
+                    if (exists)
+                    {
+                        if (_dialogService.ShowMessageButton($"Вы точно хотите изменить данные «{employeeToUpdate.SecondName} {employeeToUpdate.FirstName} {employeeToUpdate.LastName}»!", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                        {
+                            employeeToUpdate.SecondName = TextBoxSecondName;
+                            employeeToUpdate.FirstName = TextBoxFirstName;
+                            employeeToUpdate.LastName = TextBoxLastName;
+
+                            employeeToUpdate.IdPosition = ComboBoxSelectedPositionList.IdPosition;
+
+                            employeeToUpdate.Salary = TextBoxSalary;
+
+                            employeeToUpdate.IdGender = ComboBoxSelectedGender.IdGender;
+
+                            employeeToUpdate.Login = TextBoxLogin;
+                            employeeToUpdate.Password = TextBoxPassword;
+
+                            await _dataBaseServices.UpdateAsync(employeeToUpdate);
+
+                            ClearingDataEntry();
+                            GetEmployeeData();
+                        }
+                    }
+                    else
+                    {
                         employeeToUpdate.SecondName = TextBoxSecondName;
                         employeeToUpdate.FirstName = TextBoxFirstName;
                         employeeToUpdate.LastName = TextBoxLastName;
@@ -278,97 +292,96 @@ namespace LifeLine.MVVM.ViewModel
                         employeeToUpdate.Login = TextBoxLogin;
                         employeeToUpdate.Password = TextBoxPassword;
 
-                        context.SaveChanges();
+                        await _dataBaseServices.UpdateAsync(employeeToUpdate);
 
                         ClearingDataEntry();
                         GetEmployeeData();
                     }
                 }
-                else
-                {
-                    _dialogService.ShowMessage("TEST", "Предупреждение!!!");
-                    //MessageBox.Show("srgdtgadRG");
-                }
             }
         }
 
-        private void DeleteEmployee(object parametr)
+        private async void DeleteEmployeeAsync(object parametr)
         {
-            using (EmployeeManagementContext context = new())
+            if (parametr != null)
             {
                 if (parametr is Employee employee)
                 {
-                    var deleteEmployee = context.Employees.Find(employee.IdEmployee);
-
-                    if (deleteEmployee != null)
-                    {
-                        if (_dialogService.ShowMessageButton($"Вы точно хотите удалить сотрудника " +
-                            $"«{employee.SecondName} {employee.FirstName} {employee.LastName}»!", 
-                            "Предупреждение!!!", 
+                    if (_dialogService.ShowMessageButton($"Вы точно хотите удалить сотрудника " +
+                            $"«{employee.SecondName} {employee.FirstName} {employee.LastName}»!",
+                            "Предупреждение!!!",
                             MessageButtons.YesNo) == MessageButtons.Yes)
-                        {
-                            context.Remove(deleteEmployee);
-                            context.SaveChanges();
+                    {
+                        await _dataBaseServices.DeleteAsync(employee);
 
-                            // TODO: Ошибка с удалением сотрудника : РЕШЕНА
-
-                            ClearingDataEntry();
-                            GetEmployeeData();
-                        }
+                        ClearingDataEntry();
+                        GetEmployeeData();
                     }
                 }
             }
         }
 
-        private void GetEmployeeData()
+        private async void GetEmployeeData()
         {
             EmployeeList.Clear();
 
-            using (EmployeeManagementContext context = new EmployeeManagementContext())
+            var query =
+                    await _dataBaseServices.GetDataTableAsync<Employee>(x => x
+                        .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdAccessLevelNavigation)
+                        .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
+                        .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation.IdDepartmentNavigation)
+                        .Include(x => x.IdGenderNavigation)
+
+                        .Include(x => x.IdPositionNavigation)
+                                .ThenInclude(x => x.IdPositionListNavigation)
+                                    .ThenInclude(x => x.IdDepartmentNavigation)
+                            .Include(x => x.IdGenderNavigation));
+
+            if (!string.IsNullOrWhiteSpace(SearchEmployeeTB))
             {
-                var employeeList = context.Employees
-                    .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdAccessLevelNavigation)
-                    .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
-                    .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation.IdDepartmentNavigation)
-                    .Include(x => x.IdGenderNavigation)
-                    .ToList();
-                
-                foreach (var item in employeeList)
-                {
-                    EmployeeList.Add(item);
-                }
+                string searchLover = SearchEmployeeTB.ToLower();
+
+                query = 
+                    query.
+                        Where(x =>
+                            x.SecondName.ToLower().Contains(searchLover) ||
+                            x.FirstName.ToLower().Contains(searchLover) ||
+                            x.LastName.ToLower().Contains(searchLover) ||
+                            x.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName.ToLower().Contains(searchLover) ||
+                            x.IdPositionNavigation.IdPositionListNavigation.PositionListName.ToLower().Contains(searchLover) ||
+                            x.Login.ToLower().Contains(searchLover) ||
+                            x.IdGenderNavigation.GenderName.ToLower().Contains(searchLover));
+            }
+
+            List<Employee> employeeList = query.ToList();
+
+            foreach (var item in employeeList)
+            {
+                EmployeeList.Add(item);
             }
         }
 
-        private void GetPositionData()
+        private async void GetPositionData()
         {
             PositionList.Clear();
 
-            using (EmployeeManagementContext context = new())
-            {
-                var positionList = context.Positions
-                    .Include(x => x.IdPositionListNavigation)
-                    .ToList();
+            var positionList = await _dataBaseServices.GetDataTableAsync<Position>(x => x.Include(x => x.IdPositionListNavigation));
 
-                foreach (var item in positionList)
-                {
-                    PositionList.Add(item);
-                }
+            foreach (var item in positionList)
+            {
+                PositionList.Add(item);
             }
         }
 
-        private void GetGenderData()
+        private async void GetGenderData()
         {
             GenderList.Clear();
 
-            using (EmployeeManagementContext context = new())
-            {
-                var genderList = context.Genders.ToList();
+            var genderList = await _dataBaseServices.GetDataTableAsync<Gender>();
 
-                foreach (var item in genderList)
-                {
-                    GenderList.Add(item);
-                }
+            foreach (var item in genderList)
+            {
+                GenderList.Add(item);
             }
         }
         // Первый вариант
@@ -380,73 +393,30 @@ namespace LifeLine.MVVM.ViewModel
         // Второй вариант
         private async void SearchEmployeeAsync()
         {
-            using (EmployeeManagementContext context = new())
-            {
-                //var search = await 
-                //    context.Employees
-                //        .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
-                //            .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation)
-                //                .Include(x => x.IdGenderNavigation)
-                //                    .Where(x => x.SecondName.ToLower().Contains(SearchEmployeeTB))
-
-                //    .Union(context.Employees
-                //        .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
-                //            .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation)
-                //                .Include(x => x.IdGenderNavigation)
-                //                    .Where(x => x.FirstName.ToLower().Contains(SearchEmployeeTB)))
-
-                //    .Union(context.Employees
-                //        .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
-                //            .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation)
-                //                .Include(x => x.IdGenderNavigation)
-                //                    .Where(x => x.LastName.ToLower().Contains(SearchEmployeeTB)))
-
-                //    .Union(context.Employees
-                //        .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
-                //            .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation)
-                //                .Include(x => x.IdGenderNavigation)
-                //                    .Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchEmployeeTB)))
-
-                //    .Union(context.Employees
-                //        .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
-                //            .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation)
-                //                .Include(x => x.IdGenderNavigation)
-                //                    .Where(x => x.IdPositionNavigation.IdPositionListNavigation.PositionListName.ToLower().Contains(SearchEmployeeTB)))
-
-                //    .Union(context.Employees
-                //        .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
-                //            .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation)
-                //                .Include(x => x.IdGenderNavigation)
-                //                    .Where(x => x.Login.ToLower().Contains(SearchEmployeeTB)))
-                //    .ToListAsync();
-
-                var search = await context.Employees
+            var search =
+                await _dataBaseServices.GetDataTableAsync<Employee>(x => x
                         .Include(x => x.IdPositionNavigation)
                             .ThenInclude(x => x.IdPositionListNavigation)
                                 .ThenInclude(x => x.IdDepartmentNavigation)
                         .Include(x => x.IdGenderNavigation)
                         .Where(x =>
-                            x.SecondName.ToLower().Contains(SearchEmployeeTB) ||
-                            x.FirstName.ToLower().Contains(SearchEmployeeTB) ||
-                            x.LastName.ToLower().Contains(SearchEmployeeTB) ||
-                            x.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchEmployeeTB) ||
-                            x.IdPositionNavigation.IdPositionListNavigation.PositionListName.ToLower().Contains(SearchEmployeeTB) ||
-                            x.Login.ToLower().Contains(SearchEmployeeTB) ||
-                            x.IdGenderNavigation.GenderName.ToLower().Contains(SearchEmployeeTB))
-                        .ToListAsync();
+                            x.SecondName.ToLower().Contains(SearchEmployeeTB.ToLower()) ||
+                            x.FirstName.ToLower().Contains(SearchEmployeeTB.ToLower()) ||
+                            x.LastName.ToLower().Contains(SearchEmployeeTB.ToLower()) ||
+                            x.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchEmployeeTB.ToLower()) ||
+                            x.IdPositionNavigation.IdPositionListNavigation.PositionListName.ToLower().Contains(SearchEmployeeTB.ToLower()) ||
+                            x.Login.ToLower().Contains(SearchEmployeeTB.ToLower()) ||
+                            x.IdGenderNavigation.GenderName.ToLower().Contains(SearchEmployeeTB.ToLower())));
 
-                // TODO: Проблема с поиском, пропадает <<Отдел>> и <<Пол>> : РЕШЕНА + упрощен запрос
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                EmployeeList.Clear();
 
-                App.Current.Dispatcher.Invoke(() =>
+                foreach (var item in search)
                 {
-                    EmployeeList.Clear();
-
-                    foreach (var item in search)
-                    {
-                        EmployeeList.Add(item);
-                    }
-                });
-            }
+                    EmployeeList.Add(item);
+                }
+            });
         }
 
         private void ClearingDataEntry()
