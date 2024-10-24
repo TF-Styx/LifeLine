@@ -17,18 +17,33 @@ namespace LifeLine.MVVM.ViewModel
         {
             _dialogService = dialogService;
             _dataBaseServices = dataBaseServices;
-
+            IsCustomPopupCB = false;
 
             GetEmployeeData();
             GetPositionData();
             GetGenderData();
         }
 
+        #region Popup
+
+        private bool _isCustomPopupCB;
+        public bool IsCustomPopupCB
+        {
+            get => _isCustomPopupCB;
+            set
+            {
+                _isCustomPopupCB = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
+
+        #region Свойства
+
         private readonly IDialogService _dialogService;
 
         private readonly IDataBaseServices _dataBaseServices;
-
-        #region Свойства
 
         private string _textBoxSecondName;
         public string TextBoxSecondName
@@ -138,6 +153,17 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+        private string _depPos;
+        public string DepPos
+        {
+            get => _depPos;
+            set
+            {
+                _depPos = value;
+                OnPropertyChanged();
+            }
+        }
+
         private Position _comboBoxSelectedPositionList;
         public Position ComboBoxSelectedPositionList
         {
@@ -145,6 +171,8 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _comboBoxSelectedPositionList = value;
+                DepPos = $"Отдел: {value.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}; Должность: {value.IdPositionListNavigation.PositionListName}";
+                IsCustomPopupCB = false;
                 OnPropertyChanged();
             }
         }
@@ -180,6 +208,9 @@ namespace LifeLine.MVVM.ViewModel
 
         private RelayCommand _deleteEmployeeCommand;
         public RelayCommand DeleteEmployeeCommand => _deleteEmployeeCommand ??= new RelayCommand(DeleteEmployeeAsync);
+
+        private RelayCommand _openPopupPositionDepartment;
+        public RelayCommand OpenPopupPositionDepartment { get => _openPopupPositionDepartment ??= new(obj => { OpenPopupPosDep(); }); }
 
         #endregion
 
@@ -325,7 +356,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             EmployeeList.Clear();
 
-            var query =
+            var querySearch =
                     await _dataBaseServices.GetDataTableAsync<Employee>(x => x
                         .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdAccessLevelNavigation)
                         .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
@@ -341,8 +372,8 @@ namespace LifeLine.MVVM.ViewModel
             {
                 string searchLover = SearchEmployeeTB.ToLower();
 
-                query = 
-                    query.
+                querySearch = 
+                    querySearch.
                         Where(x =>
                             x.SecondName.ToLower().Contains(searchLover) ||
                             x.FirstName.ToLower().Contains(searchLover) ||
@@ -353,7 +384,7 @@ namespace LifeLine.MVVM.ViewModel
                             x.IdGenderNavigation.GenderName.ToLower().Contains(searchLover));
             }
 
-            List<Employee> employeeList = query.ToList();
+            List<Employee> employeeList = querySearch.ToList();
 
             foreach (var item in employeeList)
             {
@@ -365,7 +396,9 @@ namespace LifeLine.MVVM.ViewModel
         {
             PositionList.Clear();
 
-            var positionList = await _dataBaseServices.GetDataTableAsync<Position>(x => x.Include(x => x.IdPositionListNavigation));
+            var positionList = await _dataBaseServices.GetDataTableAsync<Position>(x => x
+                .Include(x => x.IdPositionListNavigation)
+                .Include(x => x.IdPositionListNavigation.IdDepartmentNavigation));
 
             foreach (var item in positionList)
             {
@@ -384,13 +417,7 @@ namespace LifeLine.MVVM.ViewModel
                 GenderList.Add(item);
             }
         }
-        // Первый вариант
-        //private async Task SearchEmployeeAsync()
-        //{
-            
-        //}
 
-        // Второй вариант
         private async void SearchEmployeeAsync()
         {
             var search =
@@ -433,6 +460,18 @@ namespace LifeLine.MVVM.ViewModel
 
             TextBoxLogin = string.Empty;
             TextBoxPassword = string.Empty;
+        }
+
+        private void OpenPopupPosDep()
+        {
+            if (IsCustomPopupCB)
+            {
+                IsCustomPopupCB = false;
+            }
+            if (!IsCustomPopupCB)
+            {
+                IsCustomPopupCB = true;
+            }
         }
 
         #endregion

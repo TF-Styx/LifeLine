@@ -11,7 +11,9 @@
         Title="AddEmployeeWindow"
         Style="{StaticResource Window}"
         Height="750" Width="900"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        
+        PreviewMouseDown="Border_PreviewMouseDown">
 
     <!--#region Настройка окна -->
 
@@ -564,12 +566,105 @@ BorderThickness="0,0,0,2">
                             </StackPanel>
 
                             <StackPanel>
-                                <ComboBox Width="200" Height="25" Margin="0 5 0 0"
+
+                                <!--#region POPUP -->
+                                
+                                <Popup IsOpen="{Binding IsCustomPopupCB}" 
+                                       Height="400"
+                                       x:Name="MyPopup"
+                                       Placement="Bottom" StaysOpen="True"
+                                       PlacementTarget="{Binding ElementName=TextBlockPopupPosDep}"
+                                       PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+                                    <ListView ItemsSource="{Binding PositionList}" SelectedItem="{Binding ComboBoxSelectedPositionList}">
+                                        <!--<ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="Отдел">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Margin="0 0 2 0" Text="{Binding IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Отдел1">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Margin="0 0 2 0" Text="{Binding IdPositionListNavigation.PositionListName}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                            </GridView>
+                                        </ListView.View>-->
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Width="200" 
+                                                                   TextAlignment="Left" TextWrapping="WrapWithOverflow" 
+                                                                   Text="{Binding IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}"/>
+                                                        <TextBlock Width="350" Margin="0 0 5 0"
+                                                                   TextAlignment="Left" TextWrapping="WrapWithOverflow" 
+                                                                   Text="{Binding IdPositionListNavigation.PositionListName}"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </Popup>
+
+                                <StackPanel Background="Transparent"
+                                            Height="25" Width="200">
+                                    <StackPanel.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{Binding OpenPopupPositionDepartment}"/>
+                                    </StackPanel.InputBindings>
+                                    <Grid MaxWidth="200" Name="PopupGridDepPos">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="30"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border>
+                                            <TextBox Name="TextBlockPopupPosDep" Grid.Column="0" 
+                                                     Style="{StaticResource DepPosTextBoxStyle}"
+                                                     Template="{StaticResource SettingTextBoxTemplate}"
+                                                     Text="{Binding DepPos}">
+                                                <TextBox.InputBindings>
+                                                    <MouseBinding MouseAction="LeftClick" Command="{Binding OpenPopupPositionDepartment}"/>
+                                                </TextBox.InputBindings>
+                                            </TextBox>
+                                        </Border>
+                                        <Button Background="Transparent" BorderThickness="1" Grid.Column="1" Command="{Binding OpenPopupPositionDepartment}">
+                                            <Path x:Name="arrow" Data="F1 M 0,0 L 2.667,2.66665 L 5.3334,0 L 5.3334,-1.78168 L 2.6667,0.88501 L0,-1.78168 L0,0 Z" Fill="Black" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+
+                                <!--#endregion-->
+
+                                <!--<Button Name="btn" HorizontalAlignment="Left" Width="180" Height="25" 
+                                        Template="{StaticResource MainButtonTemplate}"
+                                        Command="{Binding OpenPopupPositionDepartment}">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Name="TextBlockPopupPosDep" Grid.Column="0" 
+                                               Height="{Binding ActualHeight, ElementName=btn}" 
+                                                       Width="{Binding ActualWidth, ElementName=btn}"
+                                               Text="{Binding DepPos}"
+                                               HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Stretch"/>
+                                            <Path x:Name="arrow" Data="F1 M 0,0 L 2.667,2.66665 L 5.3334,0 L 5.3334,-1.78168 L 2.6667,0.88501 L0,-1.78168 L0,0 Z" Fill="Black" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>-->
+
+                                <!--<ComboBox Width="200" Height="25" Margin="0 5 0 0"
                                           VerticalContentAlignment="Center"
                                           ItemsSource="{Binding PositionList}" 
                                           SelectedItem="{Binding ComboBoxSelectedPositionList}"
                                           Style="{StaticResource ComboBoxStyleApp}"
-                                          DisplayMemberPath="IdPositionListNavigation.PositionListName"/>
+                                          DisplayMemberPath="IdPositionListNavigation.PositionListName"/>-->
 
                                 <TextBox Width="200" Height="25" Margin="0 5 0 0"
                                          VerticalContentAlignment="Center" 

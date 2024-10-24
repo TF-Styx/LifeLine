@@ -46,6 +46,13 @@
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
+    
+    <Style x:Key="DepPosTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource TextBoxStyle}">
+        <Setter Property="Height" Value="25"/>
+        <Setter Property="Width" Value="170"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="FontSize" Value="18"/>
+    </Style>
 
 
     <ControlTemplate x:Key="SettingTextBoxTemplate" TargetType="TextBox">

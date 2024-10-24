@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -45,6 +46,20 @@ namespace LifeLine.MVVM.View.Windows
         {
             //App.Current.Shutdown();
             SystemCommands.CloseWindow(this);
+        }
+
+        private void Border_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (MyPopup.IsOpen && !IsMouseOverTarget(MyPopup, e))
+            {
+                MyPopup.IsOpen = false;
+            }
+        }
+        private bool IsMouseOverTarget(FrameworkElement target, MouseButtonEventArgs e)
+        {
+            var mousePosition = e.GetPosition(target);
+            return mousePosition.X >= 0 && mousePosition.X <= target.ActualWidth
+                   && mousePosition.Y >= 0 && mousePosition.Y <= target.ActualHeight;
         }
     }
 }

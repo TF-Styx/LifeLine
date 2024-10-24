@@ -1,4 +1,6 @@
-﻿using LifeLine.MVVM.ViewModel;
+﻿using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.MVVM.ViewModel;
+using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogService;
 using LifeLine.Services.NavigationPage;
 using System.ComponentModel;
@@ -25,11 +27,15 @@ namespace LifeLine
         {
             InitializeComponent();
 
-            IDialogService service = new DialogService();
+            IDialogService dialogService = new DialogService();
 
             NavigationServices navigationServices = new(MainFrame);
 
-            DataContext = new MainWindowVM(navigationServices, service);
+            Func<EmployeeManagementContext> contextFactory = () => new EmployeeManagementContext();
+
+            IDataBaseServices dataBaseServices = new DataBaseServices(contextFactory);
+
+            DataContext = new MainWindowVM(navigationServices, dialogService, dataBaseServices);
 
             StateChanged += MainWindowStateChangeRaised;
         }
