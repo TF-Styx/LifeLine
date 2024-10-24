@@ -190,10 +190,22 @@ namespace LifeLine.MVVM.ViewModel
         {
             PositionLists.Clear();
 
-            var positionList = 
+            var querySearch = 
                 await _dataBaseServices.GetDataTableAsync<PositionList>(x => x
                     .Include(x => x.IdDepartmentNavigation)
                         .OrderBy(x => x.IdDepartmentNavigation.DepartmentName));
+
+            if (!string.IsNullOrWhiteSpace(SearchPositionList))
+            {
+                string searchLower = SearchPositionList.ToLower();
+
+                querySearch = 
+                    querySearch
+                        .Where(x => x.PositionListName.ToLower().Contains(SearchPositionList.ToLower()) ||
+                                    x.IdDepartmentNavigation.DepartmentName.ToLower().Contains(searchLower));
+            }
+
+            List<PositionList> positionList = querySearch.ToList();
 
             foreach (var item in positionList)
             {

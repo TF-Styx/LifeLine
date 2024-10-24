@@ -1,5 +1,6 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.MVVM.View.Windows;
+using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogService;
 using LifeLine.Services.NavigationPage;
 using MasterAnalyticsDeadByDaylight.Command;
@@ -19,9 +20,10 @@ namespace LifeLine.MVVM.ViewModel
         NavigationServices navigateS;
         Employee CurrentUser;
 
-        public MainWindowVM(NavigationServices navigationServices, IDialogService dialogService)
+        public MainWindowVM(NavigationServices navigationServices, IDialogService dialogService, IDataBaseServices dataBaseServices)
         {
             _dialogService = dialogService;
+            _dataBaseServices = dataBaseServices;
 
             TextBlockMainWindowContentVisibility = Visibility.Collapsed;
             MainMenu = Visibility.Collapsed;
@@ -37,6 +39,7 @@ namespace LifeLine.MVVM.ViewModel
         #region Свойства
 
         private readonly IDialogService _dialogService;
+        private readonly IDataBaseServices _dataBaseServices;
 
 
             #region Visibility
@@ -414,17 +417,27 @@ namespace LifeLine.MVVM.ViewModel
         /// <summary>
         /// Метод входа
         /// </summary>
-        private void Authorization()
+        private async void Authorization()
         {
             using (EmployeeManagementContext context = new())
             {
-                var id_user = 
-                    context.Employees
-                    .Include(x => x.IdGenderNavigation)
-                    .Include(x => x.IdPositionNavigation.IdAccessLevelNavigation)
-                    .Include(x => x.IdPositionNavigation.IdPositionListNavigation)
-                    .Include(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation)
-                    .FirstOrDefault(u => u.Login == UserLogin && u.Password == UserPass);
+                var id_user = await _dataBaseServices.FindByValueAsync<Employee>(new Dictionary<string, object>()
+                {
+                    { "Login", UserLogin },
+                    { "Password", UserPass }
+                },
+                    x => x.Include(x => x.IdGenderNavigation)
+                          .Include(x => x.IdPositionNavigation.IdAccessLevelNavigation)
+                          .Include(x => x.IdPositionNavigation.IdPositionListNavigation)
+                          .Include(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation)
+                );
+
+                //var id_user = context.Employees
+                //    .Include(x => x.IdGenderNavigation)
+                //    .Include(x => x.IdPositionNavigation.IdAccessLevelNavigation)
+                //    .Include(x => x.IdPositionNavigation.IdPositionListNavigation)
+                //    .Include(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation)
+                //    .FirstOrDefault(u => u.Login == UserLogin && u.Password == UserPass);
 
                 if (id_user == null)
                 {

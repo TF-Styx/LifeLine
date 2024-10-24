@@ -220,16 +220,16 @@ namespace LifeLine.MVVM.ViewModel
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                var query = await _dataBaseServices.GetDataTableAsync<TypeDocument>(x => x.Include(x => x.IdTypeOfPersoneNavigation).OrderBy(x => x.IdTypeOfPersone));
+                var querySearch = await _dataBaseServices.GetDataTableAsync<TypeDocument>(x => x.Include(x => x.IdTypeOfPersoneNavigation).OrderBy(x => x.IdTypeOfPersone));
 
                 if (!string.IsNullOrWhiteSpace(SearchTypeDocumentLists))
                 {
                     string searchLover = SearchTypeDocumentLists.ToLower();
 
-                    query = query.Where(stdl => stdl.TypeDocumentName.ToLower().Contains(searchLover)).OrderBy(x => x.IdTypeOfPersone);
+                    querySearch = querySearch.Where(stdl => stdl.TypeDocumentName.ToLower().Contains(searchLover)).OrderBy(x => x.IdTypeOfPersone);
                 }
 
-                List<TypeDocument> typeDocuments = query.ToList();
+                List<TypeDocument> typeDocuments = querySearch.ToList();
 
                 foreach (var item in typeDocuments)
                 {

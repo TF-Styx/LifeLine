@@ -226,20 +226,20 @@ namespace LifeLine.MVVM.ViewModel
         {
             DepartmentList.Clear();
 
-            var query = 
+            var querySearch = 
                 await _dataBaseServices.GetDataTableAsync<Department>(x => x.OrderBy(x => x.DepartmentName));
 
             if (!string.IsNullOrWhiteSpace(SearchDepartmentTB))
             {
                 string searchLover = SearchDepartmentTB.ToLower();
 
-                query =
-                    query
+                querySearch =
+                    querySearch
                     .Where(x => x.DepartmentName.ToLower().Contains(searchLover) ||
                             x.Address.ToLower().Contains(searchLover));
             }
 
-            List<Department> departmentList = query.ToList();
+            List<Department> departmentList = querySearch.ToList();
 
             foreach (var item in departmentList)
             {

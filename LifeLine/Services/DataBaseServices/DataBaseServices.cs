@@ -1,7 +1,10 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -64,6 +67,69 @@ namespace LifeLine.Services.DataBaseServices
                 }
             }
         }
+
+        public async Task<T> FindByValueAsync<T>(string propertyName, object value, Func<IQueryable<T>, IQueryable<T>> include = null) where T : class
+        {
+            using (var context = _contextFactory())
+            {
+                IQueryable<T> query = context.Set<T>();
+
+                if (include != null)
+                {
+                    query = include(query);
+                }
+
+                try
+                {
+                    return await query.FirstOrDefaultAsync(x => EF.Property<object>(x, propertyName).Equals(value));
+                }
+                catch (Exception)
+                {
+
+                    throw new Exception($"Свойство <<{propertyName}>> не найдено");
+                }
+            }
+        }
+
+        public async Task<T> FindByValueAsync<T>(Dictionary<string, object> propertyValues, Func<IQueryable<T>, IQueryable<T>> include = null) where T : class
+        {
+            using (var context = _contextFactory())
+            {
+                IQueryable<T> query = context.Set<T>();
+
+                if (include != null)
+                {
+                    query = include(query);
+                }
+
+                try
+                {
+                    var parametr = Expression.Parameter(typeof(T), "e"); // Создаем параметр для лямбда выражения
+
+                    Expression predicate = null; // Создаем выражение
+
+                    foreach (var propValue in propertyValues)
+                    {
+                        var property = Expression.Property(parametr, propValue.Key); // Получаем свойство по ключу
+
+                        var compretion = Expression.Equal(property, Expression.Constant(propValue.Value)); // Создаем выражение для сравнения свойств с его значением
+
+                        predicate = predicate == null ? compretion : Expression.AndAlso(predicate, compretion); // Если predicate уже имеет значение, комбинируем через &&
+                    }
+
+                    var lambda = Expression.Lambda<Func<T, bool>>(predicate, parametr); // Создаем лямбда выражение
+
+                    query = query.Where(lambda); // Применяем фильтрацию через одно Where с логическими <<&&>> <<И>>  
+
+                    return await query.FirstOrDefaultAsync();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Ошибка при поиске по свойствам <<{ex.Message}>>");
+                }
+            }
+        }
+
         public async Task<bool> ExistsAsync<T>(Expression<Func<T, bool>> predicate) where T : class
         {
             using (var context = _contextFactory())
@@ -109,6 +175,16 @@ namespace LifeLine.Services.DataBaseServices
                 await context.SaveChangesAsync();
             }
         }
+
+        public void RemoveRange<T>(IEnumerable<T> entity) where T : class
+        {
+            using (var context = _contextFactory())
+            {
+                context.Set<T>().RemoveRange(entity);
+                context.SaveChanges();
+            }
+        }
+
         public async Task<T> FindIdAsync<T>(int id_entity) where T : class
         {
             using (var context = _contextFactory())
@@ -116,6 +192,22 @@ namespace LifeLine.Services.DataBaseServices
                 return await context.Set<T>().FindAsync(id_entity);
             }
         }
+
+        public int Count<T>(Func<IQueryable<T>, IQueryable<T>> include = null) where T : class
+        {
+            using (var context = _contextFactory())
+            {
+                IQueryable<T> query = context.Set<T>();
+
+                if (include != null)
+                {
+                    query = include(query);
+                }
+
+                return query.Count();
+            }
+        }
+
         public async Task<IEnumerable<T>> GetByConditionAsync<T>(
                      Expression<Func<T, bool>> predicate,
                      Func<IQueryable<T>, IQueryable<T>> include = null) where T : class
