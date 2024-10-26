@@ -2,11 +2,14 @@
 using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogService;
 using LifeLine.Utils.Enum;
+using LifeLine.Utils.Helper;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 
 namespace LifeLine.MVVM.ViewModel
@@ -78,6 +81,17 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+        private byte[] _selectImage;
+        public byte[] SelectImage
+        {
+            get => _selectImage;
+            set
+            {
+                _selectImage = value;
+                OnPropertyChanged();
+            }
+        }
+
         private decimal? _textBoxSalary;
         public decimal? TextBoxSalary
         {
@@ -141,12 +155,16 @@ namespace LifeLine.MVVM.ViewModel
                 TextBoxFirstName = value.FirstName;
                 TextBoxLastName = value.LastName;
 
+                SelectImage = value.Avatar;
+
                 TextBoxSalary = value.Salary;
 
                 TextBoxLogin = value.Login;
                 TextBoxPassword = value.Password;
 
-                ComboBoxSelectedPositionList = PositionList.FirstOrDefault(x => x.IdPositionList == value.IdPosition);
+                //DepPos = $"Отдел: {value.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName};\nДолжность: {value.IdPositionNavigation.IdPositionListNavigation.PositionListName}";
+
+                ComboBoxSelectedPositionList = PositionList.FirstOrDefault(x => x.IdPositionList == value.IdPositionNavigation.IdPositionListNavigation.IdPositionList);
                 ComboBoxSelectedGender = GenderList.FirstOrDefault(x => x.IdGender == value.IdGender);
 
                 OnPropertyChanged();
@@ -171,7 +189,16 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _comboBoxSelectedPositionList = value;
-                DepPos = $"Отдел: {value.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}; Должность: {value.IdPositionListNavigation.PositionListName}";
+
+                if (value == null)
+                {
+                    DepPos = string.Empty;
+                }
+                else
+                {
+                    DepPos = $"Отдел: {value.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName};\nДолжность: {value.IdPositionListNavigation.PositionListName}";
+                }
+                
                 IsCustomPopupCB = false;
                 OnPropertyChanged();
             }
@@ -195,7 +222,7 @@ namespace LifeLine.MVVM.ViewModel
         public ObservableCollection<Gender> GenderList { get; set; } = [];
 
         #endregion
-
+        
         //------------------------------------------------------------------------------------------------
 
         #region Команды
@@ -211,6 +238,12 @@ namespace LifeLine.MVVM.ViewModel
 
         private RelayCommand _openPopupPositionDepartment;
         public RelayCommand OpenPopupPositionDepartment { get => _openPopupPositionDepartment ??= new(obj => { OpenPopupPosDep(); }); }
+
+        private RelayCommand _selectedImageCommand;
+        public RelayCommand SelectedImageCommand { get => _selectedImageCommand ??= new(obj => { SelectedImage(); }); }
+
+        private RelayCommand _clearImageCommand;
+        public RelayCommand ClearImageCommand { get => _clearImageCommand ??= new(obj => { SelectImage = null; }); }
 
         #endregion
 
@@ -257,10 +290,11 @@ namespace LifeLine.MVVM.ViewModel
                 FirstName = TextBoxFirstName,
                 LastName = TextBoxLastName,
 
-                IdPosition = ComboBoxSelectedPositionList.IdPosition,
+                Avatar = SelectImage,
 
                 Salary = TextBoxSalary,
 
+                IdPosition = ComboBoxSelectedPositionList.IdPosition,
                 IdGender = ComboBoxSelectedGender.IdGender,
 
                 Login = TextBoxLogin,
@@ -293,6 +327,8 @@ namespace LifeLine.MVVM.ViewModel
                             employeeToUpdate.FirstName = TextBoxFirstName;
                             employeeToUpdate.LastName = TextBoxLastName;
 
+                            employeeToUpdate.Avatar = SelectImage;
+
                             employeeToUpdate.IdPosition = ComboBoxSelectedPositionList.IdPosition;
 
                             employeeToUpdate.Salary = TextBoxSalary;
@@ -313,6 +349,8 @@ namespace LifeLine.MVVM.ViewModel
                         employeeToUpdate.SecondName = TextBoxSecondName;
                         employeeToUpdate.FirstName = TextBoxFirstName;
                         employeeToUpdate.LastName = TextBoxLastName;
+
+                        employeeToUpdate.Avatar = SelectImage;
 
                         employeeToUpdate.IdPosition = ComboBoxSelectedPositionList.IdPosition;
 
@@ -452,10 +490,11 @@ namespace LifeLine.MVVM.ViewModel
             TextBoxFirstName = string.Empty;
             TextBoxLastName = string.Empty;
 
-            ComboBoxSelectedPositionList = null;
+            SelectImage = null;
 
             TextBoxSalary = 0;
 
+            ComboBoxSelectedPositionList = null;
             ComboBoxSelectedGender = null;
 
             TextBoxLogin = string.Empty;
@@ -471,6 +510,19 @@ namespace LifeLine.MVVM.ViewModel
             if (!IsCustomPopupCB)
             {
                 IsCustomPopupCB = true;
+            }
+        }
+
+        private void SelectedImage()
+        {
+            OpenFileDialog openFileDialog = new() { Filter = "Изображения (*.jpg; *.jpeg; *.png)|*.jpg; *.jpeg; *.png" };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                using (Image image = Image.FromFile(openFileDialog.FileName))
+                {
+                    SelectImage = FileHelper.ImageToBytes(image);
+                }
             }
         }
 

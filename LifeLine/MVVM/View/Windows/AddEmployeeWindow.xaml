@@ -7,10 +7,11 @@
         mc:Ignorable="d"
         xmlns:fa="http://schemas.fontawesome.com/icons/" 
         xmlns:viewmodel="clr-namespace:LifeLine.MVVM.ViewModel" 
+        xmlns:converter="clr-namespace:LifeLine.Utils.ValueConverter"
         d:DataContext="{d:DesignInstance Type=viewmodel:AddEmployeeVM}"
         Title="AddEmployeeWindow"
         Style="{StaticResource Window}"
-        Height="750" Width="900"
+        Height="730" Width="1000"
         ResizeMode="NoResize"
         
         PreviewMouseDown="Border_PreviewMouseDown">
@@ -29,6 +30,8 @@
     </Window.CommandBindings>
 
     <Window.Resources>
+
+        <converter:EmptyImageConverter x:Key="EmptyImageConverter"/>
 
         <!--#region Стили для кнопок в строке заголовка -->
 
@@ -154,7 +157,6 @@ BorderThickness="0,0,0,2">
 
     <Border>
         <Grid>
-
             <Grid.RowDefinitions>
                 <RowDefinition Height="39"/>
                 <RowDefinition Height="*"/>
@@ -212,14 +214,441 @@ BorderThickness="0,0,0,2">
             <!--#endregion-->
 
             <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <!--#region Основной поиск -->
 
+                <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
+
+                    <TextBlock Text="Поиск: " Margin="0" Style="{StaticResource TextBlockStyle}"/>
+
+                    <TextBox Width="250" Height="25" Margin="0"
+                             VerticalContentAlignment="Center" 
+                             Text="{Binding SearchEmployeeTB, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource SettingTextBoxStyle}" 
+                             Template="{StaticResource SettingTextBoxTemplate}"/>
+
+                </StackPanel>
+
+                <!--#endregion-->
+
+                <!--#region Левая колонка -->
+                <ScrollViewer Grid.Row="1" Grid.Column="0">
+                    <Border>
+                        <StackPanel>
+                            <!--#region ФИО -->
+                            <Border CornerRadius="0 20 0 20" BorderThickness="1" BorderBrush="Black" Background="#FFA0C5D1" Margin="10">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" Direction="300"/>
+                                </Border.Effect>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <StackPanel Margin="0 10 15 10">
+                                        <TextBlock Text="Фамилия: "  Style="{StaticResource TextBlockEmployee}"/>
+                                        <TextBlock Text="Имя: "      Style="{StaticResource TextBlockEmployee}"/>
+                                        <TextBlock Text="Отчество: " Style="{StaticResource TextBlockEmployee}"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="15 10 0 10">
+                                        <TextBox Text="{Binding TextBoxSecondName}"
+                                             Style="{StaticResource EmployeeTextBoxStyle}" 
+                                             Template="{StaticResource SettingTextBoxTemplate}"/>
+
+                                        <TextBox Text="{Binding TextBoxFirstName}"
+                                             Style="{StaticResource EmployeeTextBoxStyle}" 
+                                             Template="{StaticResource SettingTextBoxTemplate}"/>
+
+                                        <TextBox Text="{Binding TextBoxLastName}"
+                                             Style="{StaticResource EmployeeTextBoxStyle}" 
+                                             Template="{StaticResource SettingTextBoxTemplate}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <!--#endregion-->
+
+                            <!--#region Аватар -->
+                            <Border CornerRadius="0 20 0 20" BorderThickness="1" BorderBrush="Black" Background="#FFA0C5D1" Margin="10">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" Direction="300"/>
+                                </Border.Effect>
+                                <StackPanel Margin="10 10 0 10" HorizontalAlignment="Center">
+                                    <Border BorderBrush="Black" BorderThickness="2" CornerRadius="10">
+                                        <StackPanel>
+                                            <Image Source="{Binding SelectImage}" d:Source="/Res/Kotozila.jpg" Width="100" Height="100" Margin="5"/>
+                                            <Separator Background="Black" />
+                                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 4">
+                                                <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Left" Command="{Binding SelectedImageCommand}">
+                                                    <fa:ImageAwesome Icon="Regular_FileImage" Width="10" Foreground="#FF3053C2"/>
+                                                </Button>
+                                                <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Right" Margin="10 0 0 0" Command="{Binding ClearImageCommand}">
+                                                    <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
+                                                </Button>
+                                            </WrapPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <!--#endregion-->
+
+                            <!--#region Должность -->
+                            <Border CornerRadius="0 20 0 20" BorderThickness="1" BorderBrush="Black" Background="#FFA0C5D1" Margin="10">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" Direction="300"/>
+                                </Border.Effect>
+                                <StackPanel Orientation="Horizontal" Margin="0 15 0 15"
+                                        HorizontalAlignment="Center" VerticalAlignment="Top">
+                                    <StackPanel Margin="0 0 15 0" VerticalAlignment="Center">
+                                        <TextBlock Text="Должность: " VerticalAlignment="Center" Style="{StaticResource TextBlockEmployee}"/>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <Popup IsOpen="{Binding IsCustomPopupCB}" 
+                                       Height="400"
+                                       x:Name="MyPopup"
+                                       Placement="Bottom" StaysOpen="True"
+                                       PlacementTarget="{Binding ElementName=TextBlockPopupPosDep}"
+                                       PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+                                            <ListView ItemsSource="{Binding PositionList}" SelectedItem="{Binding ComboBoxSelectedPositionList}">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Width="200" 
+                                                                   TextAlignment="Left" TextWrapping="WrapWithOverflow" 
+                                                                   Text="{Binding IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}"/>
+                                                                <TextBlock Width="350" Margin="0 0 5 0"
+                                                                   TextAlignment="Left" TextWrapping="WrapWithOverflow" 
+                                                                   Text="{Binding IdPositionListNavigation.PositionListName}"/>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+                                        </Popup>
+
+                                        <StackPanel Background="Transparent" Margin="0 10 0 10" Height="100" Width="200">
+                                            <StackPanel.InputBindings>
+                                                <MouseBinding MouseAction="LeftClick" Command="{Binding OpenPopupPositionDepartment}"/>
+                                            </StackPanel.InputBindings>
+                                            <Grid MaxWidth="200" Name="PopupGridDepPos">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="30"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Border>
+                                                    <TextBox Name="TextBlockPopupPosDep" Grid.Column="0"
+                                                         Style="{StaticResource DepPosTextBoxStyle}"
+                                                         Template="{StaticResource SettingTextBoxTemplate}"
+                                                         Text="{Binding DepPos}"/>
+                                                </Border>
+                                                <Button Background="Transparent" BorderThickness="0.5" Grid.Column="1" Command="{Binding OpenPopupPositionDepartment}">
+                                                    <Path x:Name="arrow" Data="F1 M 0,0 L 2.667,2.66665 L 5.3334,0 L 5.3334,-1.78168 L 2.6667,0.88501 L0,-1.78168 L0,0 Z" Fill="Black" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
+                                                </Button>
+                                            </Grid>
+                                        </StackPanel>
+
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <!--#endregion-->
+
+                            <!--#region Зароботная плата -->
+                            <Border CornerRadius="0 20 0 20" BorderThickness="1" 
+                                BorderBrush="Black" Background="#FFA0C5D1" Margin="10">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" Direction="300"/>
+                                </Border.Effect>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
+                                    <StackPanel Margin="0 10 5 10">
+                                        <TextBlock Text="Зароботная плата: " 
+                                               TextAlignment="Right"
+                                               TextWrapping="WrapWithOverflow" 
+                                               Width="100" Height="50" 
+                                               Style="{StaticResource TextBlockEmployee}"/>
+                                        <TextBlock Text="Пол: "  Style="{StaticResource TextBlockEmployee}"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="10 10 10 10">
+                                        <TextBox Text="{Binding TextBoxSalary}" Margin="0 5 0 0"
+                                             Style="{StaticResource EmployeeTextBoxStyle}"
+                                             Template="{StaticResource SettingTextBoxTemplate}"/>
+                                        <ComboBox Width="200" Height="25" Margin="0 25 0 0"
+                                              VerticalContentAlignment="Center"
+                                              ItemsSource="{Binding GenderList}"
+                                              SelectedItem="{Binding ComboBoxSelectedGender}"
+                                              Style="{StaticResource ComboBoxStyleApp}"
+                                              DisplayMemberPath="GenderName"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <!--#endregion-->
+
+                            <!--#region Login && Password -->
+                            <Border CornerRadius="0 20 0 20" BorderThickness="1" BorderBrush="Black" Background="#FFA0C5D1" Margin="10">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" Direction="300"/>
+                                </Border.Effect>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <StackPanel Margin="0 10 15 10">
+                                        <TextBlock Text="Логин: "   Style="{StaticResource TextBlockEmployee}"/>
+                                        <TextBlock Text="Пароль: " Style="{StaticResource TextBlockEmployee}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Margin="15 10 0 10">
+                                        <TextBox Text="{Binding TextBoxLogin}"
+                                             Style="{StaticResource EmployeeTextBoxStyle}" 
+                                             Template="{StaticResource SettingTextBoxTemplate}"/>
+
+                                        <TextBox Text="{Binding TextBoxPassword}"
+                                             Style="{StaticResource EmployeeTextBoxStyle}" 
+                                             Template="{StaticResource SettingTextBoxTemplate}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <!--#endregion-->
+
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+
+                <!--#endregion-->
+
+                <!--#region Сохранить && Добавить -->
+                <Border Margin="10" Grid.Row="2" Grid.Column="0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" Direction="300"/>
+                    </Border.Effect>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel HorizontalAlignment="Left" Margin="0 0 15 0">
+                            <Button Content="Сохранить и обновить" 
+                    Command="{Binding UpdateEmployeeCommand}"
+                    Style="{StaticResource EmployeeBTN}"
+                    Template="{StaticResource MainButtonTemplate}"/>
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Right" Margin="15 0 0 0">
+                            <Button Content="Добавить должность"
+                    Command="{Binding AddEmployeeCommand}" 
+                    Style="{StaticResource EmployeeBTN}"
+                    Template="{StaticResource MainButtonTemplate}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <!--#endregion-->
+
+                <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" 
+                        CornerRadius="0 20 0 20" BorderThickness="1" 
+                        BorderBrush="Black" Background="#FFA0C5D1" Margin="10">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" Direction="300"/>
+                    </Border.Effect>
+
+                    <ListView Grid.Column="0" Grid.Row="1"
+                              ItemsSource="{Binding EmployeeList}"
+                              SelectedItem="{Binding SelectedEmployee}"
+                              d:ItemsSource="{d:SampleData ItemCount=5}"
+          
+                              HorizontalContentAlignment="Center"
+                              Background="#FF8AC1D2"                          
+          
+                              VerticalContentAlignment="Center"
+                              ScrollViewer.CanContentScroll="True"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingStackPanel.VirtualizationMode="Recycling"
+                              VirtualizingPanel.CacheLength="15, 15"
+                              VirtualizingPanel.CacheLengthUnit="Item"
+                              VirtualizingPanel.ScrollUnit="Pixel">
+
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" BorderThickness="1" CornerRadius="0 10 0 10" Width="540">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+
+                                        <StackPanel Margin="10 10 0 10">
+                                            <Border BorderBrush="Black" BorderThickness="2" CornerRadius="10">
+                                                <StackPanel>
+                                                    <Image Source="{Binding Avatar}" d:Source="/Res/Kotozila.jpg" Width="100" Height="100" Margin="5"/>
+                                                    <Separator Background="Black" />
+                                                    <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 4">
+                                                        <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Left">
+                                                            <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
+                                                        </Button>
+                                                        <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Right" Margin="10 0 0 0" Command="{Binding DataContext.DeleteEmployeeCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                                            <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
+                                                        </Button>
+                                                    </WrapPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Margin="10 10 0 10" Visibility="Collapsed">
+                                            <Border>
+                                                <StackPanel>
+                                                    <Image Source="/Res/Kotozila.jpg" Width="150" Height="150"/>
+                                                    <DockPanel Margin="0 5 0 0" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                                                        <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Left">
+                                                            <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
+                                                        </Button>
+
+                                                        <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Right" Margin="10 0 0 0" Command="{Binding DataContext.DeleteEmployeeCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                                            <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
+                                                        </Button>
+                                                    </DockPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Vertical" Margin="15 5 5 5">
+
+                                            <!--#region ФИО -->
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="ФИО:" Margin="0 0 5 0"
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding SecondName}" 
+                                                           Margin="5 0 5 0"
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding FirstName}" 
+                                                           Margin="5 0 5 0"
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding LastName}" 
+                                                           Margin="5 0 5 0"
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <!--#endregion-->
+
+                                            <!--#region Отдел -->
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Отдел: "
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}" 
+                                                           Margin="5 0 5 0"
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!--#endregion-->
+
+                                            <!--#region Должность -->
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Должность: "
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Top"/>
+                                                <TextBlock Text="{Binding IdPositionNavigation.IdPositionListNavigation.PositionListName}" 
+                                                           Margin="5 0 5 0" Width="250"
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Left"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <!--#endregion-->
+
+                                            <!--#region Пол -->
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Пол: "
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding IdGenderNavigation.GenderName}" 
+                                                           Margin="5 0 5 0"
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!--#endregion-->
+
+                                            <!--#region Логин и Пароль -->
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Логин: "
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Login}" 
+                                                           Margin="5 0 5 0" 
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Horizontal">
+
+                                                <TextBlock Text="Пароль: "
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+
+                                                <TextBlock Text="{Binding Password}" 
+                                                           Margin="5 0 5 0" 
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+
+                                            </StackPanel>
+
+                                            <!--#endregion-->
+
+                                            <!--#region Уровень доступа и ЗП-->
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Уровень доступа: "
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding IdPositionNavigation.IdAccessLevelNavigation.AccessLevelName}" 
+                                                           Margin="5 0 5 0"
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Зароботная плата: "
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Salary}" 
+                                                           Margin="5 0 5 0"
+                                                           TextWrapping="WrapWithOverflow" 
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                                <!--, StringFormat={}{0:F0}-->
+
+                                            </StackPanel>
+
+                                            <!--#endregion-->
+
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Border>
+                
+            </Grid>
+
+            <!--<Grid Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="200"/>
                 </Grid.RowDefinitions>
 
-                <!--#region Поиск -->
+                --><!--#region Поиск --><!--
                 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
 
@@ -233,9 +662,9 @@ BorderThickness="0,0,0,2">
 
                 </StackPanel>
                 
-                <!--#endregion-->
+                --><!--#endregion-->
 
-                <!--#region Данные -->
+                <!--#region Данные --><!--
 
                 <ListView Grid.Column="0" Grid.Row="1" 
                           ItemsSource="{Binding EmployeeList}"
@@ -266,7 +695,7 @@ BorderThickness="0,0,0,2">
 
                                     <StackPanel Orientation="Vertical" Margin="15 5 5 5">
 
-                                        <!--#region ФИО -->
+                                        --><!--#region ФИО --><!--
 
                                         <StackPanel Orientation="Horizontal">
 
@@ -294,9 +723,9 @@ BorderThickness="0,0,0,2">
                                                        VerticalAlignment="Center"/>
                                         </StackPanel>
 
-                                        <!--#endregion-->
+                                        --><!--#endregion-->
 
-                                        <!--#region Отдел -->
+                                        <!--#region Отдел --><!--
 
                                         <StackPanel Orientation="Horizontal">
 
@@ -313,9 +742,9 @@ BorderThickness="0,0,0,2">
 
                                         </StackPanel>
 
-                                        <!--#endregion-->
+                                        --><!--#endregion-->
 
-                                        <!--#region Должность -->
+                                        <!--#region Должность --><!--
 
                                         <StackPanel Orientation="Horizontal">
 
@@ -332,9 +761,9 @@ BorderThickness="0,0,0,2">
 
                                         </StackPanel>
 
-                                        <!--#endregion-->
+                                        --><!--#endregion-->
 
-                                        <!--#region Пол -->
+                                        <!--#region Пол --><!--
 
                                         <StackPanel Orientation="Horizontal">
 
@@ -351,9 +780,9 @@ BorderThickness="0,0,0,2">
 
                                         </StackPanel>
 
-                                        <!--#endregion-->
+                                        --><!--#endregion-->
 
-                                        <!--#region Логин и Пароль -->
+                                        <!--#region Логин и Пароль --><!--
 
                                         <StackPanel Orientation="Horizontal">
 
@@ -385,9 +814,9 @@ BorderThickness="0,0,0,2">
 
                                         </StackPanel>
 
-                                        <!--#endregion-->
+                                        --><!--#endregion-->
 
-                                        <!--#region Уровень доступа и ЗП-->
+                                        <!--#region Уровень доступа и ЗП--><!--
 
                                         <StackPanel Orientation="Horizontal">
 
@@ -417,11 +846,11 @@ BorderThickness="0,0,0,2">
                                                        TextAlignment="Center"
                                                        VerticalAlignment="Center"/>
 
-                                            <!--, StringFormat={}{0:F0}-->
+                                            --><!--, StringFormat={}{0:F0}--><!--
 
                                         </StackPanel>
 
-                                        <!--#endregion-->
+                                        --><!--#endregion--><!--
 
                                     </StackPanel>
 
@@ -442,7 +871,7 @@ BorderThickness="0,0,0,2">
 
                                 </StackPanel>
                                 
-                                <!--<StackPanel Orientation="Horizontal" Margin="0 0 0 5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                --><!--<StackPanel Orientation="Horizontal" Margin="0 0 0 5" VerticalAlignment="Center" HorizontalAlignment="Center">
 
                                     <Button Background="#00DDDDDD" BorderBrush="#00707070"
                                                 Command="{Binding DataContext.DeletePositionCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
@@ -513,7 +942,7 @@ BorderThickness="0,0,0,2">
                                         <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
                                     </Button>
 
-                                </StackPanel>-->
+                                </StackPanel>--><!--
                             
                             </Border>
                         </DataTemplate>
@@ -521,9 +950,9 @@ BorderThickness="0,0,0,2">
 
                 </ListView>
 
-                <!--#endregion-->
+                --><!--#endregion-->
 
-                <!--#region Ввод данных -->
+                <!--#region Ввод данных --><!--
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -567,7 +996,7 @@ BorderThickness="0,0,0,2">
 
                             <StackPanel>
 
-                                <!--#region POPUP -->
+                                --><!--#region POPUP --><!--
                                 
                                 <Popup IsOpen="{Binding IsCustomPopupCB}" 
                                        Height="400"
@@ -576,7 +1005,7 @@ BorderThickness="0,0,0,2">
                                        PlacementTarget="{Binding ElementName=TextBlockPopupPosDep}"
                                        PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
                                     <ListView ItemsSource="{Binding PositionList}" SelectedItem="{Binding ComboBoxSelectedPositionList}">
-                                        <!--<ListView.View>
+                                        --><!--<ListView.View>
                                             <GridView>
                                                 <GridViewColumn Header="Отдел">
                                                     <GridViewColumn.CellTemplate>
@@ -597,7 +1026,7 @@ BorderThickness="0,0,0,2">
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>
                                             </GridView>
-                                        </ListView.View>-->
+                                        </ListView.View>--><!--
                                         <ListView.ItemTemplate>
                                             <DataTemplate>
                                                 <Border>
@@ -641,7 +1070,7 @@ BorderThickness="0,0,0,2">
                                     </Grid>
                                 </StackPanel>
 
-                                <!--#endregion-->
+                                --><!--#endregion-->
 
                                 <!--<Button Name="btn" HorizontalAlignment="Left" Width="180" Height="25" 
                                         Template="{StaticResource MainButtonTemplate}"
@@ -664,7 +1093,7 @@ BorderThickness="0,0,0,2">
                                           ItemsSource="{Binding PositionList}" 
                                           SelectedItem="{Binding ComboBoxSelectedPositionList}"
                                           Style="{StaticResource ComboBoxStyleApp}"
-                                          DisplayMemberPath="IdPositionListNavigation.PositionListName"/>-->
+                                          DisplayMemberPath="IdPositionListNavigation.PositionListName"/>--><!--
 
                                 <TextBox Width="200" Height="25" Margin="0 5 0 0"
                                          VerticalContentAlignment="Center" 
@@ -706,7 +1135,7 @@ BorderThickness="0,0,0,2">
                         </StackPanel>
 
 
-                        <!--<StackPanel Orientation="Horizontal">
+                        --><!--<StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Фамилия: " Margin="5 0 10 0" TextWrapping="WrapWithOverflow"/>
                                 <TextBox Width="250" Height="25" Margin="0"
                                          VerticalContentAlignment="Center" 
@@ -724,7 +1153,7 @@ BorderThickness="0,0,0,2">
                                          Text="{Binding SearchTypeDocumentLists, UpdateSourceTrigger=PropertyChanged}"
                                          Style="{StaticResource SettingTextBoxStyle}" 
                                          Template="{StaticResource SettingTextBoxTemplate}"/>
-                            </StackPanel>-->
+                            </StackPanel>--><!--
 
                     </StackPanel>
 
@@ -746,9 +1175,9 @@ BorderThickness="0,0,0,2">
 
                 </StackPanel>
 
-                <!--#endregion-->
+                --><!--#endregion--><!--
 
-            </Grid>
+            </Grid>-->
             
         </Grid>
     </Border>

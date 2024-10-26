@@ -10,6 +10,16 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
+    <Style x:Key="TextBoxStyle" TargetType="TextBox">
+        <Setter Property="FontSize" Value="17"/>
+        <Setter Property="FontFamily" Value="Bahnschrift SemiBold SemiCondensed"/>
+        <Setter Property="Margin" Value="10 0 0 10"/>
+        <Setter Property="Height" Value="25"/>
+        <Setter Property="Width" Value="120"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
     <Style x:Key="TextBloclProfileName" TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}">
         <Setter Property="Margin" Value="10"/>
         <Setter Property="FontSize" Value="30"/>
@@ -23,17 +33,27 @@
         <Setter Property="Foreground" Value="Black"/>
     </Style>
 
-    <Style x:Key="TextBoxStyle" TargetType="TextBox">
-        <Setter Property="FontSize" Value="17"/>
-        <Setter Property="FontFamily" Value="Bahnschrift SemiBold SemiCondensed"/>
-        <Setter Property="Margin" Value="10 0 0 10"/>
-        <Setter Property="Height" Value="25"/>
-        <Setter Property="Width" Value="120"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <!--#region Employee -->
+    
+    <Style x:Key="TextBlockEmployee" TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}">
+        <Setter Property="Margin" Value="0 0 0 10"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
     </Style>
 
+    <Style x:Key="EmployeeTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource TextBoxStyle}">
+        <Setter Property="Width" Value="200"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Margin" Value="0 0 0 10"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    </Style>
 
+    <!--#endregion-->
 
     <Style x:Key="SettingTextBoxStyle" TargetType="TextBox">
         <Setter Property="Height" Value="30"/>
@@ -48,11 +68,16 @@
     </Style>
     
     <Style x:Key="DepPosTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource TextBoxStyle}">
-        <Setter Property="Height" Value="25"/>
+        <Setter Property="Height" Value="100"/>
         <Setter Property="Width" Value="170"/>
         <Setter Property="Margin" Value="0"/>
         <Setter Property="FontSize" Value="18"/>
+        <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Top"/>
     </Style>
+    
+    
 
 
     <ControlTemplate x:Key="SettingTextBoxTemplate" TargetType="TextBox">

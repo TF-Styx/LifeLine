@@ -405,6 +405,9 @@ namespace LifeLine.MVVM.ViewModel
         
         private RelayCommand _openAddGraphWindowCommand;
         public RelayCommand OpenAddGraphWindowCommand { get => _openAddGraphWindowCommand ??= new(obj => { OpenAddGraphWindow(); }); }
+        
+        private RelayCommand _openBackupWindowCommand;
+        public RelayCommand OpenBackupWindowCommand { get => _openBackupWindowCommand ??= new(obj => { OpenBackupWindow(); }); }
 
         private RelayCommand _logOutOfAccountCommand;
         public RelayCommand LogOutOfAccountCommand { get => _logOutOfAccountCommand ??= new(obj => { LogOutOfAccount(); }); }
@@ -511,6 +514,13 @@ namespace LifeLine.MVVM.ViewModel
         {
             AddGraphWindow addGraphWindow = new AddGraphWindow();
             addGraphWindow.Show();
+        }
+
+
+        private void OpenBackupWindow()
+        {
+            BackupWindow openBackupWindow = new BackupWindow();
+            openBackupWindow.Show();
         }
 
         #endregion

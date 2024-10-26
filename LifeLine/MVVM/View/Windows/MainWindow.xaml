@@ -376,6 +376,13 @@
                               InputGestureText="Ctrl + G"/>
                     
                     <Separator/>
+                    
+                    <MenuItem Header="Резервные копии" 
+                              Visibility="{Binding AddEmployeeVisibility}"
+                              Command="{Binding OpenBackupWindowCommand}"
+                              InputGestureText="Ctrl + G"/>
+                    
+                    <Separator/>
 
                     <MenuItem Header="Выйти из аккаунта"
                               Command="{Binding LogOutOfAccountCommand}"
