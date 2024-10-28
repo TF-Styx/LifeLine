@@ -152,7 +152,7 @@ BorderThickness="0,0,0,2">
 
     <Border x:Name="MainWindowBorder" BorderBrush="LightCoral" BorderThickness="0">
         <Grid>
-            
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="39"/>
                 <RowDefinition Height="*"/>
@@ -225,7 +225,7 @@ BorderThickness="0,0,0,2">
                              Style="{StaticResource SettingTextBoxStyle}" 
                              Template="{StaticResource SettingTextBoxTemplate}"/>
                 </StackPanel>
-                
+
                 <Border Grid.Row="1" Grid.Column="0" MaxWidth="1200" Background="#FFA0C5D1" Margin="10">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="10" Direction="300"/>
@@ -283,7 +283,6 @@ BorderThickness="0,0,0,2">
 
                 <Border Grid.Row="2">
                     <Grid HorizontalAlignment="Center">
-
                         <!--<StackPanel VerticalAlignment="Center">
 
                             <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
@@ -328,68 +327,54 @@ BorderThickness="0,0,0,2">
                             </StackPanel>
 
                         </StackPanel>-->
-
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <StackPanel>
-
                                 <TextBlock Text="Отдел" FontSize="17" 
                                            Margin="0 0 0 5"
                                            HorizontalAlignment="Center"/>
-
                                 <ComboBox Width="175" Height="25" Margin="0 0 10 5"
                                           VerticalContentAlignment="Center"
                                           ItemsSource="{Binding DepartmentList}"
                                           SelectedItem="{Binding ComboBoxSelectedDepartment}"
                                           Style="{StaticResource ComboBoxStyleApp}"
                                           DisplayMemberPath="DepartmentName"/>
-
                                 <Button Content="Сохранить и обновить" 
                                         Width="175" Height="25" Margin="0 5 10 0"
                                         Command="{Binding UpdatePositionCommand}"
                                         Template="{StaticResource MainButtonTemplate}"/>
-
                             </StackPanel>
 
                             <StackPanel>
-
                                 <TextBlock Text="Должность" FontSize="17" 
                                            Margin="0 0 0 5"
                                            HorizontalAlignment="Center"/>
-
                                 <ComboBox Width="175" Height="25" Margin="10 0 10 0"
                                           VerticalContentAlignment="Center"
                                           ItemsSource="{Binding PositionList}"
                                           SelectedItem="{Binding ComboBoxSelectedPosition}"
                                           Style="{StaticResource ComboBoxStyleApp}"
                                           DisplayMemberPath="PositionListName"/>
-
                             </StackPanel>
 
                             <StackPanel>
-
                                 <TextBlock Text="Уровень доступа" FontSize="17" 
                                            Margin="0 0 0 5"
                                            HorizontalAlignment="Center"/>
-
                                 <ComboBox Width="175" Height="25" Margin="10 0 0 5" 
                                           VerticalContentAlignment="Center"
                                           ItemsSource="{Binding AccessList}"
                                           SelectedItem="{Binding ComboBoxSelectedAccess}"
                                           Style="{StaticResource ComboBoxStyleApp}"
                                           DisplayMemberPath="AccessLevelName"/>
-
                                 <Button Content="Добавить должность" 
                                         Width="175" Height="25" Margin="10 5 0 0"
                                         Command="{Binding AddPositionCommand}" 
                                         Template="{StaticResource MainButtonTemplate}"/>
-
                             </StackPanel>
-
                         </StackPanel>
                     </Grid>
                 </Border>
             </Grid>
         </Grid>
     </Border>
-
 </Window>
