@@ -218,18 +218,19 @@ BorderThickness="0,0,0,2">
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-
                     <TextBlock Text="Поиск:  " Margin="0" Style="{StaticResource TextBlockStyle}"/>
-
                     <TextBox Width="250" Height="25" Margin="0"
                              VerticalContentAlignment="Center" 
                              Text="{Binding SearchPositionTB, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource SettingTextBoxStyle}" 
                              Template="{StaticResource SettingTextBoxTemplate}"/>
-
                 </StackPanel>
-
-                <ListView Grid.Column="0" Grid.Row="1" 
+                
+                <Border Grid.Row="1" Grid.Column="0" MaxWidth="1200" Background="#FFA0C5D1" Margin="10">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" Direction="300"/>
+                    </Border.Effect>
+                    <ListView Grid.Column="0" Grid.Row="1" 
                           ItemsSource="{Binding PositionMainList}"
                           SelectedItem="{Binding SelectedPosition}"
                           d:ItemsSource="{d:SampleData ItemCount=5}"
@@ -243,44 +244,41 @@ BorderThickness="0,0,0,2">
                           VirtualizingPanel.CacheLength="15, 15"
                           VirtualizingPanel.CacheLengthUnit="Item"
                           VirtualizingPanel.ScrollUnit="Pixel">
-
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Border BorderBrush="Black" BorderThickness="1" CornerRadius="0 10 0 10">
-                                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5" 
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Border BorderBrush="Black" BorderThickness="1" CornerRadius="0 10 0 10">
+                                        <StackPanel Orientation="Horizontal" Margin="0 0 0 5" 
                                                 VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Button Background="#00DDDDDD" BorderBrush="#00707070"
+                                            <Button Background="#00DDDDDD" BorderBrush="#00707070"
                                                 Command="{Binding DataContext.DeletePositionCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
-                                            <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
-                                        </Button>
-
-                                        <TextBlock Text="{Binding IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}" 
+                                                <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
+                                            </Button>
+                                            <TextBlock Text="{Binding IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}" 
                                                    Margin="5 0 5 0" Width="190" Height="auto" 
                                                    TextWrapping="WrapWithOverflow" 
                                                    TextAlignment="Center"
                                                    VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding IdPositionListNavigation.PositionListName}" 
+                                            <TextBlock Text="{Binding IdPositionListNavigation.PositionListName}" 
                                                    Margin="5 0 5 0" Width="190" Height="auto" 
                                                    TextWrapping="WrapWithOverflow" 
                                                    TextAlignment="Center"
                                                    VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding IdAccessLevelNavigation.AccessLevelName}" 
+                                            <TextBlock Text="{Binding IdAccessLevelNavigation.AccessLevelName}" 
                                                    Margin="5 0 5 0" Width="175" Height="auto" 
                                                    TextWrapping="WrapWithOverflow" 
                                                    TextAlignment="Center"
                                                    VerticalAlignment="Center"/>
-
-                                        <Button Background="#00DDDDDD" BorderBrush="#00707070">
-                                            <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
-                                        </Button>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-
-                </ListView>
+                                            <Button Background="#00DDDDDD" BorderBrush="#00707070">
+                                                <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Border>
 
 
                 <Border Grid.Row="2">
@@ -342,6 +340,7 @@ BorderThickness="0,0,0,2">
                                           VerticalContentAlignment="Center"
                                           ItemsSource="{Binding DepartmentList}"
                                           SelectedItem="{Binding ComboBoxSelectedDepartment}"
+                                          Style="{StaticResource ComboBoxStyleApp}"
                                           DisplayMemberPath="DepartmentName"/>
 
                                 <Button Content="Сохранить и обновить" 
@@ -361,6 +360,7 @@ BorderThickness="0,0,0,2">
                                           VerticalContentAlignment="Center"
                                           ItemsSource="{Binding PositionList}"
                                           SelectedItem="{Binding ComboBoxSelectedPosition}"
+                                          Style="{StaticResource ComboBoxStyleApp}"
                                           DisplayMemberPath="PositionListName"/>
 
                             </StackPanel>
@@ -375,6 +375,7 @@ BorderThickness="0,0,0,2">
                                           VerticalContentAlignment="Center"
                                           ItemsSource="{Binding AccessList}"
                                           SelectedItem="{Binding ComboBoxSelectedAccess}"
+                                          Style="{StaticResource ComboBoxStyleApp}"
                                           DisplayMemberPath="AccessLevelName"/>
 
                                 <Button Content="Добавить должность" 
