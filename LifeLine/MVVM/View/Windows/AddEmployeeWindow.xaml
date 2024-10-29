@@ -11,7 +11,7 @@
         d:DataContext="{d:DesignInstance Type=viewmodel:AddEmployeeVM}"
         Title="AddEmployeeWindow"
         Style="{StaticResource Window}"
-        Height="730" d:Height="930" Width="1000"
+        Height="840" Width="1000"
         ResizeMode="NoResize"
         
         PreviewMouseDown="Border_PreviewMouseDown">
@@ -32,6 +32,7 @@
     <Window.Resources>
 
         <converter:EmptyImageConverter x:Key="EmptyImageConverter"/>
+        <converter:PageLimitConverter x:Key="PageLimitConverter"/>
 
         <!--#region Стили для кнопок в строке заголовка -->
 
@@ -441,7 +442,7 @@ BorderThickness="0,0,0,2">
                 <!--#endregion-->
 
                 <!--#region ListView -->
-                <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" 
+                <Border Grid.Row="1" Grid.Column="1" 
                         CornerRadius="0 20 0 20" BorderThickness="1" 
                         BorderBrush="Black" Background="#FFA0C5D1" Margin="10">
                     <Border.Effect>
@@ -581,6 +582,34 @@ BorderThickness="0,0,0,2">
                     
                 </Border>
                 <!--#endregion-->
+
+                <Border Grid.Row="2" Grid.Column="1">
+                    <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Button Content="Предыдущая" Command="{Binding PreviousPageCommand}" Style="{StaticResource EmployeeBTN}" Template="{StaticResource MainButtonTemplate}">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{StaticResource PageLimitConverter}">
+                                    <Binding Path="CurrentPage"/>
+                                    <Binding Path="TotalPage"/>
+                                    <Binding Mode="OneWay" Source="Предыдущая"/>
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
+
+                        <TextBlock Text="{Binding CurrentPage}" d:Text="1" Style="{StaticResource TextBlockPagination}"/>
+                        <TextBlock Text="из" Style="{StaticResource TextBlockPagination}"/>
+                        <TextBlock Text="{Binding TotalPage}" d:Text="150" Style="{StaticResource TextBlockPagination}"/>
+
+                        <Button Content="Следующая" Command="{Binding NextPageCommand}" Style="{StaticResource EmployeeBTN}" Template="{StaticResource MainButtonTemplate}">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{StaticResource PageLimitConverter}">
+                                    <Binding Path="CurrentPage"/>
+                                    <Binding Path="TotalPage"/>
+                                    <Binding Mode="OneWay" Source="Следующая"/>
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
+                    </WrapPanel>
+                </Border>
             </Grid>
         </Grid>
     </Border>

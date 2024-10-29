@@ -30,6 +30,20 @@ namespace LifeLine.Services.DataBaseServices
                 return await query.ToListAsync();
             }
         }
+        public IEnumerable<T> GetDataTable<T>(Func<IQueryable<T>, IQueryable<T>> include = null) where T : class
+        {
+            using (var context = _contextFactory())
+            {
+                IQueryable<T> query = context.Set<T>();
+
+                if (include != null)
+                {
+                    query = include(query);
+                }
+
+                return query.ToList();
+            }
+        }
 
         public async Task<List<T>> GetDataTableListAsync<T>(Func<IQueryable<T>, IQueryable<T>> include = null) where T : class
         {

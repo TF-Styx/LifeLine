@@ -44,6 +44,10 @@
         <Setter Property="HorizontalAlignment" Value="Right"/>
     </Style>
 
+    <Style x:Key="TextBlockPagination" TargetType="TextBlock" BasedOn="{StaticResource TextBlockEmployee}">
+        <Setter Property="Margin" Value="10 0 10 0"/>
+    </Style>
+
     <Style x:Key="TextBlockSimpleTextListView" TargetType="TextBlock">
         <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
         <Setter Property="TextAlignment" Value="Center"/>

@@ -215,7 +215,32 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+        private const int _NUMBER_ITEM_PAGE = 4;
+
+        private int _currentPage = 1;
+        public int CurrentPage
+        {
+            get => _currentPage;
+            set
+            {
+                _currentPage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int _totalPage;
+        public int TotalPage
+        {
+            get => _totalPage;
+            set
+            {
+                _totalPage = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ObservableCollection<Employee> EmployeeList { get; set; } = [];
+        private List<Employee> _allEmployees { get; set; } = [];
 
         public ObservableCollection<Position> PositionList { get; set; } = [];
 
@@ -244,6 +269,12 @@ namespace LifeLine.MVVM.ViewModel
 
         private RelayCommand _clearImageCommand;
         public RelayCommand ClearImageCommand { get => _clearImageCommand ??= new(obj => { SelectImage = null; }); }
+
+        private RelayCommand _previousPageCommand;
+        public RelayCommand PreviousPageCommand { get => _previousPageCommand ??= new(obj => { CurrentPage--; LoadEmployee(); }); }
+
+        private RelayCommand _nextPageCommand;
+        public RelayCommand NextPageCommand { get => _nextPageCommand ??= new(obj => { CurrentPage++; LoadEmployee(); }); }
 
         #endregion
 
@@ -370,11 +401,11 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private async void DeleteEmployeeAsync(object parametr)
+        private async void DeleteEmployeeAsync(object parameter)
         {
-            if (parametr != null)
+            if (parameter != null)
             {
-                if (parametr is Employee employee)
+                if (parameter is Employee employee)
                 {
                     if (_dialogService.ShowMessageButton($"Вы точно хотите удалить сотрудника " +
                             $"«{employee.SecondName} {employee.FirstName} {employee.LastName}»!",
@@ -390,12 +421,11 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private async void GetEmployeeData()
+        private void GetEmployeeData()
         {
-            EmployeeList.Clear();
+            _allEmployees.Clear();
 
-            var querySearch =
-                    await _dataBaseServices.GetDataTableAsync<Employee>(x => x
+            var querySearch = _dataBaseServices.GetDataTable<Employee>(x => x
                         .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdAccessLevelNavigation)
                         .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
                         .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation.IdDepartmentNavigation)
@@ -424,11 +454,31 @@ namespace LifeLine.MVVM.ViewModel
 
             List<Employee> employeeList = querySearch.ToList();
 
-            foreach (var item in employeeList)
+            _allEmployees.AddRange(employeeList);
+
+            CalculateTotalPage(employeeList.Count);
+
+            LoadEmployee();
+        }
+
+        private void CalculateTotalPage(int count)
+        {
+            TotalPage = (int)Math.Ceiling((double)count / _NUMBER_ITEM_PAGE);
+        }
+
+        private void LoadEmployee()
+        {
+            EmployeeList.Clear();
+
+            var items = _allEmployees.Skip((CurrentPage - 1) * _NUMBER_ITEM_PAGE).Take(_NUMBER_ITEM_PAGE);
+
+            foreach (var item in items)
             {
                 EmployeeList.Add(item);
             }
         }
+
+        
 
         private async void GetPositionData()
         {
