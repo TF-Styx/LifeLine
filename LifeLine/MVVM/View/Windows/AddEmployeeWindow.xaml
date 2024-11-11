@@ -478,7 +478,7 @@ BorderThickness="0,0,0,2">
                                                     </Border>
                                                     <!--<Separator Background="Black" />-->
                                                     <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 4">
-                                                        <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Left">
+                                                        <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Left" Command="{Binding DataContext.OpenProfileEmployeeCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
                                                             <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
                                                         </Button>
                                                         <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Right" Margin="10 0 0 0" Command="{Binding DataContext.DeleteEmployeeCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
@@ -516,6 +516,20 @@ BorderThickness="0,0,0,2">
                                                 <TextBlock Text="{Binding SecondName}" Style="{StaticResource TextBlockDataTextListView}"/>
                                                 <TextBlock Text="{Binding FirstName}" Style="{StaticResource TextBlockDataTextListView}"/>
                                                 <TextBlock Text="{Binding LastName}" Style="{StaticResource TextBlockDataTextListView}"/>
+                                            </StackPanel>
+                                            <!--#endregion-->
+                                            
+                                            <!--#region Дата рождения -->
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="День рождения:" Style="{StaticResource TextBlockSimpleTextListView}"/>
+                                                <TextBlock Text="{Binding DateBirth}" Style="{StaticResource TextBlockDataTextListView}"/>
+                                            </StackPanel>
+                                            <!--#endregion-->
+                                            
+                                            <!--#region Дата вступления в должность -->
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Дата вступления в должность:" Style="{StaticResource TextBlockSimpleTextListView}"/>
+                                                <TextBlock Text="{Binding DateBirth}" Style="{StaticResource TextBlockDataTextListView}"/>
                                             </StackPanel>
                                             <!--#endregion-->
 
@@ -583,6 +597,7 @@ BorderThickness="0,0,0,2">
                 </Border>
                 <!--#endregion-->
 
+                <!--#region Пагинация -->
                 <Border Grid.Row="2" Grid.Column="1">
                     <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Button Content="Предыдущая" Command="{Binding PreviousPageCommand}" Style="{StaticResource EmployeeBTN}" Template="{StaticResource MainButtonTemplate}">
@@ -610,6 +625,7 @@ BorderThickness="0,0,0,2">
                         </Button>
                     </WrapPanel>
                 </Border>
+                <!--#endregion-->
             </Grid>
         </Grid>
     </Border>

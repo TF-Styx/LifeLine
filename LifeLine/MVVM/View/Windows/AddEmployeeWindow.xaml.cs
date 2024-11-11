@@ -2,6 +2,8 @@
 using LifeLine.MVVM.ViewModel;
 using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogService;
+using LifeLine.Services.NavigationPage;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +26,7 @@ namespace LifeLine.MVVM.View.Windows
     /// </summary>
     public partial class AddEmployeeWindow : Window
     {
-        public AddEmployeeWindow()
+        public AddEmployeeWindow(INavigationServices navigationServices)
         {
             InitializeComponent();
 
@@ -34,7 +36,7 @@ namespace LifeLine.MVVM.View.Windows
 
             IDataBaseServices dataBaseServices = new DataBaseServices(contextFactory);
 
-            DataContext = new AddEmployeeVM(service, dataBaseServices);
+            DataContext = new AddEmployeeVM(service, dataBaseServices, navigationServices);
         }
 
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
