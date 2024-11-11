@@ -29,7 +29,7 @@ namespace LifeLine
 
             IDialogService dialogService = new DialogService();
 
-            NavigationServices navigationServices = new(MainFrame);
+            INavigationServices navigationServices = new NavigationServices(MainFrame);
 
             Func<EmployeeManagementContext> contextFactory = () => new EmployeeManagementContext();
 

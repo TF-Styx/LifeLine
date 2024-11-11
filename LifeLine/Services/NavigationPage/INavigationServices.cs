@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LifeLine.Services.NavigationPage
 {
-    interface INavigationServices
+    public interface INavigationServices
     {
         void NavigateTo(string namePage, object parametr);
     }

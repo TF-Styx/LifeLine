@@ -1,6 +1,7 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogService;
+using LifeLine.Services.NavigationPage;
 using LifeLine.Utils.Enum;
 using LifeLine.Utils.Helper;
 using MasterAnalyticsDeadByDaylight.Command;
@@ -16,10 +17,11 @@ namespace LifeLine.MVVM.ViewModel
 {
     internal class AddEmployeeVM : BaseViewModel
     {
-        public AddEmployeeVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
+        public AddEmployeeVM(IDialogService dialogService, IDataBaseServices dataBaseServices, INavigationServices navigationServices)
         {
             _dialogService = dialogService;
             _dataBaseServices = dataBaseServices;
+            _navigationServices = navigationServices;
             IsCustomPopupCB = false;
 
             GetEmployeeData();
@@ -47,6 +49,8 @@ namespace LifeLine.MVVM.ViewModel
         private readonly IDialogService _dialogService;
 
         private readonly IDataBaseServices _dataBaseServices;
+
+        private readonly INavigationServices _navigationServices;
 
         private string _textBoxSecondName;
         public string TextBoxSecondName
@@ -77,6 +81,39 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _textBoxLastName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime _dateBirth;
+        public DateTime DateBirth
+        {
+            get => _dateBirth;
+            set
+            {
+                _dateBirth = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime _dateAddition;
+        public DateTime DateAddition
+        {
+            get => _dateAddition;
+            set
+            {
+                _dateAddition = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime _dateTakingOffice;
+        public DateTime DateTakingOffice
+        {
+            get => _dateTakingOffice;
+            set
+            {
+                _dateTakingOffice = value;
                 OnPropertyChanged();
             }
         }
@@ -275,6 +312,9 @@ namespace LifeLine.MVVM.ViewModel
 
         private RelayCommand _nextPageCommand;
         public RelayCommand NextPageCommand { get => _nextPageCommand ??= new(obj => { CurrentPage++; LoadEmployee(); }); }
+
+        private RelayCommand _openProfileEmployeeCommand;
+        public RelayCommand OpenProfileEmployeeCommand => _openProfileEmployeeCommand ??= new RelayCommand(OpenProfileEmployee);
 
         #endregion
 
@@ -478,7 +518,16 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        
+        private void OpenProfileEmployee(object parameter)
+        {
+            if (parameter != null)
+            {
+                if (parameter is Employee employee)
+                {
+                    _navigationServices.NavigateTo("ProfileEmployee", employee);
+                }
+            }
+        }
 
         private async void GetPositionData()
         {

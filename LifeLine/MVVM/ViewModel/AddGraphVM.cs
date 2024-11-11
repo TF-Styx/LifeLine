@@ -1,4 +1,6 @@
-﻿using LifeLine.MVVM.Models.MSSQL_DB;
+﻿using LifeLine.MVVM.Models.AppModel;
+using LifeLine.MVVM.Models.MSSQL_DB;
+using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogService;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
@@ -8,25 +10,31 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.AxHost;
 
 namespace LifeLine.MVVM.ViewModel
 {
     class AddGraphVM : BaseViewModel
     {
-        public AddGraphVM(IDialogService dialogService)
+        public AddGraphVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
         {
             _dialogService = dialogService;
+            _dataBaseServices = dataBaseServices;
 
             GetDepartmentData();
             GetShiftData();
+            //GetTimeTable();
             //GetEmployeeData();
 
             SelectedDepartment = Departments.FirstOrDefault();
+
+            SetDate();
         }
 
         #region Свойства
 
         private readonly IDialogService _dialogService;
+        private readonly IDataBaseServices _dataBaseServices;
 
         private Department _selectedDepartment;
         public Department SelectedDepartment
@@ -35,7 +43,9 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _selectedDepartment = value;
+                SelectedEmployee = null;
                 GetSelectedEmployee();
+                //LoadEmployeeTimeTable();
                 OnPropertyChanged();
             }
         }
@@ -47,7 +57,29 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _selectedEmployee = value;
+                FillOrNull(value);
                 OnPropertyChanged();
+            }
+        }
+
+        private TimeTable _selectedTImeTable;
+        public TimeTable SelectedTImeTable
+        {
+            get => _selectedTImeTable;
+            set
+            {
+                _selectedTImeTable = value;
+
+                if (value != null)
+                {
+                    SelectedShift = Shifts.FirstOrDefault(x => x.IdShift == value.IdShift);
+                    DateWork = value.Date;
+                    StartTimeWork = DateTime.Parse(value.TimeStart);
+                    EndTimeWork = DateTime.Parse(value.TimeEnd);
+                    NoteForGraphik = value.Notes;
+
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -73,8 +105,8 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private DateTime? _startTimeWork;
-        public DateTime? StartTimeWork
+        private DateTime _startTimeWork;
+        public DateTime StartTimeWork
         {
             get => _startTimeWork;
             set
@@ -84,8 +116,8 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private DateTime? _endTimeWork;
-        public DateTime? EndTimeWork
+        private DateTime _endTimeWork;
+        public DateTime EndTimeWork
         {
             get => _endTimeWork;
             set
@@ -117,7 +149,7 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _searchDepartmentTB = value;
-                //SearchDepartmentAsync();
+                SearchDepartmentAsync();
                 OnPropertyChanged();
             }
         }
@@ -145,11 +177,36 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+        private DateTime? _firstDate;
+        public DateTime? FirstDate
+        {
+            get => _firstDate;
+            set
+            {
+                _firstDate = value;
+                OnPropertyChanged();
+            }
+        }
+        private DateTime? _secondDate;
+        public DateTime? SecondDate
+        {
+            get => _secondDate;
+            set
+            {
+                _secondDate = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ObservableCollection<Department> Departments { get; set; } = [];
 
         public ObservableCollection<Employee> Employees { get; set; } = [];
 
         public ObservableCollection<Shift> Shifts { get; set; } = [];
+
+        public ObservableCollection<TimeTable> TimeTables { get; set; } = [];
+
+        public ObservableCollection<EmployeeTimeTable> EmployeeTimeTables { get; set; } = [];
 
         #endregion
 
@@ -159,6 +216,23 @@ namespace LifeLine.MVVM.ViewModel
 
         private RelayCommand _addTimeTableCommand;
         public RelayCommand AddTimeTableCommand { get => _addTimeTableCommand ??= new(obj => { AddTimeTable(); }); }
+
+        private RelayCommand _applyFilterCommand;
+        public RelayCommand ApplyFilterCommand { get => _applyFilterCommand ??= new(obj => { GetTimeTable(); }); }
+
+        private RelayCommand _testCommand;
+        public RelayCommand TestCommand => _testCommand ??= new RelayCommand(TestMethod);
+
+        private void TestMethod(object parameter)
+        {
+            if (parameter != null)
+            {
+                if (parameter is TimeTableList timeTableList)
+                {
+                    _dialogService.ShowMessage($"Проверка: {timeTableList.IdTimeTable}, {timeTableList.Date}");
+                }
+            }            
+        }
 
         #endregion
 
@@ -172,8 +246,8 @@ namespace LifeLine.MVVM.ViewModel
             {
                 IdEmployee = SelectedEmployee.IdEmployee,
                 Date = DateWork.Value.Date,
-                TimeStart = StartTimeWork.ToString(),
-                TimeEnd = EndTimeWork.ToString(),
+                TimeStart = StartTimeWork.ToString("HH:mm"),
+                TimeEnd = EndTimeWork.ToString("HH:mm"),
                 IdShift = SelectedShift.IdShift,
                 Notes = NoteForGraphik
             };
@@ -193,16 +267,17 @@ namespace LifeLine.MVVM.ViewModel
 
                 context.TimeTables.Add(timeTable);
                 context.SaveChanges();
+                GetTimeTable();
             }
         }
 
-        private void GetSelectedEmployee()
+        private async void GetSelectedEmployee()
         {
             Employees.Clear();
 
-            using (EmployeeManagementContext context = new())
+            if (SelectedDepartment != null)
             {
-                var getSelectedEmployee = context.Employees.Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment).ToList();
+                var getSelectedEmployee = await _dataBaseServices.GetDataTableAsync<Employee>(x => x.Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment));
 
                 foreach (var item in getSelectedEmployee)
                 {
@@ -241,35 +316,85 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        //private void GetEmployeeData()
-        //{
-        //    Employees.Clear();
+        private async void GetTimeTable()
+        {
+            TimeTables.Clear();
 
-        //    using (EmployeeManagementContext context = new())
-        //    {
-        //        var employees = context.Employees.ToList();
+            var timeTable = 
+                await 
+                    _dataBaseServices.GetDataTableAsync<TimeTable>(x => x
+                        .Include(x => x.IdEmployeeNavigation)
+                        .Include(x => x.IdShiftNavigation)
+                            .Where(x => x.IdEmployee == SelectedEmployee.IdEmployee)
+                            .Where(x => x.Date >= FirstDate && x.Date <= SecondDate));
 
-        //        foreach (var item in employees)
-        //        {
-        //            Employees.Add(item);
-        //        }
-        //    }
-        //}
+            foreach (var item in timeTable)
+            {
+                TimeTables.Add(item);
+            }
+        }
 
-        //private async void SearchDepartmentAsync()
-        //{
-        //    Departments.Clear();
+        private void SetDate()
+        {
+            FirstDate = DateTime.Now;
+            SecondDate = FirstDate.Value.AddDays(6);
+        }
 
-        //    using (EmployeeManagementContext context = new())
-        //    {
-        //        var search = await context.Departments.Where(x => x.DepartmentName.ToLower().Contains(SearchDepartmentTB)).ToListAsync();
+        private void FillOrNull(Employee value)
+        {
+            if (value != null)
+            {
+                GetTimeTable();
+            }
+            else
+            {
+                TimeTables.Clear();
 
-        //        foreach (var item in search)
-        //        {
-        //            Departments.Add(item);
-        //        }
-        //    }
-        //}
+                SelectedShift = null;
+                DateWork = null;
+                StartTimeWork = DateTime.MinValue;
+                EndTimeWork = DateTime.MinValue;
+                NoteForGraphik = string.Empty;
+            }
+        }
+
+        private async void LoadEmployeeTimeTable()
+        {
+            EmployeeTimeTables.Clear();
+
+            var employees = await _dataBaseServices.GetDataTableAsync<Employee>(x => x.Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment));
+
+            foreach (var item in employees)
+            {
+                var timeTable = _dataBaseServices.GetDataTable<TimeTable>(x => x.Include(x => x.IdShiftNavigation).Where(x => x.IdEmployee == item.IdEmployee));
+                ObservableCollection<TimeTableList> timeTableLists = new ObservableCollection<TimeTableList>();
+                ObservableCollection<ShiftIdName> shiftIdNames = new ObservableCollection<ShiftIdName>();
+
+                foreach (var table in timeTable)
+                {
+                    timeTableLists.Add(new TimeTableList()
+                    {
+                        IdTimeTable = table.IdTimeTable,
+                        Date = table.Date,
+                        TimeStart = table.TimeStart,
+                        TimeEnd = table.TimeEnd,
+                        ShiftNames = table.IdShiftNavigation.ShiftName,
+                        Notes = table.Notes
+                    });
+                }
+
+                var employeeTimeTable = new EmployeeTimeTable()
+                {
+                    IdEmployee = item.IdEmployee,
+                    Avatar = item.Avatar,
+                    SecondName = item.SecondName,
+                    FirstName = item.FirstName,
+                    LastName = item.LastName,
+                    TimeTableLists = timeTableLists
+                };
+                EmployeeTimeTables.Add(employeeTimeTable);
+            }
+        }
 
         private async void SearchEmployeeAsync()
         {
@@ -278,14 +403,41 @@ namespace LifeLine.MVVM.ViewModel
             using (EmployeeManagementContext context = new())
             {
                 var search = await context.Employees.Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment)
-                    .Where(x => x.SecondName.ToLower().Contains(SearchEmployeeTB) || 
+                    .Where(x => x.SecondName.ToLower().Contains(SearchEmployeeTB) ||
                         x.FirstName.ToLower().Contains(SearchEmployeeTB) ||
                         x.LastName.ToLower().Contains(SearchEmployeeTB)).ToListAsync();
 
-                foreach(var item in search)
+                foreach (var item in search)
                 {
                     Employees.Add(item);
                 }
+            }
+        }
+
+        private void GetEmployeeData()
+        {
+            Employees.Clear();
+
+            using (EmployeeManagementContext context = new())
+            {
+                var employees = context.Employees.ToList();
+
+                foreach (var item in employees)
+                {
+                    Employees.Add(item);
+                }
+            }
+        }
+
+        private async void SearchDepartmentAsync()
+        {
+            Departments.Clear();
+
+            var search = await _dataBaseServices.GetDataTableAsync<Department>(x => x.Where(x => x.DepartmentName.ToLower().Contains(SearchDepartmentTB)));
+
+            foreach (var item in search)
+            {
+                Departments.Add(item);
             }
         }
 

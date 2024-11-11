@@ -12,7 +12,7 @@
         mc:Ignorable="d"
         
         Title="MainWindow" 
-        
+         
         WindowStartupLocation="CenterScreen"
         
         Style="{StaticResource Window}"

@@ -5,22 +5,16 @@ using LifeLine.Services.DialogService;
 using LifeLine.Services.NavigationPage;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Navigation;
 
 namespace LifeLine.MVVM.ViewModel
 {
     internal class MainWindowVM : BaseViewModel
     {
-        NavigationServices navigateS;
+        INavigationServices navigateS;
         Employee CurrentUser;
 
-        public MainWindowVM(NavigationServices navigationServices, IDialogService dialogService, IDataBaseServices dataBaseServices)
+        public MainWindowVM(INavigationServices navigationServices, IDialogService dialogService, IDataBaseServices dataBaseServices)
         {
             _dialogService = dialogService;
             _dataBaseServices = dataBaseServices;
@@ -470,6 +464,8 @@ namespace LifeLine.MVVM.ViewModel
             TextBlockMainWindowContentVisibility = Visibility.Collapsed;
             MainMenu = Visibility.Collapsed;
             MainGridVisibility = Visibility.Collapsed;
+
+            navigateS.NavigateTo("nullPage", null);
         }
 
         /// <summary>
@@ -506,7 +502,7 @@ namespace LifeLine.MVVM.ViewModel
 
         private void OpenAddEmployeeWindow()
         {
-            AddEmployeeWindow addEmployeeWindow = new AddEmployeeWindow();
+            AddEmployeeWindow addEmployeeWindow = new AddEmployeeWindow(navigateS);
             addEmployeeWindow.Show();
         }
 

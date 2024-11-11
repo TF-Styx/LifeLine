@@ -9,7 +9,7 @@ using System.Windows.Controls;
 
 namespace LifeLine.Services.NavigationPage
 {
-    internal class NavigationServices : INavigationServices
+    public class NavigationServices : INavigationServices
     {
         private readonly Frame _frame;
 
@@ -24,6 +24,10 @@ namespace LifeLine.Services.NavigationPage
             {
                 case "ProfileEmployee":
                     _frame.Navigate(new ProfileEmployeePage(parametr));
+                    break;
+
+                case "nullPage":
+                    _frame.Content = null;
                     break;
 
                 default:
