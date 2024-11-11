@@ -1,4 +1,5 @@
-﻿using LifeLine.MVVM.Models.MSSQL_DB;
+﻿using LifeLine.MVVM.Models.AppModel;
+using LifeLine.MVVM.Models.MSSQL_DB;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,7 +16,18 @@ namespace LifeLine.Utils.ValueConverter
         {
             if (value is Employee employee)
             {
-                return $"{employee.SecondName} {employee.FirstName} {employee.LastName}";
+                if (employee != null)
+                {
+                    return $"{employee.SecondName} {employee.FirstName} {employee.LastName}";
+                }
+                else
+                {
+                    return "Сотрудник";
+                }
+            }
+            else if (value is EmployeeTimeTable timeTable)
+            {
+                return $"{timeTable.SecondName} {timeTable.FirstName} {timeTable.LastName}";
             }
             else
             {

@@ -174,6 +174,15 @@ public partial class EmployeeManagementContext : DbContext
 
             entity.Property(e => e.IdEmployee).HasColumnName("id_employee");
             entity.Property(e => e.Avatar).HasColumnName("avatar");
+            entity.Property(e => e.DateAddition)
+                .HasColumnType("datetime")
+                .HasColumnName("dateAddition");
+            entity.Property(e => e.DateBirth)
+                .HasColumnType("datetime")
+                .HasColumnName("dateBirth");
+            entity.Property(e => e.DateTakingOffice)
+                .HasColumnType("datetime")
+                .HasColumnName("dateTakingOffice");
             entity.Property(e => e.FirstName)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -192,6 +201,9 @@ public partial class EmployeeManagementContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .HasColumnName("password");
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(50)
+                .HasColumnName("phoneNumber");
             entity.Property(e => e.Salary)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("salary");

@@ -25,6 +25,14 @@ public partial class Employee
 
     public decimal? Salary { get; set; }
 
+    public DateTime? DateAddition { get; set; }
+
+    public DateTime? DateTakingOffice { get; set; }
+
+    public DateTime? DateBirth { get; set; }
+
+    public string PhoneNumber { get; set; }
+
     public virtual ICollection<Document> Documents { get; set; } = new List<Document>();
 
     public virtual Gender IdGenderNavigation { get; set; }
