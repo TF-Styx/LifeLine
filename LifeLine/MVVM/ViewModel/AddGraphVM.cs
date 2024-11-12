@@ -76,7 +76,7 @@ namespace LifeLine.MVVM.ViewModel
                     DateWork = value.Date;
                     StartTimeWork = DateTime.Parse(value.TimeStart);
                     EndTimeWork = DateTime.Parse(value.TimeEnd);
-                    NoteForGraphik = value.Notes;
+                    NoteForGraphic = value.Notes;
 
                     OnPropertyChanged();
                 }
@@ -90,7 +90,32 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _selectedShift = value;
+                SetShiftTime(value);
                 OnPropertyChanged();
+            }
+        }
+
+        private void SetShiftTime(Shift shift)
+        {
+            if (shift != null)
+            {
+                StartTimeWork = shift.IdShift switch
+                {
+                    1 => DateTime.Today.AddHours(8),
+                    2 => DateTime.Today.AddHours(18),
+                    3 => DateTime.Today.AddHours(8),
+                    4 => DateTime.Today.AddHours(8),
+                    _ => DateTime.Today.AddHours(0),
+                };
+
+                EndTimeWork = shift.IdShift switch
+                {
+                    1 => DateTime.Today.AddHours(15),
+                    2 => DateTime.Today.AddHours(8),
+                    3 => DateTime.Today.AddHours(20),
+                    4 => DateTime.Today.AddHours(8),
+                    _ => DateTime.Today.AddHours(0),
+                };
             }
         }
 
@@ -166,13 +191,13 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private string _noteForGraphik;
-        public string NoteForGraphik
+        private string _noteForGraphic;
+        public string NoteForGraphic
         {
-            get => _noteForGraphik;
+            get => _noteForGraphic;
             set
             {
-                _noteForGraphik = value;
+                _noteForGraphic = value;
                 OnPropertyChanged();
             }
         }
@@ -198,6 +223,17 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+        private bool _isPopupOpen = false;
+        public bool IsPopupOpen
+        {
+            get => _isPopupOpen;
+            set
+            {
+                _isPopupOpen = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ObservableCollection<Department> Departments { get; set; } = [];
 
         public ObservableCollection<Employee> Employees { get; set; } = [];
@@ -214,11 +250,14 @@ namespace LifeLine.MVVM.ViewModel
 
         #region Команды
 
-        private RelayCommand _addTimeTableCommand;
-        public RelayCommand AddTimeTableCommand { get => _addTimeTableCommand ??= new(obj => { AddTimeTable(); }); }
+        private RelayCommand _saveGraphicCommand;
+        public RelayCommand SaveGraphicCommand { get => _saveGraphicCommand ??= new(obj => { AddTimeTable(); }); }
 
         private RelayCommand _applyFilterCommand;
         public RelayCommand ApplyFilterCommand { get => _applyFilterCommand ??= new(obj => { GetTimeTable(); }); }
+
+        private RelayCommand _openPopupFilterPeriodCommand;
+        public RelayCommand OpenPopupFilterPeriodCommand { get => _openPopupFilterPeriodCommand ??= new(obj => { OpenPopupFilterPeriod(); }); }
 
         private RelayCommand _testCommand;
         public RelayCommand TestCommand => _testCommand ??= new RelayCommand(TestMethod);
@@ -240,8 +279,19 @@ namespace LifeLine.MVVM.ViewModel
 
         #region Методы
 
-        private void AddTimeTable()
+        private async void AddTimeTable()
         {
+            if (SelectedEmployee == null)
+            {
+                _dialogService.ShowMessage("Не был выбран сотрудник!!");
+                return;
+            }
+            if (SelectedShift == null)
+            {
+                _dialogService.ShowMessage("Не была выбрана смена!!");
+                return;
+            }
+
             TimeTable timeTable = new TimeTable()
             {
                 IdEmployee = SelectedEmployee.IdEmployee,
@@ -249,26 +299,11 @@ namespace LifeLine.MVVM.ViewModel
                 TimeStart = StartTimeWork.ToString("HH:mm"),
                 TimeEnd = EndTimeWork.ToString("HH:mm"),
                 IdShift = SelectedShift.IdShift,
-                Notes = NoteForGraphik
+                Notes = NoteForGraphic
             };
 
-            using (EmployeeManagementContext context = new())
-            {
-                if (SelectedEmployee == null)
-                {
-                    _dialogService.ShowMessage("Не был выбран сотрудник!!");
-                    return;
-                }
-                if (SelectedShift == null)
-                {
-                    _dialogService.ShowMessage("Не была выбрана смена!!");
-                    return;
-                }
-
-                context.TimeTables.Add(timeTable);
-                context.SaveChanges();
-                GetTimeTable();
-            }
+            await _dataBaseServices.AddAsync(timeTable);
+            GetTimeTable();
         }
 
         private async void GetSelectedEmployee()
@@ -286,51 +321,48 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private void GetDepartmentData()
+        private async void GetDepartmentData()
         {
             Departments.Clear();
 
-            using (EmployeeManagementContext context = new())
-            {
-                var departaments = context.Departments.ToList();
+            var departments = await _dataBaseServices.GetDataTableAsync<Department>();
 
-                foreach (var item in departaments)
-                {
-                    Departments.Add(item);
-                }
+            foreach (var item in departments)
+            {
+                Departments.Add(item);
             }
         }
 
-        private void GetShiftData()
+        private async void GetShiftData()
         {
             Shifts.Clear();
 
-            using (EmployeeManagementContext context = new())
-            {
-                var shifts = context.Shifts.ToList();
+            var shifts = await _dataBaseServices.GetDataTableAsync<Shift>();
 
-                foreach (var item in shifts)
-                {
-                    Shifts.Add(item);
-                }
+            foreach (var item in shifts)
+            {
+                Shifts.Add(item);
             }
         }
 
         private async void GetTimeTable()
         {
-            TimeTables.Clear();
-
-            var timeTable = 
-                await 
-                    _dataBaseServices.GetDataTableAsync<TimeTable>(x => x
-                        .Include(x => x.IdEmployeeNavigation)
-                        .Include(x => x.IdShiftNavigation)
-                            .Where(x => x.IdEmployee == SelectedEmployee.IdEmployee)
-                            .Where(x => x.Date >= FirstDate && x.Date <= SecondDate));
-
-            foreach (var item in timeTable)
+            if (SelectedEmployee != null)
             {
-                TimeTables.Add(item);
+                TimeTables.Clear();
+
+                var timeTable =
+                    await
+                        _dataBaseServices.GetDataTableAsync<TimeTable>(x => x
+                            .Include(x => x.IdEmployeeNavigation)
+                            .Include(x => x.IdShiftNavigation)
+                                .Where(x => x.IdEmployee == SelectedEmployee.IdEmployee)
+                                .Where(x => x.Date >= FirstDate && x.Date <= SecondDate));
+
+                foreach (var item in timeTable)
+                {
+                    TimeTables.Add(item);
+                }
             }
         }
 
@@ -354,7 +386,7 @@ namespace LifeLine.MVVM.ViewModel
                 DateWork = null;
                 StartTimeWork = DateTime.MinValue;
                 EndTimeWork = DateTime.MinValue;
-                NoteForGraphik = string.Empty;
+                NoteForGraphic = string.Empty;
             }
         }
 
@@ -400,17 +432,17 @@ namespace LifeLine.MVVM.ViewModel
         {
             Employees.Clear();
 
-            using (EmployeeManagementContext context = new())
-            {
-                var search = await context.Employees.Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment)
-                    .Where(x => x.SecondName.ToLower().Contains(SearchEmployeeTB) ||
-                        x.FirstName.ToLower().Contains(SearchEmployeeTB) ||
-                        x.LastName.ToLower().Contains(SearchEmployeeTB)).ToListAsync();
+            var search =
+                    await
+                        _dataBaseServices.GetDataTableAsync<Employee>(x => x
+                            .Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment)
+                            .Where(x => x.SecondName.ToLower().Contains(SearchEmployeeTB) ||
+                                x.FirstName.ToLower().Contains(SearchEmployeeTB) ||
+                                x.LastName.ToLower().Contains(SearchEmployeeTB)));
 
-                foreach (var item in search)
-                {
-                    Employees.Add(item);
-                }
+            foreach (var item in search)
+            {
+                Employees.Add(item);
             }
         }
 
@@ -439,6 +471,11 @@ namespace LifeLine.MVVM.ViewModel
             {
                 Departments.Add(item);
             }
+        }
+
+        private void OpenPopupFilterPeriod()
+        {
+            IsPopupOpen = true;
         }
 
         #endregion

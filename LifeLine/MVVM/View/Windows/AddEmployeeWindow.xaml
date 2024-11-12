@@ -311,11 +311,11 @@ BorderThickness="0,0,0,2">
                                     </StackPanel>
                                     <StackPanel>
                                         <Popup IsOpen="{Binding IsCustomPopupCB}" 
-                                       Height="400"
-                                       x:Name="MyPopup"
-                                       Placement="Bottom" StaysOpen="True"
-                                       PlacementTarget="{Binding ElementName=TextBlockPopupPosDep}"
-                                       PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+                                               Height="400"
+                                               x:Name="MyPopup"
+                                               Placement="Bottom" StaysOpen="True"
+                                               PlacementTarget="{Binding ElementName=TextBlockPopupPosDep}"
+                                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
                                             <ListView ItemsSource="{Binding PositionList}" SelectedItem="{Binding ComboBoxSelectedPositionList}">
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate>

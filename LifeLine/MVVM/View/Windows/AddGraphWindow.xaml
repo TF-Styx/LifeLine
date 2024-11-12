@@ -641,12 +641,16 @@ BorderThickness="0,0,0,2">
                     
                     <!--#region Первый варинат -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
-                        <Border VerticalAlignment="Top" CornerRadius="10" BorderThickness="1" BorderBrush="Black" Background="#FFA0C5D1" Margin="10">
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="10" Direction="300"/>
-                            </Border.Effect>
-                            <StackPanel Margin="5">
-                                <TextBlock d:Text="Сотрудник" VerticalAlignment="Center" Text="{Binding SelectedEmployee, Converter={StaticResource FullNameConvertor}}"/>
+
+                        <!--#region Popup btnFilterPeriod -->
+                        <Popup IsOpen="{Binding IsPopupOpen}" 
+                               PlacementTarget="{Binding ElementName=btnFilterPeriod}"
+                               Placement="Bottom" StaysOpen="False">
+                            <Border BorderThickness="2" BorderBrush="Gray" 
+                                    CornerRadius="0 20 0 20" Background="#FFA0C5D1">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="10" Direction="300"/>
+                                </Border.Effect>
                                 <StackPanel Margin="0 5 0 5" HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock Text="Период" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     <StackPanel Margin="5">
@@ -664,9 +668,29 @@ BorderThickness="0,0,0,2">
                                                 Template="{StaticResource MainButtonTemplate}"/>
                                     </StackPanel>
                                 </StackPanel>
-                                
-                                <ScrollViewer HorizontalAlignment="Center" 
-                                          ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                            </Border>
+                        </Popup>
+                        <!--#endregion-->
+
+                        <Border VerticalAlignment="Top" CornerRadius="10" BorderThickness="1" BorderBrush="Black" Background="#FFA0C5D1" Margin="10">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" Direction="300"/>
+                            </Border.Effect>
+                            <StackPanel Margin="5">
+                                <DockPanel>
+                                    <StackPanel HorizontalAlignment="Left">
+                                        <TextBlock d:Text="Сотрудник" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding SelectedEmployee, Converter={StaticResource FullNameConvertor}}"/>
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Right">
+                                        <Button Name="btnFilterPeriod" Background="#00DDDDDD" 
+                                                BorderBrush="#00707070"
+                                                Command="{Binding OpenPopupFilterPeriodCommand}">
+                                            <fa:ImageAwesome Icon="Solid_Filter" Width="20" Foreground="#FF486169"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DockPanel>
+
+                                <ScrollViewer HorizontalAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                                     <ListView ItemsSource="{Binding TimeTables}" SelectedItem="{Binding SelectedTImeTable}" d:ItemsSource="{d:SampleData ItemCount=15}" FontSize="15">
                                         <!--#region ListView.Resources-->
 
@@ -804,7 +828,9 @@ BorderThickness="0,0,0,2">
                                 </DockPanel>
                                 <StackPanel HorizontalAlignment="Center" Margin="5">
                                     <TextBlock Text="Записка к графику" HorizontalAlignment="Center"/>
-                                    <TextBox Margin="0 0 0 0" Width="170" Height="100"
+                                    <TextBox Margin="0 0 0 0" 
+                                             Width="170" Height="100"
+                                             d:Text="РАБОТАЙ !!!"
                                              Text="{Binding NoteForGraphik}"
                                              TextWrapping="WrapWithOverflow"
                                              Style="{StaticResource SettingTextBoxStyle}" 
@@ -812,7 +838,7 @@ BorderThickness="0,0,0,2">
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Center" Margin="5">
                                     <Button Content="Сохранить" 
-                                            Command="{Binding SaveGraphikCommand}"
+                                            Command="{Binding SaveGraphicCommand}"
                                             Style="{StaticResource GraphBTN}"
                                             Template="{StaticResource MainButtonTemplate}"/>
                                 </StackPanel>
