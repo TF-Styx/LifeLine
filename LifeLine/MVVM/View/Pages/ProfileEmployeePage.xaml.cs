@@ -1,5 +1,7 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.MVVM.ViewModel;
+using LifeLine.Services.DataBaseServices;
+using LifeLine.Services.DialogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +28,13 @@ namespace LifeLine.MVVM.View.Pages
         {
             InitializeComponent();
 
-            DataContext = new ProfileEmployeePageVM(user);
+            IDialogService service = new DialogService();
+
+            Func<EmployeeManagementContext> contextFactory = () => new EmployeeManagementContext();
+
+            IDataBaseServices dataBaseServices = new DataBaseServices(contextFactory);
+
+            DataContext = new ProfileEmployeePageVM(user, service, dataBaseServices);
         }
     }
 }
