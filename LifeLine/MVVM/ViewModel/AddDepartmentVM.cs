@@ -1,26 +1,36 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
+using LifeLine.Services.DialogServices;
+using LifeLine.Services.NavigationPages;
 using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
 
 namespace LifeLine.MVVM.ViewModel
 {
-    class AddDepartmentVM : BaseViewModel
+    class AddDepartmentVM : BaseViewModel, IUpdatableWindow
     {
+        private readonly IServiceProvider _serviceProvider;
+
         private readonly IDialogService _dialogService;
+        private readonly IDataBaseService _dataBaseService;
 
-        private readonly IDataBaseServices _dataBaseServices;
-
-        public AddDepartmentVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
+        public AddDepartmentVM(IServiceProvider serviceProvider)
         {
-            _dialogService = dialogService;
-            _dataBaseServices = dataBaseServices;
+            _serviceProvider = serviceProvider;
+
+            _dialogService = _serviceProvider.GetService<IDialogService>();
+            _dataBaseService = _serviceProvider.GetService<IDataBaseService>();
 
             GetDepartmentDataAsync();
+        }
+
+        public void Update(object value)
+        {
+
         }
 
         #region Свойства
@@ -124,7 +134,7 @@ namespace LifeLine.MVVM.ViewModel
                 _dialogService.ShowMessage("Вы не заполнили поле!!");
                 return;
             }
-            if (await _dataBaseServices.ExistsAsync<Department>(x => x.DepartmentName.ToLower() == TextBoxDepartment.ToLower()))
+            if (await _dataBaseService.ExistsAsync<Department>(x => x.DepartmentName.ToLower() == TextBoxDepartment.ToLower()))
             {
                 _dialogService.ShowMessage("Такое поле уже есть!!");
             }
@@ -137,7 +147,7 @@ namespace LifeLine.MVVM.ViewModel
                     Description = TextBoxDescription
                 };
 
-                await _dataBaseServices.AddAsync(department);
+                await _dataBaseService.AddAsync(department);
 
                 GetDepartmentDataAsync();
             }
@@ -150,11 +160,11 @@ namespace LifeLine.MVVM.ViewModel
         {
             if (SelectedDepartment == null) { return; }
 
-            var updateDepartament = await _dataBaseServices.FindIdAsync<Department>(SelectedDepartment.IdDepartment);
+            var updateDepartament = await _dataBaseService.FindIdAsync<Department>(SelectedDepartment.IdDepartment);
 
             if (updateDepartament != null)
             {
-                bool exists = await _dataBaseServices.ExistsAsync<Department>(x => x.DepartmentName.ToLower() == TextBoxDepartment.ToLower());
+                bool exists = await _dataBaseService.ExistsAsync<Department>(x => x.DepartmentName.ToLower() == TextBoxDepartment.ToLower());
 
                 if (exists)
                 {
@@ -171,7 +181,7 @@ namespace LifeLine.MVVM.ViewModel
                         updateDepartament.DepartmentName = TextBoxDepartment;
                         updateDepartament.Address = TextBoxAddress;
                         updateDepartament.Description = TextBoxDescription;
-                        await _dataBaseServices.UpdateAsync(updateDepartament);
+                        await _dataBaseService.UpdateAsync(updateDepartament);
 
                         DepartmentList.Clear();
                         TextBoxDepartment = string.Empty;
@@ -186,7 +196,7 @@ namespace LifeLine.MVVM.ViewModel
                     updateDepartament.DepartmentName = TextBoxDepartment;
                     updateDepartament.Address = TextBoxAddress;
                     updateDepartament.Description = TextBoxDescription;
-                    await _dataBaseServices.UpdateAsync(updateDepartament);
+                    await _dataBaseService.UpdateAsync(updateDepartament);
 
                     DepartmentList.Clear();
                     TextBoxDepartment = string.Empty;
@@ -211,7 +221,7 @@ namespace LifeLine.MVVM.ViewModel
                     if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {department.DepartmentName}?",
                         "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
                     {
-                        _dataBaseServices.DeleteAsync(department);
+                        _dataBaseService.DeleteAsync(department);
 
                         GetDepartmentDataAsync();
                     }
@@ -227,7 +237,7 @@ namespace LifeLine.MVVM.ViewModel
             DepartmentList.Clear();
 
             var querySearch = 
-                await _dataBaseServices.GetDataTableAsync<Department>(x => x.OrderBy(x => x.DepartmentName));
+                await _dataBaseService.GetDataTableAsync<Department>(x => x.OrderBy(x => x.DepartmentName));
 
             if (!string.IsNullOrWhiteSpace(SearchDepartmentTB))
             {
@@ -253,7 +263,7 @@ namespace LifeLine.MVVM.ViewModel
         private async void SearchDepartmentNameAsync()
         {
             var searchDepartment = 
-                await _dataBaseServices.GetDataTableAsync<Department>(x => x
+                await _dataBaseService.GetDataTableAsync<Department>(x => x
                     .Where(x => x.DepartmentName.ToLower().Contains(SearchDepartmentTB.ToLower()) ||
                                 x.Address.ToLower().Contains(SearchDepartmentTB.ToLower())));
 

@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace LifeLine.Services.DialogService
+namespace LifeLine.Services.DialogServices
 {
-    interface IDialogService
+    public interface IDialogService
     {
         bool ShowMessage(string Message, string Title = "Предупреждение", MessageButtons messageButtons = MessageButtons.OK);
         MessageButtons ShowMessageButton(string Message, string Title = "Предупреждение", MessageButtons messageButtons = MessageButtons.OK);

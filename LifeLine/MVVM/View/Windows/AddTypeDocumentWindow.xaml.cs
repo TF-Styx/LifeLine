@@ -1,20 +1,9 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.MVVM.ViewModel;
 using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LifeLine.Services.DialogServices;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace LifeLine.MVVM.View.Windows
 {
@@ -26,14 +15,6 @@ namespace LifeLine.MVVM.View.Windows
         public AddTypeDocumentWindow()
         {
             InitializeComponent();
-
-            IDialogService service = new DialogService();
-
-            Func<EmployeeManagementContext> contextFactory = () => new EmployeeManagementContext();
-
-            IDataBaseServices dataBaseServices = new DataBaseServices(contextFactory);
-
-            DataContext = new AddTypeDocumentVM(service, dataBaseServices);
         }
 
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)

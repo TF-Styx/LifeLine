@@ -69,8 +69,8 @@ namespace LifeLine.MVVM.ViewModel
                 else
                 {
                     //AuthWindowVisibility = Visibility.Collapsed;
-                    MainWindow mainWindow = new MainWindow();
-                    mainWindow.Show();
+                    //MainWindow mainWindow = new MainWindow();
+                    //mainWindow.Show();
                 }
             }
         }

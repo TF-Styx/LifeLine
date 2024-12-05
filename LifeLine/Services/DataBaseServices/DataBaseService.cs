@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace LifeLine.Services.DataBaseServices
 {
-    public class DataBaseServices(Func<EmployeeManagementContext> ContextFactory) : IDataBaseServices
+    public class DataBaseService(Func<EmployeeManagementContext> ContextFactory) : IDataBaseService
     {
         private readonly Func<EmployeeManagementContext> _contextFactory = ContextFactory;
 

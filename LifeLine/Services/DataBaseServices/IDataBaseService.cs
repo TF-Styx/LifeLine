@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LifeLine.Services.DataBaseServices
 {
-    public interface IDataBaseServices
+    public interface IDataBaseService
     {
         Task<IEnumerable<T>> GetDataTableAsync<T>(Func<IQueryable<T>, IQueryable<T>> include = null) where T : class;
         IEnumerable<T> GetDataTable<T>(Func<IQueryable<T>, IQueryable<T>> include = null) where T : class;

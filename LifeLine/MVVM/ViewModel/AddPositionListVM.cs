@@ -1,9 +1,11 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
+using LifeLine.Services.DialogServices;
+using LifeLine.Services.NavigationPages;
 using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq.Expressions;
@@ -11,22 +13,27 @@ using System.Windows.Forms;
 
 namespace LifeLine.MVVM.ViewModel
 {
-    class AddPositionListVM : BaseViewModel
+    class AddPositionListVM : BaseViewModel, IUpdatableWindow
     {
+        private readonly IServiceProvider _serviceProvider;
+
         private readonly IDialogService _dialogService;
+        private readonly IDataBaseService _dataBaseService;
 
-        private readonly IDataBaseServices _dataBaseServices;
-
-        public AddPositionListVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
+        public AddPositionListVM(IServiceProvider serviceProvider)
         {
-            PositionLists = [];
-            DepartmentLists = [];
+            _serviceProvider = serviceProvider;
 
-            _dialogService = dialogService;
-            _dataBaseServices = dataBaseServices;
+            _dialogService = _serviceProvider.GetService<IDialogService>();
+            _dataBaseService = _serviceProvider.GetService<IDataBaseService>();
 
             GetPositionList();
             GetDepartmentList();
+        }
+
+        public void Update(object value)
+        {
+
         }
 
         #region Свойства
@@ -90,9 +97,9 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        public ObservableCollection<PositionList> PositionLists { get; set; }
+        public ObservableCollection<PositionList> PositionLists { get; set; } = [];
 
-        public ObservableCollection<Department> DepartmentLists { get; set; }
+        public ObservableCollection<Department> DepartmentLists { get; set; } = [];
 
         #endregion
 
@@ -138,7 +145,7 @@ namespace LifeLine.MVVM.ViewModel
                     IdDepartment = SelectedDepartmentList.IdDepartment,
                 };
 
-                await _dataBaseServices.AddAsync(positionList);
+                await _dataBaseService.AddAsync(positionList);
 
                 GetPositionList();
             }
@@ -148,7 +155,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             if (SelectPositionList == null) { return; }
 
-            var positionList = await _dataBaseServices.FindIdAsync<PositionList>(SelectPositionList.IdPositionList);
+            var positionList = await _dataBaseService.FindIdAsync<PositionList>(SelectPositionList.IdPositionList);
 
             if (positionList != null)
             {
@@ -158,7 +165,7 @@ namespace LifeLine.MVVM.ViewModel
                     positionList.PositionListName = TextBoxPositionLists;
                     positionList.IdDepartment = SelectedDepartmentList.IdDepartment;
 
-                    await _dataBaseServices.UpdateAsync(positionList);
+                    await _dataBaseService.UpdateAsync(positionList);
 
                     PositionLists.Clear();
                     TextBoxPositionLists = string.Empty;
@@ -177,7 +184,7 @@ namespace LifeLine.MVVM.ViewModel
                     if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {positionList.PositionListName}?", 
                         "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
                     {
-                        _dataBaseServices.DeleteAsync(positionList);
+                        _dataBaseService.DeleteAsync(positionList);
                     }
                 }
             }
@@ -191,7 +198,7 @@ namespace LifeLine.MVVM.ViewModel
             PositionLists.Clear();
 
             var querySearch = 
-                await _dataBaseServices.GetDataTableAsync<PositionList>(x => x
+                await _dataBaseService.GetDataTableAsync<PositionList>(x => x
                     .Include(x => x.IdDepartmentNavigation)
                         .OrderBy(x => x.IdDepartmentNavigation.DepartmentName));
 
@@ -219,7 +226,7 @@ namespace LifeLine.MVVM.ViewModel
         private async void GetDepartmentList()
         {
             var departmentList = 
-                await _dataBaseServices.GetDataTableAsync<Department>(x => x
+                await _dataBaseService.GetDataTableAsync<Department>(x => x
                     .OrderBy(x => x.DepartmentName));
 
             foreach (var item in departmentList)
@@ -234,7 +241,7 @@ namespace LifeLine.MVVM.ViewModel
         private async void SearchPositionListNameAsync()
         {
             var searchPositionListName = 
-                await _dataBaseServices.GetDataTableAsync<PositionList>(x => x
+                await _dataBaseService.GetDataTableAsync<PositionList>(x => x
                         .Include(x => x.IdDepartmentNavigation)
                             .Where(x => x.PositionListName.ToLower().Contains(SearchPositionList.ToLower()) ||
                                         x.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchPositionList.ToLower())));

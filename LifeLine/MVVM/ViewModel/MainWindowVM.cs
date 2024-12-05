@@ -1,23 +1,41 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.MVVM.View.Windows;
 using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
-using LifeLine.Services.NavigationPage;
+using LifeLine.Services.DialogServices;
+using LifeLine.Services.NavigationPages;
+using LifeLine.Services.NavigationWindow;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
 namespace LifeLine.MVVM.ViewModel
 {
-    internal class MainWindowVM : BaseViewModel
+    public class MainWindowVM : BaseViewModel
     {
-        INavigationServices navigateS;
+        private readonly IServiceProvider _serviceProvider;
+
+        private readonly IDialogService _dialogService;
+        private readonly IDataBaseService _dataBaseServices;
+        private readonly INavigationPage _navigationPage;
+        private readonly INavigationWindow _navigationWindow;
+
         Employee CurrentUser;
 
-        public MainWindowVM(INavigationServices navigationServices, IDialogService dialogService, IDataBaseServices dataBaseServices)
+        public MainWindowVM(IServiceProvider serviceProvider)
         {
-            _dialogService = dialogService;
-            _dataBaseServices = dataBaseServices;
+            _serviceProvider = serviceProvider;
+
+            _dialogService = _serviceProvider.GetService<IDialogService>();
+            _dataBaseServices = _serviceProvider.GetService<IDataBaseService>();
+            _navigationPage = _serviceProvider.GetService<INavigationPage>();
+            _navigationWindow = _serviceProvider.GetService<INavigationWindow>();
+
+            #region MyRegion
+            //_dialogService = dialogService;
+            //_dataBaseServices = dataBaseServices;
+            //navigateS = navigationServices;
+            #endregion
 
             TextBlockMainWindowContentVisibility = Visibility.Collapsed;
             MainMenu = Visibility.Collapsed;
@@ -25,19 +43,12 @@ namespace LifeLine.MVVM.ViewModel
 
             UserLogin = "pika";
             UserPass = "pika";
-
-            navigateS = navigationServices;
         }
 
 
         #region Свойства
 
-        private readonly IDialogService _dialogService;
-        private readonly IDataBaseServices _dataBaseServices;
-
-
             #region Visibility
-
         private Visibility _stackPanelAuthVisibility;
         public Visibility StackPanelAuthVisibility
         {
@@ -81,8 +92,6 @@ namespace LifeLine.MVVM.ViewModel
                 OnPropertyChanged();
             }
         }
-
-
                 #region MenuVisibility
 
         private Visibility _mainMenu;
@@ -334,15 +343,15 @@ namespace LifeLine.MVVM.ViewModel
             AddShiftVisibility = Visibility.Collapsed;
         }
 
-                    #endregion
+        #endregion
 
 
-                #endregion
+        #endregion
 
 
-            #endregion
+        #endregion
 
-
+            #region Пользователь
         private string _userLogin;
         public string UserLogin
         {
@@ -364,6 +373,7 @@ namespace LifeLine.MVVM.ViewModel
                 OnPropertyChanged();
             }
         }
+            #endregion
 
         #endregion
 
@@ -416,9 +426,7 @@ namespace LifeLine.MVVM.ViewModel
         /// </summary>
         private async void Authorization()
         {
-            using (EmployeeManagementContext context = new())
-            {
-                var id_user = await _dataBaseServices.FindByValueAsync<Employee>(new Dictionary<string, object>()
+            var id_user = await _dataBaseServices.FindByValueAsync<Employee>(new Dictionary<string, object>()
                 {
                     { "Login", UserLogin },
                     { "Password", UserPass }
@@ -429,30 +437,22 @@ namespace LifeLine.MVVM.ViewModel
                           .Include(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation)
                 );
 
-                //var id_user = context.Employees
-                //    .Include(x => x.IdGenderNavigation)
-                //    .Include(x => x.IdPositionNavigation.IdAccessLevelNavigation)
-                //    .Include(x => x.IdPositionNavigation.IdPositionListNavigation)
-                //    .Include(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation)
-                //    .FirstOrDefault(u => u.Login == UserLogin && u.Password == UserPass);
+            if (id_user == null)
+            {
+                MessageBox.Show("Не правильный логин или пароль!!");
+            }
+            else
+            {
+                CurrentUser = id_user;
 
-                if (id_user == null)
-                {
-                    MessageBox.Show("Не правльный логин или пароль!!");
-                }
-                else
-                {
-                    CurrentUser = id_user;
+                StackPanelAuthVisibility = Visibility.Collapsed;
+                TextBlockAuthVisibility = Visibility.Collapsed;
 
-                    StackPanelAuthVisibility = Visibility.Collapsed;
-                    TextBlockAuthVisibility = Visibility.Collapsed;
+                TextBlockMainWindowContentVisibility = Visibility.Visible;
+                MainMenu = Visibility.Visible;
+                MainGridVisibility = Visibility.Visible;
 
-                    TextBlockMainWindowContentVisibility = Visibility.Visible;
-                    MainMenu = Visibility.Visible;
-                    MainGridVisibility = Visibility.Visible;
-
-                    SetVisibility(id_user.IdPositionNavigation.IdAccessLevelNavigation.AccessLevelName);
-                }
+                SetVisibility(id_user.IdPositionNavigation.IdAccessLevelNavigation.AccessLevelName);
             }
         }
 
@@ -465,7 +465,7 @@ namespace LifeLine.MVVM.ViewModel
             MainMenu = Visibility.Collapsed;
             MainGridVisibility = Visibility.Collapsed;
 
-            navigateS.NavigateTo("nullPage", null);
+            _navigationPage.NavigateTo("nullPage", null);
         }
 
         /// <summary>
@@ -473,50 +473,43 @@ namespace LifeLine.MVVM.ViewModel
         /// </summary>
         private void OpenProfileEmployeePage()
         {
-            navigateS.NavigateTo("ProfileEmployee", CurrentUser);
+            _navigationPage.NavigateTo("ProfileEmployee", CurrentUser);
         }
 
         private void OpenAddDepartmentWindow()
         {
-            AddDepartmentWindow addDepartmentWindow = new AddDepartmentWindow();
-            addDepartmentWindow.Show();
-        }
-
-        private void OpenAddPositionListWindow()
-        {
-            AddPositionListWindow addPositionListWindow = new AddPositionListWindow();
-            addPositionListWindow.Show();
-        }
-
-        private void OpenAddTypeDocumentWindow()
-        {
-            AddTypeDocumentWindow addTypeDocumentWindow = new AddTypeDocumentWindow();
-            addTypeDocumentWindow.Show();
-        }
-
-        private void OpenAddPositionWindow()
-        {
-            AddPositionWindow addPositionWindow = new AddPositionWindow();
-            addPositionWindow.Show();
+            _navigationWindow.NavigateTo("AddDepartment");
         }
 
         private void OpenAddEmployeeWindow()
         {
-            AddEmployeeWindow addEmployeeWindow = new AddEmployeeWindow(navigateS);
-            addEmployeeWindow.Show();
+            _navigationWindow.NavigateTo("AddEmployee");
         }
 
         private void OpenAddGraphWindow()
         {
-            AddGraphWindow addGraphWindow = new AddGraphWindow();
-            addGraphWindow.Show();
+            _navigationWindow.NavigateTo("AddGraph");
+        }
+
+        private void OpenAddPositionListWindow()
+        {
+            _navigationWindow.NavigateTo("AddPositionList");
+        }
+
+        private void OpenAddPositionWindow()
+        {
+            _navigationWindow.NavigateTo("AddPosition");
+        }
+
+        private void OpenAddTypeDocumentWindow()
+        {
+            _navigationWindow.NavigateTo("AddTypeDocument");
         }
 
 
         private void OpenBackupWindow()
         {
-            BackupWindow openBackupWindow = new BackupWindow();
-            openBackupWindow.Show();
+            _navigationWindow.NavigateTo("Backup");
         }
 
         #endregion

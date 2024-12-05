@@ -1,32 +1,44 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
-using LifeLine.Services.NavigationPage;
+using LifeLine.Services.DialogServices;
+using LifeLine.Services.NavigationPages;
 using LifeLine.Utils.Enum;
 using LifeLine.Utils.Helper;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.IO;
-using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Media.Imaging;
 
 namespace LifeLine.MVVM.ViewModel
 {
-    internal class AddEmployeeVM : BaseViewModel
+    public class AddEmployeeVM : BaseViewModel, IUpdatableWindow
     {
-        public AddEmployeeVM(IDialogService dialogService, IDataBaseServices dataBaseServices, INavigationServices navigationServices)
+        private readonly IServiceProvider _serviceProvider;
+
+        private readonly IDialogService _dialogService;
+        private readonly IDataBaseService _dataBaseService;
+        private readonly INavigationPage _navigationPage;
+
+        public AddEmployeeVM(IServiceProvider serviceProvider)
         {
-            _dialogService = dialogService;
-            _dataBaseServices = dataBaseServices;
-            _navigationServices = navigationServices;
+            _serviceProvider = serviceProvider;
+
+            _dialogService = _serviceProvider.GetService<IDialogService>();
+            _dataBaseService = _serviceProvider.GetService<IDataBaseService>();
+            _navigationPage = _serviceProvider.GetService<INavigationPage>();
+            
             IsCustomPopupCB = false;
 
             GetEmployeeData();
             GetPositionData();
             GetGenderData();
+        }
+
+        public void Update(object value)
+        {
+
         }
 
         #region Popup
@@ -45,12 +57,6 @@ namespace LifeLine.MVVM.ViewModel
         #endregion
 
         #region Свойства
-
-        private readonly IDialogService _dialogService;
-
-        private readonly IDataBaseServices _dataBaseServices;
-
-        private readonly INavigationServices _navigationServices;
 
         private string _textBoxSecondName;
         public string TextBoxSecondName
@@ -349,7 +355,7 @@ namespace LifeLine.MVVM.ViewModel
                 _dialogService.ShowMessage("Вы не назначили логин и пароль сотрудника!");
                 return;
             }
-            if (await _dataBaseServices.ExistsAsync<Employee>(x => x.Login.ToLower() == TextBoxLogin.ToLower()))
+            if (await _dataBaseService.ExistsAsync<Employee>(x => x.Login.ToLower() == TextBoxLogin.ToLower()))
             {
                 _dialogService.ShowMessage("Такой логин уже занят!");
                 return;
@@ -372,7 +378,7 @@ namespace LifeLine.MVVM.ViewModel
                 Password = TextBoxPassword,
             };
 
-            await _dataBaseServices.AddAsync(employee);
+            await _dataBaseService.AddAsync(employee);
 
             ClearingDataEntry();
             GetEmployeeData();
@@ -384,11 +390,11 @@ namespace LifeLine.MVVM.ViewModel
             {
                 if (SelectedEmployee == null) { return; }
 
-                var employeeToUpdate = await _dataBaseServices.FindIdAsync<Employee>(SelectedEmployee.IdEmployee);
+                var employeeToUpdate = await _dataBaseService.FindIdAsync<Employee>(SelectedEmployee.IdEmployee);
 
                 if (employeeToUpdate != null)
                 {
-                    bool exists = await _dataBaseServices.ExistsAsync<Employee>(x => x.Login.ToLower() == employeeToUpdate.Login.ToLower());
+                    bool exists = await _dataBaseService.ExistsAsync<Employee>(x => x.Login.ToLower() == employeeToUpdate.Login.ToLower());
 
                     if (exists)
                     {
@@ -409,7 +415,7 @@ namespace LifeLine.MVVM.ViewModel
                             employeeToUpdate.Login = TextBoxLogin;
                             employeeToUpdate.Password = TextBoxPassword;
 
-                            await _dataBaseServices.UpdateAsync(employeeToUpdate);
+                            await _dataBaseService.UpdateAsync(employeeToUpdate);
 
                             ClearingDataEntry();
                             GetEmployeeData();
@@ -432,7 +438,7 @@ namespace LifeLine.MVVM.ViewModel
                         employeeToUpdate.Login = TextBoxLogin;
                         employeeToUpdate.Password = TextBoxPassword;
 
-                        await _dataBaseServices.UpdateAsync(employeeToUpdate);
+                        await _dataBaseService.UpdateAsync(employeeToUpdate);
 
                         ClearingDataEntry();
                         GetEmployeeData();
@@ -452,7 +458,7 @@ namespace LifeLine.MVVM.ViewModel
                             "Предупреждение!!!",
                             MessageButtons.YesNo) == MessageButtons.Yes)
                     {
-                        await _dataBaseServices.DeleteAsync(employee);
+                        await _dataBaseService.DeleteAsync(employee);
 
                         ClearingDataEntry();
                         GetEmployeeData();
@@ -465,7 +471,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             _allEmployees.Clear();
 
-            var querySearch = _dataBaseServices.GetDataTable<Employee>(x => x
+            var querySearch = _dataBaseService.GetDataTable<Employee>(x => x
                         .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdAccessLevelNavigation)
                         .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation)
                         .Include(x => x.IdPositionNavigation).ThenInclude(x => x.IdPositionListNavigation.IdDepartmentNavigation)
@@ -524,7 +530,7 @@ namespace LifeLine.MVVM.ViewModel
             {
                 if (parameter is Employee employee)
                 {
-                    _navigationServices.NavigateTo("ProfileEmployee", employee);
+                    _navigationPage.NavigateTo("ProfileEmployee", employee);
                 }
             }
         }
@@ -533,7 +539,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             PositionList.Clear();
 
-            var positionList = await _dataBaseServices.GetDataTableAsync<Position>(x => x
+            var positionList = await _dataBaseService.GetDataTableAsync<Position>(x => x
                 .Include(x => x.IdPositionListNavigation)
                 .Include(x => x.IdPositionListNavigation.IdDepartmentNavigation));
 
@@ -547,7 +553,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             GenderList.Clear();
 
-            var genderList = await _dataBaseServices.GetDataTableAsync<Gender>();
+            var genderList = await _dataBaseService.GetDataTableAsync<Gender>();
 
             foreach (var item in genderList)
             {
@@ -558,7 +564,7 @@ namespace LifeLine.MVVM.ViewModel
         private async void SearchEmployeeAsync()
         {
             var search =
-                await _dataBaseServices.GetDataTableAsync<Employee>(x => x
+                await _dataBaseService.GetDataTableAsync<Employee>(x => x
                         .Include(x => x.IdPositionNavigation)
                             .ThenInclude(x => x.IdPositionListNavigation)
                                 .ThenInclude(x => x.IdDepartmentNavigation)

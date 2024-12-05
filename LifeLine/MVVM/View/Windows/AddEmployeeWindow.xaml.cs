@@ -1,23 +1,5 @@
-﻿using LifeLine.MVVM.Models.MSSQL_DB;
-using LifeLine.MVVM.ViewModel;
-using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
-using LifeLine.Services.NavigationPage;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace LifeLine.MVVM.View.Windows
 {
@@ -26,17 +8,9 @@ namespace LifeLine.MVVM.View.Windows
     /// </summary>
     public partial class AddEmployeeWindow : Window
     {
-        public AddEmployeeWindow(INavigationServices navigationServices)
+        public AddEmployeeWindow()
         {
             InitializeComponent();
-
-            IDialogService service = new DialogService();
-
-            Func<EmployeeManagementContext> contextFactory = () => new EmployeeManagementContext();
-
-            IDataBaseServices dataBaseServices = new DataBaseServices(contextFactory);
-
-            DataContext = new AddEmployeeVM(service, dataBaseServices, navigationServices);
         }
 
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)

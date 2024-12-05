@@ -1,9 +1,11 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
+using LifeLine.Services.DialogServices;
+using LifeLine.Services.NavigationPages;
 using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,12 +16,19 @@ using System.Windows.Forms;
 
 namespace LifeLine.MVVM.ViewModel
 {
-    class AddTypeDocumentVM : BaseViewModel
+    class AddTypeDocumentVM : BaseViewModel, IUpdatableWindow
     {
-        public AddTypeDocumentVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
+        private readonly IServiceProvider _serviceProvider;
+
+        private readonly IDialogService _dialogService;
+        private readonly IDataBaseService _dataBaseService;
+
+        public AddTypeDocumentVM(IServiceProvider serviceProvider)
         {
-            _dialogService = dialogService;
-            _dataBaseServices = dataBaseServices;
+            _serviceProvider = serviceProvider;
+
+            _dialogService = _serviceProvider.GetService<IDialogService>();
+            _dataBaseService = _serviceProvider.GetService<IDataBaseService>();
 
             GetTypeOfPersonOnComboBox();
             GetTypeDocument();
@@ -27,11 +36,13 @@ namespace LifeLine.MVVM.ViewModel
             ComboBoxTypeOfPersone = TypeOfPersoneList.First();
         }
 
+        public void Update(object value)
+        {
+
+        }
+
 
         #region Свойства
-
-        private readonly IDialogService _dialogService;
-        private readonly IDataBaseServices _dataBaseServices;
 
         private string _textBoxTypeDocuments;
         public string TextBoxTypeDocuments
@@ -119,7 +130,7 @@ namespace LifeLine.MVVM.ViewModel
                     //MessageBox.Show("Вы не заполнили поле!!");
                     return;
                 }
-                if (await _dataBaseServices.ExistsAsync<TypeDocument>(x => x.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()))
+                if (await _dataBaseService.ExistsAsync<TypeDocument>(x => x.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()))
                 {
                     _dialogService.ShowMessage("Такое поле уже есть!!");
                     //MessageBox.Show("Такое поле уже есть!!");
@@ -139,7 +150,7 @@ namespace LifeLine.MVVM.ViewModel
                         IdTypeOfPersone = ComboBoxTypeOfPersone.IdTypeOfPersone,
                     };
 
-                    await _dataBaseServices.AddAsync(typeDocument);
+                    await _dataBaseService.AddAsync(typeDocument);
 
                     TypeDocumentList.Clear();
                     TextBoxTypeDocuments = string.Empty;
@@ -155,11 +166,11 @@ namespace LifeLine.MVVM.ViewModel
             {
                 if (SelectTypeDocumentLists == null || ComboBoxTypeOfPersone.IdTypeOfPersone == 0) { return; }
 
-                var updateTypeDocumentLists = await _dataBaseServices.FindIdAsync<TypeDocument>(SelectTypeDocumentLists.IdTypeDocument);
+                var updateTypeDocumentLists = await _dataBaseService.FindIdAsync<TypeDocument>(SelectTypeDocumentLists.IdTypeDocument);
 
                 if (updateTypeDocumentLists != null)
                 {
-                    bool exists = await _dataBaseServices.ExistsAsync<TypeDocument>(x => x.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()) || string.IsNullOrWhiteSpace(TextBoxTypeDocuments);
+                    bool exists = await _dataBaseService.ExistsAsync<TypeDocument>(x => x.TypeDocumentName.ToLower() == TextBoxTypeDocuments.ToLower()) || string.IsNullOrWhiteSpace(TextBoxTypeDocuments);
                     
                     if (exists)
                     {
@@ -168,7 +179,7 @@ namespace LifeLine.MVVM.ViewModel
                             updateTypeDocumentLists.TypeDocumentName = TextBoxTypeDocuments;
                             updateTypeDocumentLists.IdTypeOfPersone = ComboBoxTypeOfPersone.IdTypeOfPersone;
 
-                            await _dataBaseServices.UpdateAsync(updateTypeDocumentLists);
+                            await _dataBaseService.UpdateAsync(updateTypeDocumentLists);
 
                             TypeDocumentList.Clear();
                             TextBoxTypeDocuments = string.Empty;
@@ -181,7 +192,7 @@ namespace LifeLine.MVVM.ViewModel
                         updateTypeDocumentLists.TypeDocumentName = TextBoxTypeDocuments;
                         updateTypeDocumentLists.IdTypeOfPersone = ComboBoxTypeOfPersone.IdTypeOfPersone;
 
-                        await _dataBaseServices.UpdateAsync(updateTypeDocumentLists);
+                        await _dataBaseService.UpdateAsync(updateTypeDocumentLists);
 
                         TypeDocumentList.Clear();
                         TextBoxTypeDocuments = string.Empty;
@@ -206,7 +217,7 @@ namespace LifeLine.MVVM.ViewModel
                     {
                        if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {typeDocumentLists.TypeDocumentName}?", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
                         {
-                            await _dataBaseServices.DeleteAsync(typeDocumentLists);
+                            await _dataBaseService.DeleteAsync(typeDocumentLists);
 
                             TypeDocumentList.Clear();
                             GetTypeDocument();
@@ -220,7 +231,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             using (EmployeeManagementContext context = new EmployeeManagementContext())
             {
-                var querySearch = await _dataBaseServices.GetDataTableAsync<TypeDocument>(x => x.Include(x => x.IdTypeOfPersoneNavigation).OrderBy(x => x.IdTypeOfPersone));
+                var querySearch = await _dataBaseService.GetDataTableAsync<TypeDocument>(x => x.Include(x => x.IdTypeOfPersoneNavigation).OrderBy(x => x.IdTypeOfPersone));
 
                 if (!string.IsNullOrWhiteSpace(SearchTypeDocumentLists))
                 {

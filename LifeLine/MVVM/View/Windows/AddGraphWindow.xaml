@@ -643,14 +643,12 @@ BorderThickness="0,0,0,2">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
 
                         <!--#region Popup btnFilterPeriod -->
-                        <Popup IsOpen="{Binding IsPopupOpen}" 
+                        <Popup IsOpen="{Binding IsPopupOpen}"
                                PlacementTarget="{Binding ElementName=btnFilterPeriod}"
-                               Placement="Bottom" StaysOpen="False">
+                               Placement="Bottom" StaysOpen="False"
+                               AllowsTransparency="True">
                             <Border BorderThickness="2" BorderBrush="Gray" 
                                     CornerRadius="0 20 0 20" Background="#FFA0C5D1">
-                                <Border.Effect>
-                                    <DropShadowEffect Color="Black" BlurRadius="10" Direction="300"/>
-                                </Border.Effect>
                                 <StackPanel Margin="0 5 0 5" HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock Text="Период" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     <StackPanel Margin="5">

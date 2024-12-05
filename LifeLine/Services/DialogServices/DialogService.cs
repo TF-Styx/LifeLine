@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LifeLine.Services.DialogService
+namespace LifeLine.Services.DialogServices
 {
     public class DialogService : IDialogService
     {

@@ -1,9 +1,11 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
+using LifeLine.Services.DialogServices;
+using LifeLine.Services.NavigationPages;
 using LifeLine.Utils.Enum;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,21 +18,29 @@ using System.Windows.Forms;
 
 namespace LifeLine.MVVM.ViewModel
 {
-    class AddPositionVM : BaseViewModel
+    class AddPositionVM : BaseViewModel, IUpdatableWindow
     {
+        private readonly IServiceProvider _serviceProvider;
+
         private readonly IDialogService _dialogService;
+        private readonly IDataBaseService _dataBaseService;
 
-        private readonly IDataBaseServices _dataBaseServices;
-
-        public AddPositionVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
+        public AddPositionVM(IServiceProvider serviceProvider)
         {
-            _dialogService = dialogService;
-            _dataBaseServices = dataBaseServices;
+            _serviceProvider = serviceProvider;
+
+            _dialogService = _serviceProvider.GetService<IDialogService>();
+            _dataBaseService = _serviceProvider.GetService<IDataBaseService>();
 
             GetPositionMainData();
             GetPositionData();
             GetDepartmentData();
             GetAccessData();
+        }
+
+        public void Update(object value)
+        {
+
         }
 
         #region Свойства
@@ -139,7 +149,7 @@ namespace LifeLine.MVVM.ViewModel
                 IdAccessLevel = ComboBoxSelectedAccess.IdAccessLevel
             };
 
-            await _dataBaseServices.AddAsync(position);
+            await _dataBaseService.AddAsync(position);
 
             GetPositionMainData();
         }
@@ -148,7 +158,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             if (SelectedPosition == null) { return; }
 
-            var departmetn = await _dataBaseServices.FindIdAsync<Position>(SelectedPosition.IdPosition);
+            var departmetn = await _dataBaseService.FindIdAsync<Position>(SelectedPosition.IdPosition);
 
             if (departmetn != null)
             {
@@ -159,7 +169,7 @@ namespace LifeLine.MVVM.ViewModel
                     departmetn.IdPositionList = ComboBoxSelectedPosition.IdPositionList;
                     departmetn.IdAccessLevel = ComboBoxSelectedAccess.IdAccessLevel;
 
-                    await _dataBaseServices.UpdateAsync(departmetn);
+                    await _dataBaseService.UpdateAsync(departmetn);
 
                     ComboBoxSelectedDepartment = null;
                     ComboBoxSelectedPosition = null;
@@ -181,7 +191,7 @@ namespace LifeLine.MVVM.ViewModel
                                                          "Предупреждение!!",
                                                          MessageButtons.YesNo) == MessageButtons.Yes)
                     {
-                        _dataBaseServices.DeleteAsync(position);
+                        _dataBaseService.DeleteAsync(position);
 
                         GetPositionMainData();
                     }
@@ -194,7 +204,7 @@ namespace LifeLine.MVVM.ViewModel
             PositionMainList.Clear();
 
             var querySearch = 
-                await _dataBaseServices.GetDataTableAsync<Position>(x => x
+                await _dataBaseService.GetDataTableAsync<Position>(x => x
                     .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation)
                     .Include(x => x.IdAccessLevelNavigation)
                     .OrderBy(x => x.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName));
@@ -225,7 +235,7 @@ namespace LifeLine.MVVM.ViewModel
 
             if (ComboBoxSelectedDepartment == null)
             {
-                var positionList = await _dataBaseServices.GetDataTableAsync<PositionList>(x => x.OrderBy(x => x.PositionListName));
+                var positionList = await _dataBaseService.GetDataTableAsync<PositionList>(x => x.OrderBy(x => x.PositionListName));
 
                 foreach (var item in positionList)
                 {
@@ -236,7 +246,7 @@ namespace LifeLine.MVVM.ViewModel
             }
             else
             {
-                var positionList = await _dataBaseServices.GetDataTableAsync<PositionList>(x => x.Where(x => x.IdDepartment == ComboBoxSelectedDepartment.IdDepartment));
+                var positionList = await _dataBaseService.GetDataTableAsync<PositionList>(x => x.Where(x => x.IdDepartment == ComboBoxSelectedDepartment.IdDepartment));
 
                 foreach (var item in positionList)
                 {
@@ -249,7 +259,7 @@ namespace LifeLine.MVVM.ViewModel
 
         private async void GetDepartmentData()
         {
-            var departmentList = await _dataBaseServices.GetDataTableAsync<Department>(x => x.OrderBy(x => x.DepartmentName));
+            var departmentList = await _dataBaseService.GetDataTableAsync<Department>(x => x.OrderBy(x => x.DepartmentName));
 
             foreach (var item in departmentList)
             {
@@ -259,7 +269,7 @@ namespace LifeLine.MVVM.ViewModel
 
         private async void GetAccessData()
         {
-            var accessList = await _dataBaseServices.GetDataTableAsync<AccessLevel>(x => x.OrderBy(x => x.AccessLevelName));
+            var accessList = await _dataBaseService.GetDataTableAsync<AccessLevel>(x => x.OrderBy(x => x.AccessLevelName));
 
             foreach (var item in accessList)
             {
@@ -270,7 +280,7 @@ namespace LifeLine.MVVM.ViewModel
         private async void SearchPositionAsync()
         {
             var searchPosition =
-                    await _dataBaseServices.GetDataTableAsync<Position>(x => x
+                    await _dataBaseService.GetDataTableAsync<Position>(x => x
                         .Include(x => x.IdPositionListNavigation).ThenInclude(x => x.IdDepartmentNavigation).Include(x => x.IdAccessLevelNavigation)
                             .Where(x => x.IdPositionListNavigation.PositionListName.ToLower().Contains(SearchPositionTB.ToLower()) ||
                                         x.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName.ToLower().Contains(SearchPositionTB.ToLower()) ||

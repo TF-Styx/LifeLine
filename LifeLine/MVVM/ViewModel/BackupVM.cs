@@ -1,9 +1,11 @@
 ﻿using LifeLine.MVVM.Models.AppModel;
 using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
+using LifeLine.Services.DialogServices;
+using LifeLine.Services.NavigationPages;
 using LifeLine.Utils.Helper;
 using MasterAnalyticsDeadByDaylight.Command;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,22 +16,31 @@ using System.Windows;
 
 namespace LifeLine.MVVM.ViewModel
 {
-    class BackupVM : BaseViewModel
+    class BackupVM : BaseViewModel, IUpdatableWindow
     {
-        public BackupVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
+        private readonly IServiceProvider _serviceProvider;
+
+        private readonly IDialogService _dialogService;
+        private readonly IDataBaseService _dataBaseService;
+
+        public BackupVM(IServiceProvider serviceProvider)
         {
-            _dialogService = dialogService;
-            _dataBaseServices = dataBaseServices;
+            _serviceProvider = serviceProvider;
+
+            _dialogService = _serviceProvider.GetService<IDialogService>();
+            _dataBaseService = _serviceProvider.GetService<IDataBaseService>();
 
             GetData();
 
             SaveFilePath = "C:\\Users\\texno\\source\\repos\\LifeLine Backup";
         }
 
-        #region Свойства
+        public void Update(object value)
+        {
 
-        private readonly IDialogService _dialogService;
-        private readonly IDataBaseServices _dataBaseServices;
+        }
+
+        #region Свойства
 
         private string _saveFilePath;
         public string SaveFilePath
@@ -144,77 +155,77 @@ namespace LifeLine.MVVM.ViewModel
 
         private async void GetAccessLevelData()
         {
-            AccessLevels.AddRange(await _dataBaseServices.GetDataTableAsync<AccessLevel>());
+            AccessLevels.AddRange(await _dataBaseService.GetDataTableAsync<AccessLevel>());
         }
 
         private async void GetAnalysisData()
         {
-            Analyses.AddRange(await _dataBaseServices.GetDataTableAsync<Analysis>());
+            Analyses.AddRange(await _dataBaseService.GetDataTableAsync<Analysis>());
         }
 
         private async void GetDepartmentData()
         {
-            Departments.AddRange(await _dataBaseServices.GetDataTableAsync<Department>());
+            Departments.AddRange(await _dataBaseService.GetDataTableAsync<Department>());
         }
 
         private async void GetDocumentData()
         {
-            Documents.AddRange(await _dataBaseServices.GetDataTableAsync<Document>());
+            Documents.AddRange(await _dataBaseService.GetDataTableAsync<Document>());
         }
 
         private async void GetDocumentPatientData()
         {
-            DocumentPatients.AddRange(await _dataBaseServices.GetDataTableAsync<DocumentPatient>());
+            DocumentPatients.AddRange(await _dataBaseService.GetDataTableAsync<DocumentPatient>());
         }
 
         private async void GetEmployeeData()
         {
-            Employees.AddRange(await _dataBaseServices.GetDataTableAsync<Employee>());
+            Employees.AddRange(await _dataBaseService.GetDataTableAsync<Employee>());
         }
 
         private async void GetGenderData()
         {
-            Genders.AddRange(await _dataBaseServices.GetDataTableAsync<Gender>());
+            Genders.AddRange(await _dataBaseService.GetDataTableAsync<Gender>());
         }
 
         private async void GetPatientData()
         {
-            Patients.AddRange(await _dataBaseServices.GetDataTableAsync<Patient>());
+            Patients.AddRange(await _dataBaseService.GetDataTableAsync<Patient>());
         }
 
         private async void GetPositionData()
         {
-            Positions.AddRange(await _dataBaseServices.GetDataTableAsync<Position>());
+            Positions.AddRange(await _dataBaseService.GetDataTableAsync<Position>());
         }
 
         private async void GetPositionListData()
         {
-            PositionLists.AddRange(await _dataBaseServices.GetDataTableAsync<PositionList>());
+            PositionLists.AddRange(await _dataBaseService.GetDataTableAsync<PositionList>());
         }
 
         private async void GetShiftData()
         {
-            Shifts.AddRange(await _dataBaseServices.GetDataTableAsync<Shift>());
+            Shifts.AddRange(await _dataBaseService.GetDataTableAsync<Shift>());
         }
 
         private async void GetStatusData()
         {
-            Statuses.AddRange(await _dataBaseServices.GetDataTableAsync<Status>());
+            Statuses.AddRange(await _dataBaseService.GetDataTableAsync<Status>());
         }
 
         private async void GetTimeTableData()
         {
-            TimeTables.AddRange(await _dataBaseServices.GetDataTableAsync<TimeTable>());
+            TimeTables.AddRange(await _dataBaseService.GetDataTableAsync<TimeTable>());
         }
 
         private async void GetTypeDocumentData()
         {
-            TypeDocuments.AddRange(await _dataBaseServices.GetDataTableAsync<TypeDocument>());
+            TypeDocuments.AddRange(await _dataBaseService.GetDataTableAsync<TypeDocument>());
         }
 
         private async void GetTypeOfPersoneData()
         {
-            TypeOfPersones.AddRange(await _dataBaseServices.GetDataTableAsync<TypeOfPersone>());
+            TypeOfPersones.AddRange(await _dataBaseService.GetDataTableAsync<TypeOfPersone>());
         }
 
         private void GetData()

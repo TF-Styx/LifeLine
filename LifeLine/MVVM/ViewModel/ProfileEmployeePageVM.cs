@@ -1,7 +1,9 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
+using LifeLine.Services.DialogServices;
+using LifeLine.Services.NavigationPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,22 +13,35 @@ using System.Threading.Tasks;
 
 namespace LifeLine.MVVM.ViewModel
 {
-    class ProfileEmployeePageVM : BaseViewModel
+    class ProfileEmployeePageVM : BaseViewModel, IUpdatablePage
     {
-        public ProfileEmployeePageVM(object user, IDialogService dialogService, IDataBaseServices dataBaseServices)
-        {
-            _dialogService = dialogService;
-            _dataBaseServices = dataBaseServices;
-
-            GetUser(user);
-
-            GetEmployeeData();
-            GetTimeTable();
-        }
+        private readonly IServiceProvider _serviceProvider;
 
         private readonly IDialogService _dialogService;
+        private readonly IDataBaseService _dataBaseServices;
 
-        private readonly IDataBaseServices _dataBaseServices;
+        public ProfileEmployeePageVM(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+
+            _dialogService = serviceProvider.GetService<IDialogService>();
+            _dataBaseServices = serviceProvider.GetService<IDataBaseService>();
+
+            //GetUser(user);
+
+            //GetEmployeeData();
+            //GetTimeTable();
+        }
+        public void Update(object value)
+        {
+            if (value is Employee employee)
+            {
+                UserEmployee = employee;
+                GetUser();
+                GetEmployeeData();
+                GetTimeTable();
+            }
+        }
 
         private Employee _userEmployee;
         public Employee UserEmployee
@@ -86,9 +101,8 @@ namespace LifeLine.MVVM.ViewModel
         public ObservableCollection<Employee> Employees { get; set; } = [];
         public ObservableCollection<TimeTable> TimeTables { get; set; } = [];
 
-        private void GetUser(object user)
+        private void GetUser()
         {
-            UserEmployee = (Employee)user;
             ImageProfile = UserEmployee.Avatar;
             DepartmentName = $"Отдел: {UserEmployee.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation.DepartmentName}";
             DepartmentDescription = $"Описание отдела: {UserEmployee.IdPositionNavigation.IdPositionListNavigation.IdDepartmentNavigation.Description}";
@@ -117,7 +131,9 @@ namespace LifeLine.MVVM.ViewModel
         {
             TimeTables.Clear();
 
-            var timeTable = await _dataBaseServices.GetDataTableAsync<TimeTable>(x => x.Include(x => x.IdShiftNavigation).Where(x => x.IdEmployee == UserEmployee.IdEmployee));
+            //var timeTable = await _dataBaseServices.GetDataTableAsync<TimeTable>(x => x.Include(x => x.IdShiftNavigation).Where(x => x.IdEmployee == UserEmployee.IdEmployee).Where(x => x.Date <= DateTime.Today.AddDays(6)));
+
+            var timeTable = await _dataBaseServices.GetDataTableAsync<TimeTable>(x => x.Include(x => x.IdShiftNavigation).Where(x => x.IdEmployee == UserEmployee.IdEmployee && x.Date >= DateTime.Now));
 
             foreach (var item in timeTable)
             {

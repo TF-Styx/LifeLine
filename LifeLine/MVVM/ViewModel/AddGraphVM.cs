@@ -1,9 +1,11 @@
 ﻿using LifeLine.MVVM.Models.AppModel;
 using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
+using LifeLine.Services.DialogServices;
+using LifeLine.Services.NavigationPages;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,12 +16,19 @@ using static System.Windows.Forms.AxHost;
 
 namespace LifeLine.MVVM.ViewModel
 {
-    class AddGraphVM : BaseViewModel
+    class AddGraphVM : BaseViewModel, IUpdatableWindow
     {
-        public AddGraphVM(IDialogService dialogService, IDataBaseServices dataBaseServices)
+        private readonly IServiceProvider _serviceProvider;
+
+        private readonly IDialogService _dialogService;
+        private readonly IDataBaseService _dataBaseService;
+
+        public AddGraphVM(IServiceProvider serviceProvider)
         {
-            _dialogService = dialogService;
-            _dataBaseServices = dataBaseServices;
+            _serviceProvider = serviceProvider;
+
+            _dialogService = _serviceProvider.GetService<IDialogService>();
+            _dataBaseService = _serviceProvider.GetService<IDataBaseService>();
 
             GetDepartmentData();
             GetShiftData();
@@ -31,10 +40,12 @@ namespace LifeLine.MVVM.ViewModel
             SetDate();
         }
 
-        #region Свойства
+        public void Update(object value)
+        {
 
-        private readonly IDialogService _dialogService;
-        private readonly IDataBaseServices _dataBaseServices;
+        }
+
+        #region Свойства
 
         private Department _selectedDepartment;
         public Department SelectedDepartment
@@ -302,7 +313,7 @@ namespace LifeLine.MVVM.ViewModel
                 Notes = NoteForGraphic
             };
 
-            await _dataBaseServices.AddAsync(timeTable);
+            await _dataBaseService.AddAsync(timeTable);
             GetTimeTable();
         }
 
@@ -312,7 +323,7 @@ namespace LifeLine.MVVM.ViewModel
 
             if (SelectedDepartment != null)
             {
-                var getSelectedEmployee = await _dataBaseServices.GetDataTableAsync<Employee>(x => x.Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment));
+                var getSelectedEmployee = await _dataBaseService.GetDataTableAsync<Employee>(x => x.Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment));
 
                 foreach (var item in getSelectedEmployee)
                 {
@@ -325,7 +336,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             Departments.Clear();
 
-            var departments = await _dataBaseServices.GetDataTableAsync<Department>();
+            var departments = await _dataBaseService.GetDataTableAsync<Department>();
 
             foreach (var item in departments)
             {
@@ -337,7 +348,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             Shifts.Clear();
 
-            var shifts = await _dataBaseServices.GetDataTableAsync<Shift>();
+            var shifts = await _dataBaseService.GetDataTableAsync<Shift>();
 
             foreach (var item in shifts)
             {
@@ -353,7 +364,7 @@ namespace LifeLine.MVVM.ViewModel
 
                 var timeTable =
                     await
-                        _dataBaseServices.GetDataTableAsync<TimeTable>(x => x
+                        _dataBaseService.GetDataTableAsync<TimeTable>(x => x
                             .Include(x => x.IdEmployeeNavigation)
                             .Include(x => x.IdShiftNavigation)
                                 .Where(x => x.IdEmployee == SelectedEmployee.IdEmployee)
@@ -394,11 +405,11 @@ namespace LifeLine.MVVM.ViewModel
         {
             EmployeeTimeTables.Clear();
 
-            var employees = await _dataBaseServices.GetDataTableAsync<Employee>(x => x.Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment));
+            var employees = await _dataBaseService.GetDataTableAsync<Employee>(x => x.Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment));
 
             foreach (var item in employees)
             {
-                var timeTable = _dataBaseServices.GetDataTable<TimeTable>(x => x.Include(x => x.IdShiftNavigation).Where(x => x.IdEmployee == item.IdEmployee));
+                var timeTable = _dataBaseService.GetDataTable<TimeTable>(x => x.Include(x => x.IdShiftNavigation).Where(x => x.IdEmployee == item.IdEmployee));
                 ObservableCollection<TimeTableList> timeTableLists = new ObservableCollection<TimeTableList>();
                 ObservableCollection<ShiftIdName> shiftIdNames = new ObservableCollection<ShiftIdName>();
 
@@ -434,7 +445,7 @@ namespace LifeLine.MVVM.ViewModel
 
             var search =
                     await
-                        _dataBaseServices.GetDataTableAsync<Employee>(x => x
+                        _dataBaseService.GetDataTableAsync<Employee>(x => x
                             .Where(x => x.IdPositionNavigation.IdPositionListNavigation.IdDepartment == SelectedDepartment.IdDepartment)
                             .Where(x => x.SecondName.ToLower().Contains(SearchEmployeeTB) ||
                                 x.FirstName.ToLower().Contains(SearchEmployeeTB) ||
@@ -465,7 +476,7 @@ namespace LifeLine.MVVM.ViewModel
         {
             Departments.Clear();
 
-            var search = await _dataBaseServices.GetDataTableAsync<Department>(x => x.Where(x => x.DepartmentName.ToLower().Contains(SearchDepartmentTB)));
+            var search = await _dataBaseService.GetDataTableAsync<Department>(x => x.Where(x => x.DepartmentName.ToLower().Contains(SearchDepartmentTB)));
 
             foreach (var item in search)
             {

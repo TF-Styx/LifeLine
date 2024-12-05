@@ -1,20 +1,8 @@
-﻿using LifeLine.MVVM.Models.MSSQL_DB;
-using LifeLine.MVVM.ViewModel;
-using LifeLine.Services.DataBaseServices;
-using LifeLine.Services.DialogService;
-using LifeLine.Services.NavigationPage;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using LifeLine.MVVM.ViewModel;
+using LifeLine.Services.NavigationPages;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace LifeLine
 {
@@ -23,19 +11,22 @@ namespace LifeLine
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(MainWindowVM viewModel, IServiceProvider serviceProvider)
         {
             InitializeComponent();
 
-            IDialogService dialogService = new DialogService();
+            #region MyRegion
+            //IDialogService dialogService = new DialogService();
+            //INavigationPage navigationServices = new NavigationPage(MainFrame);
+            //Func<EmployeeManagementContext> contextFactory = () => new EmployeeManagementContext();
+            //IDataBaseService dataBaseServices = new DataBaseService(contextFactory);
+            //DataContext = new MainWindowVM(navigationServices, dialogService, dataBaseServices);
+            #endregion
 
-            INavigationServices navigationServices = new NavigationServices(MainFrame);
+            DataContext = viewModel;
 
-            Func<EmployeeManagementContext> contextFactory = () => new EmployeeManagementContext();
-
-            IDataBaseServices dataBaseServices = new DataBaseServices(contextFactory);
-
-            DataContext = new MainWindowVM(navigationServices, dialogService, dataBaseServices);
+            var navigationPage = serviceProvider.GetService<INavigationPage>();
+            navigationPage.GetFrame(MainFrame);
 
             StateChanged += MainWindowStateChangeRaised;
         }
