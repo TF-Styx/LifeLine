@@ -342,7 +342,7 @@ namespace LifeLine.MVVM.ViewModel
             }
             if (TextBoxSalary == 0)
             {
-                _dialogService.ShowMessage("Вы не назначили зароботную плату сотрудника!");
+                _dialogService.ShowMessage("Вы не назначили заработную плату сотрудника!");
                 return;
             }
             if (ComboBoxSelectedGender == null)

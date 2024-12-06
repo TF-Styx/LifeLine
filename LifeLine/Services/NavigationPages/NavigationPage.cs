@@ -29,6 +29,7 @@ namespace LifeLine.Services.NavigationPages
                 {
                     viewModel.Update(parameter);
                 }
+                return;
             }
             OpenPage(namePage, parameter);
         }
@@ -45,11 +46,8 @@ namespace LifeLine.Services.NavigationPages
                         DataContext = profileEmployeePageVM,
                     };
                     profileEmployeePageVM.Update(parameter);
-                    
-                    if (!_openPage.ContainsKey(namePage))
-                    {
-                        _openPage.Add(namePage, profileEmployeePage);
-                    }
+
+                    _openPage.TryAdd(namePage, profileEmployeePage);
                     _frame.Navigate(profileEmployeePage);
                 },
 

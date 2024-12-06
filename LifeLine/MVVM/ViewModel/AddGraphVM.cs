@@ -22,6 +22,7 @@ namespace LifeLine.MVVM.ViewModel
 
         private readonly IDialogService _dialogService;
         private readonly IDataBaseService _dataBaseService;
+        private readonly INavigationPage _navigationPage;
 
         public AddGraphVM(IServiceProvider serviceProvider)
         {
@@ -29,6 +30,7 @@ namespace LifeLine.MVVM.ViewModel
 
             _dialogService = _serviceProvider.GetService<IDialogService>();
             _dataBaseService = _serviceProvider.GetService<IDataBaseService>();
+            _navigationPage = _serviceProvider.GetService<INavigationPage>();
 
             GetDepartmentData();
             GetShiftData();
@@ -314,6 +316,7 @@ namespace LifeLine.MVVM.ViewModel
             };
 
             await _dataBaseService.AddAsync(timeTable);
+            _navigationPage.NavigateTo("ProfileEmployee", timeTable.IdEmployee);
             GetTimeTable();
         }
 

@@ -1,5 +1,4 @@
 ﻿using LifeLine.MVVM.Models.MSSQL_DB;
-using LifeLine.MVVM.View.Windows;
 using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogServices;
 using LifeLine.Services.NavigationPages;
@@ -7,7 +6,11 @@ using LifeLine.Services.NavigationWindow;
 using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Drawing;
+using System.Windows.Media.Imaging;
+using System.IO;
 using System.Windows;
+using System.Drawing.Imaging;
 
 namespace LifeLine.MVVM.ViewModel
 {
@@ -37,6 +40,7 @@ namespace LifeLine.MVVM.ViewModel
             //navigateS = navigationServices;
             #endregion
 
+            AvatarVisibility = Visibility.Collapsed;
             TextBlockMainWindowContentVisibility = Visibility.Collapsed;
             MainMenu = Visibility.Collapsed;
             MainGridVisibility = Visibility.Collapsed;
@@ -49,6 +53,18 @@ namespace LifeLine.MVVM.ViewModel
         #region Свойства
 
             #region Visibility
+
+        private Visibility _avatarVisibility;
+        public Visibility AvatarVisibility
+        {
+            get => _avatarVisibility;
+            set
+            {
+                _avatarVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
         private Visibility _stackPanelAuthVisibility;
         public Visibility StackPanelAuthVisibility
         {
@@ -351,7 +367,19 @@ namespace LifeLine.MVVM.ViewModel
 
         #endregion
 
-            #region Пользователь
+        #region Пользователь
+
+        private byte[] _avatarEmployee;
+        public byte[] AvatarEmployee
+        {
+            get => _avatarEmployee;
+            set
+            {
+                _avatarEmployee = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string _userLogin;
         public string UserLogin
         {
@@ -373,6 +401,7 @@ namespace LifeLine.MVVM.ViewModel
                 OnPropertyChanged();
             }
         }
+
             #endregion
 
         #endregion
@@ -439,11 +468,23 @@ namespace LifeLine.MVVM.ViewModel
 
             if (id_user == null)
             {
-                MessageBox.Show("Не правильный логин или пароль!!");
+                _dialogService.ShowMessage("Не правильный логин или пароль!!");
             }
             else
             {
                 CurrentUser = id_user;
+
+                if (CurrentUser.Avatar != null)
+                {
+                    AvatarEmployee = CurrentUser.Avatar;
+                }
+                else
+                {
+                    AvatarEmployee = Properties.Resources.Kotozila;
+                }
+
+                
+                AvatarVisibility = Visibility.Visible;
 
                 StackPanelAuthVisibility = Visibility.Collapsed;
                 TextBlockAuthVisibility = Visibility.Collapsed;
@@ -458,6 +499,9 @@ namespace LifeLine.MVVM.ViewModel
 
         private void LogOutOfAccount()
         {
+            AvatarEmployee = null;
+            AvatarVisibility = Visibility.Collapsed;
+
             StackPanelAuthVisibility = Visibility.Visible;
             TextBlockAuthVisibility = Visibility.Visible;
 

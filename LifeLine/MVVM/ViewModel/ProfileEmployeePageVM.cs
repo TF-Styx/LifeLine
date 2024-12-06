@@ -34,9 +34,18 @@ namespace LifeLine.MVVM.ViewModel
         }
         public void Update(object value)
         {
+            if (value is int id_user)
+            {
+                if (UserEmployee.IdEmployee == id_user)
+                {
+                    GetTimeTable();
+                }
+            }
+
             if (value is Employee employee)
             {
                 UserEmployee = employee;
+
                 GetUser();
                 GetEmployeeData();
                 GetTimeTable();

@@ -6,13 +6,10 @@
     <!--<Nullable>enable</Nullable>-->
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>icons8-медицинский-96.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Res\Kiany.jpg" />
     <None Remove="Res\Kotozila.jpg" />
-    <None Remove="Res\MainImage.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +41,21 @@
     <Resource Include="Res\Kiany.jpg" />
     <Resource Include="Res\MainImage.png" />
     <Resource Include="Res\Kotozila.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
