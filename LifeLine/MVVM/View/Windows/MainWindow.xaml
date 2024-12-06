@@ -189,56 +189,48 @@
             <!--#region Разметка для Window chrome -->
 
             <Grid Grid.Row="0" Height="40" Background="#FF7B8C98" Grid.ColumnSpan="2">
-
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-
-                    <Image Source="/Res/Kotozila.jpg"
+                    <Image Source="{Binding AvatarEmployee}"
+                           Visibility="{Binding AvatarVisibility}"
                            Width="35" Margin="2"
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
                     <TextBlock Text="Вход" 
                                Visibility="{Binding TextBlockAuthVisibility}"
                                FontSize="20" Margin="20 0 0 0"
                                VerticalAlignment="Center"/>
-
                     <TextBlock Text="Главное окно" 
                                Visibility="{Binding TextBlockMainWindowContentVisibility}"
                                FontSize="20" Margin="20 0 0 0"
                                VerticalAlignment="Center"/>
-
                 </StackPanel>
 
-
-                <!-- Кнопки для управления окном -->
-
+                <!--#region Кнопки для управления окном -->
+                
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
-
                     <Button Command="{x:Static SystemCommands.MinimizeWindowCommand}"
                             Style="{StaticResource MinimizeButtonStyle}" 
                             WindowChrome.IsHitTestVisibleInChrome="True" 
                             ToolTip="Minimize"/>
-
                     <Button x:Name="RestoreButton" 
                             Command="{x:Static SystemCommands.RestoreWindowCommand}" 
                             Style="{StaticResource RestoreButtonStyle}"  
                             WindowChrome.IsHitTestVisibleInChrome="True" 
                             ToolTip="Restore"
                             Visibility="Collapsed"/>
-
                     <Button x:Name="MaximizeButton"
                             Command="{x:Static SystemCommands.MaximizeWindowCommand}" 
                             Style="{StaticResource MaximizeButtonStyle}" 
                             WindowChrome.IsHitTestVisibleInChrome="True" 
                             ToolTip="Maximize"
                             Visibility="Visible"/>
-
                     <Button Command="{x:Static SystemCommands.CloseWindowCommand}"
                             Style="{StaticResource CloseButtonStyle}"
                             WindowChrome.IsHitTestVisibleInChrome="True" 
                             ToolTip="Close"/>
-
                 </StackPanel>
-
+                
+                <!--#endregion-->
+                
             </Grid>
 
             <!--#endregion-->
@@ -247,7 +239,6 @@
             <!--#region Вход -->
 
             <Image Grid.Row="1" Grid.RowSpan="3" Source="/Res/MainImage.png" Stretch="UniformToFill"/>
-
             <StackPanel Grid.Row="2" Orientation="Horizontal" 
                         HorizontalAlignment="Center" VerticalAlignment="Center"
                         d:Visibility="Collapsed"
@@ -259,50 +250,32 @@
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="10" Direction="300"/>
                     </Border.Effect>
-
                     <StackPanel>
-
                         <StackPanel Orientation="Horizontal">
-
                             <StackPanel Margin="15" HorizontalAlignment="Center" VerticalAlignment="Center">
-
                                 <TextBlock Text="Login" Style="{StaticResource TextBlockStyle}"/>
                                 <TextBlock Text="Password" Style="{StaticResource TextBlockStyle}"/>
-
                             </StackPanel>
-
 
                             <StackPanel Margin="15" HorizontalAlignment="Center" VerticalAlignment="Center">
-
                                 <TextBox Text="{Binding UserLogin}" Style="{StaticResource SettingTextBoxStyle}" Template="{StaticResource SettingTextBoxTemplate}"/>
                                 <TextBox Text="{Binding UserPass}" Style="{StaticResource SettingTextBoxStyle}" Template="{StaticResource SettingTextBoxTemplate}"/>
-
                             </StackPanel>
-
                         </StackPanel>
 
-
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
-
                             <Button Content="Вход" Height="30" Width="120" 
                                     Foreground="White" Margin="0 0 0 5"
                                     FontSize="20" FontFamily="Bahnschrift SemiBold SemiCondensed"
                                     Command="{Binding LoginButtonCommand}"
                                     Template="{StaticResource MainButtonTemplate}">
-
                                 <Button.Effect>
                                     <DropShadowEffect BlurRadius="10" Direction="300"/>
                                 </Button.Effect>
-
                             </Button>
-
                         </StackPanel>
-
                     </StackPanel>
-
                 </Border>
-
-
 
             </StackPanel>
 
@@ -329,8 +302,7 @@
                   FontSize="20" FontFamily="Bahnschrift SemiBold SemiCondensed"
                   HorizontalAlignment="Left" VerticalAlignment="Center"
                   Visibility="{Binding MainMenu}">
-                
-                <MenuItem Style="{DynamicResource MenuItemStyle}" Header="Добавить">
+                <MenuItem Style="{DynamicResource MenuItemStyle}" Header="Действие">
 
                     <MenuItem Header="Добавить сотрудника" 
                               Visibility="{Binding AddEmployeeVisibility}"
@@ -338,7 +310,7 @@
                               InputGestureText="Ctrl + E"/>
                     <MenuItem Header="Добавить пациента"
                               Visibility="{Binding AddPatientVisibility}"/>
-                    
+
                     <Separator/>
 
                     <MenuItem Header="Добавить тип документа" 
@@ -350,7 +322,7 @@
                               InputGestureText="Ctrl + D"/>
                     <MenuItem Header="Добавить документы пациента"
                               Visibility="{Binding AddDocumentPatientVisibility}"/>
-                    
+
                     <Separator/>
 
                     <MenuItem Header="Добавить отдел" 
@@ -367,21 +339,21 @@
                               InputGestureText="Ctrl + L"/>
 
                     <Separator/>
-                    
+
                     <MenuItem Header="Добавить смену"
                               Visibility="{Binding AddShiftVisibility}"/>
                     <MenuItem Header="Добавить расписание" 
                               Visibility="{Binding AddGraphVisibility}"
                               Command="{Binding OpenAddGraphWindowCommand}"
                               InputGestureText="Ctrl + G"/>
-                    
+
                     <Separator/>
-                    
+
                     <MenuItem Header="Резервные копии" 
                               Visibility="{Binding AddEmployeeVisibility}"
                               Command="{Binding OpenBackupWindowCommand}"
                               InputGestureText="Ctrl + G"/>
-                    
+
                     <Separator/>
 
                     <MenuItem Header="Выйти из аккаунта"
@@ -392,7 +364,6 @@
                               InputGestureText="Alt + F4"/>
 
                 </MenuItem>
-                
             </Menu>
             
             <!--#endregion-->
