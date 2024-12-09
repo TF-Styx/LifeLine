@@ -482,7 +482,6 @@ namespace LifeLine.MVVM.ViewModel
                 {
                     AvatarEmployee = Properties.Resources.Kotozila;
                 }
-
                 
                 AvatarVisibility = Visibility.Visible;
 

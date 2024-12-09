@@ -28,6 +28,7 @@ namespace LifeLine.Services.NavigationPages
                 if (existPage.DataContext is IUpdatablePage viewModel)
                 {
                     viewModel.Update(parameter);
+                    _frame.Navigate(existPage);
                 }
                 return;
             }
@@ -49,6 +50,19 @@ namespace LifeLine.Services.NavigationPages
 
                     _openPage.TryAdd(namePage, profileEmployeePage);
                     _frame.Navigate(profileEmployeePage);
+                },
+
+                "ProfileAddDocumentEmployee" => () =>
+                {
+                    ProfileAddDocumentEmployeePageVM profileAddDocumentEmployeePageVM = new ProfileAddDocumentEmployeePageVM(_serviceProvider);
+                    ProfileAddDocumentEmployeePage profileAddDocumentEmployeePage = new ProfileAddDocumentEmployeePage
+                    {
+                        DataContext = profileAddDocumentEmployeePageVM,
+                    };
+                    profileAddDocumentEmployeePageVM.Update(parameter);
+
+                    _openPage.TryAdd(namePage, profileAddDocumentEmployeePage);
+                    _frame.Navigate(profileAddDocumentEmployeePage);
                 },
 
                 "nullPage" => () =>

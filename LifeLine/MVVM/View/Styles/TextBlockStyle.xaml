@@ -27,6 +27,13 @@
         <Setter Property="Foreground" Value="Black"/>
     </Style>
 
+    <Style x:Key="TextBloclAddDocumentProfileName" TargetType="TextBlock" BasedOn="{StaticResource TextBloclProfileName}">
+        <Setter Property="Margin" Value="0 0 0 0"/>
+        <Setter Property="FontSize" Value="30"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+
     <Style x:Key="TextBloclProfileText" TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}">
         <Setter Property="Margin" Value="0 5 0 5"/>
         <Setter Property="FontSize" Value="20"/>
@@ -41,7 +48,7 @@
     </Style>
 
     <!--#region Employee -->
-    
+
     <Style x:Key="TextBlockEmployee" TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}">
         <Setter Property="Margin" Value="0 0 0 10"/>
         <Setter Property="Height" Value="20"/>
@@ -53,6 +60,11 @@
 
     <Style x:Key="TextBlockPagination" TargetType="TextBlock" BasedOn="{StaticResource TextBlockEmployee}">
         <Setter Property="Margin" Value="10 0 10 0"/>
+    </Style>
+
+    <Style x:Key="TextBlockImage" TargetType="TextBlock" BasedOn="{StaticResource TextBlockEmployee}">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0"/>
     </Style>
 
     <Style x:Key="TextBlockSimpleTextListView" TargetType="TextBlock">
@@ -72,6 +84,10 @@
         <Setter Property="FontSize" Value="20"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    </Style>
+
+    <Style x:Key="DocumentEmployeeTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource EmployeeTextBoxStyle}">
+        <Setter Property="Margin" Value="0 0 0 0"/>
     </Style>
 
     <!--#endregion-->

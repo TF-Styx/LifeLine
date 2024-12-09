@@ -39,6 +39,7 @@ namespace LifeLine
             service.AddSingleton<INavigationWindow, NavigationWindow>();
             service.AddSingleton<INavigationPage, NavigationPage>();
             service.AddSingleton<IDataBaseService, DataBaseService>();
+            service.AddSingleton<IOpenFileDialogService, OpenFileDialogService>();
 
             service.AddTransient<EmployeeManagementContext>();
             service.AddSingleton<Func<EmployeeManagementContext>>(provider => () => provider.GetRequiredService<EmployeeManagementContext>());

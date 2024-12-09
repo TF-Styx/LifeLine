@@ -2,14 +2,10 @@
 using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogServices;
 using LifeLine.Services.NavigationPages;
+using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LifeLine.MVVM.ViewModel
 {
@@ -19,13 +15,15 @@ namespace LifeLine.MVVM.ViewModel
 
         private readonly IDialogService _dialogService;
         private readonly IDataBaseService _dataBaseServices;
+        private readonly INavigationPage _navigationPage;
 
         public ProfileEmployeePageVM(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
 
-            _dialogService = serviceProvider.GetService<IDialogService>();
-            _dataBaseServices = serviceProvider.GetService<IDataBaseService>();
+            _dialogService = _serviceProvider.GetService<IDialogService>();
+            _dataBaseServices = _serviceProvider.GetService<IDataBaseService>();
+            _navigationPage = _serviceProvider.GetService<INavigationPage>();
 
             //GetUser(user);
 
@@ -109,6 +107,15 @@ namespace LifeLine.MVVM.ViewModel
 
         public ObservableCollection<Employee> Employees { get; set; } = [];
         public ObservableCollection<TimeTable> TimeTables { get; set; } = [];
+
+
+        private RelayCommand _profileAddDocumentEmployeeCommand;
+        public RelayCommand ProfileAddDocumentEmployeeCommand { get => _profileAddDocumentEmployeeCommand ??= new(obj => { OpenProfileAddDocumentEmployee(); }); }
+
+        private void OpenProfileAddDocumentEmployee()
+        {
+            _navigationPage.NavigateTo("ProfileAddDocumentEmployee", UserEmployee);
+        }
 
         private void GetUser()
         {
