@@ -82,6 +82,40 @@ namespace LifeLine.Services.DataBaseServices
             }
         }
 
+        public async Task<T> FirstOrDefaultAsync<T>(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IQueryable<T>> include = null, bool reverse = false) where T : class
+        {
+            using (var context = _contextFactory())
+            {
+                IQueryable<T> query = context.Set<T>();
+
+                if (include != null)
+                {
+                    query = include(query);
+                }
+                if (reverse)
+                {
+                    query = query.Reverse();
+                }
+
+                return await query.FirstOrDefaultAsync(predicate);
+            }
+        }
+
+        public async Task<T> LastOrDefaultAsync<T>(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IQueryable<T>> include = null) where T : class
+        {
+            using (var context = _contextFactory())
+            {
+                IQueryable<T> query = context.Set<T>();
+
+                if (include != null)
+                {
+                    query = include(query);
+                }
+
+                return await query.LastOrDefaultAsync();
+            }
+        }
+
         public async Task<T> FindByValueAsync<T>(string propertyName, object value, Func<IQueryable<T>, IQueryable<T>> include = null) where T : class
         {
             using (var context = _contextFactory())

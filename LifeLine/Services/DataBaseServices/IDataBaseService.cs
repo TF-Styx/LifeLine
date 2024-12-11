@@ -14,6 +14,8 @@ namespace LifeLine.Services.DataBaseServices
         IEnumerable<T> GetDataTable<T>(Func<IQueryable<T>, IQueryable<T>> include = null) where T : class;
         Task<List<T>> GetDataTableListAsync<T>(Func<IQueryable<T>, IQueryable<T>> include = null) where T : class;
         Task<T> GetByIdAsync<T>(int id, string propertyName, Func<IQueryable<T>, IQueryable<T>> include = null) where T : class;
+        Task<T> FirstOrDefaultAsync<T>(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IQueryable<T>> include = null, bool reverse = false) where T : class;
+        Task<T> LastOrDefaultAsync<T>(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IQueryable<T>> include = null) where T : class;
         /// <summary>
         /// 
         /// </summary>

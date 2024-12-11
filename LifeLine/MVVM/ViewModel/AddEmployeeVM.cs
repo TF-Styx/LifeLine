@@ -386,42 +386,17 @@ namespace LifeLine.MVVM.ViewModel
 
         private async void UpdateEmployeeAsync()
         {
-            using (EmployeeManagementContext context = new())
+            if (SelectedEmployee == null) { return; }
+
+            var employeeToUpdate = await _dataBaseService.FindIdAsync<Employee>(SelectedEmployee.IdEmployee);
+
+            if (employeeToUpdate != null)
             {
-                if (SelectedEmployee == null) { return; }
+                bool exists = await _dataBaseService.ExistsAsync<Employee>(x => x.Login.ToLower() == employeeToUpdate.Login.ToLower());
 
-                var employeeToUpdate = await _dataBaseService.FindIdAsync<Employee>(SelectedEmployee.IdEmployee);
-
-                if (employeeToUpdate != null)
+                if (exists)
                 {
-                    bool exists = await _dataBaseService.ExistsAsync<Employee>(x => x.Login.ToLower() == employeeToUpdate.Login.ToLower());
-
-                    if (exists)
-                    {
-                        if (_dialogService.ShowMessageButton($"Вы точно хотите изменить данные «{employeeToUpdate.SecondName} {employeeToUpdate.FirstName} {employeeToUpdate.LastName}»!", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
-                        {
-                            employeeToUpdate.SecondName = TextBoxSecondName;
-                            employeeToUpdate.FirstName = TextBoxFirstName;
-                            employeeToUpdate.LastName = TextBoxLastName;
-
-                            employeeToUpdate.Avatar = SelectImage;
-
-                            employeeToUpdate.IdPosition = ComboBoxSelectedPositionList.IdPosition;
-
-                            employeeToUpdate.Salary = TextBoxSalary;
-
-                            employeeToUpdate.IdGender = ComboBoxSelectedGender.IdGender;
-
-                            employeeToUpdate.Login = TextBoxLogin;
-                            employeeToUpdate.Password = TextBoxPassword;
-
-                            await _dataBaseService.UpdateAsync(employeeToUpdate);
-
-                            ClearingDataEntry();
-                            GetEmployeeData();
-                        }
-                    }
-                    else
+                    if (_dialogService.ShowMessageButton($"Вы точно хотите изменить данные «{employeeToUpdate.SecondName} {employeeToUpdate.FirstName} {employeeToUpdate.LastName}»!", "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)
                     {
                         employeeToUpdate.SecondName = TextBoxSecondName;
                         employeeToUpdate.FirstName = TextBoxFirstName;
@@ -443,6 +418,28 @@ namespace LifeLine.MVVM.ViewModel
                         ClearingDataEntry();
                         GetEmployeeData();
                     }
+                }
+                else
+                {
+                    employeeToUpdate.SecondName = TextBoxSecondName;
+                    employeeToUpdate.FirstName = TextBoxFirstName;
+                    employeeToUpdate.LastName = TextBoxLastName;
+
+                    employeeToUpdate.Avatar = SelectImage;
+
+                    employeeToUpdate.IdPosition = ComboBoxSelectedPositionList.IdPosition;
+
+                    employeeToUpdate.Salary = TextBoxSalary;
+
+                    employeeToUpdate.IdGender = ComboBoxSelectedGender.IdGender;
+
+                    employeeToUpdate.Login = TextBoxLogin;
+                    employeeToUpdate.Password = TextBoxPassword;
+
+                    await _dataBaseService.UpdateAsync(employeeToUpdate);
+
+                    ClearingDataEntry();
+                    GetEmployeeData();
                 }
             }
         }

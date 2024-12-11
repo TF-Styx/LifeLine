@@ -124,6 +124,30 @@ namespace LifeLine.Services.NavigationWindow
                     backupWindow.Show();
                 },
 
+                "PreviewDocumentWithUpdate" => () =>
+                {
+                    PreviewDocumentVM previewDocumentVM = new PreviewDocumentVM(_serviceProvider);
+                    PreviewDocumentWindow previewDocumentWindow = new PreviewDocumentWindow()
+                    {
+                        DataContext = previewDocumentVM,
+                    };
+                    _openWindow.TryAdd(nameWindow, previewDocumentWindow);
+                    previewDocumentVM.Update(parameter);
+                    previewDocumentWindow.Closed += (s, e) => _openWindow.Remove(nameWindow);
+                    previewDocumentWindow.Show();
+                },
+
+                "PreviewDocumentNewWindow" => () =>
+                {
+                    PreviewDocumentVM previewDocumentVM = new PreviewDocumentVM(_serviceProvider);
+                    PreviewDocumentWindow previewDocumentWindow = new PreviewDocumentWindow()
+                    {
+                        DataContext = previewDocumentVM,
+                    };
+                    previewDocumentVM.Update(parameter);
+                    previewDocumentWindow.Show();
+                },
+
                 _ => throw new NotImplementedException(),
             };
             action.Invoke();

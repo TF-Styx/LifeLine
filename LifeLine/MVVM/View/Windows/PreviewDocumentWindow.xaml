@@ -1,0 +1,204 @@
+﻿<Window x:Class="LifeLine.MVVM.View.Windows.PreviewDocumentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LifeLine.MVVM.View.Windows" xmlns:viewmodel="clr-namespace:LifeLine.MVVM.ViewModel" xmlns:fa="http://schemas.fontawesome.com/icons/" d:DataContext="{d:DesignInstance Type=viewmodel:PreviewDocumentVM}"
+        mc:Ignorable="d"
+        Title="PreviewDocumentWindow" 
+        Style="{StaticResource Window}"
+        Height="600" Width="600"
+        MinHeight="250" MinWidth="350">
+
+    <!--#region Настройка окна -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" />
+    </WindowChrome.WindowChrome>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Close" />
+        <CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />
+        <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Minimize" />
+        <CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Restore" />
+    </Window.CommandBindings>
+
+    <Window.Resources>
+        <!--#region Стили для кнопок в строке заголовка -->
+
+        <Style x:Key="CaptionButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="LayoutRoot" Background="Transparent" Width="50" Height="auto">
+                            <TextBlock x:Name="txt" Text="{TemplateBinding Content}" FontFamily="Segoe MDL2 Assets" FontSize="10" 
+                           Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           RenderOptions.ClearTypeHint="Auto" TextOptions.TextRenderingMode="Aliased" TextOptions.TextFormattingMode="Display"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="LayoutRoot" Property="Background" Value="#E5E5E5"/>
+                                <Setter TargetName="txt" Property="Foreground" Value="#000000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MinimizeButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE949;"/>
+        </Style>
+
+        <Style x:Key="MaximizeButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE739;"/>
+        </Style>
+
+        <Style x:Key="RestoreButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE923;"/>
+        </Style>
+
+        <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE106;"/>
+        </Style>
+
+        <!--#endregion-->
+    </Window.Resources>
+    <!--#endregion-->
+
+    <Border x:Name="MainWindowBorder" BorderBrush="LightCoral" BorderThickness="0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height ="39"/>
+                <RowDefinition Height ="*"/>
+            </Grid.RowDefinitions>
+
+            <!--#region Разметка для Window chrome -->
+
+            <Grid Grid.Row="0" Height="40" Background="#FF7B8C98" Grid.ColumnSpan="2">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Image Source="{Binding AvatarEmp}"
+                           Width="35" Margin="2"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Text="Ваш документ" 
+                               FontSize="20" Margin="20 0 0 0"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!--#region Кнопки для управления окном -->
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                    <Button Command="{x:Static SystemCommands.MinimizeWindowCommand}"
+                        Style="{StaticResource MinimizeButtonStyle}" 
+                        WindowChrome.IsHitTestVisibleInChrome="True" 
+                        ToolTip="Minimize"/>
+                    <Button x:Name="RestoreButton" 
+                        Command="{x:Static SystemCommands.RestoreWindowCommand}" 
+                        Style="{StaticResource RestoreButtonStyle}"  
+                        WindowChrome.IsHitTestVisibleInChrome="True" 
+                        ToolTip="Restore"
+                        Visibility="Collapsed"/>
+                    <Button x:Name="MaximizeButton"
+                        Command="{x:Static SystemCommands.MaximizeWindowCommand}" 
+                        Style="{StaticResource MaximizeButtonStyle}" 
+                        WindowChrome.IsHitTestVisibleInChrome="True" 
+                        ToolTip="Maximize"
+                        Visibility="Visible"/>
+                    <Button Command="{x:Static SystemCommands.CloseWindowCommand}"
+                        Style="{StaticResource CloseButtonStyle}"
+                        WindowChrome.IsHitTestVisibleInChrome="True" 
+                        ToolTip="Close"/>
+                </StackPanel>
+
+                <!--#endregion-->
+
+            </Grid>
+
+            <!--#endregion-->
+
+            <ScrollViewer Grid.Row="1">
+                <Border MaxWidth="1200" Margin="10" CornerRadius="0 20 0 20" Background="#FFA0C5D1" BorderThickness="2" BorderBrush="Black">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" Direction="300"/>
+                    </Border.Effect>
+                    <Border>
+                        <StackPanel>
+                            <!--#region Информация о документе -->
+                            <Border Margin="10" CornerRadius="0 10 0 10" Background="#FFA0C5D1" BorderThickness="2" BorderBrush="Black">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" Direction="300"/>
+                                </Border.Effect>
+                                <StackPanel Margin="5">
+                                    <TextBlock Text="{Binding DocFile}" 
+                                               d:Text="Имя файла" 
+                                               FontSize="20" Margin="0 0 0 0"
+                                               HorizontalAlignment="Center"/>
+                                    <DockPanel Margin="5" HorizontalAlignment="Stretch">
+                                        <TextBlock Text="Тип документа: " DockPanel.Dock="Left" Style="{StaticResource TextBlockImage}"/>
+                                        <TextBlock d:Text="Тип документа" Text="{Binding Documents.IdTypeDocumentNavigation.TypeDocumentName}" HorizontalAlignment="Right" Style="{StaticResource TextBlockImage}"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="5" HorizontalAlignment="Stretch">
+                                        <TextBlock Text="Номер документа: " DockPanel.Dock="Left" Style="{StaticResource TextBlockImage}"/>
+                                        <TextBox Text="{Binding NumberDocumentTB}"
+                                                 Style="{StaticResource DocumentEmployeeTextBoxStyle}"
+                                                 Template="{StaticResource SettingTextBoxTemplate}"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="5" HorizontalAlignment="Stretch">
+                                        <TextBlock Text="Место выдачи: " DockPanel.Dock="Left" Style="{StaticResource TextBlockImage}"/>
+                                        <TextBox Text="{Binding PlaceOfIssueTB}"
+                                                 Style="{StaticResource DocumentEmployeeTextBoxStyle}"
+                                                 Template="{StaticResource SettingTextBoxTemplate}"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="5" HorizontalAlignment="Stretch">
+                                        <TextBlock Text="Дата выдачи: " DockPanel.Dock="Left" Style="{StaticResource TextBlockImage}"/>
+                                        <DatePicker SelectedDate="{Binding DateOfIssueDP}"
+                                                    Width="200" BorderThickness="0" 
+                                                    HorizontalAlignment="Right" VerticalContentAlignment="Center"/>
+                                    </DockPanel>
+                                </StackPanel>
+                            </Border>
+                            <!--#endregion-->
+
+                            <!--#region Скан документа -->
+                            <Border Margin="10" CornerRadius="0 10 0 10" Background="#FFA0C5D1" BorderThickness="2" BorderBrush="Black">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" Direction="300"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <Image MaxHeight="675" Margin="10" Source="{Binding DocImage}"/>
+                                    <Border BorderThickness="0 0 0 2" BorderBrush="Black" >
+                                        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5">
+                                            <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Left" Command="{Binding SelectedImageCommand}">
+                                                <fa:ImageAwesome Icon="Regular_FileImage" Width="10" Foreground="#FF3053C2"/>
+                                            </Button>
+                                            <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Right" Margin="10 0 0 0" Command="{Binding ClearImageCommand}">
+                                                <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
+                                            </Button>
+                                        </WrapPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <!--#endregion-->
+
+                            <!--#region || НИЗ || Сохранить && Добавить -->
+                            <Border Grid.Row="2" Grid.Column="0" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" Direction="300"/>
+                                </Border.Effect>
+                                <StackPanel Orientation="Horizontal" 
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Button Content="Сохранить изменения"
+                                            Command="{Binding UpdateDocumentEmployeeCommand}" 
+                                            Style="{StaticResource EmployeeBTN}"
+                                            Template="{StaticResource MainButtonTemplate}"/>
+                                </StackPanel>
+                            </Border>
+                            <!--#endregion-->
+                        </StackPanel>
+                    </Border>
+                </Border>
+            </ScrollViewer>
+            
+        </Grid>
+    </Border>
+</Window>

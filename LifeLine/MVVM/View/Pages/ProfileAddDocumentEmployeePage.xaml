@@ -7,6 +7,8 @@
       xmlns:convertor="clr-namespace:LifeLine.Utils.ValueConverter" 
       xmlns:fa="http://schemas.fontawesome.com/icons/" 
       xmlns:viewmodel="clr-namespace:LifeLine.MVVM.ViewModel" 
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+      xmlns:behavior="clr-namespace:LifeLine.Utils.Behaviors"
       d:DataContext="{d:DesignInstance Type=viewmodel:ProfileAddDocumentEmployeePageVM}"
       Style="{StaticResource Page}"
       mc:Ignorable="d"
@@ -57,52 +59,7 @@
                         <DropShadowEffect BlurRadius="10" Direction="300"/>
                     </Border.Effect>
                     <StackPanel Margin="10">
-                        <!--#region Первый варинат -->
-                        <!--<Border Margin="10" CornerRadius="0 10 0 10" Background="#FFA0C5D1" BorderThickness="2" BorderBrush="Black">
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="10" Direction="300"/>
-                                </Border.Effect>
-                                <StackPanel>
-                                    <StackPanel Margin="0 10 0 0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <StackPanel>
-                                            <TextBlock Text="Тип документа: " Style="{StaticResource TextBlockImage}"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="10 0 0 0">
-                                            <ComboBox Width="200" Height="25"
-                                                      VerticalContentAlignment="Center"
-                                                      ItemsSource="{Binding TypeDocuments}"
-                                                      SelectedItem="{Binding SelectedTypeDocument}"
-                                                      Style="{StaticResource ComboBoxStyleApp}"
-                                                      DisplayMemberPath="TypeDocumentName"/>
-                                        </StackPanel>
-                                    </StackPanel>
-
-                                    <StackPanel Margin="0 10 0 0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <StackPanel >
-                                            <TextBlock Text="Номер документа: " Style="{StaticResource TextBlockImage}"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="10 0 0 0">
-                                            <TextBox Text="{Binding TextBoxSalary}"
-                                                     Style="{StaticResource EmployeeTextBoxStyle}"
-                                                     Template="{StaticResource SettingTextBoxTemplate}"/>
-                                        </StackPanel>
-                                    </StackPanel>
-
-                                    <StackPanel Margin="0 10 0 0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <StackPanel>
-                                            <TextBlock Text="Место выдачи: " Style="{StaticResource TextBlockImage}"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="10 0 0 0">
-                                            <TextBox Text="{Binding TextBoxSalary}"
-                                             Style="{StaticResource EmployeeTextBoxStyle}"
-                                             Template="{StaticResource SettingTextBoxTemplate}"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>-->
-                        <!--#endregion-->
-
-                        <!--#region Второй варинат -->
+                        <!--#region Информация о документе -->
                         <Border Margin="10" CornerRadius="0 10 0 10" Background="#FFA0C5D1" BorderThickness="2" BorderBrush="Black">
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" Direction="300"/>
@@ -118,7 +75,6 @@
                                                   SelectedItem="{Binding SelectedTypeDocument}"
                                                   Style="{StaticResource ComboBoxStyleApp}"
                                                   DisplayMemberPath="TypeDocumentName"/>
-
                                 </DockPanel>
                                 <DockPanel Margin="5" HorizontalAlignment="Stretch">
                                     <TextBlock Text="Номер документа: " DockPanel.Dock="Left" Style="{StaticResource TextBlockImage}"/>
@@ -136,7 +92,7 @@
                                     <TextBlock Text="Дата выдачи: " DockPanel.Dock="Left" Style="{StaticResource TextBlockImage}"/>
                                     <DatePicker SelectedDate="{Binding DateOfIssueDP}"
                                                 Width="200" BorderThickness="0" 
-                                                HorizontalAlignment="Right" VerticalContentAlignment="Center" />
+                                                HorizontalAlignment="Right" VerticalContentAlignment="Center"/>
                                 </DockPanel>
                             </StackPanel>
                         </Border>
@@ -160,7 +116,7 @@
                                               VerticalContentAlignment="Center"
                                               HorizontalContentAlignment="Center" 
                                               MaxWidth="600" Width="auto" MinWidth="420"
-                                              MaxHeight="415"             MinHeight="210">
+                                              MaxHeight="550">
                                         <ListView.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <WrapPanel Width="390"/>
@@ -209,7 +165,30 @@
                         <DropShadowEffect BlurRadius="10" Direction="300"/>
                     </Border.Effect>
                     <StackPanel Margin="10">
-                        <ListView ItemsSource="{Binding Documents}" d:ItemsSource="{d:SampleData ItemCount=15}" FontSize="15">
+
+                        <!--#region Основной поиск -->
+                        <StackPanel Margin="0 0 0 10" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="Поиск: " Margin="0" Style="{StaticResource TextBlockStyle}"/>
+                            <TextBox Width="150" Height="25" Margin="0"
+                                     VerticalContentAlignment="Center" 
+                                     Text="{Binding SearchDocumentEmployeeTB, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource SettingTextBoxStyle}" 
+                                     Template="{StaticResource SettingTextBoxTemplate}"/>
+                            <Button ToolTip="Удаление выбраных элементов через «ctrl» или «shift»" Background="#00DDDDDD" BorderBrush="#00707070" Margin="30 0 0 0" Command="{Binding DeleteALLDocumentEmployeeCommand}">
+                                <fa:ImageAwesome Icon="Solid_TrashAlt" Width="15" Foreground="#FFDD3D3D"/>
+                            </Button>
+                        </StackPanel>
+                        <!--#endregion-->
+
+                        <ListView ItemsSource="{Binding Documents}" 
+                                  d:ItemsSource="{d:SampleData ItemCount=12}" 
+                                  SelectionMode="Extended"
+                                  FontSize="15" MaxHeight="320">
+                            
+                            <i:Interaction.Behaviors>
+                                <behavior:ListViewSelectedItemsBehavior SelectedItems="{Binding SelectedFiles}"/>
+                            </i:Interaction.Behaviors>
+                            
                             <!--#region ListView.Resources-->
 
                             <ListView.Resources>
@@ -235,16 +214,16 @@
                                                         <ColumnDefinition Width="5"/>
                                                     </Grid.ColumnDefinitions>
                                                     <Border Background="{TemplateBinding Background}" 
- BorderBrush="#FF8AC1D2" 
- BorderThickness="0,0,1,0" 
- Padding="5" 
- Grid.Column="0">
+                                                            BorderBrush="#FF8AC1D2" 
+                                                            BorderThickness="0,0,1,0" 
+                                                            Padding="5" 
+                                                            Grid.Column="0">
                                                         <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" RecognizesAccessKey="True" />
                                                     </Border>
                                                     <Thumb Grid.Column="1" 
-Width="5" 
-Background="#FF8AC1D2" 
-Cursor="SizeWE"/>
+                                                           Width="5" 
+                                                           Background="#FF8AC1D2" 
+                                                           Cursor="SizeWE"/>
                                                 </Grid>
                                             </ControlTemplate>
                                         </Setter.Value>
@@ -301,10 +280,10 @@ Cursor="SizeWE"/>
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal">
-                                                    <Button Background="#00DDDDDD" BorderBrush="#00707070" Margin="0 0 10 0" Command="{Binding DataContext.DeleteEmployeeCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                                    <Button Background="#00DDDDDD" BorderBrush="#00707070" Margin="0 0 10 0" Command="{Binding DataContext.DeleteDocumentEmployeeCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
                                                         <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
                                                     </Button>
-                                                    <TextBlock Text="{Binding TypeDocument}"/>
+                                                    <TextBlock Text="{Binding IdTypeDocumentNavigation.TypeDocumentName}"/>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
@@ -312,12 +291,15 @@ Cursor="SizeWE"/>
                                     <GridViewColumn Header="Документ">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding Document}"/>
-                                                    <Button Background="#00DDDDDD" BorderBrush="#00707070" Margin="10 0 0 0" Command="{Binding DataContext.OpenDocumentCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                                <DockPanel HorizontalAlignment="Stretch">
+                                                    <Button Background="#00DDDDDD" BorderBrush="#00707070" Margin="0 0 5 0" Command="{Binding DataContext.OpenDocumentNewWindowCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                                        <fa:ImageAwesome Icon="Regular_WindowRestore" Width="10" Foreground="#FF3053C2"/>
+                                                    </Button>
+                                                    <TextBlock Text="{Binding DocumentFile}" DockPanel.Dock="Left" TextWrapping="Wrap" Width="300"/>
+                                                    <Button DockPanel.Dock="Right" Background="#00DDDDDD" BorderBrush="#00707070" Margin="10 0 0 0" Command="{Binding DataContext.OpenDocumentWithUpdateCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
                                                         <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
                                                     </Button>
-                                                </StackPanel>
+                                                </DockPanel>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -335,20 +317,12 @@ Cursor="SizeWE"/>
                     <DropShadowEffect BlurRadius="10" Direction="300"/>
                 </Border.Effect>
                 <StackPanel Orientation="Horizontal" 
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center">
-                    <StackPanel HorizontalAlignment="Left" Margin="0 0 15 0">
-                        <Button Content="Сохранить и обновить" 
-                                    Command="{Binding UpdateDocumentEmployeeCommand}"
-                                    Style="{StaticResource EmployeeBTN}"
-                                    Template="{StaticResource MainButtonTemplate}"/>
-                    </StackPanel>
-                    <StackPanel HorizontalAlignment="Right" Margin="15 0 0 0">
-                        <Button Content="Добавить документ"
-                                    Command="{Binding AddDocumentEmployeeCommand}" 
-                                    Style="{StaticResource EmployeeBTN}"
-                                    Template="{StaticResource MainButtonTemplate}"/>
-                    </StackPanel>
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <Button Content="Добавить документ"
+                            Command="{Binding AddDocumentEmployeeCommand}" 
+                            Style="{StaticResource EmployeeBTN}"
+                            Template="{StaticResource MainButtonTemplate}"/>
                 </StackPanel>
             </Border>
             <!--#endregion-->

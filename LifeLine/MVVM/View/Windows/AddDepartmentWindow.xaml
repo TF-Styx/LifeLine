@@ -228,7 +228,7 @@
                     <TextBlock Text="Поиск:  " Margin="0" Style="{StaticResource TextBlockStyle}"/>
                     <TextBox Width="250" Height="25" Margin="0"
                              VerticalContentAlignment="Center" 
-                             Text="{Binding SearchDepartment, UpdateSourceTrigger=PropertyChanged}"
+                             Text="{Binding SearchDepartmentTB, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource SettingTextBoxStyle}" 
                              Template="{StaticResource SettingTextBoxTemplate}"/>
                 </StackPanel>
