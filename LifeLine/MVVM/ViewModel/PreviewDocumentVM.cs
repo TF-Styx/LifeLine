@@ -14,6 +14,66 @@ namespace LifeLine.MVVM.ViewModel
 {
     class PreviewDocumentVM : BaseViewModel, IUpdatableWindow
     {
+        #region Трансформация картинки
+
+        private double _scaleX = 1.0;
+        public double ScaleX
+        {
+            get => _scaleX;
+            set
+            {
+                _scaleX = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private double _scaleY = 1.0;
+        public double ScaleY
+        {
+            get => _scaleY;
+            set
+            {
+                _scaleY = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private double _translateX = 0.0;
+        public double TranslateX
+        {
+            get => _translateX;
+            set
+            {
+                _translateX = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private double _translateY = 0.0;
+        public double TranslateY
+        {
+            get => _translateY;
+            set
+            {
+                _translateY = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private RelayCommand _resetTransformCommand;
+        public RelayCommand ResetTransformCommand { get => _resetTransformCommand ??= new(obj => { ResetTransform(); }); }
+
+        private void ResetTransform()
+        {
+            ScaleX = 1.0;
+            ScaleY = 1.0;
+
+            TranslateX = 0.0;
+            TranslateY = 0.0;
+        }
+
+        #endregion
+
         private readonly IServiceProvider _serviceProvider;
 
         private readonly IDialogService _dialogService;
@@ -39,6 +99,8 @@ namespace LifeLine.MVVM.ViewModel
                 AvatarEmp = (byte[])obj[1];
             }
         }
+
+        #region Свойства
 
         private Document _documents;
         public Document Documents
@@ -131,11 +193,19 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+        #endregion
+
+        #region Команды
+
         private RelayCommand _updateDocumentEmployeeCommand;
         public RelayCommand UpdateDocumentEmployeeCommand { get => _updateDocumentEmployeeCommand ??= new(obj => { UpdateDocumentEmployee(); }); }
 
         private RelayCommand _selectedImageCommand;
         public RelayCommand SelectedImageCommand { get => _selectedImageCommand ??= new(obj => { SelectedImage(); }); }
+
+        #endregion
+
+        #region Методы
 
         private async void UpdateDocumentEmployee()
         {
@@ -193,5 +263,7 @@ namespace LifeLine.MVVM.ViewModel
                 DocFile = fileInfo.Name;
             }
         }
+
+        #endregion
     }
 }

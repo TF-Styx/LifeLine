@@ -10,6 +10,10 @@
         Height="600" Width="600"
         MinHeight="250" MinWidth="350">
 
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="E" Command="{Binding ResetTransformCommand}"/>
+    </Window.InputBindings>
+
     <!--#region Настройка окна -->
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="40" />
@@ -164,8 +168,27 @@
                                     <DropShadowEffect BlurRadius="10" Direction="300"/>
                                 </Border.Effect>
                                 <StackPanel>
-                                    <Image MaxHeight="675" Margin="10" Source="{Binding DocImage}"/>
-                                    <Border BorderThickness="0 0 0 2" BorderBrush="Black" >
+                                    <!--#region Первый варинт -->
+                                    <ScrollViewer MaxHeight="675" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+                                        <Grid>
+                                            <Image Source="{Binding DocImage}" 
+                                                   MouseWheel="Image_MouseWheel" 
+                                                   MouseLeftButtonDown="Image_MouseLeftButtonDown"
+                                                   MouseLeftButtonUp="Image_MouseLeftButtonUp"
+                                                   MouseMove="Image_MouseMove">
+                                                <Image.RenderTransform>
+                                                    <TransformGroup>
+                                                        <ScaleTransform ScaleX="{Binding ScaleX}" ScaleY="{Binding ScaleY}"/>
+                                                        <TranslateTransform X="{Binding TranslateX}" Y="{Binding TranslateY}"/>
+                                                    </TransformGroup>
+                                                </Image.RenderTransform>
+                                            </Image>
+                                        </Grid>
+                                    </ScrollViewer>
+                                    <!--#endregion-->
+                                    
+                                    
+                                    <Border BorderThickness="0 2 0 0" BorderBrush="Black" >
                                         <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5">
                                             <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Left" Command="{Binding SelectedImageCommand}">
                                                 <fa:ImageAwesome Icon="Regular_FileImage" Width="10" Foreground="#FF3053C2"/>
