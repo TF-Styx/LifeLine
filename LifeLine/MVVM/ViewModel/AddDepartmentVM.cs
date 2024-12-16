@@ -112,7 +112,7 @@ namespace LifeLine.MVVM.ViewModel
         public RelayCommand AddDepartmentCommand { get => _addDepartmentCommand ??= new(obj => { AddDepartmentAsync(); }); }
 
         private RelayCommand _updateDepartmentCommand;
-        public RelayCommand UpdateDepartmentCommand { get => _updateDepartmentCommand ??= new(obj => { UpdateDepartamentAsync(); }); }
+        public RelayCommand UpdateDepartmentCommand { get => _updateDepartmentCommand ??= new(obj => { UpdateDepartmentAsync(); }); }
 
         private RelayCommand _deleteDepartmentCommand;
         public RelayCommand DeleteDepartmentCommand => _deleteDepartmentCommand ??= new RelayCommand(DeleteDepartment);
@@ -156,7 +156,7 @@ namespace LifeLine.MVVM.ViewModel
         /// <summary>
         /// Метод обновления данных в базе данных
         /// </summary>
-        private async void UpdateDepartamentAsync()
+        private async void UpdateDepartmentAsync()
         {
             if (SelectedDepartment == null) { return; }
 
@@ -212,11 +212,11 @@ namespace LifeLine.MVVM.ViewModel
         /// Метод удаления отдела
         /// </summary>
         /// <param name="parametr">Выбраный элемент</param>
-        private void DeleteDepartment(object parametr)
+        private void DeleteDepartment(object parameter)
         {
-            if (parametr != null)
+            if (parameter != null)
             {
-                if (parametr is Department department)
+                if (parameter is Department department)
                 {
                     if (_dialogService.ShowMessageButton($"Вы точно хотите удалить {department.DepartmentName}?",
                         "Предупреждение!!!", MessageButtons.YesNo) == MessageButtons.Yes)

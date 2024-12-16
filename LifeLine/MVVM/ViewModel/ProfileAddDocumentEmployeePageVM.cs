@@ -51,6 +51,11 @@ namespace LifeLine.MVVM.ViewModel
             {
                 GetDocument();
             }
+
+            if (value is Patient patient)
+            {
+                UserPatient = patient;
+            }
         }
 
         // ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -64,6 +69,17 @@ namespace LifeLine.MVVM.ViewModel
             set
             {
                 _currentUser = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Patient _userPatient;
+        public Patient UserPatient
+        {
+            get => _userPatient;
+            set
+            {
+                _userPatient = value;
                 OnPropertyChanged();
             }
         }
@@ -181,17 +197,29 @@ namespace LifeLine.MVVM.ViewModel
         private RelayCommand _openDocumentWithUpdateCommand;
         public RelayCommand OpenDocumentWithUpdateCommand => _openDocumentWithUpdateCommand ??= new RelayCommand(OpenDocumentWithUpdate);
 
+        private RelayCommand _openPreviewDocumentWithUpdateCommand;
+        public RelayCommand OpenPreviewDocumentWithUpdateCommand => _openPreviewDocumentWithUpdateCommand ??= new RelayCommand(OpenPreviewDocumentWithUpdate);
+
         private RelayCommand _openDocumentNewWindowCommand;
         public RelayCommand OpenDocumentNewWindowCommand => _openDocumentNewWindowCommand ??= new RelayCommand(OpenDocumentNewWindow);
 
         #endregion
 
         // ---------------------------------------------------------------------------------------------------------------------------------------------
+
         #region Методы
 
         private async void AddDocumentEmployee()
         {
-            DateOnly dateOnly = new DateOnly(DateOfIssueDP.Value.Year, DateOfIssueDP.Value.Month, DateOfIssueDP.Value.Day);
+            DateOnly date;
+            try
+            {
+                date = new DateOnly(DateOfIssueDP.Value.Year, DateOfIssueDP.Value.Month, DateOfIssueDP.Value.Day);
+            }
+            catch (Exception)
+            {
+                date = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            }
 
             if (SelectedTypeDocument == null)
             {
@@ -207,7 +235,7 @@ namespace LifeLine.MVVM.ViewModel
                     IdTypeDocument = SelectedTypeDocument.IdTypeDocument,
                     Number = NumberDocumentTB,
                     PlaceOfIssue = PlaceOfIssueTB,
-                    DateOfIssue = dateOnly,
+                    DateOfIssue = date,
                     DocumentImage = item.Image,
                     DocumentFile = item.NameImage,
                 };
@@ -217,8 +245,6 @@ namespace LifeLine.MVVM.ViewModel
 
             GetDocument();
             ClearInputData();
-            
-            //Documents.Add(await _dataBaseService.FirstOrDefaultAsync<Document>(x => x.IdEmployee == CurrentUser.IdEmployee, x => x.Include(x => x.IdTypeDocumentNavigation)));
         }
 
         private async void DeleteDocumentEmployee(object parameter)
@@ -265,23 +291,27 @@ namespace LifeLine.MVVM.ViewModel
         private void SelectedImage()
         {
             var files = _openFileDialogService.OpenDialog();
+            if (files == null) { return; }
 
-            foreach (var item in files)
+            if (files.Length != 0)
             {
-                byte[] imageByte;
-                FileInfo fileInfo = new FileInfo(item);
-
-                using (Image image = Image.FromFile(item))
+                foreach (var item in files)
                 {
-                    imageByte = FileHelper.ImageToBytes(image);
+                    byte[] imageByte;
+                    FileInfo fileInfo = new FileInfo(item);
+
+                    using (Image image = Image.FromFile(item))
+                    {
+                        imageByte = FileHelper.ImageToBytes(image);
+                    }
+
+                    ImageDocumentEmployee imageDocumentEmployee = new ImageDocumentEmployee();
+
+                    imageDocumentEmployee.Image = imageByte;
+                    imageDocumentEmployee.NameImage = fileInfo.Name;
+
+                    ImageDocumentEmployees.Add(imageDocumentEmployee);
                 }
-
-                ImageDocumentEmployee imageDocumentEmployee = new ImageDocumentEmployee();
-
-                imageDocumentEmployee.Image = imageByte;
-                imageDocumentEmployee.NameImage = fileInfo.Name;
-
-                ImageDocumentEmployees.Add(imageDocumentEmployee);
             }
         }
 
@@ -305,6 +335,18 @@ namespace LifeLine.MVVM.ViewModel
                     List<object> obj = [imageDoc, CurrentUser.Avatar];
 
                     _navigationWindow.NavigateTo("PreviewDocumentWithUpdate", obj);
+                }
+            }
+        }
+        
+
+        private void OpenPreviewDocumentWithUpdate(object parameter)
+        {
+            if (parameter != null)
+            {
+                if (parameter is ImageDocumentEmployee image)
+                {
+                    _navigationWindow.NavigateTo("PreviewDocumentWithUpdate", image);
                 }
             }
         }

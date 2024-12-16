@@ -180,13 +180,13 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private void DeletePosition(object parametr)
+        private void DeletePosition(object parameter)
         {
-            if (parametr != null)
+            if (parameter != null)
             {
-                if (parametr is Position position)
+                if (parameter is Position position)
                 {
-                    if (_dialogService.ShowMessageButton($"Вы точно хотиде удалить:" +
+                    if (_dialogService.ShowMessageButton($"Вы точно хотите удалить:" +
                                                          $"\nДолжность: {position.IdPositionListNavigation.PositionListName}",
                                                          "Предупреждение!!",
                                                          MessageButtons.YesNo) == MessageButtons.Yes)

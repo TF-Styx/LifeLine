@@ -30,6 +30,7 @@
 
     <Window.InputBindings>
         <KeyBinding Modifiers="Ctrl" Key="E" Command="{Binding OpenAddEmployeeWindowCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="Q" Command="{Binding OpenAddPatientWindowCommand}"/>
 
         <KeyBinding Modifiers="Ctrl" Key="T" Command="{Binding AddTypeDocumentVisibility}"/>
         <KeyBinding Modifiers="Ctrl" Key="D" Command="{Binding AddDocumentEmployee}"/>
@@ -235,7 +236,9 @@
                               Command="{Binding OpenAddEmployeeWindowCommand}"
                               InputGestureText="Ctrl + E"/>
                     <MenuItem Header="Добавить пациента"
-                              Visibility="{Binding AddPatientVisibility}"/>
+                              Visibility="{Binding AddPatientVisibility}"
+                              Command="{Binding OpenAddPatientWindowCommand}"
+                              InputGestureText="Ctrl + Q"/>
 
                     <Separator/>
 

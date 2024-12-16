@@ -76,7 +76,7 @@ namespace LifeLine.MVVM.View.Windows
             var viewModel = (PreviewDocumentVM)DataContext; // Приведение типов. Делать только если знаешь что находится в object
 
             // Получаем позицию курсора относительно изображения
-            var image = (System.Windows.Controls.Button)sender;
+            var image = (System.Windows.Controls.Image)sender;
             var cursorPosition = e.GetPosition(image);
 
             // Вычисляем текущие координаты в масштабированном пространстве

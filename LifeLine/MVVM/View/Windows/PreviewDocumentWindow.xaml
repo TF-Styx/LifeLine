@@ -125,9 +125,9 @@
                         <DropShadowEffect BlurRadius="10" Direction="300"/>
                     </Border.Effect>
                     <Border>
-                        <StackPanel>
+                        <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <!--#region Информация о документе -->
-                            <Border Margin="10" CornerRadius="0 10 0 10" Background="#FFA0C5D1" BorderThickness="2" BorderBrush="Black">
+                            <Border Visibility="{Binding InfoDocumentBorderVisibility}" Margin="10" CornerRadius="0 10 0 10" Background="#FFA0C5D1" BorderThickness="2" BorderBrush="Black">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="10" Direction="300"/>
                                 </Border.Effect>
@@ -163,15 +163,18 @@
                             <!--#endregion-->
 
                             <!--#region Скан документа -->
-                            <Border Margin="10" CornerRadius="0 10 0 10" Background="#FFA0C5D1" BorderThickness="2" BorderBrush="Black">
+                            <Border Margin="10" CornerRadius="0 10 0 10" 
+                                    Background="#FFA0C5D1" BorderThickness="2" BorderBrush="Black"
+                                    VerticalAlignment="Center">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="10" Direction="300"/>
                                 </Border.Effect>
                                 <StackPanel>
                                     <!--#region Первый варинт -->
-                                    <ScrollViewer MaxHeight="675" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+                                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
                                         <Grid>
                                             <Image Source="{Binding DocImage}" 
+                                                   MaxHeight="{Binding MaxHeightImage}" 
                                                    MouseWheel="Image_MouseWheel" 
                                                    MouseLeftButtonDown="Image_MouseLeftButtonDown"
                                                    MouseLeftButtonUp="Image_MouseLeftButtonUp"
@@ -188,7 +191,7 @@
                                     <!--#endregion-->
                                     
                                     
-                                    <Border BorderThickness="0 2 0 0" BorderBrush="Black" >
+                                    <Border Visibility="{Binding SaveDeleteButtonBorderVisibility}" BorderThickness="0 2 0 0" BorderBrush="Black" >
                                         <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5">
                                             <Button Background="#00DDDDDD" BorderBrush="#00707070" HorizontalAlignment="Left" Command="{Binding SelectedImageCommand}">
                                                 <fa:ImageAwesome Icon="Regular_FileImage" Width="10" Foreground="#FF3053C2"/>
@@ -203,7 +206,7 @@
                             <!--#endregion-->
 
                             <!--#region || НИЗ || Сохранить && Добавить -->
-                            <Border Grid.Row="2" Grid.Column="0" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Border Visibility="{Binding SaveChangeButtonBorderVisibility}" Grid.Row="2" Grid.Column="0" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="10" Direction="300"/>
                                 </Border.Effect>

@@ -26,6 +26,22 @@
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Foreground" Value="Black"/>
     </Style>
+    
+
+    <Style x:Key="PatientTBo" TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}">
+        <Setter Property="Margin" Value="0 0 5 0"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
+    <Style x:Key="PatientFIOTBo" TargetType="TextBlock" BasedOn="{StaticResource PatientTBo}">
+        <Setter Property="Margin" Value="0 0 5 0"/>
+        <Setter Property="FontSize" Value="25"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+    
 
     <Style x:Key="TextBloclAddDocumentProfileName" TargetType="TextBlock" BasedOn="{StaticResource TextBloclProfileName}">
         <Setter Property="Margin" Value="0 0 0 0"/>

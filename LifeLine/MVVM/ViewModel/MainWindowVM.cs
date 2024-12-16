@@ -421,6 +421,9 @@ namespace LifeLine.MVVM.ViewModel
         private RelayCommand _openProfileEmployeePageCommand;
         public RelayCommand OpenProfileEmployeePageCommand { get => _openProfileEmployeePageCommand ??= new(obj => { OpenProfileEmployeePage(); }); }
 
+        private RelayCommand _openAddPatientWindowCommand;
+        public RelayCommand OpenAddPatientWindowCommand { get => _openAddPatientWindowCommand ??= new(obj => { OpenAddPatientWindow(); }); }
+
         private RelayCommand _openAddDepartmentWindowCommand;
         public RelayCommand OpenAddDepartmentWindowCommand { get => _openAddDepartmentWindowCommand ??= new(obj => { OpenAddDepartmentWindow(); }); }
 
@@ -527,6 +530,11 @@ namespace LifeLine.MVVM.ViewModel
         private void OpenAddEmployeeWindow()
         {
             _navigationWindow.NavigateTo("AddEmployee");
+        }
+
+        private void OpenAddPatientWindow()
+        {
+            _navigationWindow.NavigateTo("AddPatient");
         }
 
         private void OpenAddGraphWindow()

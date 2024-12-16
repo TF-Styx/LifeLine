@@ -1,4 +1,5 @@
-﻿using LifeLine.MVVM.Models.MSSQL_DB;
+﻿using LifeLine.MVVM.Models.AppModel;
+using LifeLine.MVVM.Models.MSSQL_DB;
 using LifeLine.Services.DataBaseServices;
 using LifeLine.Services.DialogServices;
 using LifeLine.Services.NavigationPages;
@@ -8,6 +9,7 @@ using MasterAnalyticsDeadByDaylight.Command;
 using Microsoft.Extensions.DependencyInjection;
 using System.Drawing;
 using System.IO;
+using System.Windows;
 using System.Windows.Interop;
 
 namespace LifeLine.MVVM.ViewModel
@@ -95,10 +97,83 @@ namespace LifeLine.MVVM.ViewModel
         {
             if (value is List<object> obj)
             {
+                VisibilityVisibleManager();
+                MaxHeightImage = 675;
+
                 Documents = (Document)obj[0];
                 AvatarEmp = (byte[])obj[1];
             }
+
+            if (value is ImageDocumentEmployee image)
+            {
+                VisibilityCollapsedManager();
+                MaxHeightImage = 950;
+
+                DocImage = image.Image;
+            }
         }
+
+        #region Visibility + MaxHeight
+
+        private Visibility _infoDocumentBorderVisibility;
+        public Visibility InfoDocumentBorderVisibility
+        {
+            get => _infoDocumentBorderVisibility;
+            set
+            {
+                _infoDocumentBorderVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _saveDeleteButtonBorderVisibility;
+        public Visibility SaveDeleteButtonBorderVisibility
+        {
+            get => _saveDeleteButtonBorderVisibility;
+            set
+            {
+                _saveDeleteButtonBorderVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _saveChangeButtonBorderVisibility;
+        public Visibility SaveChangeButtonBorderVisibility
+        {
+            get => _saveChangeButtonBorderVisibility;
+            set
+            {
+                _saveChangeButtonBorderVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int _maxHeightImage;
+        public int MaxHeightImage
+        {
+            get => _maxHeightImage;
+            set
+            {
+                _maxHeightImage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private void VisibilityCollapsedManager()
+        {
+            InfoDocumentBorderVisibility = Visibility.Collapsed;
+            SaveDeleteButtonBorderVisibility = Visibility.Collapsed;
+            SaveChangeButtonBorderVisibility = Visibility.Collapsed;
+        }
+
+        private void VisibilityVisibleManager()
+        {
+            InfoDocumentBorderVisibility = Visibility.Visible;
+            SaveDeleteButtonBorderVisibility = Visibility.Visible;
+            SaveChangeButtonBorderVisibility = Visibility.Visible;
+        }
+
+        #endregion
 
         #region Свойства
 
