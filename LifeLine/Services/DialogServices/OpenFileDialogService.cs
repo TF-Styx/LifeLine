@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Win32;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace LifeLine.Services.DialogServices
 {
@@ -17,7 +12,7 @@ namespace LifeLine.Services.DialogServices
             dialog.Multiselect = true;
             dialog.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
 
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (dialog.ShowDialog() == true)
             {
                 return dialog.FileNames;
             }

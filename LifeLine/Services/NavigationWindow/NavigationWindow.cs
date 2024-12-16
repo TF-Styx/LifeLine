@@ -64,6 +64,18 @@ namespace LifeLine.Services.NavigationWindow
                     addEmployeeWindow.Show();
                 },
 
+                "AddPatient" => () =>
+                {
+                    AddPatientVM addPatientVM = new AddPatientVM(_serviceProvider);
+                    AddPatientWindow addPatientWindow = new AddPatientWindow
+                    {
+                        DataContext = addPatientVM,
+                    };
+                    _openWindow.TryAdd(nameWindow, addPatientWindow);
+                    addPatientWindow.Closed += (s, e) => _openWindow.Remove(nameWindow);
+                    addPatientWindow.Show();
+                },
+
                 "AddGraph" => () =>
                 {
                     AddGraphVM addGraphVM = new AddGraphVM(_serviceProvider);

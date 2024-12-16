@@ -33,7 +33,7 @@
                     </Border.Effect>
                     <DockPanel>
                         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
-                            <StackPanel>
+                            <StackPanel Visibility="{Binding ImageSPVisibility}">
                                 <Border BorderThickness="2" BorderBrush="Black" CornerRadius="10" Margin="10" HorizontalAlignment="Left">
                                     <Image Source="{Binding ImageProfile}" d:Source="/Res/Kotozila.jpg" Width="100" Height="100" Margin="10"/>
                                 </Border>
@@ -41,7 +41,13 @@
                             <StackPanel VerticalAlignment="Top">
                                 <StackPanel HorizontalAlignment="Left">
                                     <TextBlock Text="{Binding UserEmployee, Converter={StaticResource FullNameConvertor}}" 
-                                           d:Text="Фамилия Имя Отчество" Style="{StaticResource TextBloclProfileName}"/>
+                                               d:Text="Фамилия Имя Отчество" Style="{StaticResource TextBloclProfileName}"
+                                               Visibility="{Binding EmployeeFIOtbVisibility}"/>
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding PatientFIOspVisibility}">
+                                        <TextBlock Text="{Binding UserPatient.SecondName}" d:Text="Фамилия" Style="{StaticResource TextBloclProfileName}" Margin="0 0 7 0"/>
+                                        <TextBlock Text="{Binding UserPatient.FirstName}" d:Text="Имя" Style="{StaticResource TextBloclProfileName}" Margin="0 0 7 0" />
+                                        <TextBlock Text="{Binding UserPatient.LastName}" d:Text="Отчество" Style="{StaticResource TextBloclProfileName}" Margin="0 0 0 0"/>
+                                    </StackPanel>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock d:Text="Дата рождения: " Style="{StaticResource TextBloclProfileText}"/>
@@ -77,7 +83,7 @@
                     </Border.Effect>
                     <StackPanel>
 
-                        <StackPanel Margin="10">
+                        <StackPanel Margin="10" Visibility="{Binding TimeTableSPVisibility}">
                             <Border  CornerRadius="0 10 0 10" Background="#FFA0C5D1" BorderThickness="2" BorderBrush="Black">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="10" Direction="300"/>
@@ -233,7 +239,14 @@ Cursor="SizeWE"/>
                                         <DropShadowEffect BlurRadius="10" Direction="300"/>
                                     </Border.Effect>
                                     <StackPanel>
-                                        <ListView Height="200" Margin="10" ItemsSource="{Binding Employees}" SelectedItem="{Binding SelectedEmployee}" d:ItemsSource="{d:SampleData ItemCount=15}" FontSize="15">
+                                        
+                                        <!--#region Коллеги ListView -->
+                                        <ListView Height="200" Margin="10" 
+                                                  ItemsSource="{Binding Employees}" 
+                                                  d:ItemsSource="{d:SampleData ItemCount=15}" 
+                                                  SelectedItem="{Binding SelectedEmployee}" 
+                                                  Visibility="{Binding ColleaguesLWVisibility}"
+                                                  FontSize="15">
                                             <!--#region ListView.Resources-->
 
                                             <ListView.Resources>
@@ -335,6 +348,120 @@ Cursor="SizeWE"/>
                                                 </GridView>
                                             </ListView.View>
                                         </ListView>
+                                        <!--#endregion-->
+                                        
+<!--============================================================================================-->
+                                        
+                                        <!--#region Пациенты -->
+                                        <ListView Height="200" Margin="10" 
+                                                  ItemsSource="{Binding Patients}" 
+                                                  d:ItemsSource="{d:SampleData ItemCount=15}" 
+                                                  SelectedItem="{Binding SelectedEmployee}" 
+                                                  Visibility="{Binding PatientsLWVisibility}"
+                                                  FontSize="15">
+                                            <!--#region ListView.Resources-->
+
+                                            <ListView.Resources>
+
+                                                <LinearGradientBrush x:Key="ListViewItemSelectedAndMousOver" EndPoint="1,0" StartPoint="1,0">
+                                                    <GradientStop Color="#FFA0C5D1" Offset="1.0"/>
+                                                    <GradientStop Color="#FF8AC1D2" Offset="0.0"/>
+                                                </LinearGradientBrush>
+
+                                                <!--#region Шаблон для заголовка GridViewColumnHeader-->
+
+                                                <Style TargetType="GridViewColumnHeader">
+                                                    <Setter Property="Background" Value="#FFA0C5D1"/>
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="GridViewColumnHeader">
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*"/>
+                                                                        <ColumnDefinition Width="5"/>
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Border Background="{TemplateBinding Background}" 
+                                    BorderBrush="#FFA0C5D1" 
+                                    BorderThickness="0,0,1,0" 
+                                    Padding="5" 
+                                    Grid.Column="0">
+                                                                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                                                                    </Border>
+                                                                    <!--<Thumb Grid.Column="1" 
+                                       Width="5" 
+                                       Background="#FF8AC1D2" 
+                                       Cursor="SizeWE"/>-->
+                                                                </Grid>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#FF8AC1D2"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter Property="Background" Value="#FF8AC1D2"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+
+                                                <!--#endregion-->
+
+                                                <!--#region Стиль ListView-->
+
+                                                <Style TargetType="ListView">
+                                                    <Setter Property="Foreground" Value="Black" />
+                                                    <Setter Property="Background" Value="#FFA0C5D1" />
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                    <Setter Property="BorderThickness" Value="0"/>
+                                                </Style>
+
+                                                <!--#endregion-->
+
+                                                <!--#region Стиль ListViewItem-->
+
+                                                <Style TargetType="ListViewItem">
+                                                    <Setter Property="Background" Value="#FFA0C5D1"/>
+                                                    <Setter Property="BorderBrush" Value="#2A2A2A"/>
+                                                    <Setter Property="Margin" Value="0 0 0 5"/>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="{StaticResource ListViewItemSelectedAndMousOver}"/>
+                                                            <Setter Property="BorderBrush" Value="#FF595958"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter Property="Background" Value="{StaticResource ListViewItemSelectedAndMousOver}"/>
+                                                            <Setter Property="BorderBrush" Value="#FF595958"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+
+                                                <!--#endregion-->
+
+                                            </ListView.Resources>
+
+                                            <!--#endregion-->
+                                            <ListView.View>
+                                                <GridView>
+                                                    <GridViewColumn Header="Пациенты">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="{Binding SecondName}" d:Text="Фамилия" Margin="0 0 2 0"/>
+                                                                    <TextBlock Text="{Binding FirstName}" d:Text="Имя" Margin="0 0 2 0" />
+                                                                    <TextBlock Text="{Binding LastName}" d:Text="Отчество"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>
+                                        <!--#endregion-->
+                                        
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
