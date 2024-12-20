@@ -97,23 +97,83 @@ namespace LifeLine.MVVM.ViewModel
         {
             if (value is List<object> obj)
             {
-                VisibilityVisibleManager();
-                MaxHeightImage = 675;
+                if (obj[0] is Document document && obj[1] is Employee employee)
+                {
+                    VisibilityVisibleManager();
+                    VisibilityAvatarTypeDocVisibleManager();
 
-                Documents = (Document)obj[0];
-                AvatarEmp = (byte[])obj[1];
+                    UserEmployee = employee;
+                    _currentUserRole = employee;
+
+                    Documents = document;
+                    AvatarEmp = UserEmployee.Avatar; /*(byte[])obj[1];*/
+                }
+
+                if (obj[0] is DocumentPatient documentPatient && obj[1] is Patient patient)
+                {
+                    VisibilityVisibleManager();
+                    VisibilityAvatarTypeDocCollapsedManager();
+
+                    UserPatient = patient;
+                    _currentUserRole = patient;
+
+                    DocumentsPatient = documentPatient;
+                    DocImage = documentPatient.DocumentImage;
+                }
             }
 
             if (value is ImageDocumentEmployee image)
             {
                 VisibilityCollapsedManager();
-                MaxHeightImage = 950;
+                VisibilityAvatarTypeDocVisibleManager();
 
                 DocImage = image.Image;
             }
+
+            //if (value is DocumentPatient docPatient)
+            //{
+            //    VisibilityVisibleManager();
+            //    VisibilityAvatarTypeDocCollapsedManager();
+
+            //    DocumentsPatient = docPatient;
+            //    DocImage = docPatient.DocumentImage;
+            //}
         }
 
         #region Visibility + MaxHeight
+
+        private Visibility _avatarVisibility;
+        public Visibility AvatarVisibility
+        {
+            get => _avatarVisibility;
+            set
+            {
+                _avatarVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _typeDocEmployeeTBVisibility;
+        public Visibility TypeDocEmployeeTBVisibility
+        {
+            get => _typeDocEmployeeTBVisibility;
+            set
+            {
+                _typeDocEmployeeTBVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _typeDocPatientTBVisibility;
+        public Visibility TypeDocPatientTBVisibility
+        {
+            get => _typeDocPatientTBVisibility;
+            set
+            {
+                _typeDocPatientTBVisibility = value;
+                OnPropertyChanged();
+            }
+        }
 
         private Visibility _infoDocumentBorderVisibility;
         public Visibility InfoDocumentBorderVisibility
@@ -164,6 +224,7 @@ namespace LifeLine.MVVM.ViewModel
             InfoDocumentBorderVisibility = Visibility.Collapsed;
             SaveDeleteButtonBorderVisibility = Visibility.Collapsed;
             SaveChangeButtonBorderVisibility = Visibility.Collapsed;
+            MaxHeightImage = 950;
         }
 
         private void VisibilityVisibleManager()
@@ -171,11 +232,49 @@ namespace LifeLine.MVVM.ViewModel
             InfoDocumentBorderVisibility = Visibility.Visible;
             SaveDeleteButtonBorderVisibility = Visibility.Visible;
             SaveChangeButtonBorderVisibility = Visibility.Visible;
+            MaxHeightImage = 675;
+        }
+
+        private void VisibilityAvatarTypeDocVisibleManager()
+        {
+            AvatarVisibility = Visibility.Visible;
+            TypeDocEmployeeTBVisibility = Visibility.Visible;
+        }
+
+        private void VisibilityAvatarTypeDocCollapsedManager()
+        {
+            AvatarVisibility = Visibility.Collapsed;
+            TypeDocEmployeeTBVisibility = Visibility.Collapsed;
+            TypeDocPatientTBVisibility = Visibility.Visible;
         }
 
         #endregion
 
         #region Свойства
+
+        private object _currentUserRole = null;
+
+        private Employee _userEmployee;
+        public Employee UserEmployee
+        {
+            get => _userEmployee;
+            set
+            {
+                _userEmployee = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Patient _userPatient;
+        public Patient UserPatient
+        {
+            get => _userPatient;
+            set
+            {
+                _userPatient = value;
+                OnPropertyChanged();
+            }
+        }
 
         private Document _documents;
         public Document Documents
@@ -196,6 +295,31 @@ namespace LifeLine.MVVM.ViewModel
                 DateOfIssueDP = nullableDateTime;
 
                 DocImage = value.DocumentImage;
+                DocFile = value.DocumentFile;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private DocumentPatient _documentsPatient;
+        public DocumentPatient DocumentsPatient
+        {
+            get => _documentsPatient;
+            set
+            {
+                _documentsPatient = value;
+
+                NumberDocumentTB = value.Number;
+                PlaceOfIssueTB = value.PlaceOfIssue;
+
+                //DateOnly? nullableDateOnly = new DateOnly(value.DateOfIssue, value.DateOfIssue.Value.Month, value.DateOfIssue.Value.Day);
+                // Проверка на наличие значения
+                //DateTime? nullableDateTime = nullableDateOnly.HasValue
+                //    ? nullableDateOnly.Value.ToDateTime(TimeOnly.MinValue)
+                //    : (DateTime?)null;
+                DateOfIssueDP = DateTime.Parse(value.DateOfIssue);
+
+                //DocImage = value.DocumentImage;
                 DocFile = value.DocumentFile;
 
                 OnPropertyChanged();
@@ -282,42 +406,89 @@ namespace LifeLine.MVVM.ViewModel
 
         #region Методы
 
-        private async void UpdateDocumentEmployee()
+        private void UpdateDocumentEmployee()
         {
-            DateOnly dateOnly = new DateOnly(DateOfIssueDP.Value.Year, DateOfIssueDP.Value.Month, DateOfIssueDP.Value.Day);
-
-            var doc = await _dataBaseService.FindIdAsync<Document>(Documents.IdDocument);
-
-            if (doc != null)
+            Action action = _currentUserRole switch
             {
-                bool exists = await _dataBaseService.ExistsAsync<Document>(x => x.IdDocument == doc.IdDocument);
-
-                if (exists)
+                Employee => async() =>
                 {
-                    if (_dialogService.ShowMessageButton($"Вы точно хотите изменить «{doc.DocumentFile}»!!", "Предупреждение!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                    DateOnly dateOnly = new DateOnly(DateOfIssueDP.Value.Year, DateOfIssueDP.Value.Month, DateOfIssueDP.Value.Day);
+
+                    var doc = await _dataBaseService.FindIdAsync<Document>(Documents.IdDocument);
+
+                    if (doc != null)
                     {
-                        doc.Number = NumberDocumentTB;
-                        doc.PlaceOfIssue = PlaceOfIssueTB;
-                        doc.DateOfIssue = dateOnly;
-                        doc.DocumentImage = DocImage;
-                        doc.DocumentFile = DocFile;
+                        bool exists = await _dataBaseService.ExistsAsync<Document>(x => x.IdDocument == doc.IdDocument);
 
-                        await _dataBaseService.UpdateAsync(doc);
-                        _navigationPage.NavigateTo("ProfileAddDocumentEmployee", true);
+                        if (exists)
+                        {
+                            if (_dialogService.ShowMessageButton($"Вы точно хотите изменить «{doc.DocumentFile}»!!", "Предупреждение!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                            {
+                                doc.Number = NumberDocumentTB;
+                                doc.PlaceOfIssue = PlaceOfIssueTB;
+                                doc.DateOfIssue = dateOnly;
+                                doc.DocumentImage = DocImage;
+                                doc.DocumentFile = DocFile;
+
+                                await _dataBaseService.UpdateAsync(doc);
+                                _navigationPage.NavigateTo("ProfileAddDocumentEmployee", true);
+                            }
+                        }
+                        else
+                        {
+                            doc.Number = NumberDocumentTB;
+                            doc.PlaceOfIssue = PlaceOfIssueTB;
+                            doc.DateOfIssue = dateOnly;
+                            doc.DocumentImage = DocImage;
+                            doc.DocumentFile = DocFile;
+
+                            await _dataBaseService.UpdateAsync(doc);
+                            _navigationPage.NavigateTo("ProfileAddDocumentEmployee", true);
+                        }
                     }
-                }
-                else
-                {
-                    doc.Number = NumberDocumentTB;
-                    doc.PlaceOfIssue = PlaceOfIssueTB;
-                    doc.DateOfIssue = dateOnly;
-                    doc.DocumentImage = DocImage;
-                    doc.DocumentFile = DocFile;
+                },
 
-                    await _dataBaseService.UpdateAsync(doc);
-                    _navigationPage.NavigateTo("ProfileAddDocumentEmployee", true);
-                }
-            }
+                Patient => async() =>
+                {
+                    DateOnly dateOnly = new DateOnly(DateOfIssueDP.Value.Year, DateOfIssueDP.Value.Month, DateOfIssueDP.Value.Day);
+
+                    var doc = await _dataBaseService.FindIdAsync<DocumentPatient>(DocumentsPatient.IdDocumentPatient);
+
+                    if (doc != null)
+                    {
+                        bool exists = await _dataBaseService.ExistsAsync<DocumentPatient>(x => x.IdDocumentPatient == doc.IdDocumentPatient);
+
+                        if (exists)
+                        {
+                            if (_dialogService.ShowMessageButton($"Вы точно хотите изменить «{doc.DocumentFile}»!!", "Предупреждение!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                            {
+                                doc.Number = NumberDocumentTB;
+                                doc.PlaceOfIssue = PlaceOfIssueTB;
+                                doc.DateOfIssue = dateOnly.ToString();
+                                doc.DocumentImage = DocImage;
+                                doc.DocumentFile = DocFile;
+
+                                await _dataBaseService.UpdateAsync(doc);
+                                _navigationPage.NavigateTo("ProfileAddDocumentEmployee", true);
+                            }
+                        }
+                        else
+                        {
+                            doc.Number = NumberDocumentTB;
+                            doc.PlaceOfIssue = PlaceOfIssueTB;
+                            doc.DateOfIssue = dateOnly.ToString();
+                            doc.DocumentImage = DocImage;
+                            doc.DocumentFile = DocFile;
+
+                            await _dataBaseService.UpdateAsync(doc);
+                            _navigationPage.NavigateTo("ProfileAddDocumentEmployee", true);
+                        }
+                    }
+                },
+
+                _ => () => throw new Exception("Нет такого типа!!")
+            };
+            action?.Invoke();
         }
 
         private void SelectedImage()

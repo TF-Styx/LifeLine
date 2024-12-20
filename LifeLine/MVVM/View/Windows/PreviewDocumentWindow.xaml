@@ -82,7 +82,8 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <Image Source="{Binding AvatarEmp}"
                            Width="35" Margin="2"
-                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                           HorizontalAlignment="Left" VerticalAlignment="Center"
+                           Visibility="{Binding AvatarVisibility}"/>
                     <TextBlock Text="Ваш документ" 
                                FontSize="20" Margin="20 0 0 0"
                                VerticalAlignment="Center"/>
@@ -138,7 +139,8 @@
                                                HorizontalAlignment="Center"/>
                                     <DockPanel Margin="5" HorizontalAlignment="Stretch">
                                         <TextBlock Text="Тип документа: " DockPanel.Dock="Left" Style="{StaticResource TextBlockImage}"/>
-                                        <TextBlock d:Text="Тип документа" Text="{Binding Documents.IdTypeDocumentNavigation.TypeDocumentName}" HorizontalAlignment="Right" Style="{StaticResource TextBlockImage}"/>
+                                        <TextBlock d:Text="Тип документа" Text="{Binding Documents.IdTypeDocumentNavigation.TypeDocumentName}" Visibility="{Binding TypeDocEmployeeTBVisibility}" HorizontalAlignment="Right" Style="{StaticResource TextBlockImage}"/>
+                                        <TextBlock d:Text="Тип документа" Text="{Binding DocumentsPatient.IdTypeDocumentNavigation.TypeDocumentName}" Visibility="{Binding TypeDocPatientTBVisibility}" HorizontalAlignment="Right" Style="{StaticResource TextBlockImage}"/>
                                     </DockPanel>
                                     <DockPanel Margin="5" HorizontalAlignment="Stretch">
                                         <TextBlock Text="Номер документа: " DockPanel.Dock="Left" Style="{StaticResource TextBlockImage}"/>

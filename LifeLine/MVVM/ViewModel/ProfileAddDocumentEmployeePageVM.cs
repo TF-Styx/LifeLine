@@ -44,9 +44,12 @@ namespace LifeLine.MVVM.ViewModel
             if (value is Employee employee)
             {
                 CurrentUser = employee;
+                _currentUserRole = employee;
+                EmployeeVisibilityManager();
                 GetDocument();
             }
 
+            // TODO : Хз что это
             if (value is bool)
             {
                 GetDocument();
@@ -55,12 +58,81 @@ namespace LifeLine.MVVM.ViewModel
             if (value is Patient patient)
             {
                 UserPatient = patient;
+                _currentUserRole = patient;
+                PatientVisibilityManager();
+                GetDocument();
             }
         }
 
         // ---------------------------------------------------------------------------------------------------------------------------------------------
 
+        #region Visibility
+
+        private Visibility _employeeFIOtbVisibility;
+        public Visibility EmployeeFIOtbVisibility
+        {
+            get => _employeeFIOtbVisibility;
+            set
+            {
+                _employeeFIOtbVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _patientFIOtbVisibility;
+        public Visibility PatientFIOtbVisibility
+        {
+            get => _patientFIOtbVisibility;
+            set
+            {
+                _patientFIOtbVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _employeeDocumentsLWVisibility;
+        public Visibility EmployeeDocumentsLWVisibility
+        {
+            get => _employeeDocumentsLWVisibility;
+            set
+            {
+                _employeeDocumentsLWVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _patientDocumentsLWVisibility;
+        public Visibility PatientDocumentsLWVisibility
+        {
+            get => _patientDocumentsLWVisibility;
+            set
+            {
+                _patientDocumentsLWVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private void EmployeeVisibilityManager()
+        {
+            EmployeeDocumentsLWVisibility = Visibility.Visible;
+            PatientDocumentsLWVisibility = Visibility.Collapsed;
+            PatientFIOtbVisibility = Visibility.Collapsed;
+            EmployeeFIOtbVisibility = Visibility.Visible;
+        }
+
+        private void PatientVisibilityManager()
+        {
+            EmployeeDocumentsLWVisibility = Visibility.Collapsed;
+            PatientDocumentsLWVisibility = Visibility.Visible;
+            PatientFIOtbVisibility = Visibility.Visible;
+            EmployeeFIOtbVisibility = Visibility.Collapsed;
+        }
+
+        #endregion
+
         #region Свойства
+
+        private object _currentUserRole = null;
 
         private Employee _currentUser;
         public Employee CurrentUser
@@ -83,6 +155,8 @@ namespace LifeLine.MVVM.ViewModel
                 OnPropertyChanged();
             }
         }
+
+            #region Заполнение
 
         private TypeDocument _selectedTypeDocument;
         public TypeDocument SelectedTypeDocument
@@ -162,10 +236,18 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
+            #endregion
+
+            #region ListView
+
         public ObservableCollection<Document> Documents { get; set; } = [];
+        public ObservableCollection<DocumentPatient> DocumentsPatient { get; set; } = [];
         public ObservableCollection<TypeDocument> TypeDocuments { get; set; } = [];
         public ObservableCollection<ImageDocumentEmployee> ImageDocumentEmployees { get; set; } = [];
-        public List<Document> SelectedFiles { get; set; } = [];
+        public List<Document> SelectedFilesEmployee { get; set; } = [];
+        public List<DocumentPatient> SelectedFilesPatient { get; set; } = [];
+
+            #endregion
 
         #endregion
 
@@ -209,83 +291,189 @@ namespace LifeLine.MVVM.ViewModel
 
         #region Методы
 
-        private async void AddDocumentEmployee()
+        private void AddDocumentEmployee()
         {
-            DateOnly date;
-            try
+            Action action = _currentUserRole switch
             {
-                date = new DateOnly(DateOfIssueDP.Value.Year, DateOfIssueDP.Value.Month, DateOfIssueDP.Value.Day);
-            }
-            catch (Exception)
-            {
-                date = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            }
-
-            if (SelectedTypeDocument == null)
-            {
-                _dialogService.ShowMessage("Вы не выбрали «Тип документа»!!");
-                return;
-            }
-
-            foreach (var item in ImageDocumentEmployees)
-            {
-                Document document = new Document()
+                Employee => async () =>
                 {
-                    IdEmployee = CurrentUser.IdEmployee,
-                    IdTypeDocument = SelectedTypeDocument.IdTypeDocument,
-                    Number = NumberDocumentTB,
-                    PlaceOfIssue = PlaceOfIssueTB,
-                    DateOfIssue = date,
-                    DocumentImage = item.Image,
-                    DocumentFile = item.NameImage,
-                };
+                    DateOnly date;
+                    try
+                    {
+                        date = new DateOnly(DateOfIssueDP.Value.Year, DateOfIssueDP.Value.Month, DateOfIssueDP.Value.Day);
+                    }
+                    catch (Exception)
+                    {
+                        date = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+                    }
 
-                await _dataBaseService.AddAsync(document);
-            }
+                    if (SelectedTypeDocument == null)
+                    {
+                        _dialogService.ShowMessage("Вы не выбрали «Тип документа»!!");
+                        return;
+                    }
 
-            GetDocument();
-            ClearInputData();
+                    foreach (var item in ImageDocumentEmployees)
+                    {
+                        Document document = new Document()
+                        {
+                            IdEmployee = CurrentUser.IdEmployee,
+                            IdTypeDocument = SelectedTypeDocument.IdTypeDocument,
+                            Number = NumberDocumentTB,
+                            PlaceOfIssue = PlaceOfIssueTB,
+                            DateOfIssue = date,
+                            DocumentImage = item.Image,
+                            DocumentFile = item.NameImage,
+                        };
+
+                        await _dataBaseService.AddAsync(document);
+                    }
+
+                    GetDocument();
+                    ClearInputData();
+                },
+
+                Patient => async () =>
+                {
+                    DateOnly date;
+                    try
+                    {
+                        date = new DateOnly(DateOfIssueDP.Value.Year, DateOfIssueDP.Value.Month, DateOfIssueDP.Value.Day);
+                    }
+                    catch (Exception)
+                    {
+                        date = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+                    }
+
+                    if (SelectedTypeDocument == null)
+                    {
+                        _dialogService.ShowMessage("Вы не выбрали «Тип документа»!!");
+                        return;
+                    }
+
+                    foreach (var item in ImageDocumentEmployees)
+                    {
+                        DocumentPatient docPatient = new DocumentPatient()
+                        {
+                            IdPatient = UserPatient.IdPatient,
+                            IdTypeDocument = SelectedTypeDocument.IdTypeDocument,
+                            Number = NumberDocumentTB,
+                            PlaceOfIssue = PlaceOfIssueTB,
+                            DateOfIssue = date.ToString(),
+                            DocumentImage = item.Image,
+                            DocumentFile = item.NameImage,
+                        };
+
+                        await _dataBaseService.AddAsync(docPatient);
+                    }
+
+                    GetDocument();
+                    ClearInputData();
+                },
+
+                _ => () => throw new Exception()
+            };
+            action?.Invoke();
         }
 
-        private async void DeleteDocumentEmployee(object parameter)
+        private void DeleteDocumentEmployee(object parameter)
         {
             if (parameter != null)
             {
-                if (parameter is Document document)
+                Action action = _currentUserRole switch
                 {
-                    if (_dialogService.ShowMessageButton($"Вы действительно хотите удалить документ «{document.IdTypeDocumentNavigation.TypeDocumentName}»\n" +
-                           $"у «{document.IdEmployeeNavigation.SecondName} {document.IdEmployeeNavigation.FirstName} {document.IdEmployeeNavigation.LastName}»!",
-                           "Предупреждение!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                    Employee => async () =>
                     {
-                        await _dataBaseService.DeleteAsync(document);
-                        GetDocument();
-                    }
-                }
+                        if (parameter is Document document)
+                        {
+                            if (_dialogService.ShowMessageButton($"Вы действительно хотите удалить документ «{document.IdTypeDocumentNavigation.TypeDocumentName}»\n" +
+                                   $"у сотрудника «{document.IdEmployeeNavigation.SecondName} {document.IdEmployeeNavigation.FirstName} {document.IdEmployeeNavigation.LastName}»!",
+                                   "Предупреждение!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                            {
+                                await _dataBaseService.DeleteAsync(document);
+                                GetDocument();
+                            }
+                        }
+                    },
+
+                    Patient => async () =>
+                    {
+                        if (parameter is DocumentPatient docPatient)
+                        {
+                            if (_dialogService.ShowMessageButton($"Вы действительно хотите удалить документ «{docPatient.IdTypeDocumentNavigation.TypeDocumentName}»\n" +
+                                   $"у пациента «{docPatient.IdPatientNavigation.SecondName} {docPatient.IdPatientNavigation.FirstName} {docPatient.IdPatientNavigation.LastName}»!",
+                                   "Предупреждение!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                            {
+                                await _dataBaseService.DeleteAsync(docPatient);
+                                GetDocument();
+                            }
+                        }
+                    },
+
+                    _ => () => throw new Exception()
+                };
+                action?.Invoke();
             }
         }
 
-        private async void DeleteALLDocumentEmployee()
+        private void DeleteALLDocumentEmployee()
         {
-            if (SelectedFiles.Count > 1)
+            Action action = _currentUserRole switch
             {
-                if (_dialogService.ShowMessageButton($"Вы действительно хотите удалить выбранные элементы «{SelectedFiles.Count}»!!", "Предупреждение!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                Employee => async() =>
                 {
-                    foreach (var item in SelectedFiles)
+                    if (SelectedFilesEmployee.Count > 1)
                     {
-                        await _dataBaseService.DeleteAsync(item);
+                        if (_dialogService.ShowMessageButton($"Вы действительно хотите удалить выбранные элементы «{SelectedFilesEmployee.Count}»!!", "Предупреждение!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                        {
+                            foreach (var item in SelectedFilesEmployee)
+                            {
+                                await _dataBaseService.DeleteAsync(item);
+                            }
+                            GetDocument();
+                        }
                     }
-                    GetDocument();
-                }
-            }
-            else
-            {
-                _dialogService.ShowMessage("Вы не выбрали ни одного элемента!!");
-            }
+                    else
+                    {
+                        _dialogService.ShowMessage("Вы не выбрали ни одного элемента!!");
+                    }
+                },
+
+                Patient => async () =>
+                {
+                    if (SelectedFilesPatient.Count > 1)
+                    {
+                        if (_dialogService.ShowMessageButton($"Вы действительно хотите удалить выбранные элементы «{SelectedFilesPatient.Count}»!!", "Предупреждение!!", MessageButtons.YesNo) == MessageButtons.Yes)
+                        {
+                            foreach (var item in SelectedFilesPatient)
+                            {
+                                await _dataBaseService.DeleteAsync(item);
+                            }
+                            GetDocument();
+                        }
+                    }
+                    else
+                    {
+                        _dialogService.ShowMessage("Вы не выбрали ни одного элемента!!");
+                    }
+                },
+
+                _ => () => throw new Exception("Что-то там не найдено")
+            };
+            action?.Invoke();
         }
 
         private void BackToProfileEmployee()
         {
-            _navigationPage.NavigateTo("ProfileEmployee", CurrentUser);
+            Action action = _currentUserRole switch
+            {
+                Employee => () => _navigationPage.NavigateTo("ProfileEmployee", CurrentUser),
+
+                Patient => () => _navigationPage.NavigateTo("ProfileEmployee", UserPatient),
+
+                _ => () => throw new Exception("Такого типа нет!!")
+            };
+            action?.Invoke();
         }
 
         private void SelectedImage()
@@ -330,15 +518,31 @@ namespace LifeLine.MVVM.ViewModel
         {
             if (parameter != null)
             {
-                if (parameter is Document imageDoc)
+                Action action = _currentUserRole switch
                 {
-                    List<object> obj = [imageDoc, CurrentUser.Avatar];
+                    Employee => () =>
+                    {
+                        if (parameter is Document imageDoc)
+                        {
+                            List<object> obj = [imageDoc, CurrentUser];
+                            _navigationWindow.NavigateTo("PreviewDocumentWithUpdate", obj);
+                        }
+                    },
 
-                    _navigationWindow.NavigateTo("PreviewDocumentWithUpdate", obj);
-                }
+                    Patient => () =>
+                    {
+                        if (parameter is DocumentPatient imageDoc)
+                        {
+                            List<object> obj = [imageDoc, UserPatient];
+                            _navigationWindow.NavigateTo("PreviewDocumentWithUpdate", obj);
+                        }
+                    },
+
+                    _ => () => throw new Exception("Такого типа нет!!")
+                };
+                action?.Invoke();
             }
         }
-        
 
         private void OpenPreviewDocumentWithUpdate(object parameter)
         {
@@ -355,27 +559,111 @@ namespace LifeLine.MVVM.ViewModel
         {
             if (parameter != null)
             {
-                if (parameter is Document imageDoc)
+                Action action = _currentUserRole switch
                 {
-                    List<object> obj = [imageDoc, CurrentUser.Avatar];
-                    _navigationWindow.NavigateTo("PreviewDocumentNewWindow", obj);
-                }
+                    Employee => () =>
+                    {
+                        if (parameter is Document imageDoc)
+                        {
+                            List<object> obj = [imageDoc, CurrentUser.Avatar];
+                            _navigationWindow.NavigateTo("PreviewDocumentNewWindow", obj);
+                        }
+                    },
+
+                    Patient => () =>
+                    {
+                        if (parameter is DocumentPatient imageDoc)
+                        {
+                            _navigationWindow.NavigateTo("PreviewDocumentNewWindow", imageDoc);
+                        }
+                    },
+
+                    _ => () => throw new Exception("Такого типа нет!!")
+                };
+                action?.Invoke();
             }
         }
 
-        private async void GetDocument()
+        private void GetDocument(/*object user*/)
         {
-            Documents.Clear();
-
-            var document = await _dataBaseService.GetDataTableAsync<Document>(x => x.Where(x => x.IdEmployee == CurrentUser.IdEmployee)
-                                                                                    .Include(x => x.IdTypeDocumentNavigation)
-                                                                                    .Include(x => x.IdEmployeeNavigation)
-                                                                                    .OrderBy(x => x.IdTypeDocument));
-
-            foreach (var item in document)
+            Action action = _currentUserRole switch
             {
-                Documents.Add(item);
-            }
+                Employee => async () =>
+                {
+                    Documents.Clear();
+
+                    var document =
+                        await _dataBaseService.GetDataTableAsync<Document>(x => x
+                            .Where(x => x.IdEmployee == CurrentUser.IdEmployee)
+                                .Include(x => x.IdTypeDocumentNavigation)
+                                .Include(x => x.IdEmployeeNavigation)
+                                    .OrderBy(x => x.IdTypeDocument));
+
+                    foreach (var item in document)
+                    {
+                        Documents.Add(item);
+                    }
+                },
+
+                Patient => async () =>
+                {
+                    DocumentsPatient.Clear();
+
+                    var docPatient =
+                        await _dataBaseService.GetDataTableAsync<DocumentPatient>(x => x
+                            .Where(x => x.IdPatient == UserPatient.IdPatient)
+                                .Include(x => x.IdTypeDocumentNavigation)
+                                .Include(x => x.IdPatientNavigation)
+                                    .OrderBy(x => x.IdTypeDocument));
+
+                    foreach (var item in docPatient)
+                    {
+                        DocumentsPatient.Add(item);
+                    }
+                },
+
+                _ => () => throw new Exception("Нет такого типа!!")
+            };
+            action?.Invoke();
+
+
+            #region Первый вариант
+
+            //if (user is Employee employee)
+            //{
+            //    Documents.Clear();
+
+            //    var document = 
+            //        await _dataBaseService.GetDataTableAsync<Document>(x => x
+            //            .Where(x => x.IdEmployee == employee.IdEmployee)
+            //                .Include(x => x.IdTypeDocumentNavigation)
+            //                .Include(x => x.IdEmployeeNavigation)
+            //                    .OrderBy(x => x.IdTypeDocument));
+
+            //    foreach (var item in document)
+            //    {
+            //        Documents.Add(item);
+            //    }
+            //}
+
+            //if (user is Patient patient)
+            //{
+            //    DocumentsPatient.Clear();
+
+            //    var docPatient = 
+            //        await _dataBaseService.GetDataTableAsync<DocumentPatient>(x => x
+            //            .Where(x => x.IdPatient == patient.IdPatient)
+            //                .Include(x => x.IdTypeDocumentNavigation)
+            //                .Include(x => x.IdPatientNavigation)
+            //                    .OrderBy(x => x.IdTypeDocument));
+
+            //    foreach (var item in docPatient)
+            //    {
+            //        DocumentsPatient.Add(item);
+            //    }
+            //}
+
+            #endregion
         }
 
         private void ClearInputData()
@@ -400,7 +688,7 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private async void SearchDocumentEmployeeAsync()
+        private void SearchDocumentEmployeeAsync()
         {
             //var search = 
             //    await 
@@ -411,23 +699,52 @@ namespace LifeLine.MVVM.ViewModel
             //                            x.PlaceOfIssue.ToLower().Contains(SearchDocumentEmployeeTB.ToLower()) ||
             //                            x.DateOfIssue.ToString().Contains(SearchDocumentEmployeeTB.ToString()) ||
             //                            x.DocumentFile.ToLower().Contains(SearchDocumentEmployeeTB)));
-            
-            var search = 
-                await 
-                    _dataBaseService.GetDataTableAsync<Document>(x => x
-                        .Include(x => x.IdTypeDocumentNavigation)
-                            .Where(x => x.IdTypeDocumentNavigation.TypeDocumentName.Contains(SearchDocumentEmployeeTB) ||
-                                        x.DocumentFile.ToLower().Contains(SearchDocumentEmployeeTB)));
 
-            App.Current.Dispatcher.Invoke(() =>
+            Action action = _currentUserRole switch
             {
-                Documents.Clear();
-
-                foreach (var item in search)
+                Employee => async () =>
                 {
-                    Documents.Add(item);
-                }
-            });
+                    var search =
+                            await
+                                _dataBaseService.GetDataTableAsync<Document>(x => x
+                                    .Include(x => x.IdTypeDocumentNavigation)
+                                        .Where(x => x.IdTypeDocumentNavigation.TypeDocumentName.Contains(SearchDocumentEmployeeTB) ||
+                                                    x.DocumentFile.ToLower().Contains(SearchDocumentEmployeeTB)));
+
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        Documents.Clear();
+
+                        foreach (var item in search)
+                        {
+                            Documents.Add(item);
+                        }
+                    });
+                },
+
+                Patient => async () =>
+                {
+                    var search =
+                            await
+                                _dataBaseService.GetDataTableAsync<DocumentPatient>(x => x
+                                    .Include(x => x.IdTypeDocumentNavigation)
+                                        .Where(x => x.IdTypeDocumentNavigation.TypeDocumentName.Contains(SearchDocumentEmployeeTB) ||
+                                                    x.DocumentFile.ToLower().Contains(SearchDocumentEmployeeTB)));
+
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        DocumentsPatient.Clear();
+
+                        foreach (var item in search)
+                        {
+                            DocumentsPatient.Add(item);
+                        }
+                    });
+                },
+
+                _ => () => throw new Exception("Нет такого типа!!")
+            };
+            action?.Invoke();
         }
 
         #endregion

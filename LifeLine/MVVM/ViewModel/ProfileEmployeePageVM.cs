@@ -45,6 +45,7 @@ namespace LifeLine.MVVM.ViewModel
             if (value is Employee employee)
             {
                 UserEmployee = employee;
+                _currentUserRole = employee;
 
                 EmployeeVisibilityManager();
                 GetUser();
@@ -55,6 +56,7 @@ namespace LifeLine.MVVM.ViewModel
             if (value is Patient patient)
             {
                 UserPatient = patient;
+                _currentUserRole = patient;
 
                 PatientVisibilityManager();
                 GetPatient();
@@ -86,13 +88,13 @@ namespace LifeLine.MVVM.ViewModel
             }
         }
 
-        private Visibility _patientFIOspVisibility;
-        public Visibility PatientFIOspVisibility
+        private Visibility _patientFIOtbVisibility;
+        public Visibility PatientFIOtbVisibility
         {
-            get => _patientFIOspVisibility;
+            get => _patientFIOtbVisibility;
             set
             {
-                _patientFIOspVisibility = value;
+                _patientFIOtbVisibility = value;
                 OnPropertyChanged();
             }
         }
@@ -133,6 +135,7 @@ namespace LifeLine.MVVM.ViewModel
         private void PatientVisibilityManager()
         {
             ImageSPVisibility = Visibility.Collapsed;
+            PatientFIOtbVisibility = Visibility.Visible;
             EmployeeFIOtbVisibility = Visibility.Collapsed;
             TimeTableSPVisibility = Visibility.Collapsed;
             ColleaguesLWVisibility = Visibility.Collapsed;
@@ -142,7 +145,8 @@ namespace LifeLine.MVVM.ViewModel
         private void EmployeeVisibilityManager()
         {
             ImageSPVisibility = Visibility.Visible;
-            PatientFIOspVisibility = Visibility.Visible;
+            PatientFIOtbVisibility = Visibility.Collapsed;
+            EmployeeFIOtbVisibility = Visibility.Visible;
             TimeTableSPVisibility = Visibility.Visible;
             ColleaguesLWVisibility = Visibility.Visible;
             PatientsLWVisibility = Visibility.Collapsed;
@@ -152,7 +156,7 @@ namespace LifeLine.MVVM.ViewModel
 
         #region Свойства
 
-            #region TextBlock
+        private object _currentUserRole = null;
 
         private Employee _userEmployee;
         public Employee UserEmployee
@@ -175,6 +179,8 @@ namespace LifeLine.MVVM.ViewModel
                 OnPropertyChanged();
             }
         }
+
+            #region TextBlock
 
         private byte[] _imageProfile;
         public byte[] ImageProfile
@@ -247,16 +253,30 @@ namespace LifeLine.MVVM.ViewModel
 
         private void OpenProfileAddDocumentEmployee()
         {
-            if (UserEmployee is Employee employee)
+            Action action = _currentUserRole switch
             {
-                _navigationPage.NavigateTo("ProfileAddDocumentEmployee", UserEmployee);
-                return;
-            }
-            if (UserPatient is Patient patient)
-            {
-                _navigationPage.NavigateTo("ProfileAddDocumentEmployee", UserPatient);
-                return;
-            }
+                Employee => () =>
+                {
+                    _navigationPage.NavigateTo("ProfileAddDocumentEmployee", _currentUserRole);
+                },
+
+                Patient => () =>
+                {
+                    _navigationPage.NavigateTo("ProfileAddDocumentEmployee", _currentUserRole);
+                },
+
+                _ => () => throw new Exception("Тип не определен!!")
+            };
+            action?.Invoke();
+
+            //if (_currentUserRole is Employee employee)
+            //{
+            //    _navigationPage.NavigateTo("ProfileAddDocumentEmployee", UserEmployee);
+            //}
+            //if (_currentUserRole is Patient patient)
+            //{
+            //    _navigationPage.NavigateTo("ProfileAddDocumentEmployee", UserPatient);
+            //}
         }
 
         private void GetUser()

@@ -25,6 +25,17 @@ namespace LifeLine.Utils.ValueConverter
                     return "Сотрудник";
                 }
             }
+            if (value is Patient patient)
+            {
+                if (patient != null)
+                {
+                    return $"{patient.SecondName} {patient.FirstName} {patient.LastName}";
+                }
+                else
+                {
+                    return "Пациент";
+                }
+            }
             else if (value is EmployeeTimeTable timeTable)
             {
                 return $"{timeTable.SecondName} {timeTable.FirstName} {timeTable.LastName}";

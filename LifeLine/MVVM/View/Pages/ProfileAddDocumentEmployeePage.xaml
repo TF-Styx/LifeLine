@@ -37,7 +37,11 @@
             <!--#region || ВЕРХ || ФИО + Навигация -->
             <StackPanel Grid.Row="0" Grid.Column="0" Margin="10" HorizontalAlignment="Center">
                 <TextBlock Text="{Binding CurrentUser, Converter={StaticResource FullNameConvertor}}" 
-                               d:Text="Фамилия Имя Отчество" Style="{StaticResource TextBloclAddDocumentProfileName}"/>
+                           d:Text="Фамилия Имя Отчество" Style="{StaticResource TextBloclAddDocumentProfileName}"
+                           Visibility="{Binding EmployeeFIOtbVisibility}"/>
+                <TextBlock Text="{Binding UserPatient, Converter={StaticResource FullNameConvertor}}" 
+                           d:Text="Фамилия Имя Отчество" Style="{StaticResource TextBloclAddDocumentProfileName}"
+                           Visibility="{Binding PatientFIOtbVisibility}"/>
             </StackPanel>
 
             <StackPanel Grid.Row="0" Grid.Column="1" Margin="10" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -184,13 +188,15 @@
                         </StackPanel>
                         <!--#endregion-->
 
+                        <!--#region Сотрудник -->
                         <ListView ItemsSource="{Binding Documents}" 
                                   d:ItemsSource="{d:SampleData ItemCount=12}" 
                                   SelectionMode="Extended"
+                                  Visibility="{Binding EmployeeDocumentsLWVisibility}"
                                   FontSize="15" MaxHeight="320">
                             
                             <i:Interaction.Behaviors>
-                                <behavior:ListViewSelectedItemsBehavior SelectedItems="{Binding SelectedFiles}"/>
+                                <behavior:ListViewSelectedItemsBehavior SelectedItems="{Binding SelectedFilesEmployee}"/>
                             </i:Interaction.Behaviors>
                             
                             <!--#region ListView.Resources-->
@@ -280,14 +286,14 @@
                             <!--#endregion-->
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Тип документа">
+                                    <GridViewColumn Header="Тип документа" Width="150">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal">
                                                     <Button Background="#00DDDDDD" BorderBrush="#00707070" Margin="0 0 10 0" Command="{Binding DataContext.DeleteDocumentEmployeeCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
                                                         <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
                                                     </Button>
-                                                    <TextBlock Text="{Binding IdTypeDocumentNavigation.TypeDocumentName}"/>
+                                                    <TextBlock Text="{Binding IdTypeDocumentNavigation.TypeDocumentName}" Width="150" TextWrapping="Wrap"/>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
@@ -299,7 +305,7 @@
                                                     <Button Background="#00DDDDDD" BorderBrush="#00707070" Margin="0 0 5 0" Command="{Binding DataContext.OpenDocumentNewWindowCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
                                                         <fa:ImageAwesome Icon="Regular_WindowRestore" Width="10" Foreground="#FF3053C2"/>
                                                     </Button>
-                                                    <TextBlock Text="{Binding DocumentFile}" DockPanel.Dock="Left" TextWrapping="Wrap" Width="300"/>
+                                                    <TextBlock Text="{Binding DocumentFile}" DockPanel.Dock="Left" TextWrapping="Wrap" Width="230"/>
                                                     <Button DockPanel.Dock="Right" Background="#00DDDDDD" BorderBrush="#00707070" Margin="10 0 0 0" Command="{Binding DataContext.OpenDocumentWithUpdateCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
                                                         <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
                                                     </Button>
@@ -310,6 +316,139 @@
                                 </GridView>
                             </ListView.View>
                         </ListView>
+                        <!--#endregion-->
+                        
+                        <!--============================================================================================-->
+
+                        <!--#region Пациент -->
+                        <ListView ItemsSource="{Binding DocumentsPatient}" 
+                                  d:ItemsSource="{d:SampleData ItemCount=12}" 
+                                  SelectionMode="Extended"
+                                  Visibility="{Binding PatientDocumentsLWVisibility}"
+                                  FontSize="15" MaxHeight="320">
+
+                            <i:Interaction.Behaviors>
+                                <behavior:ListViewSelectedItemsBehavior SelectedItems="{Binding SelectedFilesPatient}"/>
+                            </i:Interaction.Behaviors>
+
+                            <!--#region ListView.Resources-->
+
+                            <ListView.Resources>
+
+                                <LinearGradientBrush x:Key="ListViewItemSelectedAndMousOver" EndPoint="1,0" StartPoint="1,0">
+                                    <GradientStop Color="#FFA0C5D1" Offset="1.0"/>
+                                    <GradientStop Color="#FF8AC1D2" Offset="0.0"/>
+                                </LinearGradientBrush>
+
+                                <!--#region Шаблон для заголовка GridViewColumnHeader-->
+
+                                <Style TargetType="GridViewColumnHeader">
+                                    <Setter Property="Background" Value="#FF8AC1D2"/>
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="GridViewColumnHeader">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="5"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Background="{TemplateBinding Background}" 
+                                    BorderBrush="#FF8AC1D2" 
+                                    BorderThickness="0,0,1,0" 
+                                    Padding="5" 
+                                    Grid.Column="0">
+                                                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                                                    </Border>
+                                                    <Thumb Grid.Column="1" 
+                                   Width="5" 
+                                   Background="#FF8AC1D2" 
+                                   Cursor="SizeWE"/>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#FF8AC1D2"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Background" Value="#FF8AC1D2"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+
+                                <!--#endregion-->
+
+                                <!--#region Стиль ListView-->
+
+                                <Style TargetType="ListView">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="Background" Value="#FF8AC1D2" />
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+
+                                <!--#endregion-->
+
+                                <!--#region Стиль ListViewItem-->
+
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Background" Value="#FFA0C5D1"/>
+                                    <Setter Property="BorderBrush" Value="#2A2A2A"/>
+                                    <Setter Property="Margin" Value="0 0 0 5"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource ListViewItemSelectedAndMousOver}"/>
+                                            <Setter Property="BorderBrush" Value="#FF595958"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource ListViewItemSelectedAndMousOver}"/>
+                                            <Setter Property="BorderBrush" Value="#FF595958"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+
+                                <!--#endregion-->
+
+                            </ListView.Resources>
+
+                            <!--#endregion-->
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Тип документа" Width="150">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Button Background="#00DDDDDD" BorderBrush="#00707070" Margin="0 0 10 0" Command="{Binding DataContext.DeleteDocumentEmployeeCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                                        <fa:ImageAwesome Icon="Solid_TrashAlt" Width="10" Foreground="#FFDD3D3D"/>
+                                                    </Button>
+                                                    <TextBlock Text="{Binding IdTypeDocumentNavigation.TypeDocumentName}" Width="150" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Документ">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <DockPanel HorizontalAlignment="Stretch">
+                                                    <Button Background="#00DDDDDD" BorderBrush="#00707070" Margin="0 0 5 0" Command="{Binding DataContext.OpenDocumentNewWindowCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                                        <fa:ImageAwesome Icon="Regular_WindowRestore" Width="10" Foreground="#FF3053C2"/>
+                                                    </Button>
+                                                    <TextBlock Text="{Binding DocumentFile}" DockPanel.Dock="Left" TextWrapping="Wrap" Width="230"/>
+                                                    <Button DockPanel.Dock="Right" Background="#00DDDDDD" BorderBrush="#00707070" Margin="10 0 0 0" Command="{Binding DataContext.OpenDocumentWithUpdateCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}">
+                                                        <fa:ImageAwesome Icon="Solid_InfoCircle" Width="10" Foreground="#FF3053C2"/>
+                                                    </Button>
+                                                </DockPanel>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <!--#endregion-->
                     </StackPanel>
                 </Border>
             </ScrollViewer>
