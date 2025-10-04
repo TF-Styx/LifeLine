@@ -8,9 +8,15 @@
         Exist,
 
         Save,
+
         Create,
+        CreateHttp,
+
         Update,
+        UpdateHttp,
+
         Delete,
+        DeleteHttp,
 
         Server,
         InvalidRequest,
