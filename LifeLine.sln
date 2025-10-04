@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Kernel", "src\shared
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Http", "src\shared\infrastructure\Shared.Http\Shared.Http.csproj", "{0B0975E3-2615-4C8C-A933-CE76E581E2DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Logging", "src\shared\core\Shared.Logging\Shared.Logging.csproj", "{59214297-0AB0-4E1F-B2C0-A425A5E660A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{0B0975E3-2615-4C8C-A933-CE76E581E2DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B0975E3-2615-4C8C-A933-CE76E581E2DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B0975E3-2615-4C8C-A933-CE76E581E2DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59214297-0AB0-4E1F-B2C0-A425A5E660A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59214297-0AB0-4E1F-B2C0-A425A5E660A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59214297-0AB0-4E1F-B2C0-A425A5E660A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59214297-0AB0-4E1F-B2C0-A425A5E660A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{739B110E-2A40-4423-B076-8F4F75C85F68} = {6F977A9E-1025-4384-8AD6-8C33338B8D0C}
 		{346B7831-2AEC-4D82-AC2D-6F44E3F00594} = {6F977A9E-1025-4384-8AD6-8C33338B8D0C}
 		{0B0975E3-2615-4C8C-A933-CE76E581E2DF} = {123FCCFA-547A-4314-AA62-87DE5504D85B}
+		{59214297-0AB0-4E1F-B2C0-A425A5E660A5} = {6F977A9E-1025-4384-8AD6-8C33338B8D0C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B55E38C3-87A3-4F4A-8270-F0D69B972C41}
