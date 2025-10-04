@@ -1,6 +1,6 @@
 ﻿namespace Shared.Kernel.Primitives
 {
-    public abstract class Aggregate<TId> : Entity<TId> where TId : notnull
+    public abstract class Aggregate<TId> : Entity<TId>, IAggregate where TId : notnull
     {
         protected Aggregate() { }
         protected Aggregate(TId id) : base(id) { }
