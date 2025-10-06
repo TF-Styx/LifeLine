@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared.Kernel\Shared.Kernel.csproj" />
+    <ProjectReference Include="..\..\..\..\shared\api\Shared.Api.Infrastructure\Shared.Api.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\LifeLine.Employee.Service.Domain\LifeLine.Employee.Service.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@ namespace Shared.Logging
 {
     public static class LoggingExtensions
     {
-        public static IHostBuilder UseSerialog(this IHostBuilder builder)
+        public static IHostBuilder UseSerialogLogger(this IHostBuilder builder)
         {
             builder.UseSerilog((context, services, conf) =>
             {

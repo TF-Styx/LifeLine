@@ -31,6 +31,14 @@ namespace Shared.Kernel.Results
         public TResult Match<TResult>(Func<TValue, TResult> onSuccess, Func<IReadOnlyList<Error>, TResult> onFailure) 
             => IsSuccess ? onSuccess(Value) : onFailure(Errors);
 
+        public void Switch(Action<TValue> onSuccess, Action<IReadOnlyList<Error>> onFailure)
+        {
+            if (IsSuccess)
+                onSuccess(Value);
+            else
+                onFailure(Errors);
+        }
+
     }
 
     public class Result
@@ -57,6 +65,14 @@ namespace Shared.Kernel.Results
 
         public TResult Match<TResult>(Func<TResult> onSuccess, Func<IReadOnlyList<Error>, TResult> onFailure) 
             => IsSuccess ? onSuccess() : onFailure(Errors);
+
+        public void Switch(Action onSuccess, Action<IReadOnlyList<Error>> onFailure)
+        {
+            if (IsSuccess)
+                onSuccess();
+            else
+                onFailure(Errors);
+        }
 
         public string StringMessage => BuildMessage(error => $"Код: {error.ErrorCode}. Причина: {error.Message}");
 

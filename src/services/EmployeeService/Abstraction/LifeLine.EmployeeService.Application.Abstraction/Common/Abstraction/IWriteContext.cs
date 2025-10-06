@@ -1,0 +1,12 @@
+﻿using LifeLine.Employee.Service.Domain.Models;
+using Microsoft.EntityFrameworkCore;
+using Shared.Api.Infrastructure;
+
+namespace LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction
+{
+    public interface IWriteContext : IBaseWriteDbContext
+    {
+        DbSet<Employee.Service.Domain.Models.Employee> Employees { get; set; }
+        DbSet<Gender> Genders { get; set; }
+    }
+}

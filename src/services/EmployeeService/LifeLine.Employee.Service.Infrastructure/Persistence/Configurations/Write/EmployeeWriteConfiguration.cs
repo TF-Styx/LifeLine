@@ -1,0 +1,60 @@
+﻿using LifeLine.Employee.Service.Domain.ValueObjects;
+using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
+using LifeLine.Employee.Service.Domain.ValueObjects.Genders;
+using LifeLine.Employee.Service.Infrastructure.Persistence.Constants;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Write
+{
+    internal sealed class EmployeeWriteConfiguration : IEntityTypeConfiguration<Domain.Models.Employee>
+    {
+        public void Configure(EntityTypeBuilder<Domain.Models.Employee> builder)
+        {
+            builder.ToTable("Employees");
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.Id)
+                   .HasColumnName("Id")
+                   .ValueGeneratedNever()
+                   .HasConversion(inDB => inDB.Value, outDB => EmployeeId.Create(outDB));
+
+            builder.Property(x => x.Surname)
+                   .HasColumnName("Surname")
+                   .HasMaxLength(Surname.MAX_LENGTH)
+                   .UseCollation(PostgresConstants.COLLATION_NAME)
+                   .HasConversion(inDB => inDB.Value, outDB => Surname.Create(outDB));
+
+            builder.Property(x => x.Name)
+                   .HasColumnName("Name")
+                   .HasMaxLength(Name.MAX_LENGTH)
+                   .UseCollation(PostgresConstants.COLLATION_NAME)
+                   .HasConversion(inDB => inDB.Value, outDB => Name.Create(outDB));
+
+            builder.Property(x => x.Patronymic)
+                   .HasColumnName("Patronymic")
+                   .IsRequired(false)
+                   .HasMaxLength(Patronymic.MAX_LENGTH)
+                   .UseCollation(PostgresConstants.COLLATION_NAME)
+                   .HasConversion(inDB => inDB != null ? inDB.Value : null, outDB => outDB != null ? Patronymic.Create(outDB) : null);
+
+            builder.Property(x => x.DateEntry)
+                   .HasColumnName("DateEntry");
+
+            builder.Property(x => x.Rating)
+                   .HasColumnName("Rating")
+                   .HasConversion(inDB => inDB.Value, outDB => Rating.Create(outDB));
+
+            builder.Property(x => x.Avatar)
+                   .HasColumnName("Avatar")
+                   .IsRequired(false)
+                   .HasConversion(inDB => inDB != null ? inDB.Value : null, outDB => outDB != null ? ImageKey.Create(outDB) : null);
+
+            builder.Property(x => x.GenderId)
+                   .HasColumnName("GenderId")
+                   .HasConversion(inDB => inDB.Value, outDB => GenderId.Create(outDB));
+
+            builder.HasOne(x => x.Gender).WithMany().HasForeignKey(x => x.GenderId).IsRequired().OnDelete(DeleteBehavior.Restrict);
+        }
+    }
+}
