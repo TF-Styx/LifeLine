@@ -40,7 +40,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         [HttpGet("{id}/get-by-id")]
         public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
         {
-            var result = await _mediator.Send(new GetByIdGenderQuery(id));
+            var result = await _mediator.Send(new GetByIdGenderQuery(id), cancellationToken);
 
             return Ok(result.Value);
         }

@@ -61,6 +61,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abstraction", "Abstraction"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeLine.EmployeeService.Application.Abstraction", "src\services\EmployeeService\Abstraction\LifeLine.EmployeeService.Application.Abstraction\LifeLine.EmployeeService.Application.Abstraction.csproj", "{4BF03D44-AAB6-4F9F-B6A0-5C1A6582F8A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Api", "src\shared\api\Shared.Api\Shared.Api.csproj", "{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,6 +121,10 @@ Global
 		{4BF03D44-AAB6-4F9F-B6A0-5C1A6582F8A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BF03D44-AAB6-4F9F-B6A0-5C1A6582F8A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BF03D44-AAB6-4F9F-B6A0-5C1A6582F8A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -149,6 +155,7 @@ Global
 		{48ABCDE7-5A0D-4CF3-99AC-D9B990C57EC0} = {5AAF6DF6-3E4C-4814-B138-3BEB8F1E358D}
 		{70C52397-1B05-4C3D-BED2-71C7BE838C3D} = {C4C12057-A6A2-4B20-B48D-A57D3541695B}
 		{4BF03D44-AAB6-4F9F-B6A0-5C1A6582F8A2} = {70C52397-1B05-4C3D-BED2-71C7BE838C3D}
+		{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222} = {5AAF6DF6-3E4C-4814-B138-3BEB8F1E358D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B55E38C3-87A3-4F4A-8270-F0D69B972C41}

@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Persistence\SQL\Views\V_Employee_Admin_ListItem.sql" />
     <None Remove="Persistence\SQL\Views\V_Genders.sql" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Persistence\SQL\Views\V_Employee_Admin_ListItem.sql" />
     <EmbeddedResource Include="Persistence\SQL\Views\V_Genders.sql" />
   </ItemGroup>
 

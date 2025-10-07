@@ -19,7 +19,7 @@ namespace LifeLine.Employee.Service.Domain.ValueObjects.Employees
         /// <exception cref="IncorrectStringException"></exception>
         public static Surname Create(string value)
         {
-            GuardException.Against.That(!string.IsNullOrEmpty(value), () => new EmptySurnameException($"В структуру {nameof(Surname)} был передано пустое поле!"));
+            GuardException.Against.That(string.IsNullOrEmpty(value), () => new EmptySurnameException($"В структуру {nameof(Surname)} был передано пустое поле!"));
             GuardException.Against.That(value.Length > MAX_LENGTH || value.Length < MIN_LENGTH, () => new LengthException($"Длина фамилии должна быть в диапазоне от {MAX_LENGTH} до {MIN_LENGTH}"));
             GuardException.Against.That(StringValidator.ContainsInvalidChars(value), () => new IncorrectStringException($"В фамилии должен быть только русский или английский алфавит!"));
 

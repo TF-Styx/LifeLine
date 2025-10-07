@@ -3,7 +3,7 @@ using Shared.Api.Application.Validators.Abstraction;
 
 namespace Shared.Api.Application.Validators.Realization
 {
-    public sealed class NameValidator<TName> : AbstractValidator<TName> where TName : IHasName
+    public sealed class NameValidator<TCommand> : AbstractValidator<TCommand> where TCommand : IHasName
     {
         public NameValidator(int maxLength)
         {
