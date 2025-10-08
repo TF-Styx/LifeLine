@@ -8,6 +8,7 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
     internal sealed class EmployeeWriteContext(DbContextOptions<EmployeeWriteContext> options) : DbContext(options), IWriteContext
     {
         public DbSet<Domain.Models.Employee> Employees { get; set; } = null!;
+        public DbSet<ContactInformation> ContactInformations { get; set; } = null!;
         public DbSet<Gender> Genders { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -15,6 +16,7 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new EmployeeWriteConfiguration());
+            modelBuilder.ApplyConfiguration(new ContactInformationWriteConfiguration());
             modelBuilder.ApplyConfiguration(new GenderWriteConfiguration());
         }
     }

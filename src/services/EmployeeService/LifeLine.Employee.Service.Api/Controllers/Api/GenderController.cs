@@ -5,7 +5,7 @@ using LifeLine.Employee.Service.Application.Features.Genders.Get.GetById;
 using LifeLine.Employee.Service.Application.Features.Genders.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Contracts.Request.EmployeeService.GenderRequests;
+using Shared.Contracts.Request.EmployeeService.Gender;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {

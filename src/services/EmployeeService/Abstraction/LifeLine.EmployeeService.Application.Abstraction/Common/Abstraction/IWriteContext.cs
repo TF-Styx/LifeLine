@@ -7,6 +7,7 @@ namespace LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction
     public interface IWriteContext : IBaseWriteDbContext
     {
         DbSet<Employee.Service.Domain.Models.Employee> Employees { get; set; }
+        DbSet<ContactInformation> ContactInformations { get; set; }
         DbSet<Gender> Genders { get; set; }
     }
 }

@@ -1,9 +1,10 @@
-﻿using LifeLine.Employee.Service.Domain.ValueObjects;
+﻿using LifeLine.Employee.Service.Domain.Models;
 using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
 using LifeLine.Employee.Service.Domain.ValueObjects.Genders;
 using LifeLine.Employee.Service.Infrastructure.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shared.Domain.ValueObjects;
 
 namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Write
 {
@@ -55,6 +56,8 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Wr
                    .HasConversion(inDB => inDB.Value, outDB => GenderId.Create(outDB));
 
             builder.HasOne(x => x.Gender).WithMany().HasForeignKey(x => x.GenderId).IsRequired().OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.ContactInformation).WithOne(x => x.Employee).HasForeignKey<ContactInformation>(x => x.EmployeeId).IsRequired(false).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

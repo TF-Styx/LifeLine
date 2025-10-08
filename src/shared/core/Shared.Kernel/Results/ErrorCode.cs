@@ -21,5 +21,6 @@
         Server,
         InvalidRequest,
         InvalidResponse,
+        ExistContactInformation,
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Shared.Kernel.Guard;
 using Shared.Kernel.Guard.Extensions;
 
-namespace LifeLine.Employee.Service.Domain.ValueObjects
+namespace Shared.Domain.ValueObjects
 {
     public sealed record ImageKey
     {

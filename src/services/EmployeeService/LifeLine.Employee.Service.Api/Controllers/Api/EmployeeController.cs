@@ -1,7 +1,6 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.Get.GetAll;
-using LifeLine.Employee.Service.Application.Features.Employees.Update;
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployee;
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployeeGenderId;
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployeeName;
@@ -9,7 +8,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmpl
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployeeSurname;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Contracts.Request.EmployeeService.EmployeeRequest;
+using Shared.Contracts.Request.EmployeeService.Employee;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
