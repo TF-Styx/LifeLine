@@ -63,6 +63,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeLine.EmployeeService.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Api", "src\shared\api\Shared.Api\Shared.Api.csproj", "{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DirectoryService", "DirectoryService", "{1A1A0BCB-3532-4E6F-A004-EFDC1774B38F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeLine.Directory.Service.Application", "src\services\DirectoryService\LifeLine.Directory.Service.Application\LifeLine.Directory.Service.Application.csproj", "{4E90153C-E12B-4AC2-ACD5-ED2601BF61A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeLine.Directory.Service.Domain", "src\services\DirectoryService\LifeLine.Directory.Service.Domain\LifeLine.Directory.Service.Domain.csproj", "{E05BA467-0E24-4727-A4BC-56C75F8EE14F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeLine.Directory.Service.Infrastructure", "src\services\DirectoryService\LifeLine.Directory.Service.Infrastructure\LifeLine.Directory.Service.Infrastructure.csproj", "{9744F96A-DD05-4EDB-88CB-6386BA108690}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeLine.Directory.Service.Api", "src\services\DirectoryService\LifeLine.Directory.Service.Api\LifeLine.Directory.Service.Api.csproj", "{0543D8CC-1BAA-4632-BD4D-7D2C07D0F934}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +135,22 @@ Global
 		{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E90153C-E12B-4AC2-ACD5-ED2601BF61A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E90153C-E12B-4AC2-ACD5-ED2601BF61A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E90153C-E12B-4AC2-ACD5-ED2601BF61A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E90153C-E12B-4AC2-ACD5-ED2601BF61A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E05BA467-0E24-4727-A4BC-56C75F8EE14F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E05BA467-0E24-4727-A4BC-56C75F8EE14F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E05BA467-0E24-4727-A4BC-56C75F8EE14F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E05BA467-0E24-4727-A4BC-56C75F8EE14F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9744F96A-DD05-4EDB-88CB-6386BA108690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9744F96A-DD05-4EDB-88CB-6386BA108690}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9744F96A-DD05-4EDB-88CB-6386BA108690}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9744F96A-DD05-4EDB-88CB-6386BA108690}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0543D8CC-1BAA-4632-BD4D-7D2C07D0F934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0543D8CC-1BAA-4632-BD4D-7D2C07D0F934}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0543D8CC-1BAA-4632-BD4D-7D2C07D0F934}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0543D8CC-1BAA-4632-BD4D-7D2C07D0F934}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -156,6 +182,11 @@ Global
 		{70C52397-1B05-4C3D-BED2-71C7BE838C3D} = {C4C12057-A6A2-4B20-B48D-A57D3541695B}
 		{4BF03D44-AAB6-4F9F-B6A0-5C1A6582F8A2} = {70C52397-1B05-4C3D-BED2-71C7BE838C3D}
 		{B3FAA4AB-C7A3-48EF-87F4-DBCEACFBF222} = {5AAF6DF6-3E4C-4814-B138-3BEB8F1E358D}
+		{1A1A0BCB-3532-4E6F-A004-EFDC1774B38F} = {9548AABA-1AED-4338-B59E-1E5BE6AC09B1}
+		{4E90153C-E12B-4AC2-ACD5-ED2601BF61A7} = {1A1A0BCB-3532-4E6F-A004-EFDC1774B38F}
+		{E05BA467-0E24-4727-A4BC-56C75F8EE14F} = {1A1A0BCB-3532-4E6F-A004-EFDC1774B38F}
+		{9744F96A-DD05-4EDB-88CB-6386BA108690} = {1A1A0BCB-3532-4E6F-A004-EFDC1774B38F}
+		{0543D8CC-1BAA-4632-BD4D-7D2C07D0F934} = {1A1A0BCB-3532-4E6F-A004-EFDC1774B38F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B55E38C3-87A3-4F4A-8270-F0D69B972C41}
