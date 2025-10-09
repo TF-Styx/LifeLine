@@ -30,11 +30,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 
         [HttpGet]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
-        {
-            var result = await _mediator.Send(new GetAllStatusQuery(), cancellationToken);
-
-            return Ok(result);
-        }
+            => Ok(await _mediator.Send(new GetAllStatusQuery(), cancellationToken));
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateStatusRequest request, CancellationToken cancellationToken = default)

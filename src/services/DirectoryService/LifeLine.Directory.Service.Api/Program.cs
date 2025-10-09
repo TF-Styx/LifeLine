@@ -1,5 +1,6 @@
 using LifeLine.Directory.Service.Application.Common;
 using LifeLine.Directory.Service.Infrastructure.Ioc;
+using Shared.Logging;
 
 namespace LifeLine.Directory.Service.Api
 {
@@ -14,6 +15,7 @@ namespace LifeLine.Directory.Service.Api
             builder.Services.UseInfrastructure(builder.Configuration);
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IDirectoryContext).Assembly));
+            builder.Host.UseSerialogLogger();
 
             var app = builder.Build();
 

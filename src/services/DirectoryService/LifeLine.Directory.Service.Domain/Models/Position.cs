@@ -20,7 +20,7 @@ namespace LifeLine.Directory.Service.Domain.Models
             DepartmentId = departmentId;
         }
 
-        public static Position Create(string name, string description, Guid departmentId)
+        internal static Position Create(string name, string description, Guid departmentId)
             => new Position(PositionId.New(), DirectoryName.Create(name), Description.Create(description), DepartmentId.Create(departmentId));
     }
 }

@@ -21,7 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Departments\Positions\" />
+    <Folder Include="Features\Departments\Positions\Create\" />
+    <Folder Include="Features\Departments\Positions\Delete\" />
+    <Folder Include="Features\Departments\Positions\Get\" />
+    <Folder Include="Features\Departments\Positions\Update\" />
   </ItemGroup>
 
 </Project>

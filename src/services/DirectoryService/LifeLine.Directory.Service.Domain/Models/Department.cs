@@ -23,5 +23,19 @@ namespace LifeLine.Directory.Service.Domain.Models
 
         public static Department Create(string name, string description, Address departmentAddress)
             => new Department(DepartmentId.New(), DirectoryName.Create(name), Description.Create(description), departmentAddress);
+
+        public void AddPositions(string name, string description) => _positions.Add(Position.Create(name, description, this.Id));
+
+        public void UpdateName(DirectoryName name)
+        {
+            if (name != Name)
+                Name = name;
+        }
+
+        public void UpdateDescription(Description description)
+        {
+            if (description != Description) 
+                Description = description;
+        }
     }
 }
