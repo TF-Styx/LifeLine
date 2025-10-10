@@ -1,5 +1,4 @@
 ﻿using Shared.Domain.Exceptions;
-using Shared.Domain.Validations;
 using Shared.Kernel.Guard;
 using Shared.Kernel.Guard.Extensions;
 
@@ -16,7 +15,6 @@ namespace LifeLine.Directory.Service.Domain.ValueObjects
 
         /// <exception cref="EmptyNameException"></exception>
         /// <exception cref="LengthException"></exception>
-        /// <exception cref="IncorrectStringException"></exception>
         public static DirectoryName Create(string value)
         {
             GuardException.Against.That(string.IsNullOrEmpty(value), () => new EmptyNameException($"В структуру {nameof(DirectoryName)} был передано пустое поле!"));

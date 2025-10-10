@@ -15,7 +15,6 @@ namespace Shared.Domain.ValueObjects
 
         /// <exception cref="EmptyNameException"></exception>
         /// <exception cref="LengthException"></exception>
-        /// <exception cref="IncorrectStringException"></exception>
         public static Description Create(string value)
         {
             GuardException.Against.That(string.IsNullOrEmpty(value), () => new EmptyNameException($"В структуру {nameof(Description)} был передано пустое поле!"));
