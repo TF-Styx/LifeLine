@@ -22,5 +22,17 @@ namespace LifeLine.Directory.Service.Domain.Models
 
         internal static Position Create(string name, string description, Guid departmentId)
             => new Position(PositionId.New(), DirectoryName.Create(name), Description.Create(description), DepartmentId.Create(departmentId));
+
+        internal void UpdateName(DirectoryName name)
+        {
+            if (name != Name)
+                Name = name;
+        }
+
+        internal void UpdateDescription(Description description)
+        {
+            if (description != Description)
+                Description = description;
+        }
     }
 }
