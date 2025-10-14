@@ -20,6 +20,8 @@ namespace LifeLine.Employee.Service.Domain.ValueObjects.Employees
 
         public static EmployeeId New() => new(Guid.NewGuid());
 
+        public static EmployeeId? Null => null;
+
         public override string ToString() => Value.ToString();
 
         public static implicit operator Guid(EmployeeId employeeId) => employeeId.Value;

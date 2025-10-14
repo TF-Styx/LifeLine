@@ -24,8 +24,11 @@ namespace LifeLine.Employee.Service.Infrastructure.Ioc
             });
             services.AddScoped<IReadContext>(provider => provider.GetRequiredService<EmployeeReadContext>());
 
-            services.AddScoped<IGenderRepository, GenderRepository>();
+            services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+            services.AddScoped<IContractRepository, ContractRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IEmployeeTypeRepository, EmployeeTypeRepository>();
+            services.AddScoped<IGenderRepository, GenderRepository>();
 
             return services;
         }

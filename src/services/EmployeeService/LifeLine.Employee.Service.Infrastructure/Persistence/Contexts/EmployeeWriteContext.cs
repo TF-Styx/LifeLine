@@ -11,6 +11,10 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
         public DbSet<ContactInformation> ContactInformations { get; set; } = null!;
         public DbSet<Gender> Genders { get; set; } = null!;
 
+        public DbSet<Assignment> Assignments { get; set; } = null!;
+        public DbSet<Contract> Contracts { get; set; } = null!;
+        public DbSet<EmployeeType> EmployeeTypes { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -18,6 +22,10 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new EmployeeWriteConfiguration());
             modelBuilder.ApplyConfiguration(new ContactInformationWriteConfiguration());
             modelBuilder.ApplyConfiguration(new GenderWriteConfiguration());
+
+            modelBuilder.ApplyConfiguration(new AssignmentWriteConfiguration());
+            modelBuilder.ApplyConfiguration(new ContractWriteConfiguration());
+            modelBuilder.ApplyConfiguration(new EmployeeTypeWriteConfiguration());
         }
     }
 }

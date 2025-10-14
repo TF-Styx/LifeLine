@@ -19,11 +19,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\shared\api\Shared.Api.Infrastructure\Shared.Api.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\shared\api\Shared.Api\Shared.Api.csproj" />
     <ProjectReference Include="..\..\..\shared\core\Shared.Contracts\Shared.Contracts.csproj" />
     <ProjectReference Include="..\..\..\shared\core\Shared.Kernel\Shared.Kernel.csproj" />
     <ProjectReference Include="..\..\..\shared\core\Shared.Logging\Shared.Logging.csproj" />
     <ProjectReference Include="..\LifeLine.Employee.Service.Application\LifeLine.Employee.Service.Application.csproj" />
     <ProjectReference Include="..\LifeLine.Employee.Service.Infrastructure\LifeLine.Employee.Service.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Response\" />
   </ItemGroup>
 
 </Project>

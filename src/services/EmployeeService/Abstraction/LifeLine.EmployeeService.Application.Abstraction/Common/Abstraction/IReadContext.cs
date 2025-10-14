@@ -1,5 +1,4 @@
 ﻿using LifeLine.EmployeeService.Application.Abstraction.Models;
-using Microsoft.EntityFrameworkCore;
 using Shared.Api.Infrastructure;
 
 namespace LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction
@@ -8,5 +7,6 @@ namespace LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction
     {
         IQueryable<GenderView> GenderViews { get; }
         IQueryable<EmployeeAdminListItemView> EmployeeAdminListItemViews { get; }
+        IQueryable<EmployeeTypeView> EmployeeTypeViews { get; }
     }
 }
