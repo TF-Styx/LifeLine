@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="Shared.WPF.Views.UserControls.LoginControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Shared.WPF.Views.UserControls"
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls"
+             xmlns:helpers="clr-namespace:Shared.WPF.Resources.Attachables"
+             mc:Ignorable="d" 
+             d:Height="500" d:Width="400"
+             Background="{StaticResource App.MainColor}">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Brushes/AppBrushes.xaml"/>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/Button.xaml"/>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Templates/Icons.xaml"/>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/TextBox.xaml"/>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/CheckBox.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource App.SecondColor}" 
+            CornerRadius="11" 
+            BorderThickness="1" 
+            BorderBrush="#33343A">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="30" ShadowDepth="20" Direction="315" Opacity="0.3"/>
+        </Border.Effect>
+        <DockPanel Margin="20 30 20 30">
+
+            <StackPanel DockPanel.Dock="Top">
+                <Control Background="#3C5C97" 
+                         Foreground="#609EE7" 
+                         Width="100" 
+                         Template="{StaticResource HospitalCross}"/>
+                <TextBlock Text="LifeLIne System" 
+                           HorizontalAlignment="Center" 
+                           FontSize="40" 
+                           Margin="0 10 0 0" 
+                           Foreground="#8C95A4"/>
+
+                <StackPanel Margin="0 20 0 20">
+                    <cc:PlaceHolderTextBox PlaceHolder="Имя пользователя" 
+                                           Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, UpdateSourceTrigger=PropertyChanged}" 
+                                           Margin="0 20 0 10" helpers:TextBoxHelper.Icon="{StaticResource User}"/>
+                    <cc:PlaceHolderTextBox PlaceHolder="Пароль" 
+                                           Text="{Binding Password, RelativeSource={RelativeSource AncestorType=UserControl}, UpdateSourceTrigger=PropertyChanged}" 
+                                           Margin="0 10 0 0" helpers:TextBoxHelper.Icon="{StaticResource Password}"/>
+                </StackPanel>
+                
+                <DockPanel VerticalAlignment="Center" Margin="0 20 0 0">
+                    <Button Content="Забыли пароль?" 
+                            DockPanel.Dock="Right" 
+                            FontSize="15"
+                            Foreground="#8C95A4" 
+                            Background="Transparent" 
+                            BorderThickness="0"/>
+                    <CheckBox Content="Запомнить меня"
+                              FontSize="15"
+                              DockPanel.Dock="Left"
+                              VerticalContentAlignment="Center" 
+                              Foreground="#8C95A4"
+                              Style="{StaticResource ModernCheckBox}"/>
+                </DockPanel>
+            </StackPanel>
+
+            <Button Command="{Binding AuthCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                    VerticalAlignment="Bottom" 
+                    Content="Войти" 
+                    FontSize="30" 
+                    Style="{StaticResource App.Button}">
+                <Button.Effect>
+                    <DropShadowEffect BlurRadius="30" ShadowDepth="10" Direction="315" Opacity="0.3"/>
+                </Button.Effect>
+            </Button>
+        </DockPanel>
+    </Border>
+
+</UserControl>
+
