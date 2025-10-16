@@ -4,22 +4,54 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LifeLine.AdminPanel.Desktop.Views.Windows"
-        xmlns:uc="clr-namespace:Shared.WPF.Views.UserControls;assembly=Shared.WPF" xmlns:windows="clr-namespace:LifeLine.AdminPanel.Desktop.ViewModels.Windows" d:DataContext="{d:DesignInstance Type=windows:MainWindowVM}"
+        xmlns:uc="clr-namespace:Shared.WPF.Views.UserControls;assembly=Shared.WPF" 
+        xmlns:windows="clr-namespace:LifeLine.AdminPanel.Desktop.ViewModels.Windows" 
+        d:DataContext="{d:DesignInstance Type=windows:MainWindowVM}"
         mc:Ignorable="d"
         Title="MainWindow" 
         d:Height="450" 
         d:Width="800" 
+        WindowStyle="ThreeDBorderWindow"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource App.MainColor}">
-    <!--Height="650" Width="800"-->
-    <Grid>
-        <uc:LoginControl Height="500" Width="400" 
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/Button.xaml"/>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Templates/Icons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="34"/>
+    </WindowChrome.WindowChrome>
+
+    <Border x:Name="MainWindowBorder" BorderBrush="LightGray" BorderThickness="0">
+        <Grid Background="{StaticResource App.MainColor}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="39"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" >
+                <Button WindowChrome.IsHitTestVisibleInChrome="True" Command="{x:Static SystemCommands.MinimizeWindowCommand}" Style="{StaticResource MinimizeButtonStyle}"/>
+                <Button x:Name="MaximizeButton" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Command="{x:Static SystemCommands.MaximizeWindowCommand}" Style="{StaticResource MaximizeButtonStyle}"/>
+                <Button x:Name="RestoreButton" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Command="{x:Static SystemCommands.RestoreWindowCommand}" Style="{StaticResource RestoreButtonStyle}"/>
+                <Button WindowChrome.IsHitTestVisibleInChrome="True" Command="{x:Static SystemCommands.CloseWindowCommand}" Style="{StaticResource CloseButtonStyle}"/>
+            </StackPanel>
+
+            <Grid Grid.Row="1">
+                <uc:LoginControl Height="500" Width="400" 
                          Login="{Binding AuthController.Login}" 
                          Password="{Binding AuthController.Password}" 
                          AuthCommand="{Binding AuthController.AuthCommandAsync}" 
                          Visibility="{Binding AuthController.AuthVisibility}"
                          d:Visibility="Collapsed"/>
 
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
-    </Grid>
+                <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>
