@@ -8,19 +8,17 @@ namespace LifeLine.AdminPanel.Desktop.Views.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(MainWindowVM vm)
         {
+            this.DataContext = vm;
+
+            InitializeComponent();
+
             this.Width = 550;
             this.Height = 650;
             this.ResizeMode = ResizeMode.NoResize;
 
-            var vm = new MainWindowVM();
-
-            InitializeComponent();
-
-            this.DataContext = vm;
-
-            vm.ResizeWindow += () =>
+            vm.AuthController.ResizeWindow += () =>
             {
                 this.Width = 800;
                 this.Height = 450;

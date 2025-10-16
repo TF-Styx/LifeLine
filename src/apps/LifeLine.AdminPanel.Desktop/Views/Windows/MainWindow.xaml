@@ -16,8 +16,10 @@
         <uc:LoginControl Height="500" Width="400" 
                          Login="{Binding AuthController.Login}" 
                          Password="{Binding AuthController.Password}" 
-                         AuthCommand="{Binding AuthCommandAsync}" 
-                         Visibility="{Binding AuthVisibility}"
+                         AuthCommand="{Binding AuthController.AuthCommandAsync}" 
+                         Visibility="{Binding AuthController.AuthVisibility}"
                          d:Visibility="Collapsed"/>
+
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>
