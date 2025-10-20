@@ -10,6 +10,7 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Repository
         public async Task<Domain.Models.Employee?> GetByIdAsync(Guid id) 
             => await _context.Employees
                 .Include(x => x.ContactInformation)
+                .Include(x => x.EmployeeSpecialties)
                     .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

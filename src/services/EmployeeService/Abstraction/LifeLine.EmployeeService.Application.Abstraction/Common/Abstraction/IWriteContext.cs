@@ -16,5 +16,8 @@ namespace LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction
 
         DbSet<WorkPermit> WorkPermits { get; set; }
         DbSet<EducationDocument> EducationDocuments { get; set; }
+
+        DbSet<Specialty> Specialties { get; set; }
+        DbSet<EmployeeSpecialty> EmployeeSpecialties { get; set; }
     }
 }

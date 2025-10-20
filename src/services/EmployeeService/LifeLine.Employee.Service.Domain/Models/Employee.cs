@@ -28,6 +28,9 @@ namespace LifeLine.Employee.Service.Domain.Models
         private readonly List<EducationDocument> _educationDocuments = [];
         public IReadOnlyCollection<EducationDocument> EducationDocuments => _educationDocuments.AsReadOnly();
 
+        private readonly List<EmployeeSpecialty> _employeeSpecialties = [];
+        public IReadOnlyCollection<EmployeeSpecialty> EmployeeSpecialties => _employeeSpecialties.AsReadOnly();
+
         private Employee() { }
         private Employee(EmployeeId id, Surname surname, Name name, Patronymic patronymic, GenderId genderId) : base(id)
         {
@@ -234,6 +237,14 @@ namespace LifeLine.Employee.Service.Domain.Models
 
             _educationDocuments.Add(educationDocument);
         }
+
+        #endregion
+
+        #region EmployeeSpecialty
+
+        // TODO : Сделать проверки
+        public void AddSpecialty(Guid specialtyId) 
+            => _employeeSpecialties.Add(EmployeeSpecialty.Create(this.Id, specialtyId));
 
         #endregion
     }

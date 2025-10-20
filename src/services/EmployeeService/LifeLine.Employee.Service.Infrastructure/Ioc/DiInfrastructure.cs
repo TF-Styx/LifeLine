@@ -29,6 +29,7 @@ namespace LifeLine.Employee.Service.Infrastructure.Ioc
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IEmployeeTypeRepository, EmployeeTypeRepository>();
             services.AddScoped<IGenderRepository, GenderRepository>();
+            services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
 
             return services;
         }

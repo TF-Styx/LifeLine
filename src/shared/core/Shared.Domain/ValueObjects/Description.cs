@@ -24,6 +24,8 @@ namespace Shared.Domain.ValueObjects
             return new Description(value);
         }
 
+        public static Description? Null => null;
+
         public override string ToString() => Value.ToString();
 
         public static implicit operator string(Description name) => name.Value;

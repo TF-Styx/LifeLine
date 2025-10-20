@@ -18,6 +18,9 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
         public DbSet<WorkPermit> WorkPermits { get; set; } = null!;
         public DbSet<EducationDocument> EducationDocuments { get; set; } = null!;
 
+        public DbSet<Specialty> Specialties { get; set; } = null!;
+        public DbSet<EmployeeSpecialty> EmployeeSpecialties { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -32,6 +35,9 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
 
             modelBuilder.ApplyConfiguration(new WorkPermitWriteConfiguration());
             modelBuilder.ApplyConfiguration(new EducationDocumentWriteConfiguration());
+
+            modelBuilder.ApplyConfiguration(new SpecialtyWriteConfiguration());
+            modelBuilder.ApplyConfiguration(new EmployeeSpecialtyWriteConfiguration());
         }
     }
 }
