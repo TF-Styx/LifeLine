@@ -61,7 +61,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
                 );
         }
 
-        [HttpDelete("{id}/delete")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
         {
             var command = new DeleteDepartmentCommand(id);

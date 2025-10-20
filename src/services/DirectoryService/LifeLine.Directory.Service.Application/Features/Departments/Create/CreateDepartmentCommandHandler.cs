@@ -52,7 +52,7 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Create
             {
                 if (domainEX is EmptyIdentifierException emptyEX)
                 {
-                    _logger.LogCritical(emptyEX, $"В методе '{nameof(Department.Create)}', в '{nameof(CreateDepartmentCommandHandler)}' при создании сотрудника не был сгенерирован {nameof(StatusId)}, в виде Guid!");
+                    _logger.LogCritical(emptyEX, $"В методе '{nameof(Department.Create)}', в '{nameof(CreateDepartmentCommandHandler)}' при создании отдела не был сгенерирован {nameof(StatusId)}, в виде Guid!");
                     return Result<Guid>.Failure(new Error(ErrorCode.Create, "Ошибка на стороне сервера!"));
                 }
 
