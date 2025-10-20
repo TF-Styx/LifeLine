@@ -15,6 +15,9 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
         public DbSet<Contract> Contracts { get; set; } = null!;
         public DbSet<EmployeeType> EmployeeTypes { get; set; } = null!;
 
+        public DbSet<WorkPermit> WorkPermits { get; set; } = null!;
+        public DbSet<EducationDocument> EducationDocuments { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -26,6 +29,9 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new AssignmentWriteConfiguration());
             modelBuilder.ApplyConfiguration(new ContractWriteConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeTypeWriteConfiguration());
+
+            modelBuilder.ApplyConfiguration(new WorkPermitWriteConfiguration());
+            modelBuilder.ApplyConfiguration(new EducationDocumentWriteConfiguration());
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using LifeLine.Employee.Service.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeLine.Employee.Service.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(EmployeeWriteContext))]
-    partial class EmployeeWriteContextModelSnapshot : ModelSnapshot
+    [Migration("20251018154627_Add_WorkPermit_EducationDocument")]
+    partial class Add_WorkPermit_EducationDocument
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,8 +212,8 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Migrations
                         .HasColumnName("SpecialtyName")
                         .UseCollation("case_insensitive");
 
-                    b.Property<double?>("TotalHours")
-                        .HasColumnType("numeric")
+                    b.Property<TimeSpan?>("TotalHours")
+                        .HasColumnType("interval")
                         .HasColumnName("TotalHours");
 
                     b.HasKey("Id");

@@ -58,6 +58,12 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Wr
             builder.HasOne(x => x.Gender).WithMany().HasForeignKey(x => x.GenderId).IsRequired().OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.ContactInformation).WithOne(x => x.Employee).HasForeignKey<ContactInformation>(x => x.EmployeeId).IsRequired(false).OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(w => w.WorkPermits).WithOne(x => x.Employee).HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Cascade);
+            builder.Navigation(w => w.WorkPermits).HasField("_workPermits").UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            builder.HasMany(e => e.EducationDocuments).WithOne(x => x.Employee).HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Cascade);
+            builder.Navigation(e => e.EducationDocuments).HasField("_educationDocuments").UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

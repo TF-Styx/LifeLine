@@ -1,11 +1,11 @@
-﻿using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
+﻿using LifeLine.Employee.Service.Domain.Exceptions;
+using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
 using LifeLine.Employee.Service.Domain.ValueObjects.Genders;
-using Shared.Kernel.Primitives;
 using Shared.Domain.Exceptions;
+using Shared.Domain.ValueObjects;
 using Shared.Kernel.Guard;
 using Shared.Kernel.Guard.Extensions;
-using Shared.Domain.ValueObjects;
-using LifeLine.Employee.Service.Domain.Exceptions;
+using Shared.Kernel.Primitives;
 
 namespace LifeLine.Employee.Service.Domain.Models
 {
@@ -21,6 +21,12 @@ namespace LifeLine.Employee.Service.Domain.Models
 
         public Gender Gender { get; private set; } = null!;
         public ContactInformation? ContactInformation { get; private set; }
+
+        private readonly List<WorkPermit> _workPermits = [];
+        public IReadOnlyCollection<WorkPermit> WorkPermits => _workPermits.AsReadOnly();
+
+        private readonly List<EducationDocument> _educationDocuments = [];
+        public IReadOnlyCollection<EducationDocument> EducationDocuments => _educationDocuments.AsReadOnly();
 
         private Employee() { }
         private Employee(EmployeeId id, Surname surname, Name name, Patronymic patronymic, GenderId genderId) : base(id)
@@ -49,6 +55,8 @@ namespace LifeLine.Employee.Service.Domain.Models
         /// <returns cref="Employee">НОВЫЙ объект Employee</returns>
         public static Employee Create(string surname, string name, string patronymic, Guid genderId)
             => new(EmployeeId.New(), Surname.Create(surname), Name.Create(name), Patronymic.Create(patronymic), GenderId.Create(genderId));
+
+        #region Employee
 
         /// <summary>
         /// При входе меняет дату входа
@@ -103,6 +111,8 @@ namespace LifeLine.Employee.Service.Domain.Models
             GenderId = genderId;
         }
 
+        #endregion
+
         #region ContactInformation
         /// <exception cref="ExistContactInformationException"></exception>
         /// <exception cref="EmptyIdentifierException"></exception>
@@ -155,6 +165,76 @@ namespace LifeLine.Employee.Service.Domain.Models
 
             this.ContactInformation!.UpdateAddress(address);
         }
+        #endregion
+
+        #region WorkPermit
+
+        public void AddWorkPermit
+            (
+                string workPermitName,
+                string? documentSeries,
+                string workPermitNumber,
+                string? protocolNumber,
+                string specialtyName,
+                string issuingAuthority,
+                DateTime issueDate,
+                DateTime expiryDate,
+                Guid permitTypeId,
+                Guid admissionStatusId
+            )
+        {
+            var workPermit = WorkPermit.Create
+                (
+                    this.Id,
+                    workPermitName,
+                    documentSeries,
+                    workPermitNumber,
+                    protocolNumber,
+                    specialtyName,
+                    issuingAuthority,
+                    issueDate,
+                    expiryDate,
+                    permitTypeId,
+                    admissionStatusId
+                );
+
+            _workPermits.Add(workPermit);
+        }
+
+        #endregion
+
+        #region EducationDocument
+
+        public void AddEducationDocument
+            (
+                Guid educationLevelId,
+                Guid documentTypeId,
+                string documentNumber,
+                DateTime issuedDate,
+                string organizationName,
+                string? qualificationAwardedName,
+                string? specialtyName,
+                string? programName,
+                TimeSpan? totalHours
+            )
+        {
+            var educationDocument = EducationDocument.Create
+                (
+                    this.Id,
+                    educationLevelId,
+                    documentTypeId,
+                    documentNumber,
+                    issuedDate,
+                    organizationName,
+                    qualificationAwardedName,
+                    specialtyName,
+                    programName,
+                    totalHours
+                );
+
+            _educationDocuments.Add(educationDocument);
+        }
+
         #endregion
     }
 }
