@@ -24,5 +24,6 @@
 
         ExistContactInformation,
         ExistDependentData,
+        ExistEducationInformation,
     }
 }
