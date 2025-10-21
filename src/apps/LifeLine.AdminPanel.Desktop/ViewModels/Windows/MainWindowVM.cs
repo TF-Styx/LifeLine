@@ -1,8 +1,7 @@
 ﻿using LifeLine.User.Service.Client.Services;
-using Shared.WPF.Commands;
+using Shared.WPF.Services.NavigationService.Windows;
 using Shared.WPF.ViewModels.Abstract;
 using Shared.WPF.ViewModels.Components;
-using System.Windows;
 
 namespace LifeLine.AdminPanel.Desktop.ViewModels.Windows
 {
@@ -10,11 +9,18 @@ namespace LifeLine.AdminPanel.Desktop.ViewModels.Windows
     {
         private readonly IAuthorizationService _authorizationService;
 
-        public MainWindowVM(IAuthorizationService authorizationService)/* : base(authorizationService)*/
+        public MainWindowVM(INavigationWindow navigationWindow, IAuthorizationService authorizationService) : base(navigationWindow)
         {
             _authorizationService = authorizationService;
 
             AuthController = new AuthController(_authorizationService);
+
+            AuthController.AuthCommandAsync!.CanExecuteChanged += (s, e) =>
+            {
+                MinimizeWindowCommand?.RaiseCanExecuteChanged();
+                MaximizeWindowCommand?.RaiseCanExecuteChanged();
+                RestoreWindowCommand?.RaiseCanExecuteChanged();
+            };
         }
 
         public AuthController AuthController { get; }

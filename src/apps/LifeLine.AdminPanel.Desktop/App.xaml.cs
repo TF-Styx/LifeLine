@@ -1,4 +1,5 @@
 ﻿using LifeLine.AdminPanel.Desktop.Ioc;
+using LifeLine.File.Service.Client;
 using LifeLine.User.Service.Client.Ioc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,7 @@ namespace LifeLine.AdminPanel.Desktop
             servicesCollection.UserClientConfiguration(configuration);
             servicesCollection.UseAdminPanelServices();
             servicesCollection.UseWindow();
+            servicesCollection.UseFileService(configuration);
 
             ServiceProvider = servicesCollection.BuildServiceProvider();
 

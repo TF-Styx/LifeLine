@@ -1,6 +1,7 @@
 ﻿using Shared.WPF.Enums;
 using Shared.WPF.ViewModels.Abstract;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Shared.WPF.Services.NavigationService.Windows
 {
@@ -41,12 +42,45 @@ namespace Shared.WPF.Services.NavigationService.Windows
                 _windows.TryAdd(windowName, window);
 
                 window.Closed += (sender, e) => _windows.Remove(windowName);
+                window.StateChanged += Window_StateChanged;
 
                 window.Show();
             }
             else
             {
                 throw new Exception("Данное фактори не зарегистрирована!");
+            }
+        }
+
+        public ResizeMode GetCurrentResizeMode(WindowName windowName)
+        {
+            if (_windows.TryGetValue(windowName, out Window? window))
+                return window.ResizeMode;
+
+            return ResizeMode.CanResize;
+        }
+
+        private void Window_StateChanged(object? sender, EventArgs e)
+        {
+            if (sender is Window window)
+            {
+                var mainBorder = window.FindName("MainWindowBorder") as Border;
+                var restoreButton = window.FindName("RestoreButton") as Button;
+                var minimizeButton = window.FindName("MinimizeButton") as Button;
+                var maximizeButton = window.FindName("MaximizeButton") as Button;
+
+                if (window.WindowState == WindowState.Maximized)
+                {
+                    mainBorder!.BorderThickness = new Thickness(8);
+                    restoreButton!.Visibility = Visibility.Visible;
+                    maximizeButton!.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    mainBorder!.BorderThickness = new Thickness(0);
+                    restoreButton!.Visibility = Visibility.Collapsed;
+                    maximizeButton!.Visibility = Visibility.Visible;
+                }
             }
         }
 
