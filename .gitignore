@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /src/apps/LifeLine.AdminPanel.Desktop/apiConfig.json
+/src/apps/LifeLine.HrPanel.Desktop/apiConfig.json
