@@ -1,5 +1,6 @@
 ﻿using Shared.WPF.Commands;
 using Shared.WPF.Enums;
+using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.Services.NavigationService.Windows;
 using System.Windows;
 
@@ -7,18 +8,20 @@ namespace Shared.WPF.ViewModels.Abstract
 {
     public abstract class BaseWindowViewModel : BaseViewModel
     {
-        private readonly INavigationWindow _navigationWindow;
+        public readonly INavigationWindow _navigationWindow;
+        public readonly INavigationPage _navigationPage;
 
-        protected BaseWindowViewModel(INavigationWindow navigationWindow)
+        protected BaseWindowViewModel(INavigationWindow navigationWindow, INavigationPage navigationPage)
         {
             _navigationWindow = navigationWindow;
+            _navigationPage = navigationPage;
 
             SetValueCommands();
         }
 
         private void SetValueCommands()
         {
-            //OpenPageCommand = new RelayCommand<PagesName>(Execute_OpenPageCommand);
+            OpenPageCommand = new RelayCommand<PageName>(Execute_OpenPageCommand);
 
             ShutDownAppCommand = new RelayCommand(Execute_ShutDownAppCommand);
 
@@ -35,13 +38,13 @@ namespace Shared.WPF.ViewModels.Abstract
             set => SetProperty(ref _windowTitle, value);
         }
 
-        //#region Открытия страницы
+        #region Открытия страницы
 
-        //public RelayCommand<PagesName>? OpenPageCommand { get; private set; }
+        public RelayCommand<PageName>? OpenPageCommand { get; private set; }
 
-        //private void Execute_OpenPageCommand(PagesName page) => _pageNavigation?.Navigate(page, FramesName.MainFrame);
+        private void Execute_OpenPageCommand(PageName page) => _navigationPage?.NavigateTo(FrameName.MainFrame, page);
 
-        //#endregion
+        #endregion
 
         #region ShutDownApp
 

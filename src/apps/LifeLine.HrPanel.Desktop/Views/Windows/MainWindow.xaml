@@ -1,0 +1,173 @@
+﻿<Window x:Class="LifeLine.HrPanel.Desktop.Views.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.Windows" 
+        xmlns:uc="clr-namespace:Shared.WPF.Views.UserControls;assembly=Shared.WPF" 
+        xmlns:enum="clr-namespace:Shared.WPF.Enums;assembly=Shared.WPF" 
+        xmlns:windows="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Windows" 
+        d:DataContext="{d:DesignInstance Type=windows:MainWindowVM}"
+        mc:Ignorable="d"
+        Title="MainWindow"  
+        d:Height="450" 
+        d:Width="800" 
+        MinHeight="450" 
+        MinWidth="800" 
+        WindowStyle="SingleBorderWindow"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource App.MainColor}">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/Button.xaml"/>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Templates/Icons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="App.Hr.MainWindow.Header.Button" TargetType="Button">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0 0 0 2"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="Margin" Value="2 0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="buttonBorder"
+                                    Padding="10 5"
+                                    Width="{TemplateBinding Width}"
+                                    Height="{TemplateBinding Height}"
+                                    Background="{TemplateBinding Background}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="0">
+
+                                <ContentControl x:Name="contenButton" 
+                                                HorizontalAlignment="Center" 
+                                                VerticalAlignment="Center"
+                                                FontSize="{TemplateBinding FontSize}"
+                                                Foreground="{TemplateBinding Foreground}"
+                                                Content="{TemplateBinding Content}" 
+                                                Margin="0"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter TargetName="buttonBorder" Property="BorderBrush" Value="White"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="true">
+                                    <Setter TargetName="buttonBorder" Property="BorderBrush" Value="#19233A"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="50"/>
+    </WindowChrome.WindowChrome>
+
+    <Border x:Name="MainWindowBorder" BorderThickness="0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="#386FD6">
+                <!--#region RecruitingPopup -->
+                <Popup IsOpen="{Binding RecruitingPopup.IsOpen}" 
+                       StaysOpen="{Binding RecruitingPopup.StaysOpen}"
+                       PlacementTarget="{Binding RecruitingPopup.TargetElement}"
+                       Placement="Bottom" MaxHeight="{Binding RecruitingPopup.MaxHeight}"
+                       AllowsTransparency="True" PopupAnimation="Slide">
+                    <Border Background="{StaticResource App.SecondColor}" 
+                            BorderBrush="#386FD6" 
+                            BorderThickness="2 0 2 2" 
+                            CornerRadius="0 0 6 6">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="30" ShadowDepth="20" Direction="315" Opacity="0.3"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <Button Content="Вакансии" BorderBrush="Black" BorderThickness="0 0 0 2" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Заявки" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Кондидаты" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+                <!--#endregion-->
+
+                <!--#region ManagementPopup -->
+                <Popup IsOpen="{Binding ManagementPopup.IsOpen}" 
+                       StaysOpen="{Binding ManagementPopup.StaysOpen}"
+                       PlacementTarget="{Binding ManagementPopup.TargetElement}"
+                       Placement="Bottom" MaxHeight="{Binding ManagementPopup.MaxHeight}"
+                       AllowsTransparency="True" PopupAnimation="Slide">
+                    <Border Background="{StaticResource App.SecondColor}" 
+                            BorderBrush="#386FD6" 
+                            BorderThickness="2 0 2 2" 
+                            CornerRadius="0 0 6 6">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="30" ShadowDepth="20" Direction="315" Opacity="0.3"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <Button Content="Сотрудники" 
+                                    Command="{Binding OpenPageCommand}" 
+                                    CommandParameter="{x:Static enum:PageName.EmployeePage}" 
+                                    Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Документы" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Отзывы" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Обучение" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Адаптация" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Выплаты" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Отпуска" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+                <!--#endregion-->
+                
+                <StackPanel Background="Transparent" 
+                            WindowChrome.IsHitTestVisibleInChrome="True" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Left" 
+                            Margin="10 5 10 0">
+                    <Button Content="Рекрутинг v" 
+                            Command="{Binding RecruitingPopup.ShowCommand}" 
+                            CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                            Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                    <Button Content="Управление v"
+                            Command="{Binding ManagementPopup.ShowCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                            Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                    <Button Content="Календарь" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                    <Button Content="Аналитика" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                    <Button Content="Отчеты" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                    <Button Content="KPI" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                </StackPanel>
+
+                <StackPanel Height="30" Background="Transparent" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Button x:Name="MinimizeButton" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding MinimizeWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource MinimizeButtonStyle}"/>
+                    <Button x:Name="MaximizeButton" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding MaximizeWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource MaximizeButtonStyle}"/>
+                    <Button x:Name="RestoreButton" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding RestoreWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource RestoreButtonStyle}"/>
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding CloseWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource CloseButtonStyle}"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1" Background="Transparent">
+                <uc:LoginControl Height="500" Width="400" 
+                                 Login="{Binding AuthController.Login}" 
+                                 Password="{Binding AuthController.Password}" 
+                                 AuthCommand="{Binding AuthController.AuthCommandAsync}" 
+                                 Visibility="{Binding AuthController.AuthVisibility}"
+                                 d:Visibility="Collapsed"/>
+
+                <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

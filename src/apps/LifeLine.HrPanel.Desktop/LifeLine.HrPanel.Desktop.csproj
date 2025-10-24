@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\clients\LifeLine.File.Service.Client\LifeLine.File.Service.Client.csproj" />
+    <ProjectReference Include="..\..\clients\LifeLine.User.Service.Client\LifeLine.User.Service.Client.csproj" />
+    <ProjectReference Include="..\..\shared\ui\Shared.WPF\Shared.WPF.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="apiConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
