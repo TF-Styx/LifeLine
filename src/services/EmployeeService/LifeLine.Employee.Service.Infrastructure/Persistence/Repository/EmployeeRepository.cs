@@ -11,6 +11,7 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Repository
             => await _context.Employees
                 .Include(x => x.ContactInformation)
                 .Include(x => x.EmployeeSpecialties)
+                .Include(x => x.PersonalDocuments)
                     .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

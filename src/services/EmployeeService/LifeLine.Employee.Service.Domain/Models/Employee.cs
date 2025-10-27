@@ -31,6 +31,9 @@ namespace LifeLine.Employee.Service.Domain.Models
         private readonly List<EmployeeSpecialty> _employeeSpecialties = [];
         public IReadOnlyCollection<EmployeeSpecialty> EmployeeSpecialties => _employeeSpecialties.AsReadOnly();
 
+        private readonly List<PersonalDocument> _personalDocuments = [];
+        public IReadOnlyCollection<PersonalDocument> PersonalDocuments => _personalDocuments.AsReadOnly();
+
         private Employee() { }
         private Employee(EmployeeId id, Surname surname, Name name, Patronymic patronymic, GenderId genderId) : base(id)
         {
@@ -245,6 +248,30 @@ namespace LifeLine.Employee.Service.Domain.Models
         // TODO : Сделать проверки
         public void AddSpecialty(Guid specialtyId) 
             => _employeeSpecialties.Add(EmployeeSpecialty.Create(this.Id, specialtyId));
+
+        #endregion
+
+        #region PersonalDocument
+
+        public void AddPersonalDocument
+            (
+                Guid documentTypeId,
+                string documentNumber,
+                string? documentSeries,
+                ImageKey? fileKey
+            )
+        {
+            var personalDocument = PersonalDocument.Create
+                (
+                    this.Id,
+                    documentTypeId,
+                    documentNumber,
+                    documentSeries,
+                    fileKey
+                );
+
+            _personalDocuments.Add(personalDocument);
+        }
 
         #endregion
     }

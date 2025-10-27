@@ -21,6 +21,8 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
         public DbSet<Specialty> Specialties { get; set; } = null!;
         public DbSet<EmployeeSpecialty> EmployeeSpecialties { get; set; } = null!;
 
+        public DbSet<PersonalDocument> PersonalDocuments { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -38,6 +40,8 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
 
             modelBuilder.ApplyConfiguration(new SpecialtyWriteConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeSpecialtyWriteConfiguration());
+
+            modelBuilder.ApplyConfiguration(new PersonalDocumentWriteConfiguration());
         }
     }
 }

@@ -19,5 +19,7 @@ namespace LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction
 
         DbSet<Specialty> Specialties { get; set; }
         DbSet<EmployeeSpecialty> EmployeeSpecialties { get; set; }
+
+        DbSet<PersonalDocument> PersonalDocuments { get; set; }
     }
 }
