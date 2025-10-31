@@ -9,10 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\..\clients\LifeLine.Directory.Service.Client\LifeLine.Directory.Service.Client.csproj" />
+    <ProjectReference Include="..\..\clients\LifeLine.Employee.Service.Client\LifeLine.Employee.Service.Client.csproj" />
     <ProjectReference Include="..\..\clients\LifeLine.File.Service.Client\LifeLine.File.Service.Client.csproj" />
     <ProjectReference Include="..\..\clients\LifeLine.User.Service.Client\LifeLine.User.Service.Client.csproj" />
     <ProjectReference Include="..\..\shared\ui\Shared.WPF\Shared.WPF.csproj" />

@@ -120,6 +120,10 @@
                                     Command="{Binding OpenPageCommand}" 
                                     CommandParameter="{x:Static enum:PageName.EmployeePage}" 
                                     Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Добавить сотрудника" 
+                                    Command="{Binding OpenPageCommand}" 
+                                    CommandParameter="{x:Static enum:PageName.EmployeeCreatePage}" 
+                                    Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
                             <Button Content="Документы" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
                             <Button Content="Отзывы" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
                             <Button Content="Обучение" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>

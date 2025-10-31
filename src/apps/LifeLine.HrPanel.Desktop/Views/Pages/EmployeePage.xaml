@@ -11,7 +11,6 @@
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/DataGrid.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/Button.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/ScrollViewer.xaml"/>
             </ResourceDictionary.MergedDictionaries>

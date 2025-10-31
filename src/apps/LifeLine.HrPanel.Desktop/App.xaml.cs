@@ -29,7 +29,7 @@ namespace LifeLine.HrPanel.Desktop
 
             // Регистрация сервисов
             servicesCollection.UserClientConfiguration(configuration);
-            servicesCollection.UseHrPanelServices();
+            servicesCollection.UseHrPanelServices(configuration);
             servicesCollection.UseWindow();
             servicesCollection.UsePage();
             servicesCollection.UseFileService(configuration);

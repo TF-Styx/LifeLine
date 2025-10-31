@@ -6,7 +6,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Brushes/AppBrushes.xaml"/>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/DataGrid.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/TextBlock.xaml"/>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/ComboBox.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
