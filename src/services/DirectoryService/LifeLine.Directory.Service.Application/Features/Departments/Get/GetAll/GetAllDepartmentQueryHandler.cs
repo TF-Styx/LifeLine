@@ -10,6 +10,6 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Get.GetAll
         private readonly IDirectoryContext _context = context;
 
         public async Task<List<DepartmentResponse>> Handle(GetAllDepartmentQuery request, CancellationToken cancellationToken)
-            => await _context.Departments.Select(x => new DepartmentResponse(x.Id, x.Name, x.Description)).ToListAsync();
+            => await _context.Departments.Select(x => new DepartmentResponse(x.Id, x.Name, x.Description)).ToListAsync(cancellationToken);
     }
 }
