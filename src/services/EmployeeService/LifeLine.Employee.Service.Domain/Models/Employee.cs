@@ -35,7 +35,7 @@ namespace LifeLine.Employee.Service.Domain.Models
         public IReadOnlyCollection<PersonalDocument> PersonalDocuments => _personalDocuments.AsReadOnly();
 
         private Employee() { }
-        private Employee(EmployeeId id, Surname surname, Name name, Patronymic patronymic, GenderId genderId) : base(id)
+        private Employee(EmployeeId id, Surname surname, Name name, Patronymic? patronymic, GenderId genderId) : base(id)
         {
             Surname = surname;
             Name = name;
@@ -59,8 +59,8 @@ namespace LifeLine.Employee.Service.Domain.Models
         /// <exception cref="LengthException"></exception>
         /// <exception cref="IncorrectStringException"></exception>
         /// <returns cref="Employee">НОВЫЙ объект Employee</returns>
-        public static Employee Create(string surname, string name, string patronymic, Guid genderId)
-            => new(EmployeeId.New(), Surname.Create(surname), Name.Create(name), Patronymic.Create(patronymic), GenderId.Create(genderId));
+        public static Employee Create(string surname, string name, string? patronymic, Guid genderId)
+            => new(EmployeeId.New(), Surname.Create(surname), Name.Create(name), patronymic != null ? Patronymic.Create(patronymic) : null, GenderId.Create(genderId));
 
         #region Employee
 

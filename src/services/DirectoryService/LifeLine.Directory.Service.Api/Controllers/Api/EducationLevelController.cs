@@ -1,4 +1,5 @@
 ﻿using LifeLine.Directory.Service.Application.Features.EducationLevels.Create;
+using LifeLine.Directory.Service.Application.Features.EducationLevels.Get.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,5 +24,9 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
                     onFailure: errors => BadRequest(errors)
                 );
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default) 
+            => Ok(await _mediator.Send(new GetAllEducationLevelQuery(), cancellationToken));
     }
 }

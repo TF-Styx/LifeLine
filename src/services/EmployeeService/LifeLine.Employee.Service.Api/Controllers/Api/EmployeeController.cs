@@ -21,7 +21,29 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeRequest request, CancellationToken cancellationToken = default)
         {
-            var command = new CreateEmployeeCommand(request.Surname, request.Name, request.Patronymic, Guid.Parse(request.GenderId));
+            var command = new CreateEmployeeCommand
+                (
+                    request.Surname, request.Name, request.Patronymic, Guid.Parse(request.GenderId),
+                    request.PersonalDocuments?.Select(x => new CreatePersonalDocumentCommand(x.DocumentTypeId, x.Number, x.Series)).ToList(),
+                    request.ContactInformation != null ? 
+                    new CreateContactInformationCommand
+                    (
+                        request.ContactInformation.PersonalPhone,
+                        request.ContactInformation.CorporatePhone,
+                        request.ContactInformation.PersonalEmail,
+                        request.ContactInformation.CorporateEmail,
+                        new CreateAddressCommandData
+                        (
+                            request.ContactInformation.PostalCode,
+                            request.ContactInformation.Region,
+                            request.ContactInformation.City,
+                            request.ContactInformation.Street,
+                            request.ContactInformation.Building,
+                            request.ContactInformation.Apartment
+                        )
+                    ) : null,
+                    request.EducationDocument?.Select(x => new CreateEducationDocumentCommand(x.EducationLevelId, x.DocumentTypeId, x.DocumentNumber, x.IssuedDate, x.OrganizationName, x.QualificationAwardedName, x.SpecialtyName, x.ProgramName, x.TotalHours)).ToList()
+                );
 
             var result = await _mediator.Send(command, cancellationToken);
 

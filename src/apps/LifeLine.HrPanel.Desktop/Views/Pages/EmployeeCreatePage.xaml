@@ -9,9 +9,10 @@
       xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
       xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
       d:DataContext="{d:DesignInstance Type=pages:EmployeeCreatePageVM}"
+      xmlns:sys="clr-namespace:System;assembly=System.Runtime" 
       mc:Ignorable="d" 
       d:Height="auto" 
-      d:Width="800"
+      d:Width="1000"
       Title="EmployeeCreatePage" 
       Background="{StaticResource App.MainColor}">
 
@@ -22,12 +23,19 @@
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!--<ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/DataGrid.xaml"/>-->
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/DataGrid.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/TextBox.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/Button.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/ScrollViewer.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Templates/Icons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <sys:String x:Key="String.BaseInfoEmployee">Базовая информация</sys:String>
+            <sys:String x:Key="String.EducationDocuments">Документы об образовании</sys:String>
+            <sys:String x:Key="String.WorkPermits">Сертификаты</sys:String>
+            <sys:String x:Key="String.EmployeeSpecialties">Специализации</sys:String>
+            <sys:String x:Key="String.Assigments">Назначения</sys:String>
+            <sys:String x:Key="String.Contracts">Контракт</sys:String>
 
             <Style TargetType="ListView">
                 <Setter Property="Background" Value="Transparent"/>
@@ -85,339 +93,485 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         
-        <TextBlock Grid.Row="0" Text="Создание сотрудника" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        <TabControl Grid.Row="0" Background="Transparent">
+            <!-- Базовая информация -->
+            <TabItem Header="{StaticResource String.BaseInfoEmployee}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Text="{StaticResource String.BaseInfoEmployee}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-            <Grid Grid.Column="0" Margin="5 0 0 0">
-                <Grid.RowDefinitions>
-                    <RowDefinition  Height="auto"/>
-                    <RowDefinition  Height="*"/>
-                    <RowDefinition  Height="*"/>
-                </Grid.RowDefinitions>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                <!-- Фотография сотрудника -->
-                <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6">
-                    <Border BorderBrush="#386FD6" Background="{StaticResource App.MainColor}" BorderThickness="2" CornerRadius="10" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
-                        <StackPanel>
-                            <Border BorderThickness="0 0 0 2" BorderBrush="#386FD6">
-                                <Image Source="{Binding SelectImage}" d:Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png" Width="200" Height="200" Margin="5"/>
-                            </Border>
-                            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 2">
-                                <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Command="{Binding AddImageCommand}">
-                                    <Control Template="{StaticResource AddIcon}"/>
-                                </Button>
-                                <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Margin="15 0 15 0" Command="{Binding ViewImageCommand}">
-                                    <Control Template="{StaticResource Magnifier}"/>
-                                </Button>
-                                <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Foreground="#F06870" Command="{Binding DeleteImageCommand}">
-                                    <Control Template="{StaticResource Trash}"/>
-                                </Button>
-                            </WrapPanel>
-                        </StackPanel>
-                    </Border>
-                </Border>
+                        <Grid Grid.Column="0" Margin="5 0 0 0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition  Height="auto"/>
+                                <RowDefinition  Height="*"/>
+                                <RowDefinition  Height="*"/>
+                            </Grid.RowDefinitions>
 
-                <Border Grid.Row="1" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 10 0 0">
-                    <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                        <DataGrid ItemsSource="{Binding CreatedPersonalDocumentDisplays}" 
-                                  SelectedItem="{Binding SelectedCreatedPersonalDocumentDisplay}"
-                                  AutoGenerateColumns="False" 
-                                  CanUserAddRows="False"
-                                  HorizontalContentAlignment="Stretch" 
-                                  HeadersVisibility="Column"
-                                  Margin="2"
-                                  Background="{StaticResource App.MainColor}"
-                                  d:ItemsSource="{d:SampleData ItemCount=10}">
-                            <DataGrid.Columns>
-                                <!--Наименование-->
-                                <DataGridTemplateColumn Header="Наименование" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding DocumentTypeName}" 
-                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <!--Информация-->
-                                <DataGridTemplateColumn Width="35">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
-                                                <Control Template="{StaticResource Magnifier}"/>
-                                                <Button.ToolTip>
-                                                    <StackPanel>
-                                                        <TextBlock Text="{Binding DocumentSeries, StringFormat=Серия: {0}}"/>
-                                                        <TextBlock Text="{Binding DocumentNumber, StringFormat=Номер: {0}}"/>
-                                                    </StackPanel>
-                                                </Button.ToolTip>
+                            <!-- Фотография сотрудника -->
+                            <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6">
+                                <Border BorderBrush="#386FD6" Background="{StaticResource App.MainColor}" BorderThickness="2" CornerRadius="10" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
+                                    <StackPanel>
+                                        <Border BorderThickness="0 0 0 2" BorderBrush="#386FD6">
+                                            <Image Source="{Binding SelectImage}" d:Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png" Width="200" Height="200" Margin="5"/>
+                                        </Border>
+                                        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 2">
+                                            <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Command="{Binding AddImageCommand}">
+                                                <Control Template="{StaticResource AddIcon}"/>
                                             </Button>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <!--Удалить-->
-                                <DataGridTemplateColumn Width="35">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Width="25" Foreground="#F06870" 
-                                                    Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                                    CommandParameter="{Binding }" 
-                                                    Style="{StaticResource Button.Icon}">
+                                            <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Margin="15 0 15 0" Command="{Binding ViewImageCommand}">
+                                                <Control Template="{StaticResource Magnifier}"/>
+                                            </Button>
+                                            <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Foreground="#F06870" Command="{Binding DeleteImageCommand}">
                                                 <Control Template="{StaticResource Trash}"/>
                                             </Button>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Border>
-                </Border>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+                            </Border>
 
-                <Button Grid.Row="2" 
-                        Content="Добавить"
-                        VerticalAlignment="Bottom" 
-                        Command="{Binding CreateEmployeeCommandAsync}" 
-                        Style="{StaticResource App.Button}" Margin="10"/>
-            </Grid>
+                            <!-- Список документов -->
+                            <Border Grid.Row="1" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 10 0 0">
+                                <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
+                                    <DataGrid ItemsSource="{Binding LocalPersonalDocuments}" 
+                                              SelectedItem="{Binding SelectedLocalPersonalDocument}"
+                                              AutoGenerateColumns="False" 
+                                              CanUserAddRows="False"
+                                              HorizontalContentAlignment="Stretch" 
+                                              HeadersVisibility="Column"
+                                              Margin="2"
+                                              Background="{StaticResource App.MainColor}"
+                                              d:ItemsSource="{d:SampleData ItemCount=10}">
+                                        <DataGrid.Columns>
+                                            <!--Наименование-->
+                                            <DataGridTemplateColumn Header="Наименование" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding DocumentType.Name}" 
+                                                                    TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
 
-            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
-                <Grid Margin="10 0 5 0">
+                                            <!--Информация-->
+                                            <DataGridTemplateColumn Width="35">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                            <Control Template="{StaticResource Magnifier}"/>
+                                                            <Button.ToolTip>
+                                                                <StackPanel>
+                                                                    <TextBlock Text="{Binding DocumentSeries, StringFormat=Серия: {0}}"/>
+                                                                    <TextBlock Text="{Binding DocumentNumber, StringFormat=Номер: {0}}"/>
+                                                                </StackPanel>
+                                                            </Button.ToolTip>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <!--Удалить-->
+                                            <DataGridTemplateColumn Width="35">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Width="25" Foreground="#F06870" 
+                                                                Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                                CommandParameter="{Binding }" 
+                                                                Style="{StaticResource Button.Icon}">
+                                                            <Control Template="{StaticResource Trash}"/>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Border>
+                            </Border>
+                        </Grid>
+
+                        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                            <Grid Margin="10 0 5 0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- ФИО -->
+                                <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 10">
+                                    <StackPanel Margin="5">
+                                        <TextBlock Text="Личная информация" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                                        <UniformGrid Columns="3" Margin="0 10 0 0">
+                                            <cc:PlaceHolderTextBox PlaceHolder="Фамилия*" 
+                                                                   Margin="0 0 5 0"
+                                                                   Text="{Binding NewBaseInfoEmployee.Surname}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                            <cc:PlaceHolderTextBox PlaceHolder="Имя*" 
+                                                                   Margin="5 0"
+                                                                   Text="{Binding NewBaseInfoEmployee.Name}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                            <cc:PlaceHolderTextBox PlaceHolder="Отчество" 
+                                                                   Margin="5 0 0 0"
+                                                                   Text="{Binding NewBaseInfoEmployee.Patronymic}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                            <ComboBox ItemsSource="{Binding Genders}" 
+                                                      SelectedItem="{Binding NewBaseInfoEmployee.Gender}"
+                                                      DisplayMemberPath="Name" 
+                                                      Margin="0 10 0 0"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Документы -->
+                                <Border Grid.Row="1" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 10">
+                                    <StackPanel Margin="6">
+
+                                        <TextBlock Text="Документы" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                                        <ComboBox ItemsSource="{Binding DocumentTypes}" 
+                                                  SelectedItem="{Binding NewPersonalDocument.DocumentType}" 
+                                                  DisplayMemberPath="Name" Margin="0 10 0 0"/>
+
+                                        <!-- Серия / Номер -->
+                                        <Grid Margin="0 10 0 0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <cc:PlaceHolderTextBox Grid.Column="0" 
+                                                                   PlaceHolder="Серия" 
+                                                                   Margin="0 0 5 0"
+                                                                   Text="{Binding NewPersonalDocument.DocumentSeries, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                            <cc:PlaceHolderTextBox Grid.Column="1" 
+                                                                   PlaceHolder="Номер*" 
+                                                                   Margin="5 0 0 0"
+                                                                   Text="{Binding NewPersonalDocument.DocumentNumber, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                        </Grid>
+
+                                        <Button Content="Добавить документ" Width="250" Height="40"
+                                                HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                                Command="{Binding AddPersonalDocumentCommand}"
+                                                Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+
+                                        <!--#region Пока не надо -->
+                                        <!-- Дата выдачи / Код подразделения -->
+                                        <UniformGrid Visibility="Collapsed" Margin="0 10 0 0">
+                                            <cc:PlaceHolderTextBox PlaceHolder="Дата выдачи*" 
+                                                                   Margin="0 0 5 0"
+                                                                   Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                                          UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                            <cc:PlaceHolderTextBox PlaceHolder="Код подразделения*" 
+                                                                   Margin="5 0 0 0"
+                                                                   Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                                          UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                        </UniformGrid>
+
+                                        <!-- Паспорт выдан -->
+                                        <cc:PlaceHolderTextBox Visibility="Collapsed" PlaceHolder="Паспорт выдан*" 
+                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                        <!-- Место Рождения -->
+                                        <cc:PlaceHolderTextBox Visibility="Collapsed" PlaceHolder="Место Рождения*" 
+                                                               Margin="0 10"
+                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                        <!-- Пол -->
+                                        <cc:PlaceHolderTextBox Visibility="Collapsed" PlaceHolder="Пол*" 
+                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                        <!--#endregion-->
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Место проживания / Контакная информация -->
+                                <Border Grid.Row="2" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 5">
+                                    <StackPanel Margin="5">
+                                        <CheckBox Content="Использовать контакнтную информацию" 
+                                                  IsChecked="{Binding IsUseContactInformation}" 
+                                                  HorizontalAlignment="Center" Margin="0 0 0 10" 
+                                                  Style="{StaticResource BaseChechBox}"/>
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Место проживания -->
+                                            <StackPanel Grid.Column="0" Margin="0 0 5 0">
+                                                <TextBlock Text="Место проживания" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                                                <!-- Код -->
+                                                <cc:PlaceHolderTextBox PlaceHolder="Код*" 
+                                                                       Margin="0 0 0 5"
+                                                                       Text="{Binding NewBaseInfoEmployee.PostalCode}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                <!-- Регион -->
+                                                <cc:PlaceHolderTextBox PlaceHolder="Регион*" 
+                                                                       Margin="0 0 0 5"
+                                                                       Text="{Binding NewBaseInfoEmployee.Region}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                <!-- Город -->
+                                                <cc:PlaceHolderTextBox PlaceHolder="Город*" 
+                                                                       Margin="0 5 0 5"
+                                                                       Text="{Binding NewBaseInfoEmployee.City}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                <!-- Улица -->
+                                                <cc:PlaceHolderTextBox PlaceHolder="Улица*" 
+                                                                       Margin="0 5 0 5"
+                                                                       Text="{Binding NewBaseInfoEmployee.Street}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                <!-- Дом / Строение -->
+                                                <cc:PlaceHolderTextBox PlaceHolder="Дом / Строение*" 
+                                                                       Margin="0 5 0 5"
+                                                                       Text="{Binding NewBaseInfoEmployee.Building}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                <!-- Квартира -->
+                                                <cc:PlaceHolderTextBox PlaceHolder="Квартира" 
+                                                                       Margin="0 5 0 0"
+                                                                       Text="{Binding NewBaseInfoEmployee.Apartment}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                            </StackPanel>
+
+                                            <!-- Контактная информация -->
+                                            <StackPanel Grid.Column="1" Margin="5 0 0 0">
+                                                <TextBlock Text="Контактная информация" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+
+                                                    <!-- Персональная -->
+                                                    <StackPanel Grid.Row="0" Margin="0 0 5 0">
+                                                        <TextBlock Text="Персональная" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 10 0 0"/>
+
+                                                        <cc:PlaceHolderTextBox PlaceHolder="Телефон*" 
+                                                                               Margin="0 0 0 5"
+                                                                               Text="{Binding NewBaseInfoEmployee.PersonalPhone}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                                        <cc:PlaceHolderTextBox PlaceHolder="Почта*" 
+                                                                               Margin="0 5 0 0"
+                                                                               Text="{Binding NewBaseInfoEmployee.PersonalEmail}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                    </StackPanel>
+
+                                                    <!-- Корпоративная -->
+                                                    <StackPanel Grid.Row="1" Margin="5 0 0 0">
+                                                        <TextBlock Text="Корпоративная" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 10 0 0"/>
+
+                                                        <cc:PlaceHolderTextBox PlaceHolder="Телефон" 
+                                                                               Margin="0 0 0 5"
+                                                                               Text="{Binding NewBaseInfoEmployee.CorporatePhone}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                                        <cc:PlaceHolderTextBox PlaceHolder="Почта" 
+                                                                               Margin="0 5 0 0"
+                                                                               Text="{Binding NewBaseInfoEmployee.CorporateEmail}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!-- Документы об образовании -->
+            <TabItem Header="{StaticResource String.EducationDocuments}">
+                <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <!-- ФИО -->
-                    <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 10">
-                        <StackPanel Margin="5">
-                            <TextBlock Text="Личная информация" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Row="0" Text="{StaticResource String.EducationDocuments}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-                            <UniformGrid Columns="3" Margin="0 10 0 0">
-                                <cc:PlaceHolderTextBox PlaceHolder="Фамилия*" 
-                                                       Margin="0 0 5 0"
-                                                       Text="{Binding Surname}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                                <cc:PlaceHolderTextBox PlaceHolder="Имя*" 
-                                                       Margin="5 0"
-                                                       Text="{Binding Name}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <!-- Список документов -->
+                        <Border Grid.Column="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 5 0">
+                            <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
+                                <DataGrid ItemsSource="{Binding LoacalEducationDocuments}" 
+                                          SelectedItem="{Binding SelectedEducationDocumentDisplay}"
+                                          AutoGenerateColumns="False" 
+                                          CanUserAddRows="False"
+                                          HorizontalContentAlignment="Stretch" 
+                                          HeadersVisibility="Column"
+                                          Margin="2"
+                                          Background="{StaticResource App.MainColor}"
+                                          d:ItemsSource="{d:SampleData ItemCount=10}">
+                                    <DataGrid.Columns>
+                                        <!-- Уровень образования -->
+                                        <DataGridTemplateColumn Header="Уровень образования" Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding EducationLevel.Name}" 
+                                                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        
+                                        <!-- Тип документа -->
+                                        <DataGridTemplateColumn Header="Тип документа" Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding DocumentType.Name}" 
+                                                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
 
-                                <cc:PlaceHolderTextBox PlaceHolder="Отчество" 
-                                                       Margin="5 0 0 0"
-                                                       Text="{Binding Patronymic}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                        <!--Информация-->
+                                        <DataGridTemplateColumn Width="35">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                        <Control Template="{StaticResource Magnifier}"/>
+                                                        <Button.ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding EducationLevel.Name, StringFormat=Уровень образования: {0}}"/>
+                                                                <TextBlock Text="{Binding DocumentType.Name, StringFormat=Тип документа: {0}}"/>
+                                                                <TextBlock Text="{Binding DocumentNumber, StringFormat=Норме: {0}}"/>
+                                                                <TextBlock Text="{Binding IssuedDate, StringFormat=Дата выдачи: {0}}"/>
+                                                                <TextBlock Text="{Binding OrganizationName, StringFormat=Наименование организации: {0}}"/>
+                                                                <TextBlock Text="{Binding QualificationAwardedName, StringFormat=Наименование присвоеной квалификации: {0}}"/>
+                                                                <TextBlock Text="{Binding SpecialtyName, StringFormat=Наименование специальности: {0}}"/>
+                                                                <TextBlock Text="{Binding ProgramName, StringFormat=Наименование программы: {0}}"/>
+                                                                <TextBlock Text="{Binding TotalHours, StringFormat=Кол-во часов: {0}}"/>
+                                                            </StackPanel>
+                                                        </Button.ToolTip>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
 
-                                <ComboBox ItemsSource="{Binding Genders}" 
-                                          SelectedItem="{Binding SelectedGender}"
-                                          DisplayMemberPath="Name" 
-                                          Margin="0 10 0 0"/>
-                            </UniformGrid>
-                        </StackPanel>
-                    </Border>
+                                        <!--Удалить-->
+                                        <DataGridTemplateColumn Width="35">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Width="25" Foreground="#F06870" 
+                                                            Command="{Binding DataContext.DeleteEducationDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                            CommandParameter="{Binding }" 
+                                                            Style="{StaticResource Button.Icon}">
+                                                        <Control Template="{StaticResource Trash}"/>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Border>
+                        </Border>
 
-                    <!-- Паспорт -->
-                    <Border Grid.Row="1" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 10">
-                        <StackPanel Margin="6">
-                            <TextBlock Text="Паспорт" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                        <ScrollViewer Grid.Column="1" Margin="5 0 0 0" VerticalScrollBarVisibility="Auto">
+                            <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 0">
+                                <StackPanel Margin="5">
+                                    <CheckBox Content="Использовать документы об образовании" 
+                                              IsChecked="{Binding IsUseEducationDocument}" 
+                                              HorizontalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 0 10" 
+                                              Style="{StaticResource BaseChechBox}"/>
 
-                            <ComboBox ItemsSource="{Binding DocumentTypes}" 
-                                      SelectedItem="{Binding SelectedDocumentType}" 
-                                      DisplayMemberPath="Name" Margin="0 10 0 0"/>
+                                    <!-- Уровень образования / Тип документа -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <ComboBox Grid.Column="0" 
+                                                  ItemsSource="{Binding EducationLevels}" 
+                                                  SelectedItem="{Binding NewEducationDocument.EducationLevel}"
+                                                  DisplayMemberPath="Name" 
+                                                  Margin="0 0 5 0"/>
 
-                            <!-- Серия / Номер -->
-                            <Grid Margin="0 10 0 0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <cc:PlaceHolderTextBox Grid.Column="0" 
-                                                       PlaceHolder="Серия" 
-                                                       Margin="0 0 5 0"
-                                                       Text="{Binding Series}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                        <ComboBox Grid.Column="1" 
+                                                  ItemsSource="{Binding DocumentTypes}" 
+                                                  SelectedItem="{Binding NewEducationDocument.DocumentType}"
+                                                  DisplayMemberPath="Name" 
+                                                  Margin="5 0 0 0"/>
+                                    </Grid>
 
-                                <cc:PlaceHolderTextBox Grid.Column="1" 
-                                                       PlaceHolder="Номер*" 
-                                                       Margin="5 0 0 0"
-                                                       Text="{Binding Number}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                            </Grid>
+                                    <!-- Номер документа / Дата выдачи -->
+                                    <Grid Margin="0 10 0 0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
 
-                            <Button Content="Добавить документ" Width="250" Height="40"
-                                    HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                    Command="{Binding AddPersonalDocumentCommand}"
-                                    Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+                                        <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Номер документа*" Margin="0 0 5 0"
+                                                               Text="{Binding NewEducationDocument.DocumentNumber, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                            <!--#region Пока не надо -->
-                            <!-- Дата выдачи / Код подразделения -->
-                            <UniformGrid Visibility="Collapsed" Margin="0 10 0 0">
-                                <cc:PlaceHolderTextBox PlaceHolder="Дата выдачи*" 
-                                                       Margin="0 0 5 0"
-                                                       Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                              UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                        <DatePicker Grid.Column="1" SelectedDate="{Binding NewEducationDocument.IssuedDate, UpdateSourceTrigger=PropertyChanged}" Margin="5 0 0 0"/>
+                                    </Grid>
 
-                                <cc:PlaceHolderTextBox PlaceHolder="Код подразделения*" 
-                                                       Margin="5 0 0 0"
-                                                       Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                              UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                            </UniformGrid>
+                                    <!-- Наименование организации / Наименование квалификации -->
+                                    <Grid Margin="0 10 0 0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
 
-                            <!-- Паспорт выдан -->
-                            <cc:PlaceHolderTextBox Visibility="Collapsed" PlaceHolder="Паспорт выдан*" 
-                                                   Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                          UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                        <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование организации*" Margin="0 0 5 0"
+                                                               Text="{Binding NewEducationDocument.OrganizationName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                            <!-- Место Рождения -->
-                            <cc:PlaceHolderTextBox Visibility="Collapsed" PlaceHolder="Место Рождения*" 
-                                                   Margin="0 10"
-                                                   Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                          UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                        <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Наименование квалификации" Margin="5 0 0 0"
+                                                               Text="{Binding NewEducationDocument.QualificationAwardedName}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                    </Grid>
 
-                            <!-- Пол -->
-                            <cc:PlaceHolderTextBox Visibility="Collapsed" PlaceHolder="Пол*" 
-                                                   Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                          UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                            <!--#endregion-->
-                        </StackPanel>
-                    </Border>
-                    
-                    <!-- Место проживания -->
-                    <Border Grid.Row="2" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 10">
-                        <StackPanel Grid.Row="2" Margin="5">
-                            <TextBlock Text="Место проживания" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                                    <!-- Наименование специальности / Наименование программы -->
+                                    <Grid Margin="0 10 0 0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                                        <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование специальности" Margin="0 0 5 0"
+                                                               Text="{Binding NewEducationDocument.SpecialtyName}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                                <!-- Регистрация -->
-                                <StackPanel Grid.Column="0" Margin="0 0 5 0">
-                                    <TextBlock Text="Регистрация" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 10 0 0"/>
-                                    <!-- Регион -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Регион*" 
-                                                               Margin="0 0 0 5"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    <!-- Пункт -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Пункт*" 
-                                                               Margin="0 5 0 5"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    <!-- Район -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Район" 
-                                                               Margin="0 5 0 5"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    <!-- Улица -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Улица*" 
-                                                               Margin="0 5 0 5"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    <!-- Дом -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Дом / Строение*" 
-                                                               Margin="0 5 0 5"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    <!-- Квартира -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Квартира*" 
-                                                               Margin="0 5 0 0"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                        <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Наименование программы" Margin="5 0 0 0"
+                                                               Text="{Binding NewEducationDocument.ProgramName}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                    </Grid>
+
+                                    <!-- Количество часов -->
+                                    <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Количество часов" Margin="0 10 0 0"
+                                                           Text="{Binding NewEducationDocument.TotalHours}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                    <Button Content="Добавить документ"
+                                            HorizontalAlignment="Center" Width="250" Height="40"
+                                            Command="{Binding AddEducationDocumentCommand}"
+                                            Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
                                 </StackPanel>
-
-                                <!-- Фактическое -->
-                                <StackPanel Grid.Column="1" Margin="5 0 0 0">
-                                    <TextBlock Text="Фактическое" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 10 0 0"/>
-                                    <!-- Регион -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Регион*" 
-                                                               Margin="0 0 0 5"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    <!-- Пункт -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Пункт*" 
-                                                               Margin="0 5 0 5"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    <!-- Район -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Район" 
-                                                               Margin="0 5 0 5"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    <!-- Улица -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Улица*" 
-                                                               Margin="0 5 0 5"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    <!-- Дом -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Дом / Строение*" 
-                                                               Margin="0 5 0 5"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    <!-- Квартира -->
-                                    <cc:PlaceHolderTextBox PlaceHolder="Квартира*" 
-                                                               Margin="0 5 0 0"
-                                                               Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                                      UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Контактная информация -->
-                    <Border Grid.Row="3" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 10">
-                        <StackPanel Grid.Row="3" Margin="5">
-                            <TextBlock Text="Контактная информация" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Персональные -->
-                                <StackPanel Grid.Column="0" Margin="0 0 5 0">
-                                    <TextBlock Text="Персональные" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 10 0 0"/>
-
-                                    <cc:PlaceHolderTextBox PlaceHolder="Телефон*" 
-                                                   Margin="0 0 0 5"
-                                                   Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                          UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-
-                                    <cc:PlaceHolderTextBox PlaceHolder="Почта*" 
-                                                   Margin="0 5 0 0"
-                                                   Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                          UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                </StackPanel>
-
-                                <!-- Корпоративные -->
-                                <StackPanel Grid.Column="1" Margin="5 0 0 0">
-                                    <TextBlock Text="Корпоративные" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 10 0 0"/>
-
-                                    <cc:PlaceHolderTextBox PlaceHolder="Телефон*" 
-                                                   Margin="0 0 0 5"
-                                                   Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                          UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-
-                                    <cc:PlaceHolderTextBox PlaceHolder="Почта*" 
-                                                   Margin="0 5 0 0"
-                                                   Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, 
-                                                          UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
+                            </Border>
+                        </ScrollViewer>
+                    </Grid>
                 </Grid>
-            </ScrollViewer>
-        </Grid>
+            </TabItem>
+    </TabControl>
+        
+        <Button Grid.Row="1" 
+                Content="Добавить"
+                VerticalAlignment="Bottom" 
+                Command="{Binding CreateEmployeeCommandAsync}" 
+                Style="{StaticResource App.Button}" Margin="10"/>
     </Grid>
 </Page>

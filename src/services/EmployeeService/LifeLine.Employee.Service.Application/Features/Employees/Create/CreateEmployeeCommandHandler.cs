@@ -4,6 +4,7 @@ using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Domain.Exceptions;
+using Shared.Domain.ValueObjects;
 using Shared.Kernel.Exceptions;
 using Shared.Kernel.Results;
 
@@ -24,9 +25,49 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
         {
             try
             {
-                var entity = Domain.Models.Employee.Create(request.Surname, request.Name, request.Patronymic, request.GenderId);
+                var employee = Domain.Models.Employee.Create(request.Surname, request.Name, request.Patronymic, request.GenderId);
 
-                await _repository.AddAsync(entity, cancellationToken);
+                //List<PersonalDocuments>
+                if (request.PersonalDocuments != null)
+                    foreach (var item in request.PersonalDocuments) 
+                        employee.AddPersonalDocument(item.DocumentTypeId, item.Number, item.Series, null);
+
+                //ContactInformation
+                if (request.CreateContactInfo != null)
+                    employee.AddContactInformation
+                        (
+                            request.CreateContactInfo.PersonalPhone, 
+                            request.CreateContactInfo.CorporatePhone, 
+                            request.CreateContactInfo.PersonalEmail, 
+                            request.CreateContactInfo.CorporateEmail,
+                            Address.Create
+                                (
+                                    request.CreateContactInfo.Address.PostalCode,
+                                    request.CreateContactInfo.Address.Region,
+                                    request.CreateContactInfo.Address.City,
+                                    request.CreateContactInfo.Address.Street,
+                                    request.CreateContactInfo.Address.Building,
+                                    request.CreateContactInfo.Address.Apartment
+                                )
+                        );
+
+                //List<EducationDocuments>
+                if (request.CreateEducationDoc != null)
+                    foreach (var item in request.CreateEducationDoc)
+                        employee.AddEducationDocument
+                            (
+                                item.EducationLevelId,
+                                item.DocumentTypeId,
+                                item.DocumentNumber,
+                                item.IssuedDate.ToUniversalTime(),
+                                item.OrganizationName,
+                                item.QualificationAwardedName,
+                                item.SpecialtyName,
+                                item.ProgramName,
+                                item.TotalHours
+                            );
+
+                await _repository.AddAsync(employee, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return Result.Success();

@@ -62,7 +62,7 @@ namespace LifeLine.Employee.Service.Domain.Models
                     EducationLevelId.Create(educationLevelId),
                     DocumentTypeId.Create(documentTypeId),
                     DocumentNumber.Create(documentNumber),
-                    issuedDate,
+                    issuedDate.ToUniversalTime(),
                     IssuingAuthority.Create(organizationName)
                 );
 

@@ -19,6 +19,7 @@ namespace LifeLine.Directory.Service.Infrastructure.Ioc
 
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IStatusRepository, StatusRepository>();
+            services.AddScoped<IEducationLevelRepository, EducationLevelRepository>();
 
             return services;
         }

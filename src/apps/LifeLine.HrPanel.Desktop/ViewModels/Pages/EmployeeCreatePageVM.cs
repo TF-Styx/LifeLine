@@ -1,4 +1,5 @@
 ﻿using LifeLine.Directory.Service.Client.Services.DocumentType;
+using LifeLine.Directory.Service.Client.Services.EducationLevel;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.HrPanel.Desktop.Models;
@@ -18,61 +19,131 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IEmployeeService _employeeService;
         private readonly IGenderReadOnlyService _genderReadOnlyService;
         private readonly IDocumentTypeReadOnlyService _documentTypeReadOnlyService;
+        private readonly IEducationLevelReadOnlyService _educationLevelReadOnlyService;
 
         public EmployeeCreatePageVM
             (
                 IEmployeeService employeeService, 
                 IGenderReadOnlyService genderReadOnlyService,
-                IDocumentTypeReadOnlyService documentTypeReadOnlyService
+                IDocumentTypeReadOnlyService documentTypeReadOnlyService,
+                IEducationLevelReadOnlyService educationLevelReadOnlyService
             )
         {
             _employeeService = employeeService;
             _genderReadOnlyService = genderReadOnlyService;
             _documentTypeReadOnlyService = documentTypeReadOnlyService;
+            _educationLevelReadOnlyService = educationLevelReadOnlyService;
+
+            CreateNewBaseInfoEmployee();
+            CreateNewPersonalDocument();
+            CreateNewEducationDocument();
 
             CreateEmployeeCommandAsync = new RelayCommandAsync(Execute_CreateEmployeeCommandAsync);
+
             AddPersonalDocumentCommand = new RelayCommand(Execute_AddPersonalDocumentCommand, CanExecute_AddPersonalDocumentCommand);
-            DeletePersonalDocumentCommand = new RelayCommand<CreatedPersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand);
+            DeletePersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand);
+
+            AddEducationDocumentCommand = new RelayCommand(Execute_AddEducationDocumentCommand, CanExecute_AddEducationDocumentCommand);
+            DeleteEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Execute_DeleteEducationDocumentCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
         {
             await GetAllGenderAsync();
             await GetAllDocumentTypeAsync();
+            await GetAllEducationLevelAsync();
         }
+
+        #region bool
+
+        private bool _isUseContactInformation;
+        public bool IsUseContactInformation
+        {
+            get => _isUseContactInformation;
+            set => SetProperty(ref _isUseContactInformation, value);
+        }
+
+        private bool _isUsePersonalDocument;
+        public bool IsUsePersonalDocument
+        {
+            get => _isUsePersonalDocument;
+            set => SetProperty(ref _isUsePersonalDocument, value);
+        }
+
+        private bool _isUseEducationDocument;
+        public bool IsUseEducationDocument
+        {
+            get => _isUseEducationDocument;
+            set => SetProperty(ref _isUseEducationDocument, value);
+        }
+
+        #endregion
+
+        #region Display
+
+        //NewBaseInfoEmployee
+        private BaseInfoEmployeeDisplay _newBaseInfoEmployee = null!;
+        public BaseInfoEmployeeDisplay NewBaseInfoEmployee
+        {
+            get => _newBaseInfoEmployee;
+            private set => SetProperty(ref _newBaseInfoEmployee, value);
+        }
+
+        private void CreateNewBaseInfoEmployee() => NewBaseInfoEmployee = new();
+
+        //NewPersonalDocument
+        private PersonalDocumentDisplay _newPersonalDocument = null!;
+        public PersonalDocumentDisplay NewPersonalDocument
+        {
+            get => _newPersonalDocument;
+            private set => SetProperty(ref _newPersonalDocument, value);
+        }
+        private void CreateNewPersonalDocument()
+        {
+            NewPersonalDocument = new(new PersonalDocumentResponse(Guid.Empty, Guid.Empty, string.Empty, string.Empty));
+
+            NewPersonalDocument.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(NewPersonalDocument.DocumentType) || e.PropertyName == nameof(NewPersonalDocument.DocumentNumber))
+                    AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
+            };
+        }
+
+        //NewEducationDocument
+        private EducationDocumentDisplay _newEducationDocument = null!;
+        public EducationDocumentDisplay NewEducationDocument
+        {
+            get => _newEducationDocument;
+            private set => SetProperty(ref _newEducationDocument, value);
+        }
+
+        private void CreateNewEducationDocument()
+        {
+            NewEducationDocument = new(new EducationDocumentResponse(string.Empty, string.Empty, string.Empty, string.Empty, DateTime.UtcNow.ToString(), string.Empty, string.Empty, string.Empty, string.Empty, "0"));
+
+            NewEducationDocument.PropertyChanged += (s, e) => AddEducationDocumentCommand?.RaiseCanExecuteChanged();
+        }
+
+        #endregion
 
         #region Employees
-
-        private string _surname = null!;
-        public string Surname
-        {
-            get => _surname;
-            set => SetProperty(ref _surname, value);
-        }
-
-        private string _name = null!;
-        public string Name
-        {
-            get => _name;
-            set => SetProperty(ref _name, value);
-        }
-
-        private string? _patronymic;
-        public string? Patronymic
-        {
-            get => _patronymic;
-            set => SetProperty(ref _patronymic, value);
-        }
 
         public RelayCommandAsync? CreateEmployeeCommandAsync { get; private set; }
         private async Task Execute_CreateEmployeeCommandAsync()
         {
+            CreateContactInformationRequest? createContactInformation = null;
+
+            if (IsUseContactInformation)
+                createContactInformation = new CreateContactInformationRequest(NewBaseInfoEmployee.PersonalPhone, NewBaseInfoEmployee.CorporatePhone, NewBaseInfoEmployee.PersonalEmail, NewBaseInfoEmployee.CorporateEmail, NewBaseInfoEmployee.PostalCode, NewBaseInfoEmployee.Region, NewBaseInfoEmployee.City, NewBaseInfoEmployee.Street, NewBaseInfoEmployee.Building, NewBaseInfoEmployee.Apartment);
+
             var result = await _employeeService.AddAsync
                 (
                     new CreateEmployeeRequest
                     (
-                        Surname, Name, Patronymic!, SelectedGender!.Id,
-                        CreatedPersonalDocumentDisplays.Select(x => new CreateEmployeePersonalDocumentRequest(x.DocumentTypeId, x.DocumentNumber, x.DocumentSeries)).ToList()
+                        NewBaseInfoEmployee.Surname, NewBaseInfoEmployee.Name, NewBaseInfoEmployee.Patronymic!, NewBaseInfoEmployee.Gender!.Id,
+                        LocalPersonalDocuments.Select(x => new CreateEmployeePersonalDocumentRequest(x.DocumentType.Id, x.DocumentNumber, x.DocumentSeries)).ToList(),
+                        createContactInformation,
+                        LoacalEducationDocuments.Select(x => new CreateEducationDocumentRequest(Guid.Parse(x.EducationLevel.Id), x.DocumentType.Id, x.DocumentNumber, x.IssuedDate, x.OrganizationName, x.QualificationAwardedName, x.SpecialtyName, x.ProgramName, x.TotalHours)).ToList()
                     )
                 );
 
@@ -81,53 +152,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     () => MessageBox.Show("Успешное добавление!"),
                     errors => MessageBox.Show(result.StringMessage)
                 );
+
+            //CreateNewPersonalDocument();
         }
 
         #endregion
 
         #region Genders
 
-        private GenderResponse? _selectedGender;
-        public GenderResponse? SelectedGender
-        {
-            get => _selectedGender;
-            set => SetProperty(ref _selectedGender, value);
-        }
         public ObservableCollection<GenderResponse> Genders { get; private init; } = [];
         private async Task GetAllGenderAsync() => Genders.Load(await _genderReadOnlyService.GetAllAsync());
 
         #endregion
 
         #region DocumentType
-
-        private string _number;
-        public string Number
-        {
-            get => _number;
-            set
-            {
-                SetProperty(ref _number, value);
-                AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private string _series;
-        public string Series
-        {
-            get => _series;
-            set => SetProperty(ref _series, value);
-        }
-
-        private DocumentTypeResponse _selectedDocumentType;
-        public DocumentTypeResponse SelectedDocumentType
-        {
-            get => _selectedDocumentType;
-            set
-            {
-                SetProperty(ref _selectedDocumentType, value);
-                AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
-            }
-        }
 
         public ObservableCollection<DocumentTypeResponse> DocumentTypes { get; private init; } = [];
         private async Task GetAllDocumentTypeAsync() => DocumentTypes.Load(await _documentTypeReadOnlyService.GetAllAsync());
@@ -136,41 +174,67 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #region PersonalDocument
 
-        private CreatedPersonalDocumentDisplay _selectedCreatedPersonalDocumentDisplay;
-        public CreatedPersonalDocumentDisplay SelectedCreatedPersonalDocumentDisplay
+        private PersonalDocumentDisplay _selectedLocalPersonalDocument = null!;
+        public PersonalDocumentDisplay SelectedLocalPersonalDocument
         {
-            get => _selectedCreatedPersonalDocumentDisplay;
-            set => SetProperty(ref _selectedCreatedPersonalDocumentDisplay, value);
+            get => _selectedLocalPersonalDocument;
+            set => SetProperty(ref _selectedLocalPersonalDocument, value);
         }
 
-        public ObservableCollection<CreatedPersonalDocumentDisplay> CreatedPersonalDocumentDisplays { get; private init; } = [];
+        public ObservableCollection<PersonalDocumentDisplay> LocalPersonalDocuments { get; private init; } = [];
 
-        public RelayCommand AddPersonalDocumentCommand { get; private set; }
+        public RelayCommand? AddPersonalDocumentCommand { get; private set; }
         private void Execute_AddPersonalDocumentCommand()
         {
-            var display = new CreatedPersonalDocumentDisplay
-                (
-                    new PersonalDocumentResponse
-                        (
-                            Guid.NewGuid(),
-                            SelectedDocumentType.Id,
-                            Number,
-                            Series
-                        )
-                );
+            LocalPersonalDocuments.Add(NewPersonalDocument);
 
-            CreatedPersonalDocumentDisplays.Add(display);
+            MessageBox.Show($"DocumentTypeId = {NewPersonalDocument.DocumentType.Id}");
 
-            display.SetDocumentTypeName(SelectedDocumentType.Name);
-            display.SetDocumentNumber(Number);
-            display.SetDocumentSeries(Series);
+            CreateNewPersonalDocument();
         }
         private bool CanExecute_AddPersonalDocumentCommand()
-            => SelectedDocumentType != null && !string.IsNullOrWhiteSpace(Number);
+            => NewPersonalDocument.DocumentType != null && !string.IsNullOrWhiteSpace(NewPersonalDocument.DocumentNumber);
 
-        public RelayCommand<CreatedPersonalDocumentDisplay> DeletePersonalDocumentCommand { get; private set; }
-        private void Execute_DeletePersonalDocumentCommand(CreatedPersonalDocumentDisplay display)
-            => CreatedPersonalDocumentDisplays.Remove(display);
+        public RelayCommand<PersonalDocumentDisplay>? DeletePersonalDocumentCommand { get; private set; }
+        private void Execute_DeletePersonalDocumentCommand(PersonalDocumentDisplay display)
+            => LocalPersonalDocuments.Remove(display);
+
+        #endregion
+
+        #region EducationLevel
+
+        public ObservableCollection<EducationLevelResponse> EducationLevels { get; private init; } = [];
+        private async Task GetAllEducationLevelAsync() => EducationLevels.Load(await _educationLevelReadOnlyService.GetAllAsync());
+
+        #endregion
+
+        #region EducationDocument
+
+        private EducationDocumentDisplay _selectedEducationDocumentDisplay = null!;
+        public EducationDocumentDisplay SelectedEducationDocumentDisplay
+        {
+            get => _selectedEducationDocumentDisplay;
+            set => SetProperty(ref _selectedEducationDocumentDisplay, value);
+        }
+
+        public ObservableCollection<EducationDocumentDisplay> LoacalEducationDocuments { get; private init; } = [];
+
+        public RelayCommand AddEducationDocumentCommand { get; private set; }
+        private void Execute_AddEducationDocumentCommand()
+        {
+            LoacalEducationDocuments.Add(NewEducationDocument);
+
+            CreateNewEducationDocument();
+        }
+        private bool CanExecute_AddEducationDocumentCommand()
+            => NewEducationDocument.EducationLevel != null && NewEducationDocument.DocumentType != null &&
+               !string.IsNullOrWhiteSpace(NewEducationDocument.DocumentNumber) && 
+               !string.IsNullOrWhiteSpace(NewEducationDocument.IssuedDate.ToString()) && 
+               !string.IsNullOrWhiteSpace(NewEducationDocument.OrganizationName);
+
+        public RelayCommand<EducationDocumentDisplay>? DeleteEducationDocumentCommand { get; private set; }
+        private void Execute_DeleteEducationDocumentCommand(EducationDocumentDisplay display)
+            => LoacalEducationDocuments.Remove(display);
 
         #endregion
     }

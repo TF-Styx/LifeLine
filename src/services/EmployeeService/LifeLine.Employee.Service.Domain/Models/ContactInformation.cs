@@ -12,7 +12,7 @@ namespace LifeLine.Employee.Service.Domain.Models
         public Phone PersonalPhone { get; private set; } = null!;
         public Phone? CorporatePhone { get; private set; }
         public Email PersonalEmail { get; private set; } = null!;
-        public Email? CorporateEmail { get; private set; } = null!;
+        public Email? CorporateEmail { get; private set; }
         public Address HomeAddress { get; private set; } = null!;
 
         public Employee Employee { get; private set; } = null!;
