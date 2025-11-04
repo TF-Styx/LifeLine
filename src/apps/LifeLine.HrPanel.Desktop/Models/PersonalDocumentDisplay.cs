@@ -30,11 +30,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         public DocumentTypeResponse DocumentType
         {
             get => _documentType;
-            set
-            {
-                SetProperty(ref _documentType, value);
-                MessageBox.Show($"{value.Id}\n{value.Name}");
-            }
+            set => SetProperty(ref _documentType, value);
         }
 
         public PersonalDocumentResponse GetUnderLineModel() => _model;

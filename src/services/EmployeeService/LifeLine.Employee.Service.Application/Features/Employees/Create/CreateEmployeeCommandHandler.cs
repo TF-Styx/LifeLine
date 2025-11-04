@@ -67,6 +67,23 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
                                 item.TotalHours
                             );
 
+                //List<WorkPermit>
+                if (request.CreateWorkPermit != null)
+                    foreach (var item in request.CreateWorkPermit)
+                        employee.AddWorkPermit
+                            (
+                                item.WorkPermitName, 
+                                item.DocumentSeries, 
+                                item.WorkPermitNumber, 
+                                item.ProtocolNumber, 
+                                item.SpecialtyName, 
+                                item.IssuingAuthority, 
+                                item.IssueDate, 
+                                item.ExpiryDate, 
+                                item.PermitTypeId, 
+                                item.AdmissionStatusId
+                            );
+
                 await _repository.AddAsync(employee, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 

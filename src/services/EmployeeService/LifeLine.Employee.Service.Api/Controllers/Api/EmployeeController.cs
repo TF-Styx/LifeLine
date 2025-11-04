@@ -42,7 +42,8 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                             request.ContactInformation.Apartment
                         )
                     ) : null,
-                    request.EducationDocument?.Select(x => new CreateEducationDocumentCommand(x.EducationLevelId, x.DocumentTypeId, x.DocumentNumber, x.IssuedDate, x.OrganizationName, x.QualificationAwardedName, x.SpecialtyName, x.ProgramName, x.TotalHours)).ToList()
+                    request.EducationDocument?.Select(x => new CreateEducationDocumentCommand(x.EducationLevelId, x.DocumentTypeId, x.DocumentNumber, x.IssuedDate, x.OrganizationName, x.QualificationAwardedName, x.SpecialtyName, x.ProgramName, x.TotalHours)).ToList(),
+                    request.WorkPermit?.Select(x => new CreateWorkPermitCommand(x.WorkPermitName, x.DocumentSeries, x.WorkPermitNumber, x.ProtocolNumber, x.SpecialtyName, x.IssuingAuthority, x.IssueDate, x.ExpiryDate, x.PermitTypeId, x.AdmissionStatusId)).ToList()
                 );
 
             var result = await _mediator.Send(command, cancellationToken);

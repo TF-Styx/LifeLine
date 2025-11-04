@@ -3,8 +3,8 @@ using Shared.Api.Infrastructure;
 
 namespace LifeLine.Directory.Service.Application.Common.Repository
 {
-    public interface IEducationLevelRepository : IBaseRepository<EducationLevel>
+    public interface IPermitTypeRepository : IBaseRepository<PermitType>
     {
-        Task<EducationLevel?> GetByIdAsync(Guid id);
+        Task<PermitType?> GetByIdAsync(Guid id);
     }
 }

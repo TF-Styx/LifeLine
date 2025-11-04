@@ -1,5 +1,7 @@
-﻿using LifeLine.Directory.Service.Client.Services.DocumentType;
+﻿using LifeLine.Directory.Service.Client.Services.AdmissionStatus;
+using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
+using LifeLine.Directory.Service.Client.Services.PermitType;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.HrPanel.Desktop.Models;
@@ -18,25 +20,32 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
     {
         private readonly IEmployeeService _employeeService;
         private readonly IGenderReadOnlyService _genderReadOnlyService;
+        private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
         private readonly IDocumentTypeReadOnlyService _documentTypeReadOnlyService;
         private readonly IEducationLevelReadOnlyService _educationLevelReadOnlyService;
+        private readonly IAdmissionStatusReadOnlyService _admissionStatusReadOnlyService;
 
         public EmployeeCreatePageVM
             (
                 IEmployeeService employeeService, 
                 IGenderReadOnlyService genderReadOnlyService,
+                IPermitTypeReadOnlyService permitTypeReadOnlyService,
                 IDocumentTypeReadOnlyService documentTypeReadOnlyService,
-                IEducationLevelReadOnlyService educationLevelReadOnlyService
+                IEducationLevelReadOnlyService educationLevelReadOnlyService,
+                IAdmissionStatusReadOnlyService admissionStatusReadOnlyService
             )
         {
             _employeeService = employeeService;
             _genderReadOnlyService = genderReadOnlyService;
+            _permitTypeReadOnlyService = permitTypeReadOnlyService;
             _documentTypeReadOnlyService = documentTypeReadOnlyService;
             _educationLevelReadOnlyService = educationLevelReadOnlyService;
+            _admissionStatusReadOnlyService = admissionStatusReadOnlyService;
 
             CreateNewBaseInfoEmployee();
             CreateNewPersonalDocument();
             CreateNewEducationDocument();
+            CreateNewWorkPermit();
 
             CreateEmployeeCommandAsync = new RelayCommandAsync(Execute_CreateEmployeeCommandAsync);
 
@@ -45,13 +54,18 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             AddEducationDocumentCommand = new RelayCommand(Execute_AddEducationDocumentCommand, CanExecute_AddEducationDocumentCommand);
             DeleteEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Execute_DeleteEducationDocumentCommand);
+
+            AddWorkPermitCommand = new RelayCommand(Execute_AddWorkPermitCommand, CanExecute_AddWorkPermitCommand);
+            DeleteWorkPermitCommand = new RelayCommand<WorkPermitDisplay>(Execute_DeleteWorkPermitCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
         {
             await GetAllGenderAsync();
+            await GetAllPermitTypeAsync();
             await GetAllDocumentTypeAsync();
             await GetAllEducationLevelAsync();
+            await GetAllAdmissionStatusAsync();
         }
 
         #region bool
@@ -77,6 +91,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set => SetProperty(ref _isUseEducationDocument, value);
         }
 
+        private bool _isUseWorkPermit;
+        public bool IsUseWorkPermit
+        {
+            get => _isUseWorkPermit;
+            set => SetProperty(ref _isUseWorkPermit, value);
+        }
+
         #endregion
 
         #region Display
@@ -88,8 +109,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             get => _newBaseInfoEmployee;
             private set => SetProperty(ref _newBaseInfoEmployee, value);
         }
+        private void CreateNewBaseInfoEmployee()
+        {
+            NewBaseInfoEmployee = new();
 
-        private void CreateNewBaseInfoEmployee() => NewBaseInfoEmployee = new();
+            NewBaseInfoEmployee.PropertyChanged += (s, e) => CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
+        }
 
         //NewPersonalDocument
         private PersonalDocumentDisplay _newPersonalDocument = null!;
@@ -102,11 +127,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             NewPersonalDocument = new(new PersonalDocumentResponse(Guid.Empty, Guid.Empty, string.Empty, string.Empty));
 
-            NewPersonalDocument.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(NewPersonalDocument.DocumentType) || e.PropertyName == nameof(NewPersonalDocument.DocumentNumber))
-                    AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
-            };
+            NewPersonalDocument.PropertyChanged += (s, e) => AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
         }
 
         //NewEducationDocument
@@ -124,11 +145,26 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             NewEducationDocument.PropertyChanged += (s, e) => AddEducationDocumentCommand?.RaiseCanExecuteChanged();
         }
 
+        //NewWorkPermit
+        private WorkPermitDisplay _newWorkPermit = null!;
+        public WorkPermitDisplay NewWorkPermit
+        {
+            get => _newWorkPermit;
+            private set => SetProperty(ref _newWorkPermit, value);
+        }
+
+        private void CreateNewWorkPermit()
+        {
+            NewWorkPermit = new(new WorkPermitResponse(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, DateTime.UtcNow, DateTime.UtcNow, string.Empty, string.Empty));
+
+            NewWorkPermit.PropertyChanged += (s, e) => AddWorkPermitCommand?.RaiseCanExecuteChanged();
+        }
+
         #endregion
 
         #region Employees
 
-        public RelayCommandAsync? CreateEmployeeCommandAsync { get; private set; }
+        public RelayCommandAsync CreateEmployeeCommandAsync { get; private set; }
         private async Task Execute_CreateEmployeeCommandAsync()
         {
             CreateContactInformationRequest? createContactInformation = null;
@@ -143,7 +179,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         NewBaseInfoEmployee.Surname, NewBaseInfoEmployee.Name, NewBaseInfoEmployee.Patronymic!, NewBaseInfoEmployee.Gender!.Id,
                         LocalPersonalDocuments.Select(x => new CreateEmployeePersonalDocumentRequest(x.DocumentType.Id, x.DocumentNumber, x.DocumentSeries)).ToList(),
                         createContactInformation,
-                        LoacalEducationDocuments.Select(x => new CreateEducationDocumentRequest(Guid.Parse(x.EducationLevel.Id), x.DocumentType.Id, x.DocumentNumber, x.IssuedDate, x.OrganizationName, x.QualificationAwardedName, x.SpecialtyName, x.ProgramName, x.TotalHours)).ToList()
+                        LocalEducationDocuments.Select(x => new CreateEducationDocumentRequest(Guid.Parse(x.EducationLevel.Id), x.DocumentType.Id, x.DocumentNumber, x.IssuedDate, x.OrganizationName, x.QualificationAwardedName, x.SpecialtyName, x.ProgramName, x.TotalHours)).ToList(),
+                        LocalWorkPermits.Select(x => new CreateWorkPermitRequest(x.WorkPermitName, x.DocumentSeries, x.WorkPermitNumber, x.ProtocolNumber, x.SpecialtyName, x.IssuingAuthority, x.IssueDate, x.ExpiryDate, Guid.Parse(x.PermitType.Id), Guid.Parse(x.AdmissionStatus.Id))).ToList()
                     )
                 );
 
@@ -169,6 +206,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         public ObservableCollection<DocumentTypeResponse> DocumentTypes { get; private init; } = [];
         private async Task GetAllDocumentTypeAsync() => DocumentTypes.Load(await _documentTypeReadOnlyService.GetAllAsync());
+
+        #endregion
+
+        #region AmissionStatus
+
+        public ObservableCollection<AdmissionStatusResponse> AdmissionStatuses { get; private init; } = [];
+        private async Task GetAllAdmissionStatusAsync() => AdmissionStatuses.Load(await _admissionStatusReadOnlyService.GetAllAsync());
+
+        #endregion
+
+        #region PermiteType
+
+        public ObservableCollection<AdmissionStatusResponse> PermitTypes { get; private init; } = [];
+        private async Task GetAllPermitTypeAsync() => PermitTypes.Load(await _permitTypeReadOnlyService.GetAllAsync());
 
         #endregion
 
@@ -217,24 +268,60 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set => SetProperty(ref _selectedEducationDocumentDisplay, value);
         }
 
-        public ObservableCollection<EducationDocumentDisplay> LoacalEducationDocuments { get; private init; } = [];
+        public ObservableCollection<EducationDocumentDisplay> LocalEducationDocuments { get; private init; } = [];
 
         public RelayCommand AddEducationDocumentCommand { get; private set; }
         private void Execute_AddEducationDocumentCommand()
         {
-            LoacalEducationDocuments.Add(NewEducationDocument);
+            LocalEducationDocuments.Add(NewEducationDocument);
 
             CreateNewEducationDocument();
         }
         private bool CanExecute_AddEducationDocumentCommand()
             => NewEducationDocument.EducationLevel != null && NewEducationDocument.DocumentType != null &&
-               !string.IsNullOrWhiteSpace(NewEducationDocument.DocumentNumber) && 
-               !string.IsNullOrWhiteSpace(NewEducationDocument.IssuedDate.ToString()) && 
-               !string.IsNullOrWhiteSpace(NewEducationDocument.OrganizationName);
+            !string.IsNullOrWhiteSpace(NewEducationDocument.DocumentNumber) && 
+            !string.IsNullOrWhiteSpace(NewEducationDocument.IssuedDate.ToString()) &&
+            NewWorkPermit.IssueDate != DateTime.MinValue &&
+            !string.IsNullOrWhiteSpace(NewEducationDocument.OrganizationName);
 
         public RelayCommand<EducationDocumentDisplay>? DeleteEducationDocumentCommand { get; private set; }
         private void Execute_DeleteEducationDocumentCommand(EducationDocumentDisplay display)
-            => LoacalEducationDocuments.Remove(display);
+            => LocalEducationDocuments.Remove(display);
+
+        #endregion
+
+        #region WorkPermit
+
+        private WorkPermitDisplay _selectedWorkPermit = null!;
+        public WorkPermitDisplay SelectedWorkPermit
+        {
+            get => _selectedWorkPermit;
+            set => SetProperty(ref _selectedWorkPermit, value);
+        }
+
+        public ObservableCollection<WorkPermitDisplay> LocalWorkPermits { get; private init; } = [];
+
+        public RelayCommand AddWorkPermitCommand { get; private set; }
+        private void Execute_AddWorkPermitCommand()
+        {
+            LocalWorkPermits.Add(NewWorkPermit);
+
+            CreateNewWorkPermit();
+        }
+        private bool CanExecute_AddWorkPermitCommand()
+            => NewWorkPermit.AdmissionStatus != null && NewWorkPermit.PermitType != null &&
+            !string.IsNullOrWhiteSpace(NewWorkPermit.WorkPermitName) &&
+            !string.IsNullOrWhiteSpace(NewWorkPermit.WorkPermitNumber) &&
+            !string.IsNullOrWhiteSpace(NewWorkPermit.SpecialtyName) &&
+            !string.IsNullOrWhiteSpace(NewWorkPermit.IssuingAuthority) &&
+            //NewWorkPermit.IssueDate != DateTime.MinValue && 
+            !string.IsNullOrWhiteSpace(NewWorkPermit.IssueDate.ToString()) &&
+            //NewWorkPermit.ExpiryDate != DateTime.MinValue &&
+            !string.IsNullOrWhiteSpace(NewWorkPermit.ExpiryDate.ToString());
+
+        public RelayCommand<WorkPermitDisplay> DeleteWorkPermitCommand { get; private set; }
+        private void Execute_DeleteWorkPermitCommand(WorkPermitDisplay display) 
+            => LocalWorkPermits.Remove(display);
 
         #endregion
     }

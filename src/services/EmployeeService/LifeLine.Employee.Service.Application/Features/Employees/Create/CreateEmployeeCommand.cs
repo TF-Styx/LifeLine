@@ -9,7 +9,8 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
             string Surname, string Name, string? Patronymic, Guid GenderId,
             List<CreatePersonalDocumentCommand>? PersonalDocuments, 
             CreateContactInformationCommand? CreateContactInfo,
-            List<CreateEducationDocumentCommand>? CreateEducationDoc
+            List<CreateEducationDocumentCommand>? CreateEducationDoc,
+            List<CreateWorkPermitCommand>? CreateWorkPermit
         ) : IRequest<Result>, IHasFIO;
 
     public sealed record CreatePersonalDocumentCommand(Guid DocumentTypeId, string Number, string? Series);
@@ -19,4 +20,6 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
     public sealed record CreateAddressCommandData(string PostalCode, string Region, string City, string Street, string Building, string? Apartment);
 
     public sealed record CreateEducationDocumentCommand(Guid EducationLevelId, Guid DocumentTypeId, string DocumentNumber, DateTime IssuedDate, string OrganizationName, string? QualificationAwardedName, string? SpecialtyName, string? ProgramName, TimeSpan? TotalHours);
+
+    public sealed record CreateWorkPermitCommand(string WorkPermitName, string? DocumentSeries, string WorkPermitNumber, string? ProtocolNumber, string SpecialtyName, string IssuingAuthority, DateTime IssueDate, DateTime ExpiryDate, /*FileInput? FileKey, */Guid PermitTypeId, Guid AdmissionStatusId);
 }

@@ -1,5 +1,7 @@
-﻿using LifeLine.Directory.Service.Client.Services.DocumentType;
+﻿using LifeLine.Directory.Service.Client.Services.AdmissionStatus;
+using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
+using LifeLine.Directory.Service.Client.Services.PermitType;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +29,8 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddHttpClient(directoryHttp, client => client.BaseAddress = new Uri(directoryService!));
             services.AddHttpClient<IDocumentTypeReadOnlyService, DocumentTypeService>(directoryHttp);
             services.AddHttpClient<IEducationLevelReadOnlyService, EducationLevelService>(directoryHttp);
+            services.AddHttpClient<IAdmissionStatusReadOnlyService, AdmissionStatusService>(directoryHttp);
+            services.AddHttpClient<IPermitTypeReadOnlyService, PermitTypeService>(directoryHttp);
 
             return services;
         }

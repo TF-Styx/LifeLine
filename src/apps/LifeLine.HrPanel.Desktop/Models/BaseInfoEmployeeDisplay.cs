@@ -65,11 +65,6 @@ namespace LifeLine.HrPanel.Desktop.Models
             get => _documentType;
             set => SetProperty(ref _documentType, value);
         }
-        public void SetDocumentType(DocumentTypeResponse documentType)
-        {
-            if (documentType.Id != DocumentType.Id)
-                DocumentType = documentType;
-        }
 
         #endregion
 

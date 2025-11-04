@@ -76,7 +76,7 @@ namespace LifeLine.Employee.Service.Domain.Models
                     DocumentNumber.Create(workPermitNumber),
                     SpecialtyName.Create(specialtyName),
                     IssuingAuthority.Create(issuingAuthority),
-                    issueDate, expiryDate,
+                    issueDate.ToUniversalTime(), expiryDate.ToUniversalTime(),
                     PermitTypeId.Create(permitTypeId),
                     AdmissionStatusId.Create(admissionStatusId)
                 );
