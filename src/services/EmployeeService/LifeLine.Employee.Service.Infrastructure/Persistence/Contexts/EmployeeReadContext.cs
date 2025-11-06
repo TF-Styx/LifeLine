@@ -11,6 +11,7 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Contexts
         public DbSet<EmployeeAdminListItemView> EmployeeAdminListItemViews { get; set; } = null!;
         public DbSet<EmployeeTypeView> EmployeeTypeViews { get; set; } = null!;
 
+
         IQueryable<GenderView> IReadContext.GenderViews => this.GenderViews;
         IQueryable<EmployeeAdminListItemView> IReadContext.EmployeeAdminListItemViews => this.EmployeeAdminListItemViews;
         IQueryable<EmployeeTypeView> IReadContext.EmployeeTypeViews => this.EmployeeTypeViews;

@@ -9,7 +9,7 @@ namespace LifeLine.Employee.Service.Domain.Models
 {
     //Кадровые назначения
     //или история работы сотрудника
-    public sealed class Assignment : Aggregate<AssignmentId>
+    public sealed class Assignment : Entity<AssignmentId>
     {
         public EmployeeId EmployeeId { get; private set; }
         public PositionId PositionId { get; private set; }
@@ -19,6 +19,8 @@ namespace LifeLine.Employee.Service.Domain.Models
         public DateTime TerminationDate { get; private set; }
         public StatusId StatusId { get; private set; }
         public ContractId ContractId { get; private set; }
+
+        public Employee Employee { get; private set; } = null!;
 
         private Assignment() { }
         private Assignment
@@ -38,8 +40,8 @@ namespace LifeLine.Employee.Service.Domain.Models
             PositionId = positionId;
             DepartmentId = departmentId;
             ManagerId = managerId;
-            HireDate = hireDate;
-            TerminationDate = terminationDate;
+            HireDate = hireDate.ToUniversalTime();
+            TerminationDate = terminationDate.ToUniversalTime();
             StatusId = statusId;
             ContractId = contractId;
         }

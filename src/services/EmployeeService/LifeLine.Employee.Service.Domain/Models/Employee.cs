@@ -34,6 +34,12 @@ namespace LifeLine.Employee.Service.Domain.Models
         private readonly List<PersonalDocument> _personalDocuments = [];
         public IReadOnlyCollection<PersonalDocument> PersonalDocuments => _personalDocuments.AsReadOnly();
 
+        private readonly List<Assignment> _assignments = [];
+        public IReadOnlyCollection<Assignment> Assignments => _assignments.AsReadOnly();
+
+        private readonly List<Contract> _contracts = [];
+        public IReadOnlyCollection<Contract> Contracts => _contracts.AsReadOnly();
+
         private Employee() { }
         private Employee(EmployeeId id, Surname surname, Name name, Patronymic? patronymic, GenderId genderId) : base(id)
         {
@@ -271,6 +277,66 @@ namespace LifeLine.Employee.Service.Domain.Models
                 );
 
             _personalDocuments.Add(personalDocument);
+        }
+
+        #endregion
+
+        #region Contract
+
+        public Contract AddContract
+            (
+                Guid employeeTypeId,
+                string contractNumber,
+                DateTime startDate,
+                DateTime endDate,
+                decimal salary,
+                ImageKey? fileKey
+            )
+        {
+            var contract = Contract.Create
+                (
+                    this.Id,
+                    employeeTypeId,
+                    contractNumber,
+                    startDate,
+                    endDate,
+                    salary,
+                    fileKey
+                );
+
+            _contracts.Add(contract);
+
+            return contract;
+        }
+
+        #endregion
+
+        #region Assignemnt
+
+        public void AddAssignment
+            (
+                Guid positionId,
+                Guid departmentId,
+                Guid? managerId,
+                DateTime hireDate,
+                DateTime terminationDate,
+                Guid statusId,
+                Guid contractId
+            )
+        {
+            var assignment = Assignment.Create
+                (
+                    this.Id,
+                    positionId,
+                    departmentId,
+                    managerId,
+                    hireDate,
+                    terminationDate,
+                    statusId,
+                    contractId
+                );
+
+            _assignments.Add(assignment);
         }
 
         #endregion

@@ -34,8 +34,9 @@
             <sys:String x:Key="String.EducationDocuments">Документы об образовании</sys:String>
             <sys:String x:Key="String.WorkPermits">Сертификаты / Аккредитация</sys:String>
             <sys:String x:Key="String.EmployeeSpecialties">Специализации</sys:String>
+            <sys:String x:Key="String.Assigments.Contracts">Назначения / Контракты</sys:String>
             <sys:String x:Key="String.Assigments">Назначения</sys:String>
-            <sys:String x:Key="String.Contracts">Контракт</sys:String>
+            <sys:String x:Key="String.Contracts">Контракты</sys:String>
 
             <Style TargetType="ListView">
                 <Setter Property="Background" Value="Transparent"/>
@@ -669,8 +670,7 @@
                                 </DataGrid>
                             </Border>
                         </Border>
-
-
+                        
                         <ScrollViewer Grid.Column="1" Margin="5 0 0 0" VerticalScrollBarVisibility="Auto">
                             <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 0">
                                 <StackPanel Margin="5">
@@ -756,6 +756,318 @@
                                     <Button Content="Добавить документ"
                                             HorizontalAlignment="Center" Width="250" Height="40"
                                             Command="{Binding AddWorkPermitCommand}"
+                                            Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+                                </StackPanel>
+                            </Border>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            
+            <!-- Добавление назначения / Контракт -->
+            <TabItem Header="{StaticResource String.Assigments.Contracts}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="{StaticResource String.Assigments.Contracts}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Список назначений -->
+                            <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 5 5">
+                                <StackPanel>
+                                    <TextBlock Grid.Row="0" Text="{StaticResource String.Assigments}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                                    <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
+                                        <DataGrid ItemsSource="{Binding LocalAssignmentsContracts}" 
+                                                  SelectedItem="{Binding SelectedWorkPermit}"
+                                                  AutoGenerateColumns="False" 
+                                                  CanUserAddRows="False"
+                                                  HorizontalContentAlignment="Stretch" 
+                                                  HeadersVisibility="Column"
+                                                  Margin="2"
+                                                  Background="{StaticResource App.MainColor}"
+                                                  d:ItemsSource="{d:SampleData ItemCount=10}">
+                                            <DataGrid.Columns>
+                                                <!-- Отдел -->
+                                                <DataGridTemplateColumn Header="Отдел" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Department.Name}" 
+                                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <!-- Должность -->
+                                                <DataGridTemplateColumn Header="Должность" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Position.Name}" 
+                                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <!-- Номер контракта -->
+                                                <DataGridTemplateColumn Header="Номер контракта" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding ContractNumber}" 
+                                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <!--Информация-->
+                                                <DataGridTemplateColumn Width="35">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                                <Control Template="{StaticResource Magnifier}"/>
+                                                                <Button.ToolTip>
+                                                                    <StackPanel>
+                                                                        <TextBlock Text="{StaticResource String.Assigments}"/>
+                                                                        <TextBlock Text="{Binding Department.Name, StringFormat=Отдел: {0}}"/>
+                                                                        <TextBlock Text="{Binding Position.Name, StringFormat=Должность: {0}}"/>
+                                                                        <TextBlock Text="{Binding Manager.Name, StringFormat=Мэнеджер: {0}}"/>
+                                                                        <TextBlock Text="{Binding HireDate, StringFormat=Дата найма: {0}}"/>
+                                                                        <TextBlock Text="{Binding TerminationDate, StringFormat=Дата расторжения договора: {0}}"/>
+                                                                        <TextBlock Text="{Binding Status.Name, StringFormat=Статус: {0}}"/>
+                                                                        
+                                                                        <TextBlock Text="{StaticResource String.Contracts}" Margin="0 10 0 0"/>
+                                                                        <TextBlock Text="{Binding EmployeeType.Name, StringFormat=Тип трудоустройства: {0}}"/>
+                                                                        <TextBlock Text="{Binding ContractNumber, StringFormat=Номер контракта: {0}}"/>
+                                                                        <TextBlock Text="{Binding StartDate, StringFormat=Начало: {0}}"/>
+                                                                        <TextBlock Text="{Binding EndDate, StringFormat=Конец: {0}}"/>
+                                                                        <TextBlock Text="{Binding Salary, StringFormat=Зарплата: {0}}"/>
+                                                                    </StackPanel>
+                                                                </Button.ToolTip>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <!--Удалить-->
+                                                <DataGridTemplateColumn Width="35">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Button Width="25" Foreground="#F06870" 
+                                                                    Command="{Binding DataContext.DeleteWorkPermitCommand, 
+                                                                    RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                                    CommandParameter="{Binding }" 
+                                                                    Style="{StaticResource Button.Icon}">
+                                                                <Control Template="{StaticResource Trash}"/>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Список контрактов -->
+                            <Border Grid.Row="1" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 5 5 0">
+                                <StackPanel>
+                                    <TextBlock Grid.Row="0" Text="{StaticResource String.Contracts}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                                    
+                                    <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
+                                        <DataGrid ItemsSource="{Binding LocalAssignmentsContracts}" 
+                                                  SelectedItem="{Binding SelectedWorkPermit}"
+                                                  AutoGenerateColumns="False" 
+                                                  CanUserAddRows="False"
+                                                  HorizontalContentAlignment="Stretch" 
+                                                  HeadersVisibility="Column"
+                                                  Margin="2"
+                                                  Background="{StaticResource App.MainColor}"
+                                                  d:ItemsSource="{d:SampleData ItemCount=10}">
+                                            <DataGrid.Columns>
+                                                <!-- Тип документа -->
+                                                <DataGridTemplateColumn Header="Тип документа" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding EmployeeType.Name}" 
+                                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <!-- Статус -->
+                                                <DataGridTemplateColumn Header="Статус" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding ContractNumber}" 
+                                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <!-- Наименование -->
+                                                <DataGridTemplateColumn Header="Наименование" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Salary}" 
+                                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <!--Информация-->
+                                                <DataGridTemplateColumn Width="35">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                                <Control Template="{StaticResource Magnifier}"/>
+                                                                <Button.ToolTip>
+                                                                    <StackPanel>
+                                                                        <TextBlock Text="{StaticResource String.Contracts}"/>
+                                                                        <TextBlock Text="{Binding EmployeeType.Name, StringFormat=Тип трудоустройства: {0}}"/>
+                                                                        <TextBlock Text="{Binding ContractNumber, StringFormat=Номер контракта: {0}}"/>
+                                                                        <TextBlock Text="{Binding StartDate, StringFormat=Начало: {0}}"/>
+                                                                        <TextBlock Text="{Binding EndDate, StringFormat=Конец: {0}}"/>
+                                                                        <TextBlock Text="{Binding Salary, StringFormat=Зарплата: {0}}"/>
+                                                                    </StackPanel>
+                                                                </Button.ToolTip>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <!--Удалить-->
+                                                <DataGridTemplateColumn Width="35">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Button Width="25" Foreground="#F06870" 
+                                                                    Command="{Binding DataContext.DeleteWorkPermitCommand, 
+                                                                    RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                                    CommandParameter="{Binding }" 
+                                                                    Style="{StaticResource Button.Icon}">
+                                                                <Control Template="{StaticResource Trash}"/>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <ScrollViewer Grid.Column="1" Margin="5 0 0 0" VerticalScrollBarVisibility="Auto">
+                            <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 0">
+                                <StackPanel Margin="5">
+                                    <CheckBox Content="Использовать назначения и контракты" 
+                                              IsChecked="{Binding IsUseWorkPermit}" 
+                                              HorizontalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 0 10" 
+                                              Style="{StaticResource BaseChechBox}"/>
+                                    
+                                    <TextBlock Grid.Row="0" Text="{StaticResource String.Assigments}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                                    <!-- Отдел / Должность -->
+                                    <Grid Margin="0 10 0 0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <ComboBox Grid.Column="0" 
+                                                  ItemsSource="{Binding Departments}" 
+                                                  SelectedItem="{Binding NewAssignmentContract.Department}"
+                                                  DisplayMemberPath="Name" 
+                                                  Margin="0 0 5 0"/>
+
+                                        <ComboBox Grid.Column="1" 
+                                                  ItemsSource="{Binding Positions}" 
+                                                  SelectedItem="{Binding NewAssignmentContract.Position}"
+                                                  DisplayMemberPath="Name" 
+                                                  Margin="5 0 0 0"/>
+                                    </Grid>
+
+                                    <!-- Менаджер / Статус -->
+                                    <Grid Margin="0 10 0 0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <ComboBox Grid.Column="0" 
+                                                  ItemsSource="{Binding Managers}" 
+                                                  SelectedItem="{Binding NewAssignmentContract.Manager}"
+                                                  DisplayMemberPath="Name" 
+                                                  Margin="0 0 5 0"/>
+
+                                        <ComboBox Grid.Column="1" 
+                                                  ItemsSource="{Binding Statuses}" 
+                                                  SelectedItem="{Binding NewAssignmentContract.Status}"
+                                                  DisplayMemberPath="Name" 
+                                                  Margin="5 0 0 0"/>
+                                    </Grid>
+
+                                    <!-- Дата найма / Дата расторжения договора -->
+                                    <Grid Margin="0 10 0 10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <DatePicker Grid.Column="0" SelectedDate="{Binding NewAssignmentContract.HireDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 5 0"/>
+
+                                        <DatePicker Grid.Column="1" SelectedDate="{Binding NewAssignmentContract.TerminationDate, UpdateSourceTrigger=PropertyChanged}" Margin="5 0 0 0"/>
+                                    </Grid>
+
+                                    <TextBlock Grid.Row="0" Text="{StaticResource String.Contracts}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                                    <!-- Тип трудоустройства / Номер контракта -->
+                                    <Grid Margin="0 10 0 0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <ComboBox Grid.Column="0" 
+                                                  ItemsSource="{Binding EmployeeTypes}" 
+                                                  SelectedItem="{Binding NewAssignmentContract.EmployeeType}"
+                                                  DisplayMemberPath="Name" 
+                                                  Margin="0 0 5 0"/>
+
+                                        <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Номер контракта*" Margin="0 0 5 0"
+                                                               Text="{Binding NewAssignmentContract.ContractNumber, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                    </Grid>
+
+                                    <!-- Дата старта / Дата окончания -->
+                                    <Grid Margin="0 10 0 0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <DatePicker Grid.Column="0" SelectedDate="{Binding NewAssignmentContract.StartDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 5 0"/>
+
+                                        <DatePicker Grid.Column="1" SelectedDate="{Binding NewAssignmentContract.EndDate, UpdateSourceTrigger=PropertyChanged}" Margin="5 0 0 0"/>
+                                    </Grid>
+
+                                    <cc:PlaceHolderTextBox PlaceHolder="Зарплата*" Margin="0 10 0 0"
+                                                           Text="{Binding NewAssignmentContract.Salary, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                                    <Button Content="Добавить"
+                                            HorizontalAlignment="Center" Width="250" Height="40"
+                                            Command="{Binding AddAssignmentContractCommand}"
                                             Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
                                 </StackPanel>
                             </Border>

@@ -12,14 +12,10 @@ namespace LifeLine.Employee.Service.Application.Features.Assignments.Create
     public sealed class CreateAssignmentCommandHandler
         (
             IWriteContext context,
-            IAssignmentRepository assignmentRepository,
-            IContractRepository contractRepository,
             ILogger<CreateAssignmentCommandHandler> logger
         ) : IRequestHandler<CreateAssignmentCommand, Result>
     {
         private readonly IWriteContext _context = context;
-        private readonly IAssignmentRepository _assignmentRepository = assignmentRepository;
-        private readonly IContractRepository _contractRepository = contractRepository;
         private readonly ILogger<CreateAssignmentCommandHandler> _logger = logger;
 
         public async Task<Result> Handle(CreateAssignmentCommand request, CancellationToken cancellationToken)
@@ -49,8 +45,8 @@ namespace LifeLine.Employee.Service.Application.Features.Assignments.Create
                         contract.Id
                     );
 
-                await _contractRepository.AddAsync(contract, cancellationToken);
-                await _assignmentRepository.AddAsync(assignment, cancellationToken);
+                //await _contractRepository.AddAsync(contract, cancellationToken);
+                //await _assignmentRepository.AddAsync(assignment, cancellationToken);
 
                 await _context.SaveChangesAsync(cancellationToken);
 

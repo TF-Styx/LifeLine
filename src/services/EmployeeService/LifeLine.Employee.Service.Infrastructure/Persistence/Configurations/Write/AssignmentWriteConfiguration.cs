@@ -51,7 +51,6 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Wr
                    .HasColumnName("ContractId")
                    .HasConversion(inDB => inDB.Value, outDB => ContractId.Create(outDB));
 
-            builder.HasOne<Domain.Models.Employee>().WithMany().HasForeignKey(assignment => assignment.EmployeeId).IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne<Contract>().WithOne().HasForeignKey<Assignment>(assignment => assignment.ContractId).IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne<Domain.Models.Employee>().WithMany().HasForeignKey(assignment => assignment.ManagerId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
         }

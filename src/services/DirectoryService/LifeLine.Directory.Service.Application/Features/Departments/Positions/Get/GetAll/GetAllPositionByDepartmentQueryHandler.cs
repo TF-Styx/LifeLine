@@ -12,7 +12,7 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Positions.
         public async Task<List<PositionResponse>> Handle(GetAllPositionByDepartmentQuery request, CancellationToken cancellationToken)
             => await _context.Positions
                 .Where(x => x.DepartmentId == request.DepartmentId)
-                    .Select(x => new PositionResponse(x.Name, x.Description))
+                    .Select(x => new PositionResponse(x.Id, x.Name, x.Description))
                         .ToListAsync(cancellationToken);
     }
 }

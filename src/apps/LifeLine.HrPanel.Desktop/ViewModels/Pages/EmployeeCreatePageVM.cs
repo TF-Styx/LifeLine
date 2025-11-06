@@ -1,8 +1,12 @@
 ﻿using LifeLine.Directory.Service.Client.Services.AdmissionStatus;
+using LifeLine.Directory.Service.Client.Services.Department;
 using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
 using LifeLine.Directory.Service.Client.Services.PermitType;
+using LifeLine.Directory.Service.Client.Services.Position.Factories;
+using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
+using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.EmployeeService.Employee;
@@ -20,32 +24,45 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
     {
         private readonly IEmployeeService _employeeService;
         private readonly IGenderReadOnlyService _genderReadOnlyService;
+        private readonly IStatusReadOnlyService _statusReadOnlyService;
         private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
+        private readonly IDepartmentReadOnlyService _departmentReadOnlyService;
         private readonly IDocumentTypeReadOnlyService _documentTypeReadOnlyService;
+        private readonly IEmployeeTypeReadOnlyService _employeeTypeReadOnlyService;
         private readonly IEducationLevelReadOnlyService _educationLevelReadOnlyService;
         private readonly IAdmissionStatusReadOnlyService _admissionStatusReadOnlyService;
+        private readonly IPositionReadOnlyApiServiceFactory _positionReadOnlyApiServiceFactory;
 
         public EmployeeCreatePageVM
             (
                 IEmployeeService employeeService, 
                 IGenderReadOnlyService genderReadOnlyService,
+                IStatusReadOnlyService statusReadOnlyService,
                 IPermitTypeReadOnlyService permitTypeReadOnlyService,
+                IDepartmentReadOnlyService departmentReadOnlyService,
                 IDocumentTypeReadOnlyService documentTypeReadOnlyService,
+                IEmployeeTypeReadOnlyService employeeTypeReadOnlyService,
                 IEducationLevelReadOnlyService educationLevelReadOnlyService,
-                IAdmissionStatusReadOnlyService admissionStatusReadOnlyService
+                IAdmissionStatusReadOnlyService admissionStatusReadOnlyService,
+                IPositionReadOnlyApiServiceFactory positionReadOnlyApiServiceFactory
             )
         {
             _employeeService = employeeService;
             _genderReadOnlyService = genderReadOnlyService;
+            _statusReadOnlyService = statusReadOnlyService;
             _permitTypeReadOnlyService = permitTypeReadOnlyService;
+            _departmentReadOnlyService = departmentReadOnlyService;
             _documentTypeReadOnlyService = documentTypeReadOnlyService;
+            _employeeTypeReadOnlyService = employeeTypeReadOnlyService;
             _educationLevelReadOnlyService = educationLevelReadOnlyService;
             _admissionStatusReadOnlyService = admissionStatusReadOnlyService;
+            _positionReadOnlyApiServiceFactory = positionReadOnlyApiServiceFactory;
 
+            CreateNewWorkPermit();
             CreateNewBaseInfoEmployee();
             CreateNewPersonalDocument();
             CreateNewEducationDocument();
-            CreateNewWorkPermit();
+            CreateNewAssignmentContract();
 
             CreateEmployeeCommandAsync = new RelayCommandAsync(Execute_CreateEmployeeCommandAsync);
 
@@ -57,13 +74,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             AddWorkPermitCommand = new RelayCommand(Execute_AddWorkPermitCommand, CanExecute_AddWorkPermitCommand);
             DeleteWorkPermitCommand = new RelayCommand<WorkPermitDisplay>(Execute_DeleteWorkPermitCommand);
+
+            AddAssignmentContractCommand = new RelayCommand(Execute_AddAssignmentContractCommand, CanExecute_AddAssignmentContractCommand);
+            DeleteAssignmentContractCommand = new RelayCommand<AssignmentContractDisplay>(Execute_DeleteAssignmentContractCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
         {
             await GetAllGenderAsync();
+            await GetAllStatusAsync();
+            await GetAllManagerAsync();
             await GetAllPermitTypeAsync();
+            await GetAllDepartmentAsync();
             await GetAllDocumentTypeAsync();
+            await GetAllEmployeeTypeAsync();
             await GetAllEducationLevelAsync();
             await GetAllAdmissionStatusAsync();
         }
@@ -116,6 +140,26 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             NewBaseInfoEmployee.PropertyChanged += (s, e) => CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
         }
 
+        //NewAssignmentContract
+        private AssignmentContractDisplay _newAssignmentContract = null!;
+        public AssignmentContractDisplay NewAssignmentContract
+        {
+            get => _newAssignmentContract;
+            private set => SetProperty(ref _newAssignmentContract, value);
+        }
+        private void CreateNewAssignmentContract()
+        {
+            NewAssignmentContract = new();
+
+            NewAssignmentContract.PropertyChanged += async (s, e) =>
+            {
+                if (e.PropertyName == nameof(AssignmentContractDisplay.Department))
+                    await GetAllPositionByIdDepartmentAsync();
+
+                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+            };
+        }
+
         //NewPersonalDocument
         private PersonalDocumentDisplay _newPersonalDocument = null!;
         public PersonalDocumentDisplay NewPersonalDocument
@@ -137,7 +181,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             get => _newEducationDocument;
             private set => SetProperty(ref _newEducationDocument, value);
         }
-
         private void CreateNewEducationDocument()
         {
             NewEducationDocument = new(new EducationDocumentResponse(string.Empty, string.Empty, string.Empty, string.Empty, DateTime.UtcNow.ToString(), string.Empty, string.Empty, string.Empty, string.Empty, "0"));
@@ -152,7 +195,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             get => _newWorkPermit;
             private set => SetProperty(ref _newWorkPermit, value);
         }
-
         private void CreateNewWorkPermit()
         {
             NewWorkPermit = new(new WorkPermitResponse(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, DateTime.UtcNow, DateTime.UtcNow, string.Empty, string.Empty));
@@ -180,7 +222,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         LocalPersonalDocuments.Select(x => new CreateEmployeePersonalDocumentRequest(x.DocumentType.Id, x.DocumentNumber, x.DocumentSeries)).ToList(),
                         createContactInformation,
                         LocalEducationDocuments.Select(x => new CreateEducationDocumentRequest(Guid.Parse(x.EducationLevel.Id), x.DocumentType.Id, x.DocumentNumber, x.IssuedDate, x.OrganizationName, x.QualificationAwardedName, x.SpecialtyName, x.ProgramName, x.TotalHours)).ToList(),
-                        LocalWorkPermits.Select(x => new CreateWorkPermitRequest(x.WorkPermitName, x.DocumentSeries, x.WorkPermitNumber, x.ProtocolNumber, x.SpecialtyName, x.IssuingAuthority, x.IssueDate, x.ExpiryDate, Guid.Parse(x.PermitType.Id), Guid.Parse(x.AdmissionStatus.Id))).ToList()
+                        LocalWorkPermits.Select(x => new CreateWorkPermitRequest(x.WorkPermitName, x.DocumentSeries, x.WorkPermitNumber, x.ProtocolNumber, x.SpecialtyName, x.IssuingAuthority, x.IssueDate, x.ExpiryDate, Guid.Parse(x.PermitType.Id), Guid.Parse(x.AdmissionStatus.Id))).ToList(),
+                        LocalAssignmentsContracts.Select(x => new CreateAssignmentRequest(x.Position.Id, x.Department.Id, x.Manager?.Id, x.HireDate, x.TerminationDate, x.Status.Id, new CreateAssignmentContractRequest(x.EmployeeType.Id, x.ContractNumber, x.StartDate, x.EndDate, x.Salary))).ToList()
                     )
                 );
 
@@ -190,7 +233,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     errors => MessageBox.Show(result.StringMessage)
                 );
 
-            //CreateNewPersonalDocument();
+            CreateNewWorkPermit();
+            CreateNewBaseInfoEmployee();
+            CreateNewPersonalDocument();
+            CreateNewEducationDocument();
+            CreateNewAssignmentContract();
         }
 
         #endregion
@@ -238,8 +285,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private void Execute_AddPersonalDocumentCommand()
         {
             LocalPersonalDocuments.Add(NewPersonalDocument);
-
-            MessageBox.Show($"DocumentTypeId = {NewPersonalDocument.DocumentType.Id}");
 
             CreateNewPersonalDocument();
         }
@@ -322,6 +367,76 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public RelayCommand<WorkPermitDisplay> DeleteWorkPermitCommand { get; private set; }
         private void Execute_DeleteWorkPermitCommand(WorkPermitDisplay display) 
             => LocalWorkPermits.Remove(display);
+
+        #endregion
+
+        #region EmployeeType
+
+        public ObservableCollection<EmployeeTypeResponse> EmployeeTypes { get; private init; } = [];
+        private async Task GetAllEmployeeTypeAsync() => EmployeeTypes.Load(await _employeeTypeReadOnlyService.GetAllAsync());
+
+        #endregion
+
+        #region Department
+
+        public ObservableCollection<DepartmentResponse> Departments { get; private init; } = [];
+        private async Task GetAllDepartmentAsync() => Departments.Load(await _departmentReadOnlyService.GetAllAsync());
+
+        #endregion
+
+        #region Position
+
+        public ObservableCollection<PositionResponse> Positions { get; private init; } = [];
+        private async Task GetAllPositionByIdDepartmentAsync() 
+            => Positions.Load(await _positionReadOnlyApiServiceFactory.Create(NewAssignmentContract.Department.Id.ToString()).GetAllAsync(), cleaning: true);
+
+        #endregion
+
+        #region Status
+
+        public ObservableCollection<StatusResponse> Statuses { get; private init; } = [];
+        private async Task GetAllStatusAsync() => Statuses.Load(await _statusReadOnlyService.GetAllAsync());
+
+        #endregion
+
+        #region Manager
+
+        public ObservableCollection<EmployeeResponse> Managers { get; private init; } = [];
+        private async Task GetAllManagerAsync() => Managers.Load(await _employeeService.GetAllAsync());
+
+        #endregion
+
+        #region AssignmentContract
+
+        private AssignmentContractDisplay _selectedAssignmentContract = null!;
+        public AssignmentContractDisplay SelectedAssignmentContract
+        {
+            get => _selectedAssignmentContract;
+            set => SetProperty(ref _selectedAssignmentContract, value);
+        }
+
+        public ObservableCollection<AssignmentContractDisplay> LocalAssignmentsContracts { get; private init; } = [];
+
+        public RelayCommand AddAssignmentContractCommand { get; private set; }
+        private void Execute_AddAssignmentContractCommand()
+        {
+            LocalAssignmentsContracts.Add(NewAssignmentContract);
+
+            CreateNewAssignmentContract();
+        }
+        private bool CanExecute_AddAssignmentContractCommand()
+            => NewAssignmentContract.Department != null && NewAssignmentContract.Position != null &&
+               NewAssignmentContract.EmployeeType != null && NewAssignmentContract.Status != null &&
+               !string.IsNullOrWhiteSpace(NewAssignmentContract.HireDate.ToString()) &&
+               !string.IsNullOrWhiteSpace(NewAssignmentContract.TerminationDate.ToString()) &&
+               !string.IsNullOrWhiteSpace(NewAssignmentContract.ContractNumber) &&
+               !string.IsNullOrWhiteSpace(NewAssignmentContract.StartDate.ToString()) &&
+               !string.IsNullOrWhiteSpace(NewAssignmentContract.EndDate.ToString()) &&
+               !string.IsNullOrWhiteSpace(NewAssignmentContract.Salary.ToString());
+
+        public RelayCommand<AssignmentContractDisplay> DeleteAssignmentContractCommand { get; private set; }
+        private void Execute_DeleteAssignmentContractCommand(AssignmentContractDisplay display)
+            => LocalAssignmentsContracts.Remove(display);
 
         #endregion
     }

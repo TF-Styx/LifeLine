@@ -6,7 +6,7 @@ using Shared.Kernel.Primitives;
 
 namespace LifeLine.Employee.Service.Domain.Models
 {
-    public sealed class Contract : Aggregate<ContractId>
+    public sealed class Contract : Entity<ContractId>
     {
         public EmployeeId EmployeeId { get; private set; }
         public EmployeeTypeId EmployeeTypeId { get; private set; }
@@ -15,6 +15,8 @@ namespace LifeLine.Employee.Service.Domain.Models
         public DateTime EndDate { get; private set; }
         public Salary Salary { get; private set; }
         public ImageKey? FileKey { get; private set; }
+
+        public Employee Employee { get; private set; } = null!;
 
         private Contract() { }
         private Contract
@@ -32,8 +34,8 @@ namespace LifeLine.Employee.Service.Domain.Models
             EmployeeId = employeeId;
             EmployeeTypeId = employeeTypeId;
             ContractNumber = contractNumber;
-            StartDate = startDate;
-            EndDate = endDate;
+            StartDate = startDate.ToUniversalTime();
+            EndDate = endDate.ToUniversalTime();
             Salary = salary;
             FileKey = fileKey;
         }

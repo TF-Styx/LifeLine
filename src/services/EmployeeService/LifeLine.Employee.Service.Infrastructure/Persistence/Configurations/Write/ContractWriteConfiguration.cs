@@ -50,7 +50,6 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Wr
                    .HasColumnName("FileKey")
                    .HasConversion(inDB => inDB != null ? inDB.Value : null, outDB => outDB != null ? ImageKey.Create(outDB) : ImageKey.Empty);
 
-            builder.HasOne<Domain.Models.Employee>().WithMany().HasForeignKey(contract => contract.EmployeeId).IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne<EmployeeType>().WithMany().HasForeignKey(contract => contract.EmployeeTypeId).IsRequired().OnDelete(DeleteBehavior.Restrict);
         }
     }

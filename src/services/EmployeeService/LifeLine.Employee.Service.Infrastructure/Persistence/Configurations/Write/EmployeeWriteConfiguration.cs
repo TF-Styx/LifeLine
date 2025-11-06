@@ -70,6 +70,12 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Wr
 
             builder.HasMany(e => e.PersonalDocuments).WithOne(x => x.Employee).HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Cascade);
             builder.Navigation(e => e.PersonalDocuments).HasField("_personalDocuments").UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            builder.HasMany(e => e.Assignments).WithOne(x => x.Employee).HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Cascade);
+            builder.Navigation(e => e.Assignments).HasField("_assignments").UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            builder.HasMany(e => e.Contracts).WithOne(x => x.Employee).HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Cascade);
+            builder.Navigation(e => e.Contracts).HasField("_contracts").UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

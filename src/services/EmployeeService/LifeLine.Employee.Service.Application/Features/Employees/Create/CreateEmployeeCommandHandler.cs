@@ -84,6 +84,32 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
                                 item.AdmissionStatusId
                             );
 
+                //List<Assignment>
+                if (request.CreateAssignment != null)
+                    foreach (var item in request.CreateAssignment)
+                    {
+                        var contract = employee.AddContract
+                            (
+                                item.Contract.EmployeeTypeId,
+                                item.Contract.ContractNumber,
+                                item.Contract.StartDate,
+                                item.Contract.EndDate,
+                                item.Contract.Salary,
+                                null
+                            );
+
+                        employee.AddAssignment
+                            (
+                                item.PositionId,
+                                item.DepartmentId,
+                                item.ManagerId,
+                                item.HireDate,
+                                item.TerminationDate,
+                                item.StatusId,
+                                contract.Id
+                            );
+                    }
+
                 await _repository.AddAsync(employee, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 

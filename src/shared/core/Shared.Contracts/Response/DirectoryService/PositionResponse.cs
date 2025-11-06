@@ -1,4 +1,4 @@
 ﻿namespace Shared.Contracts.Response.DirectoryService
 {
-    public sealed record PositionResponse(string Name, string Description);
+    public sealed record PositionResponse(Guid Id, string Name, string Description);
 }

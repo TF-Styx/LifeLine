@@ -3,6 +3,7 @@ using System;
 using LifeLine.Employee.Service.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeLine.Employee.Service.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(EmployeeWriteContext))]
-    partial class EmployeeWriteContextModelSnapshot : ModelSnapshot
+    [Migration("20251106112048_Update_Assignment_Contract_Connection_With_Employee")]
+    partial class Update_Assignment_Contract_Connection_With_Employee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -540,7 +543,7 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ContactInformationId");
 
-                            b1.ToTable("ContactInformations", (string)null);
+                            b1.ToTable("ContactInformations");
 
                             b1.WithOwner()
                                 .HasForeignKey("ContactInformationId");
