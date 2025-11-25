@@ -1,6 +1,7 @@
 ﻿using LifeLine.Employee.Service.Application.Features.EmployeeTypes.Create;
 using LifeLine.Employee.Service.Application.Features.EmployeeTypes.Delete;
 using LifeLine.Employee.Service.Application.Features.EmployeeTypes.Get.GetAll;
+using LifeLine.Employee.Service.Application.Features.EmployeeTypes.Get.GetById;
 using LifeLine.Employee.Service.Application.Features.EmployeeTypes.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,10 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default) 
             => Ok(await _mediator.Send(new GetAllEmployeeTypeQuery(), cancellationToken));
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default) 
+            => Ok(await _mediator.Send(new GetByIdEmployeeTypeQuery(id), cancellationToken));
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateEmployeeTypeRequest request, CancellationToken cancellationToken = default)

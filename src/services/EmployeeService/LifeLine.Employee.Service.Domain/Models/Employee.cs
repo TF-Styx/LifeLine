@@ -319,7 +319,7 @@ namespace LifeLine.Employee.Service.Domain.Models
                 Guid departmentId,
                 Guid? managerId,
                 DateTime hireDate,
-                DateTime terminationDate,
+                DateTime? terminationDate,
                 Guid statusId,
                 Guid contractId
             )

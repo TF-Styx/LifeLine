@@ -16,7 +16,7 @@ namespace LifeLine.Employee.Service.Domain.Models
         public DepartmentId DepartmentId { get; private set; }
         public EmployeeId? ManagerId { get; private set; }
         public DateTime HireDate { get; private set; }
-        public DateTime TerminationDate { get; private set; }
+        public DateTime? TerminationDate { get; private set; }
         public StatusId StatusId { get; private set; }
         public ContractId ContractId { get; private set; }
 
@@ -31,7 +31,7 @@ namespace LifeLine.Employee.Service.Domain.Models
                 DepartmentId departmentId, 
                 EmployeeId? managerId, 
                 DateTime hireDate, 
-                DateTime terminationDate, 
+                DateTime? terminationDate, 
                 StatusId statusId, 
                 ContractId contractId
             ) : base(id)
@@ -41,7 +41,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             DepartmentId = departmentId;
             ManagerId = managerId;
             HireDate = hireDate.ToUniversalTime();
-            TerminationDate = terminationDate.ToUniversalTime();
+            TerminationDate = terminationDate != null ? terminationDate.Value.ToUniversalTime() : null;
             StatusId = statusId;
             ContractId = contractId;
         }
@@ -71,7 +71,7 @@ namespace LifeLine.Employee.Service.Domain.Models
                 Guid departmentId, 
                 Guid? managerId, 
                 DateTime hireDate, 
-                DateTime terminationDate, 
+                DateTime? terminationDate, 
                 Guid statusId, 
                 Guid contractId
             ) => new Assignment

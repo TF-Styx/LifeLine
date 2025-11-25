@@ -1,6 +1,5 @@
 ﻿using LifeLine.Employee.Service.Domain.Models;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
-using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Domain.Exceptions;

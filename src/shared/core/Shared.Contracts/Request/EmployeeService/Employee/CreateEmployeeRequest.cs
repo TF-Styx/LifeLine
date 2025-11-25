@@ -7,6 +7,7 @@
             CreateContactInformationRequest? ContactInformation,
             List<CreateEducationDocumentRequest>? EducationDocument,
             List<CreateWorkPermitRequest>? WorkPermit, 
+            List<CreateEmployeeSpecialtyRequest>? EmployeeSpecialty,
             List<CreateAssignmentRequest>? AssignmentContract
         );
 
@@ -18,7 +19,9 @@
 
     public sealed record CreateWorkPermitRequest(string WorkPermitName, string? DocumentSeries, string WorkPermitNumber, string? ProtocolNumber, string SpecialtyName, string IssuingAuthority, DateTime IssueDate, DateTime ExpiryDate, /*FileInput? FileKey, */Guid PermitTypeId, Guid AdmissionStatusId);
 
-    public sealed record CreateAssignmentRequest(Guid PositionId, Guid DepartmentId, Guid? ManagerId, DateTime HireDate, DateTime TerminationDate, Guid StatusId, CreateAssignmentContractRequest Contract);
+    public sealed record CreateEmployeeSpecialtyRequest(Guid SpecialtyId);
+
+    public sealed record CreateAssignmentRequest(Guid PositionId, Guid DepartmentId, Guid? ManagerId, DateTime HireDate, DateTime? TerminationDate, Guid StatusId, CreateAssignmentContractRequest Contract);
 
     public sealed record CreateAssignmentContractRequest(Guid EmployeeTypeId, string ContractNumber, DateTime StartDate, DateTime EndDate, decimal Salary/*, IFormFile? FileKey*/);
 }

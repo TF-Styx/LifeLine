@@ -1,88 +1,137 @@
-﻿using Shared.Contracts.Response.DirectoryService;
-using Shared.Contracts.Response.EmployeeService;
+﻿using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models
 {
     public sealed class AssignmentContractDisplay : BaseViewModel
     {
+        private readonly AssignmentResponse _assignmentModel;
+        private readonly ContractResponse _contractModel;
+
+        private readonly IReadOnlyCollection<DepartmentDisplay> _departments;
+        private readonly IReadOnlyCollection<PositionDisplay> _positions;
+        private readonly IReadOnlyCollection<ManagerDisplay> _managers;
+        private readonly IReadOnlyCollection<StatusDisplay> _statuses;
+        private readonly IReadOnlyCollection<EmployeeTypeDisplay> _employeeTypes;
+
+        public AssignmentContractDisplay
+            (
+                AssignmentResponse assignmentModel,
+                ContractResponse contractModel,
+
+                IReadOnlyCollection<DepartmentDisplay> departments,
+                IReadOnlyCollection<PositionDisplay> positions,
+                IReadOnlyCollection<ManagerDisplay> managers,
+                IReadOnlyCollection<StatusDisplay> statuses,
+                IReadOnlyCollection<EmployeeTypeDisplay> employeeTypes
+            )
+        {
+            _assignmentModel = assignmentModel;
+            _contractModel = contractModel;
+
+            _departments = departments;
+            _positions = positions;
+            _managers = managers;
+            _statuses = statuses;
+            _employeeTypes = employeeTypes;
+
+            SetDepartment(_assignmentModel.DepartmentId.ToString());
+            SetPosition(_assignmentModel.PositionId.ToString());
+            SetManager(_assignmentModel.ManagerId.ToString()!);
+            SetStatus(_assignmentModel.StatusId.ToString());
+
+            _hireDate = assignmentModel.HireDate;
+            _terminationDate = assignmentModel.TerminationDate;
+            _contractNumber = contractModel.ContractNumber;
+            _startDate = contractModel.ContractStartDate;
+            _endDate = contractModel.ContractEndDate;
+            _salary = contractModel.Salary;
+
+            SetEmployeeType(_contractModel.EmployeeTypeId);
+        }
+
         #region Assignment
 
-        private DepartmentResponse _department = null!;
-        public DepartmentResponse Department
+        private DepartmentDisplay _department = null!;
+        public DepartmentDisplay Department
         {
             get => _department;
             set => SetProperty(ref _department, value);
         }
+        public void SetDepartment(string id) => Department = _departments.FirstOrDefault(x => x.Id == id)!;
 
-        private PositionResponse _position = null!;
-        public PositionResponse Position
+        private PositionDisplay _position = null!;
+        public PositionDisplay Position
         {
             get => _position;
             set => SetProperty(ref _position, value);
         }
+        public void SetPosition(string id) => Position = _positions.FirstOrDefault(x => x.Id == id)!;
 
-        private EmployeeResponse? _manager;
-        public EmployeeResponse? Manager
+        private ManagerDisplay? _manager;
+        public ManagerDisplay? Manager
         {
             get => _manager;
             set => SetProperty(ref _manager, value);
         }
+        public void SetManager(string id) => Manager = _managers.FirstOrDefault(x => x.Id == id)!;
 
-        private DateTime _hireDate = DateTime.Now;
+        private DateTime _hireDate;
         public DateTime HireDate
         {
             get => _hireDate;
             set => SetProperty(ref _hireDate, value);
         }
 
-        private DateTime _terminationDate = DateTime.Now;
-        public DateTime TerminationDate
+        private DateTime? _terminationDate;
+        public DateTime? TerminationDate
         {
             get => _terminationDate;
             set => SetProperty(ref _terminationDate, value);
         }
 
-        private StatusResponse _status = null!;
-        public StatusResponse Status
+        private StatusDisplay _status = null!;
+        public StatusDisplay Status
         {
             get => _status;
             set => SetProperty(ref _status, value);
         }
+        public void SetStatus(string id) => Status = _statuses.FirstOrDefault(x => x.Id == id)!;
 
         #endregion
 
         #region Contract
 
-        private EmployeeTypeResponse _employeeType = null!;
-        public EmployeeTypeResponse EmployeeType
+        private EmployeeTypeDisplay _employeeType = null!;
+        public EmployeeTypeDisplay EmployeeType
         {
             get => _employeeType;
             set => SetProperty(ref _employeeType, value);
         }
+        public void SetEmployeeType(string id) => EmployeeType = _employeeTypes.FirstOrDefault(x => x.Id == id)!;
 
-        private string _contractNumber = null!;
+        private string _contractNumber;
         public string ContractNumber
         {
             get => _contractNumber;
             set => SetProperty(ref _contractNumber, value);
         }
 
-        private DateTime _startDate = DateTime.Now;
+        private DateTime _startDate;
         public DateTime StartDate
         {
             get => _startDate;
             set => SetProperty(ref _startDate, value);
         }
 
-        private DateTime _endDate = DateTime.Now;
+        private DateTime _endDate;
         public DateTime EndDate
         {
             get => _endDate;
             set => SetProperty(ref _endDate, value);
         }
 
-        private decimal _salary = decimal.Zero;
+        private decimal _salary;
         public decimal Salary
         {
             get => _salary;

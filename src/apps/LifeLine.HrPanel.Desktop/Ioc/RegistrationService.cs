@@ -8,6 +8,7 @@ using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
+using LifeLine.Employee.Service.Client.Services.Specialty;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.WPF.Services.NavigationService.Pages;
@@ -28,6 +29,7 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddHttpClient<IEmployeeService, EmployeeService>(employeeHttp);
             services.AddHttpClient<IGenderReadOnlyService, GenderService>(employeeHttp);
             services.AddHttpClient<IEmployeeTypeReadOnlyService, EmployeeTypeService>(employeeHttp);
+            services.AddHttpClient<ISpecialtyReadOnlyService, SpecialtyService>(employeeHttp);
 
             var directoryService = configuration.GetValue<string>("DirectoryService");
             string directoryHttp = "DirectoryServiceHttp";
@@ -38,7 +40,6 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddHttpClient<IPermitTypeReadOnlyService, PermitTypeService>(directoryHttp);
             services.AddHttpClient<IStatusReadOnlyService, StatusService>(directoryHttp);
             services.AddHttpClient<IDepartmentReadOnlyService, DepartmentService>(directoryHttp);
-            //services.AddHttpClient<IPositionReadOnlyApiServiceFactory, PositionReadOnlyApiServiceFactory>(directoryHttp);
             services.AddSingleton<IPositionReadOnlyApiServiceFactory, PositionReadOnlyApiServiceFactory>();
 
             return services;

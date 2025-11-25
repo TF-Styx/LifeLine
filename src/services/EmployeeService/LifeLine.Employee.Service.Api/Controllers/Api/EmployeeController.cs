@@ -1,6 +1,8 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.Get.GetAll;
+using LifeLine.Employee.Service.Application.Features.Employees.Get.GetAllForHr;
+using LifeLine.Employee.Service.Application.Features.Employees.Get.GetFullDetailsForEmployee;
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployee;
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployeeGenderId;
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployeeName;
@@ -24,8 +26,10 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             var command = new CreateEmployeeCommand
                 (
                     request.Surname, request.Name, request.Patronymic, Guid.Parse(request.GenderId),
+
                     request.PersonalDocuments?.Select(x => new CreatePersonalDocumentCommand(x.DocumentTypeId, x.Number, x.Series)).ToList(),
-                    request.ContactInformation != null ? 
+
+                    request.ContactInformation != null ?
                     new CreateContactInformationCommand
                     (
                         request.ContactInformation.PersonalPhone,
@@ -42,45 +46,50 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                             request.ContactInformation.Apartment
                         )
                     ) : null,
+
                     request.EducationDocument?.Select(x => new CreateEducationDocumentCommand
                     (
-                        x.EducationLevelId, 
-                        x.DocumentTypeId, 
-                        x.DocumentNumber, 
-                        x.IssuedDate, 
-                        x.OrganizationName, 
-                        x.QualificationAwardedName, 
-                        x.SpecialtyName, 
-                        x.ProgramName, 
+                        x.EducationLevelId,
+                        x.DocumentTypeId,
+                        x.DocumentNumber,
+                        x.IssuedDate,
+                        x.OrganizationName,
+                        x.QualificationAwardedName,
+                        x.SpecialtyName,
+                        x.ProgramName,
                         x.TotalHours
                     )).ToList(),
+
                     request.WorkPermit?.Select(x => new CreateWorkPermitCommand
                     (
-                        x.WorkPermitName, 
-                        x.DocumentSeries, 
-                        x.WorkPermitNumber, 
-                        x.ProtocolNumber, 
-                        x.SpecialtyName, 
-                        x.IssuingAuthority, 
-                        x.IssueDate, 
-                        x.ExpiryDate, 
-                        x.PermitTypeId, 
+                        x.WorkPermitName,
+                        x.DocumentSeries,
+                        x.WorkPermitNumber,
+                        x.ProtocolNumber,
+                        x.SpecialtyName,
+                        x.IssuingAuthority,
+                        x.IssueDate,
+                        x.ExpiryDate,
+                        x.PermitTypeId,
                         x.AdmissionStatusId
                     )).ToList(),
+
+                    request.EmployeeSpecialty?.Select(x => new CreateEmployeeSpecialtyCommand(x.SpecialtyId)).ToList(),
+
                     request.AssignmentContract?.Select(x => new CreateAssignmentCommand
                     (
-                        x.PositionId, 
-                        x.DepartmentId, 
-                        x.ManagerId, 
-                        x.HireDate, 
-                        x.TerminationDate, 
-                        x.StatusId, 
+                        x.PositionId,
+                        x.DepartmentId,
+                        x.ManagerId,
+                        x.HireDate,
+                        x.TerminationDate,
+                        x.StatusId,
                         new CreateAssignmentContractCommand
                         (
-                            x.Contract.EmployeeTypeId, 
-                            x.Contract.ContractNumber, 
-                            x.Contract.StartDate, 
-                            x.Contract.EndDate, 
+                            x.Contract.EmployeeTypeId,
+                            x.Contract.ContractNumber,
+                            x.Contract.StartDate,
+                            x.Contract.EndDate,
                             x.Contract.Salary
                         )
                     )).ToList()
@@ -97,11 +106,15 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
         [HttpGet]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
-        {
-            var result = await _mediator.Send(new GetAllEmployeeQuery(), cancellationToken);
+            => Ok(await _mediator.Send(new GetAllEmployeeQuery(), cancellationToken));
 
-            return Ok(result);
-        }
+        [HttpGet("get-all-for-hr")]
+        public async Task<IActionResult> GetAllForHr(CancellationToken cancellationToken = default)
+            => Ok(await _mediator.Send(new GetAllEmployeeForHrQuery(), cancellationToken));
+
+        [HttpGet("{id}/get-full-details-for-employee")]
+        public async Task<IActionResult> GetFullDetailsForEmployee([FromRoute] Guid id, CancellationToken cancellationToken = default)
+            => Ok(await _mediator.Send(new GetFullDetailsForEmployeeQuery(id), cancellationToken));
 
         [HttpPut("{id}/update-employee")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateEmployeeRequest request, CancellationToken cancellationToken = default)

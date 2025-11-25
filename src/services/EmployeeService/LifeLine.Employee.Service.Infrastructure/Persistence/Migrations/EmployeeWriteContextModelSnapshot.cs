@@ -56,7 +56,7 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("StatusId");
 
-                    b.Property<DateTime>("TerminationDate")
+                    b.Property<DateTime?>("TerminationDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("TerminationDate");
 
@@ -540,7 +540,7 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ContactInformationId");
 
-                            b1.ToTable("ContactInformations", (string)null);
+                            b1.ToTable("ContactInformations");
 
                             b1.WithOwner()
                                 .HasForeignKey("ContactInformationId");

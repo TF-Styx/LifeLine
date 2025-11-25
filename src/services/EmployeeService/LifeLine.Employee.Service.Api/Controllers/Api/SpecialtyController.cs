@@ -1,4 +1,5 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Specialties.Create;
+using LifeLine.Employee.Service.Application.Features.Specialties.Get.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts.Request.EmployeeService.Specialty;
@@ -24,5 +25,9 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     onFailure: errors => BadRequest(errors)
                 );
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
+            => Ok(await _mediator.Send(new GetAllSpecialtyQuery(), cancellationToken));
     }
 }

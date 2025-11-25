@@ -8,5 +8,7 @@ namespace LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction
         IQueryable<GenderView> GenderViews { get; }
         IQueryable<EmployeeAdminListItemView> EmployeeAdminListItemViews { get; }
         IQueryable<EmployeeTypeView> EmployeeTypeViews { get; }
+        IQueryable<EmployeeHrItemView> EmployeeHrItemViews { get; }
+        IQueryable<EmployeeFullDetailsView> EmployeeFullDetailsViews { get; }
     }
 }

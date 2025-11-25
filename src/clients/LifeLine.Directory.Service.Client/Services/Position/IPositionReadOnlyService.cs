@@ -3,5 +3,8 @@ using Shared.Http.Base;
 
 namespace LifeLine.Directory.Service.Client.Services.Position
 {
-    public interface IPositionReadOnlyService : IBaseReadHttpService<PositionResponse, string>;
+    public interface IPositionReadOnlyService : IBaseReadHttpService<PositionResponse, string>
+    {
+        Task<List<PositionResponse>> GetAllPosition();
+    }
 }

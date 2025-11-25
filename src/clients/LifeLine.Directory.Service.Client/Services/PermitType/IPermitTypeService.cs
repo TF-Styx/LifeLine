@@ -3,5 +3,5 @@ using Shared.Http.Base;
 
 namespace LifeLine.Directory.Service.Client.Services.PermitType
 {
-    public interface IPermitTypeService : IPermitTypeReadOnlyService, IBaseWriteHttpService<AdmissionStatusResponse, string>;
+    public interface IPermitTypeService : IPermitTypeReadOnlyService, IBaseWriteHttpService<PermitTypeResponse, string>;
 }

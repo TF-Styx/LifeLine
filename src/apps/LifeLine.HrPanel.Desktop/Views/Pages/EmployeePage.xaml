@@ -3,10 +3,18 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.Pages"
+      xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.Pages" 
+      xmlns:pages="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Pages" 
+      xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+      xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF"
+      d:DataContext="{d:DesignInstance Type=pages:EmployeePageVM}"
       mc:Ignorable="d" 
-      d:Height="auto" d:Width="1000"
+      d:Height="auto" d:Width="1500"
       Title="EmployeePage" Background="{StaticResource App.MainColor}">
+
+    <b:Interaction.Behaviors>
+        <behaviors:AsyncInitializeBehavior/>
+    </b:Interaction.Behaviors>
 
     <Page.Resources>
         <ResourceDictionary>
@@ -48,6 +56,24 @@
                 <Setter Property="FontSize" Value="13"/>
                 <Setter Property="FontFamily" Value="Arial"/>
             </Style>
+
+            <Style TargetType="ToolTip">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToolTip">
+                            <Border Background="{StaticResource App.SecondColor}" 
+                                    BorderBrush="#386FD6" 
+                                    BorderThickness="2" 
+                                    CornerRadius="10"
+                                    Padding="10 5">
+                                <ContentPresenter/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -56,7 +82,13 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ListView Grid.Column="0" HorizontalContentAlignment="Stretch" d:ItemsSource="{d:SampleData ItemCount=10}">
+        
+        <ListView Grid.Column="0" 
+                  ItemsSource="{Binding EmployeeHrs}"
+                  SelectedItem="{Binding SelectedEmployee}"
+                  Foreground="White" 
+                  HorizontalContentAlignment="Stretch" 
+                  d:ItemsSource="{d:SampleData ItemCount=10}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="10 0 10 10" Background="{StaticResource App.SecondColor}" BorderBrush="#049BE5" BorderThickness="0 0 2 2" CornerRadius="6">
@@ -65,7 +97,9 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
+                            
                             <Image Grid.Column="0" Width="75" Height="75" Margin="0 0 10 0" Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png"/>
+                            
                             <Grid Grid.Column="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
@@ -73,10 +107,16 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Text="Пикин Семён Алексеевич"/>
-                                <TextBlock Grid.Row="1" Text="IT"/>
-                                <TextBlock Grid.Row="2" Text="Разработчик"/>
-                                <TextBlock Grid.Row="3" Text="На работе"/>
+                                
+                                <DockPanel Grid.Row="0">
+                                    <TextBlock Text="{Binding Surname}"/>
+                                    <TextBlock Text="{Binding Name}" Margin="2.5 0 2.5 0"/>
+                                    <TextBlock Text="{Binding Patronymic}"/>
+                                </DockPanel>
+                                
+                                <TextBlock Grid.Row="1" Text="{Binding Department}" d:Text="IT"/>
+                                <TextBlock Grid.Row="2" Text="{Binding Position}" d:Text="Разработчик"/>
+                                <TextBlock Grid.Row="3" Text="{Binding Status}" d:Text="На работе"/>
                             </Grid>
                         </Grid>
                     </Border>
@@ -87,34 +127,186 @@
         <Border Grid.Column="1" Margin="5" Background="{StaticResource App.SecondColor}" CornerRadius="6">
             <ScrollViewer>
                 <DockPanel>
-                    <TextBlock Text="Пикин Семён Алексеевич" FontSize="20" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
-                    <DockPanel DockPanel.Dock="Top">
-                        <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
+                    <!--Фамилия Имя Отчество-->
+                    <TextBlock d:Text="Пикин Семён Алексеевич" FontSize="20" HorizontalAlignment="Center" DockPanel.Dock="Top">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource FullNameValueConverter}">
+                                <Binding Path="CurrentEmployeeDetails.Surname"/>
+                                <Binding Path="CurrentEmployeeDetails.Name"/>
+                                <Binding Path="CurrentEmployeeDetails.Patronymic"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    
+                    <!--Контактная информация / Фотография / Пол-->
+                    <Grid DockPanel.Dock="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!--Контактная информация-->
+                        <Grid Grid.Column="0" Margin="0 10 0 0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <DockPanel Grid.Row="0" HorizontalAlignment="Left">
-                                <TextBlock Text="Зарплата" Width="80"/>
-                                <TextBlock Text="120 000 руб"/>
-                            </DockPanel>
-                            <DockPanel Grid.Row="1" HorizontalAlignment="Left">
-                                <TextBlock Text="Телефон" Width="80"/>
-                                <TextBlock Text="8 (495)212-85-06"/>
-                            </DockPanel>
-                            <DockPanel Grid.Row="2" HorizontalAlignment="Left">
-                                <TextBlock Text="Эл. почта" Width="80"/>
-                                <TextBlock Text="test.email@gmail.com"/>
-                            </DockPanel>
-                            <DockPanel Grid.Row="3" HorizontalAlignment="Left">
-                                <TextBlock Text="Адрес" Width="80"/>
-                                <TextBlock Text="Звенигород"/>
-                            </DockPanel>
+
+                            <!-- Телефон / Почта -->
+                            <Grid Grid.Row="0" Margin="0 0 0 5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Margin="0 0 5 0">
+                                    <StackPanel Margin="0 2.5 0 2.5">
+                                        <TextBlock Text="Персональный телефон"/>
+                                        <TextBlock Text="{Binding CurrentEmployeeDetails.PersonalPhone}" d:Text="81234567890" Foreground="#8C95A4"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Margin="0 2.5 0 2.5">
+                                        <TextBlock Text="Персональная почта"/>
+                                        <TextBlock Text="{Binding CurrentEmployeeDetails.PersonalEmail}" d:Text="test.email@yandex.ru" Foreground="#8C95A4"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Margin="5 0 0 0" HorizontalAlignment="Right">
+                                    <StackPanel Margin="0 2.5 0 2.5">
+                                        <TextBlock Text="Корпоративный телефон"/>
+                                        <TextBlock Text="{Binding CurrentEmployeeDetails.CorporatePhone}" d:Text="81234567890" Foreground="#8C95A4"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Margin="0 2.5 0 2.5">
+                                        <TextBlock Text="Корпоративная почта"/>
+                                        <TextBlock Text="{Binding CurrentEmployeeDetails.CorporateEmail}" d:Text="test.email@yandex.ru" Foreground="#8C95A4"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Адрес -->
+                            <StackPanel Grid.Row="1" Margin="0 5 0 0">
+                                <DockPanel Margin="0 2.5 0 2.5">
+                                    <TextBlock Text="{Binding CurrentEmployeeDetails.PostalCode}" d:Text="123456" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="Почтовый индекс"/>
+                                </DockPanel>
+
+                                <DockPanel Margin="0 2.5 0 2.5">
+                                    <TextBlock Text="{Binding CurrentEmployeeDetails.Region}" d:Text="Москва" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="Регион"/>
+                                </DockPanel>
+
+                                <DockPanel Margin="0 2.5 0 2.5">
+                                    <TextBlock Text="{Binding CurrentEmployeeDetails.City}" d:Text="Красногорск" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="Город"/>
+                                </DockPanel>
+
+                                <DockPanel Margin="0 2.5 0 2.5">
+                                    <TextBlock Text="{Binding CurrentEmployeeDetails.Street}" d:Text="Ленина" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="Улица"/>
+                                </DockPanel>
+
+                                <DockPanel Margin="0 2.5 0 2.5">
+                                    <TextBlock Text="{Binding CurrentEmployeeDetails.Building}" d:Text="12" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="Дом / строение"/>
+                                </DockPanel>
+
+                                <DockPanel Margin="0 2.5 0 2.5">
+                                    <TextBlock Text="{Binding CurrentEmployeeDetails.Apartment}" d:Text="15" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="Квартира"/>
+                                </DockPanel>
+                            </StackPanel>
                         </Grid>
-                        <Image Grid.Column="0" HorizontalAlignment="Right" Width="100" Height="100" Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png"/>
-                    </DockPanel>
+
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                            <!-- Фотография сотрудника -->
+                            <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6">
+                                <Border BorderBrush="#386FD6" Background="{StaticResource App.MainColor}" BorderThickness="2" CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0">
+                                    <StackPanel>
+                                        <Border BorderThickness="0 0 0 2" BorderBrush="#386FD6">
+                                            <Image Source="{Binding SelectImage}" d:Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png" Width="200" Height="200" Margin="5"/>
+                                        </Border>
+                                        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 2">
+                                            <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Command="{Binding AddImageCommand}">
+                                                <Control Template="{StaticResource AddIcon}"/>
+                                            </Button>
+                                            <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Margin="15 0 15 0" Command="{Binding ViewImageCommand}">
+                                                <Control Template="{StaticResource Magnifier}"/>
+                                            </Button>
+                                            <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Foreground="#F06870" Command="{Binding DeleteImageCommand}">
+                                                <Control Template="{StaticResource Trash}"/>
+                                            </Button>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+                            </Border>
+                            
+                            <TextBlock Text="{Binding GenderDisplay.GenderName}" d:Text="Муж" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!--Личные документы-->
+                    <Border Background="{StaticResource App.MainColor}" 
+                            Margin="5" CornerRadius="6" 
+                            HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+                        <StackPanel>
+                            <TextBlock Text="Личные документы" FontSize="15" HorizontalAlignment="Center"/>
+                            <DataGrid ItemsSource="{Binding PersonalDocuments}" 
+                                      AutoGenerateColumns="False" 
+                                      CanUserAddRows="False"
+                                      HorizontalContentAlignment="Stretch" 
+                                      HeadersVisibility="Column"
+                                      d:ItemsSource="{d:SampleData ItemCount=10}">
+                                <DataGrid.Columns>
+                                    <!--Тип-->
+                                    <DataGridTemplateColumn Header="Тип" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DocumentType.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    
+                                    <!--Номер-->
+                                    <DataGridTemplateColumn Header="Номер" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DocumentNumber}" 
+                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!--Информация-->
+                                    <DataGridTemplateColumn Width="35">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                    <Control Template="{StaticResource Magnifier}"/>
+                                                    <Button.ToolTip>
+                                                        <StackPanel>
+                                                            <TextBlock Text="{Binding DocumentType.Name, StringFormat=Тип документа: {0}}"/>
+                                                            <TextBlock Text="{Binding DocumentNumber, StringFormat=Номер документа: {0}}"/>
+                                                            <TextBlock Text="{Binding DocumentSeries, StringFormat=Серия документа: {0}}"/>
+                                                        </StackPanel>
+                                                    </Button.ToolTip>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!--Взаимодействие-->
+                                    <!--<DataGridTemplateColumn Header="Взаимодействие" Width="130">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Просмотр" FontSize="13" Height="30" Margin="2.5" Background="#386FD6" Style="{StaticResource App.Button}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>-->
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
 
                     <!--Документы об образовании-->
                     <Border Background="{StaticResource App.MainColor}" 
@@ -122,51 +314,77 @@
                             HorizontalAlignment="Stretch" DockPanel.Dock="Top">
                         <StackPanel>
                             <TextBlock Text="Документы об образовании" FontSize="15" HorizontalAlignment="Center"/>
-                            <DataGrid AutoGenerateColumns="False" 
+                            <DataGrid ItemsSource="{Binding EducationDocuments}" 
+                                      AutoGenerateColumns="False" 
                                       CanUserAddRows="False"
                                       HorizontalContentAlignment="Stretch" 
                                       HeadersVisibility="Column"
                                       d:ItemsSource="{d:SampleData ItemCount=10}">
                                 <DataGrid.Columns>
-                                    <!--Наименование-->
-                                    <DataGridTemplateColumn Header="Наименование" Width="*">
+                                    <!--Уровень образования-->
+                                    <DataGridTemplateColumn Header="Уровень образования" Width="*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="Диплом о профессиональной переподготовке установленного образца" 
+                                                <TextBlock Text="{Binding EducationLevel.Name}" 
                                                            TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    
+
                                     <!--Тип-->
                                     <DataGridTemplateColumn Header="Тип" Width="*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="Диплом" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                <TextBlock Text="{Binding DocumentType.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    
+
+                                    <!--Информация-->
+                                    <DataGridTemplateColumn Width="35">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                    <Control Template="{StaticResource Magnifier}"/>
+                                                    <Button.ToolTip>
+                                                        <StackPanel>
+                                                            <TextBlock Text="{Binding EducationLevel.Name, StringFormat=Уровень образования: {0}}"/>
+                                                            <TextBlock Text="{Binding DocumentType.Name, StringFormat=Тип документа: {0}}"/>
+                                                            <TextBlock Text="{Binding DocumentNumber, StringFormat=Номер документа: {0}}"/>
+                                                            <TextBlock Text="{Binding IssuedDate, StringFormat=Дата выдачи: {0}}"/>
+                                                            <TextBlock Text="{Binding OrganizationName, StringFormat=Наименование организации: {0}}"/>
+                                                            <TextBlock Text="{Binding QualificationAwardedName, StringFormat=Наименование квалификации: {0}}"/>
+                                                            <TextBlock Text="{Binding SpecialtyName, StringFormat=Наименование специальности: {0}}"/>
+                                                            <TextBlock Text="{Binding ProgramName, StringFormat=Наименование программы: {0}}"/>
+                                                            <TextBlock Text="{Binding TotalHours, StringFormat=Часы: {0}}"/>
+                                                        </StackPanel>
+                                                    </Button.ToolTip>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
                                     <!--Взаимодействие-->
-                                    <DataGridTemplateColumn Header="Взаимодействие" Width="130">
+                                    <!--<DataGridTemplateColumn Header="Взаимодействие" Width="130">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Content="Просмотр" FontSize="13" Height="30" Margin="2.5" Background="#386FD6" Style="{StaticResource App.Button}"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
+                                    </DataGridTemplateColumn>-->
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
                     </Border>
 
-                    <!--Контракты-->
+                    <!--Специальности-->
                     <Border Background="{StaticResource App.MainColor}" 
-                            Margin="5" CornerRadius="6"
+                            Margin="5" CornerRadius="6" 
                             HorizontalAlignment="Stretch" DockPanel.Dock="Top">
                         <StackPanel>
-                            <TextBlock Text="Контракт" FontSize="15" HorizontalAlignment="Center"/>
-                            <DataGrid AutoGenerateColumns="False" 
+                            <TextBlock Text="Специальности" FontSize="15" HorizontalAlignment="Center"/>
+                            <DataGrid ItemsSource="{Binding Specialties}" 
+                                      AutoGenerateColumns="False" 
                                       CanUserAddRows="False"
                                       HorizontalContentAlignment="Stretch" 
                                       HeadersVisibility="Column"
@@ -176,42 +394,49 @@
                                     <DataGridTemplateColumn Header="Наименование" Width="*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="Трудовой договор" 
-                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                <TextBlock Text="{Binding SpecialtyName}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <!--Действует до-->
-                                    <DataGridTemplateColumn Header="Действует до" Width="*">
+                                    <!--Информация-->
+                                    <DataGridTemplateColumn Width="35">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="21 Апреля 2030 г." 
-                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                    <Control Template="{StaticResource Magnifier}"/>
+                                                    <Button.ToolTip>
+                                                        <StackPanel>
+                                                            <TextBlock Text="{Binding SpecialtyName, StringFormat=Наименование специальности: {0}}"/>
+                                                            <TextBlock Text="{Binding Description, StringFormat=Описание специальности: {0}}"/>
+                                                        </StackPanel>
+                                                    </Button.ToolTip>
+                                                </Button>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    
+
                                     <!--Взаимодействие-->
-                                    <DataGridTemplateColumn Header="Взаимодействие" Width="130">
+                                    <!--<DataGridTemplateColumn Header="Взаимодействие" Width="130">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Content="Просмотр" FontSize="13" Height="30" Margin="2.5" Background="#386FD6" Style="{StaticResource App.Button}"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
+                                    </DataGridTemplateColumn>-->
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
                     </Border>
 
-                    <!--Сертификаты-->
+                    <!--Сертификаты / Аккредитация-->
                     <Border Background="{StaticResource App.MainColor}" 
-                            Margin="5" CornerRadius="6"
-                            HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                            Margin="5" CornerRadius="6" 
+                            HorizontalAlignment="Stretch" DockPanel.Dock="Top">
                         <StackPanel>
-                            <TextBlock Text="Сертификаты" FontSize="15" HorizontalAlignment="Center"/>
-                            <DataGrid AutoGenerateColumns="False" 
+                            <TextBlock Text="Сертификаты / Аккредитация" FontSize="15" HorizontalAlignment="Center"/>
+                            <DataGrid ItemsSource="{Binding WorkPermits}" 
+                                      AutoGenerateColumns="False" 
                                       CanUserAddRows="False"
                                       HorizontalContentAlignment="Stretch" 
                                       HeadersVisibility="Column"
@@ -221,30 +446,181 @@
                                     <DataGridTemplateColumn Header="Наименование" Width="*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="Сестренское дело" 
+                                                <TextBlock Text="{Binding WorkPermitName}" 
                                                            TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <!--Действует до-->
-                                    <DataGridTemplateColumn Header="Действует до" Width="*">
+                                    <!--Специальность-->
+                                    <DataGridTemplateColumn Header="Специальность" Width="*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="24 Мая 2030 г." 
-                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                <TextBlock Text="{Binding SpecialtyName}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!--Разрешение-->
+                                    <DataGridTemplateColumn Header="Разрешение" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding PermitType.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!--Допуск-->
+                                    <DataGridTemplateColumn Header="Допуск" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding AdmissionStatus.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!--Информация-->
+                                    <DataGridTemplateColumn Width="35">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                    <Control Template="{StaticResource Magnifier}"/>
+                                                    <Button.ToolTip>
+                                                        <StackPanel>
+                                                            <TextBlock Text="{Binding PermitType.Name, StringFormat=Типа документа: {0}}"/>
+                                                            <TextBlock Text="{Binding AdmissionStatus.Name, StringFormat=Статус документа: {0}}"/>
+                                                            <TextBlock Text="{Binding WorkPermitName, StringFormat=Наименование: {0}}"/>
+                                                            <TextBlock Text="{Binding DocumentSeries, StringFormat=Серия: {0}}"/>
+                                                            <TextBlock Text="{Binding WorkPermitNumber, StringFormat=Номер разрешения на работу: {0}}"/>
+                                                            <TextBlock Text="{Binding ProtocolNumber, StringFormat=Номер протокола: {0}}"/>
+                                                            <TextBlock Text="{Binding SpecialtyName, StringFormat=Наименование специальности: {0}}"/>
+                                                            <TextBlock Text="{Binding IssuingAuthority, StringFormat=Орган выдающий документы: {0}}"/>
+                                                            <TextBlock Text="{Binding IssueDate, StringFormat=Дата выдачи: {0}}"/>
+                                                            <TextBlock Text="{Binding ExpiryDate, StringFormat=Дата истечения срока действия: {0}}"/>
+                                                        </StackPanel>
+                                                    </Button.ToolTip>
+                                                </Button>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
                                     <!--Взаимодействие-->
-                                    <DataGridTemplateColumn Header="Взаимодействие" Width="130">
+                                    <!--<DataGridTemplateColumn Header="Взаимодействие" Width="130">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Content="Просмотр" FontSize="13" Height="30" Margin="2.5" Background="#386FD6" Style="{StaticResource App.Button}"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>-->
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+
+                    <!--Назначение / Контракт-->
+                    <Border Background="{StaticResource App.MainColor}" 
+                            Margin="5" CornerRadius="6" 
+                            HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+                        <StackPanel>
+                            <TextBlock Text="Назначение / Контракт" FontSize="15" HorizontalAlignment="Center"/>
+                            <DataGrid ItemsSource="{Binding AssignmentContracts}" 
+                                      AutoGenerateColumns="False" 
+                                      CanUserAddRows="False"
+                                      HorizontalContentAlignment="Stretch" 
+                                      HeadersVisibility="Column"
+                                      d:ItemsSource="{d:SampleData ItemCount=10}">
+                                <DataGrid.Columns>
+                                    <!--Отдел-->
+                                    <DataGridTemplateColumn Header="Отдел" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Department.Name}" 
+                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
+
+                                    <!--Должность-->
+                                    <DataGridTemplateColumn Header="Должность" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Position.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!--Статус-->
+                                    <DataGridTemplateColumn Header="Статус" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Status.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!--Тип-->
+                                    <DataGridTemplateColumn Header="Тип" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding EmployeeType.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!--Номер контракта-->
+                                    <DataGridTemplateColumn Header="Номер контракта" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding ContractNumber}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!--Информация-->
+                                    <DataGridTemplateColumn Width="35">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                    <Control Template="{StaticResource Magnifier}"/>
+                                                    <Button.ToolTip>
+                                                        <StackPanel>
+                                                            <TextBlock Text="Назначение" HorizontalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding Department.Name, StringFormat=Отдел: {0}}"/>
+                                                            <TextBlock Text="{Binding Position.Name, StringFormat=Должность: {0}}"/>
+                                                            <TextBlock d:Text="Пикин Семён Алексеевич" FontSize="20">
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding Converter="{StaticResource FullNameValueConverter}" ConverterParameter="Менеджер: ">
+                                                                        <Binding Path="Manager.Surname"/>
+                                                                        <Binding Path="Manager.Name"/>
+                                                                        <Binding Path="Manager.Patronymic"/>
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                            <TextBlock Text="{Binding HireDate, StringFormat=Дата найма: {0}}"/>
+                                                            <TextBlock Text="{Binding TerminationDate, StringFormat=Дата уволнения: {0}}"/>
+                                                            <TextBlock Text="{Binding Status.Name, StringFormat=Статус: {0}}"/>
+
+                                                            <TextBlock Text="Контракт" HorizontalAlignment="Center" Margin="0 10 0 0"/>
+                                                            <TextBlock Text="{Binding EmployeeType.Name, StringFormat=Тип: {0}}"/>
+                                                            <TextBlock Text="{Binding ContractNumber, StringFormat=Номер контракта: {0}}"/>
+                                                            <TextBlock Text="{Binding StartDate, StringFormat=Начальная дата: {0}}"/>
+                                                            <TextBlock Text="{Binding EndDate, StringFormat=Конечная дата: {0}}"/>
+                                                            <TextBlock Text="{Binding Salary, StringFormat=Зарплата: {0}}"/>
+                                                        </StackPanel>
+                                                    </Button.ToolTip>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!--Взаимодействие-->
+                                    <!--<DataGridTemplateColumn Header="Взаимодействие" Width="130">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Просмотр" FontSize="13" Height="30" Margin="2.5" Background="#386FD6" Style="{StaticResource App.Button}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>-->
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>

@@ -11,6 +11,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
             CreateContactInformationCommand? CreateContactInfo,
             List<CreateEducationDocumentCommand>? CreateEducationDoc,
             List<CreateWorkPermitCommand>? CreateWorkPermit,
+            List<CreateEmployeeSpecialtyCommand>? CreateEmployeeSpecialty,
             List<CreateAssignmentCommand>? CreateAssignment
         ) : IRequest<Result>, IHasFIO;
 
@@ -24,9 +25,9 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
 
     public sealed record CreateWorkPermitCommand(string WorkPermitName, string? DocumentSeries, string WorkPermitNumber, string? ProtocolNumber, string SpecialtyName, string IssuingAuthority, DateTime IssueDate, DateTime ExpiryDate, /*FileInput? FileKey, */Guid PermitTypeId, Guid AdmissionStatusId);
 
+    public sealed record CreateEmployeeSpecialtyCommand(Guid SpecialtyId);
 
-
-    public sealed record CreateAssignmentCommand(Guid PositionId, Guid DepartmentId, Guid? ManagerId, DateTime HireDate, DateTime TerminationDate, Guid StatusId, CreateAssignmentContractCommand Contract);
+    public sealed record CreateAssignmentCommand(Guid PositionId, Guid DepartmentId, Guid? ManagerId, DateTime HireDate, DateTime? TerminationDate, Guid StatusId, CreateAssignmentContractCommand Contract);
 
     public sealed record CreateAssignmentContractCommand(Guid EmployeeTypeId, string ContractNumber, DateTime StartDate, DateTime EndDate, decimal Salary/*, IFormFile? FileKey*/);
 }

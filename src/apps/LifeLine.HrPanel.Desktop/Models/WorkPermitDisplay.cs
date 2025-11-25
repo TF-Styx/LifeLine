@@ -4,16 +4,43 @@ using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models
 {
-    public sealed class WorkPermitDisplay(WorkPermitResponse model) : BaseViewModel
+    public sealed class WorkPermitDisplay : BaseViewModel
     {
-        private readonly WorkPermitResponse _model = model;
+        private readonly WorkPermitResponse _model;
+
+        private readonly IReadOnlyCollection<PermitTypeDisplay> _permitTypes;
+        private readonly IReadOnlyCollection<AdmissionStatusDisplay> _admissionStatuses;
+
+        public WorkPermitDisplay
+            (
+                WorkPermitResponse model, 
+                IReadOnlyCollection<PermitTypeDisplay> permitTypes, 
+                IReadOnlyCollection<AdmissionStatusDisplay> admissionStatuses
+            )
+        {
+            _model = model;
+            _permitTypes = permitTypes;
+            _admissionStatuses = admissionStatuses;
+
+            _workPermitName = model.WorkPermitName;
+            _documentSeries = model.DocumentSeries;
+            _workPermitNumber = model.WorkPermitNumber;
+            _protocolNumber = model.ProtocolNumber;
+            _specialtyName = model.SpecialtyName;
+            _issuingAuthority = model.IssuingAuthority;
+            _issueDate = model.IssueDate;
+            _expiryDate = model.ExpiryDate;
+
+            SetPermiteType(_model.PermitTypeId);
+            SetAdmissionStatus(_model.AdmissionStatusId);
+        }
 
         public string EmployeeId => _model.EmployeeId;
         public string PermitTypeId => _model.PermitTypeId;
         public string AdmissionStatusId => _model.AdmissionStatusId;
 
         //WorkPermitName
-        private string _workPermitName = model.WorkPermitName;
+        private string _workPermitName;
         public string WorkPermitName
         {
             get => _workPermitName;
@@ -21,7 +48,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         //DocumentSeries
-        private string? _documentSeries = model.DocumentSeries;
+        private string? _documentSeries;
         public string? DocumentSeries
         {
             get => _documentSeries;
@@ -29,7 +56,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         //WorkPermitNumber
-        private string _workPermitNumber = model.WorkPermitNumber;
+        private string _workPermitNumber;
         public string WorkPermitNumber
         {
             get => _workPermitNumber;
@@ -37,7 +64,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         //ProtocolNumber
-        private string? _protocolNumber = model.ProtocolNumber;
+        private string? _protocolNumber;
         public string? ProtocolNumber
         {
             get => _protocolNumber;
@@ -45,7 +72,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         //SpecialtyName
-        private string _specialtyName = model.SpecialtyName;
+        private string _specialtyName;
         public string SpecialtyName
         {
             get => _specialtyName;
@@ -53,7 +80,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         //IssuingAuthority
-        private string _issuingAuthority = model.IssuingAuthority;
+        private string _issuingAuthority;
         public string IssuingAuthority
         {
             get => _issuingAuthority;
@@ -61,7 +88,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         //IssueDate
-        private DateTime _issueDate = model.IssueDate;
+        private DateTime _issueDate;
         public DateTime IssueDate
         {
             get => _issueDate;
@@ -69,7 +96,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         //ExpiryDate
-        private DateTime _expiryDate = model.ExpiryDate;
+        private DateTime _expiryDate;
         public DateTime ExpiryDate
         {
             get => _expiryDate;
@@ -77,19 +104,21 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         //SelectedPermitType
-        private AdmissionStatusResponse _permitType = null!;
-        public AdmissionStatusResponse PermitType
+        private PermitTypeDisplay _permitType = null!;
+        public PermitTypeDisplay PermitType
         {
             get => _permitType;
             set => SetProperty(ref _permitType, value);
         }
+        public void SetPermiteType(string id) => PermitType = _permitTypes.FirstOrDefault(x => x.Id.ToString() == id)!;
 
         //SelectedAdmissionStatus
-        private AdmissionStatusResponse _admissionStatus = null!;
-        public AdmissionStatusResponse AdmissionStatus
+        private AdmissionStatusDisplay _admissionStatus = null!;
+        public AdmissionStatusDisplay AdmissionStatus
         {
             get => _admissionStatus;
             set => SetProperty(ref _admissionStatus, value);
         }
+        public void SetAdmissionStatus(string id) => AdmissionStatus = _admissionStatuses.FirstOrDefault(x => x.Id.ToString() == id)!;
     }
 }

@@ -84,6 +84,11 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
                                 item.AdmissionStatusId
                             );
 
+                //List<Specialty>
+                if (request.CreateEmployeeSpecialty != null)
+                    foreach (var item in request.CreateEmployeeSpecialty)
+                        employee.AddSpecialty(item.SpecialtyId);
+
                 //List<Assignment>
                 if (request.CreateAssignment != null)
                     foreach (var item in request.CreateAssignment)

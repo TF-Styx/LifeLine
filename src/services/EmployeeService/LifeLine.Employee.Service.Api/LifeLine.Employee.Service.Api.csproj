@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\..\shared\core\Shared.Contracts\Shared.Contracts.csproj" />
     <ProjectReference Include="..\..\..\shared\core\Shared.Kernel\Shared.Kernel.csproj" />
     <ProjectReference Include="..\..\..\shared\core\Shared.Logging\Shared.Logging.csproj" />
+    <ProjectReference Include="..\Abstraction\LifeLine.EmployeeService.Application.Abstraction\LifeLine.EmployeeService.Application.Abstraction.csproj" />
     <ProjectReference Include="..\LifeLine.Employee.Service.Application\LifeLine.Employee.Service.Application.csproj" />
     <ProjectReference Include="..\LifeLine.Employee.Service.Infrastructure\LifeLine.Employee.Service.Infrastructure.csproj" />
   </ItemGroup>

@@ -41,7 +41,8 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Wr
                    .HasColumnName("HireDate");
 
             builder.Property(x => x.TerminationDate)
-                   .HasColumnName("TerminationDate");
+                   .HasColumnName("TerminationDate")
+                   .IsRequired(false);
 
             builder.Property(x => x.StatusId)
                    .HasColumnName("StatusId")
