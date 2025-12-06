@@ -4,5 +4,5 @@ using Shared.Kernel.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployee
 {
-    public sealed record UpdateEmployeeCommand(Guid Id, string Surname, string Name, string Patronymic, Guid GenderId) : IRequest<Result>, IHasFIO;
+    public sealed record UpdateEmployeeCommand(Guid Id, string Surname, string Name, string? Patronymic, Guid GenderId) : IRequest<Result>, IHasFIO;
 }

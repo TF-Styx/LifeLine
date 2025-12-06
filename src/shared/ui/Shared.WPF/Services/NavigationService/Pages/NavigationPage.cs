@@ -18,6 +18,8 @@ namespace Shared.WPF.Services.NavigationService.Pages
                 throw new Exception("Попытка добавления Frame в словарь - провалилась! Данный Frame уже существует!");
         }
 
+        public bool CheckFrame(FrameName frameName) => _frames.Any(f => f.Key == frameName);
+
         public void NavigateTo(FrameName frameName, PageName pageName)
         {
             if (_pages.TryGetValue(pageName, out Page? page))

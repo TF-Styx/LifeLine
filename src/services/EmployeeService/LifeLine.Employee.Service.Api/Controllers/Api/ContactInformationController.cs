@@ -1,4 +1,5 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.ContactInformation.Create;
+using LifeLine.Employee.Service.Application.Features.Employees.ContactInformation.Update;
 using LifeLine.Employee.Service.Application.Features.Employees.ContactInformation.Update.UpdateAddress;
 using LifeLine.Employee.Service.Application.Features.Employees.ContactInformation.Update.UpdateCorporateEmail;
 using LifeLine.Employee.Service.Application.Features.Employees.ContactInformation.Update.UpdateCorporatePhone;
@@ -40,6 +41,20 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
                         return func.Invoke();
                     } 
+                );
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> Update([FromRoute] Guid employeeId, [FromBody] UpdateContactInformationRequest request, CancellationToken cancellationToken = default)
+        {
+            var command = new UpdateContactInformationCommand(request.Id, employeeId.ToString(), request.PersonalPhone, request.CorporatePhone, request.PersonalEmail, request.CorporateEmail, request.PostalCode, request.Region, request.City, request.Street, request.Building, request.Apartment);
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok("Успешное обновление!"),
+                    onFailure: errors => BadRequest(errors)
                 );
         }
 

@@ -20,7 +20,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/Button.xaml"/>
-                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/ScrollViewer.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <Style TargetType="ListView">
@@ -80,14 +79,39 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        
+
+        <Grid Grid.ColumnSpan="2" 
+              Panel.ZIndex="2" 
+              Background="#7F000000" 
+              d:Visibility="Collapsed"
+              Visibility="{Binding EditContactInformationEmployeeVisibility}">
+            <Border Background="{StaticResource App.MainColor}" 
+                    BorderBrush="#386FD6" BorderThickness="3" 
+                    CornerRadius="11" HorizontalAlignment="Center" 
+                    Margin="0 10 0 10">
+                <DockPanel Margin="5">
+                    <Button Command="{Binding CloseEditContactInformationEmployeeCommand}" 
+                            Width="25" Foreground="#F06870" 
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Top"
+                            Style="{StaticResource Button.Icon}">
+                        <Control Template="{StaticResource Close}"/>
+                    </Button>
+                    
+                    <Frame x:Name="EditContactInformationEmployeeFrame" NavigationUIVisibility="Hidden"/>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!--Список сотрудников-->
         <ListView Grid.Column="0" 
                   ItemsSource="{Binding EmployeeHrs}"
                   SelectedItem="{Binding SelectedEmployee}"
                   Foreground="White" 
                   HorizontalContentAlignment="Stretch" 
+                  Margin="5 10 5 10"
                   d:ItemsSource="{d:SampleData ItemCount=10}">
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -126,7 +150,7 @@
 
         <Border Grid.Column="1" Margin="5" Background="{StaticResource App.SecondColor}" CornerRadius="6">
             <ScrollViewer>
-                <DockPanel>
+                <DockPanel Margin="5">
                     <!--Фамилия Имя Отчество-->
                     <TextBlock d:Text="Пикин Семён Алексеевич" FontSize="20" HorizontalAlignment="Center" DockPanel.Dock="Top">
                         <TextBlock.Text>
@@ -139,9 +163,9 @@
                     </TextBlock>
                     
                     <!--Контактная информация / Фотография / Пол-->
-                    <Grid DockPanel.Dock="Top">
+                    <Grid DockPanel.Dock="Top" Margin="5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         
@@ -162,24 +186,24 @@
                                 <StackPanel Grid.Column="0" Margin="0 0 5 0">
                                     <StackPanel Margin="0 2.5 0 2.5">
                                         <TextBlock Text="Персональный телефон"/>
-                                        <TextBlock Text="{Binding CurrentEmployeeDetails.PersonalPhone}" d:Text="81234567890" Foreground="#8C95A4"/>
+                                        <TextBlock Text="{Binding ContactInformationDisplay.PersonalPhone}" d:Text="81234567890" Foreground="#8C95A4"/>
                                     </StackPanel>
-                                    
+
                                     <StackPanel Margin="0 2.5 0 2.5">
                                         <TextBlock Text="Персональная почта"/>
-                                        <TextBlock Text="{Binding CurrentEmployeeDetails.PersonalEmail}" d:Text="test.email@yandex.ru" Foreground="#8C95A4"/>
+                                        <TextBlock Text="{Binding ContactInformationDisplay.PersonalEmail}" d:Text="test.email@yandex.ru" Foreground="#8C95A4"/>
                                     </StackPanel>
                                 </StackPanel>
 
-                                <StackPanel Grid.Column="1" Margin="5 0 0 0" HorizontalAlignment="Right">
+                                <StackPanel Grid.Column="1" Margin="5 0 0 0">
                                     <StackPanel Margin="0 2.5 0 2.5">
                                         <TextBlock Text="Корпоративный телефон"/>
-                                        <TextBlock Text="{Binding CurrentEmployeeDetails.CorporatePhone}" d:Text="81234567890" Foreground="#8C95A4"/>
+                                        <TextBlock Text="{Binding ContactInformationDisplay.CorporatePhone}" d:Text="81234567890" Foreground="#8C95A4"/>
                                     </StackPanel>
-                                    
+
                                     <StackPanel Margin="0 2.5 0 2.5">
                                         <TextBlock Text="Корпоративная почта"/>
-                                        <TextBlock Text="{Binding CurrentEmployeeDetails.CorporateEmail}" d:Text="test.email@yandex.ru" Foreground="#8C95A4"/>
+                                        <TextBlock Text="{Binding ContactInformationDisplay.CorporateEmail}" d:Text="test.email@yandex.ru" Foreground="#8C95A4"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
@@ -187,32 +211,32 @@
                             <!-- Адрес -->
                             <StackPanel Grid.Row="1" Margin="0 5 0 0">
                                 <DockPanel Margin="0 2.5 0 2.5">
-                                    <TextBlock Text="{Binding CurrentEmployeeDetails.PostalCode}" d:Text="123456" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="{Binding ContactInformationDisplay.PostalCode}" d:Text="123456" DockPanel.Dock="Right" Foreground="#8C95A4"/>
                                     <TextBlock Text="Почтовый индекс"/>
                                 </DockPanel>
 
                                 <DockPanel Margin="0 2.5 0 2.5">
-                                    <TextBlock Text="{Binding CurrentEmployeeDetails.Region}" d:Text="Москва" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="{Binding ContactInformationDisplay.Region}" d:Text="Москва" DockPanel.Dock="Right" Foreground="#8C95A4"/>
                                     <TextBlock Text="Регион"/>
                                 </DockPanel>
 
                                 <DockPanel Margin="0 2.5 0 2.5">
-                                    <TextBlock Text="{Binding CurrentEmployeeDetails.City}" d:Text="Красногорск" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="{Binding ContactInformationDisplay.City}" d:Text="Красногорск" DockPanel.Dock="Right" Foreground="#8C95A4"/>
                                     <TextBlock Text="Город"/>
                                 </DockPanel>
 
                                 <DockPanel Margin="0 2.5 0 2.5">
-                                    <TextBlock Text="{Binding CurrentEmployeeDetails.Street}" d:Text="Ленина" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="{Binding ContactInformationDisplay.Street}" d:Text="Ленина" DockPanel.Dock="Right" Foreground="#8C95A4"/>
                                     <TextBlock Text="Улица"/>
                                 </DockPanel>
 
                                 <DockPanel Margin="0 2.5 0 2.5">
-                                    <TextBlock Text="{Binding CurrentEmployeeDetails.Building}" d:Text="12" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="{Binding ContactInformationDisplay.Building}" d:Text="12" DockPanel.Dock="Right" Foreground="#8C95A4"/>
                                     <TextBlock Text="Дом / строение"/>
                                 </DockPanel>
 
                                 <DockPanel Margin="0 2.5 0 2.5">
-                                    <TextBlock Text="{Binding CurrentEmployeeDetails.Apartment}" d:Text="15" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                    <TextBlock Text="{Binding ContactInformationDisplay.Apartment}" d:Text="15" DockPanel.Dock="Right" Foreground="#8C95A4"/>
                                     <TextBlock Text="Квартира"/>
                                 </DockPanel>
                             </StackPanel>
@@ -223,10 +247,13 @@
                             <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6">
                                 <Border BorderBrush="#386FD6" Background="{StaticResource App.MainColor}" BorderThickness="2" CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0">
                                     <StackPanel>
+                                        <!--Картинка-->
                                         <Border BorderThickness="0 0 0 2" BorderBrush="#386FD6">
                                             <Image Source="{Binding SelectImage}" d:Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png" Width="200" Height="200" Margin="5"/>
                                         </Border>
-                                        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 2">
+                                        
+                                        <!--Кнопки-->
+                                        <!--<WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 2">
                                             <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Command="{Binding AddImageCommand}">
                                                 <Control Template="{StaticResource AddIcon}"/>
                                             </Button>
@@ -236,12 +263,20 @@
                                             <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Foreground="#F06870" Command="{Binding DeleteImageCommand}">
                                                 <Control Template="{StaticResource Trash}"/>
                                             </Button>
-                                        </WrapPanel>
+                                        </WrapPanel>-->
                                     </StackPanel>
                                 </Border>
                             </Border>
-                            
-                            <TextBlock Text="{Binding GenderDisplay.GenderName}" d:Text="Муж" HorizontalAlignment="Center"/>
+
+                            <DockPanel Margin="0 10 0 0">
+                                <TextBlock Text="{Binding GenderDisplay.GenderName}" d:Text="Муж" DockPanel.Dock="Right" Foreground="#8C95A4"/>
+                                <TextBlock Text="Пол"/>
+                            </DockPanel>
+
+                            <Button Content="Редактировать" 
+                                    Command="{Binding OpenEditContactInformationEmployeeCommand}"
+                                    Height="40" Margin="0 10 0 0" 
+                                    Style="{StaticResource App.Button}"/>
                         </StackPanel>
                     </Grid>
 
@@ -295,14 +330,19 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <!--Взаимодействие-->
-                                    <!--<DataGridTemplateColumn Header="Взаимодействие" Width="130">
+                                    <!--Удалить-->
+                                    <DataGridTemplateColumn Width="35">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Content="Просмотр" FontSize="13" Height="30" Margin="2.5" Background="#386FD6" Style="{StaticResource App.Button}"/>
+                                                <Button Width="25" Foreground="#F06870" 
+                                                                Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                                CommandParameter="{Binding }" 
+                                                                Style="{StaticResource Button.Icon}">
+                                                    <Control Template="{StaticResource Trash}"/>
+                                                </Button>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>-->
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
@@ -364,14 +404,19 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <!--Взаимодействие-->
-                                    <!--<DataGridTemplateColumn Header="Взаимодействие" Width="130">
+                                    <!--Удалить-->
+                                    <DataGridTemplateColumn Width="35">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Content="Просмотр" FontSize="13" Height="30" Margin="2.5" Background="#386FD6" Style="{StaticResource App.Button}"/>
+                                                <Button Width="25" Foreground="#F06870" 
+                                                                Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                                CommandParameter="{Binding }" 
+                                                                Style="{StaticResource Button.Icon}">
+                                                    <Control Template="{StaticResource Trash}"/>
+                                                </Button>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>-->
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
@@ -416,14 +461,19 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <!--Взаимодействие-->
-                                    <!--<DataGridTemplateColumn Header="Взаимодействие" Width="130">
+                                    <!--Удалить-->
+                                    <DataGridTemplateColumn Width="35">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Content="Просмотр" FontSize="13" Height="30" Margin="2.5" Background="#386FD6" Style="{StaticResource App.Button}"/>
+                                                <Button Width="25" Foreground="#F06870" 
+                                                                Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                                CommandParameter="{Binding }" 
+                                                                Style="{StaticResource Button.Icon}">
+                                                    <Control Template="{StaticResource Trash}"/>
+                                                </Button>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>-->
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
@@ -504,14 +554,19 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <!--Взаимодействие-->
-                                    <!--<DataGridTemplateColumn Header="Взаимодействие" Width="130">
+                                    <!--Удалить-->
+                                    <DataGridTemplateColumn Width="35">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Content="Просмотр" FontSize="13" Height="30" Margin="2.5" Background="#386FD6" Style="{StaticResource App.Button}"/>
+                                                <Button Width="25" Foreground="#F06870" 
+                                                                Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                                CommandParameter="{Binding }" 
+                                                                Style="{StaticResource Button.Icon}">
+                                                    <Control Template="{StaticResource Trash}"/>
+                                                </Button>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>-->
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
@@ -613,14 +668,19 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <!--Взаимодействие-->
-                                    <!--<DataGridTemplateColumn Header="Взаимодействие" Width="130">
+                                    <!--Удалить-->
+                                    <DataGridTemplateColumn Width="35">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Content="Просмотр" FontSize="13" Height="30" Margin="2.5" Background="#386FD6" Style="{StaticResource App.Button}"/>
+                                                <Button Width="25" Foreground="#F06870" 
+                                                                Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                                CommandParameter="{Binding }" 
+                                                                Style="{StaticResource Button.Icon}">
+                                                    <Control Template="{StaticResource Trash}"/>
+                                                </Button>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>-->
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>

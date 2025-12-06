@@ -5,7 +5,7 @@ namespace LifeLine.HrPanel.Desktop.Models
 {
     public sealed class GenderDisplay(GenderResponse model) : BaseViewModel
     {
-        private readonly GenderResponse _model = model;
+        private GenderResponse _model = model;
 
         public string GenderId => _model.Id;
 
@@ -14,6 +14,16 @@ namespace LifeLine.HrPanel.Desktop.Models
         {
             get => _genderName;
             set => SetProperty(ref _genderName, value);
+        }
+
+        public void RevertChanges() => GenderName = _model.Name;
+
+        public void CommitChanges()
+        {
+            _model = _model with
+            {
+                Name = GenderName
+            };
         }
     }
 }

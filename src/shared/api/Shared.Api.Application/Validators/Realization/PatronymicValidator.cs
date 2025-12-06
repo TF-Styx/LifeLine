@@ -3,7 +3,7 @@ using Shared.Api.Application.Validators.Abstraction;
 
 namespace Shared.Api.Application.Validators.Realization
 {
-    public sealed class PatronymicValidator<TCommand> : AbstractValidator<TCommand> where TCommand : IHasPatronymic
+    public sealed class PatronymicValidator<TCommand> : AbstractValidator<TCommand> where TCommand : IMayHasPatronymic
     {
         public PatronymicValidator(int maxLength)
         {

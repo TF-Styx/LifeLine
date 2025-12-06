@@ -1,5 +1,8 @@
-﻿using Shared.Contracts.Response.EmployeeService;
+﻿using Shared.Contracts.Request.EmployeeService.ContactInformation;
+using Shared.Contracts.Request.EmployeeService.Employee;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
+using Shared.Kernel.Results;
 using System.Net.Http.Json;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee
@@ -34,6 +37,24 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
 			{
 				return null;
 			}
+		}
+
+		public async Task<Result> UpdateEmployeeAsync(string employeeId, UpdateEmployeeRequest request)
+		{
+			try
+			{
+				var response = await HttpClient.PatchAsJsonAsync($"{Url}/{employeeId}/update-employee", request, JsonSerializerOptions);
+                //response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                    return Result.Failure(new Error(ErrorCode.UpdateHttp, await response.Content.ReadAsStringAsync()));
+
+                return Result.Success();
+            }
+			catch (Exception ex)
+            {
+                return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при изменении данных пользователя!\n{ex}"));
+            }
 		}
     }
 }

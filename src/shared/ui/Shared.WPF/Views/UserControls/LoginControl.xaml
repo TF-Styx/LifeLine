@@ -47,10 +47,10 @@
                 <StackPanel Margin="0 20 0 20">
                     <cc:PlaceHolderTextBox PlaceHolder="Имя пользователя" 
                                            Text="{Binding Login, RelativeSource={RelativeSource AncestorType=UserControl}, UpdateSourceTrigger=PropertyChanged}" 
-                                           Margin="0 20 0 10" helpers:TextBoxHelper.Icon="{StaticResource User}"/>
+                                           Margin="0 20 0 10" helpers:TextBoxHelper.Icon="{StaticResource User}" Style="{StaticResource TextBox.PlaceHolder.WithIcon}"/>
                     <cc:PlaceHolderTextBox PlaceHolder="Пароль" 
                                            Text="{Binding Password, RelativeSource={RelativeSource AncestorType=UserControl}, UpdateSourceTrigger=PropertyChanged}" 
-                                           Margin="0 10 0 0" helpers:TextBoxHelper.Icon="{StaticResource Password}"/>
+                                           Margin="0 10 0 0" helpers:TextBoxHelper.Icon="{StaticResource Password}" Style="{StaticResource TextBox.PlaceHolder.WithIcon}"/>
                 </StackPanel>
                 
                 <DockPanel VerticalAlignment="Center" Margin="0 20 0 0">

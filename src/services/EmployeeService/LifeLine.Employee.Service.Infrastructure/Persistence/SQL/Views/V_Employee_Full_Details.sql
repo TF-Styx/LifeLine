@@ -14,6 +14,7 @@ SELECT
     ) AS "Gender",
 
     (SELECT jsonb_build_object(
+            'ContactInformationId', ci."Id",
             'PersonalPhone', ci."PersonalPhone",
             'CorporatePhone', ci."CorporatePhone",
             'PersonalEmail', ci."PersonalEmail",

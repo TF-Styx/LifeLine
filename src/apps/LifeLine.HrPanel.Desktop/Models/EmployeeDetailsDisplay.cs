@@ -5,9 +5,10 @@ namespace LifeLine.HrPanel.Desktop.Models
 {
     public sealed class EmployeeDetailsDisplay(EmployeeFullDetailsResponse model) : BaseViewModel
     {
-        private readonly EmployeeFullDetailsResponse _model = model;
+        private EmployeeFullDetailsResponse _model = model;
 
         public string EmployeeId => _model.EmployeeId.ToString();
+        public string GenderId => _model.Gender.GenderId.ToString();
 
         private string _surname = model.Surname;
         public string Surname
@@ -58,74 +59,29 @@ namespace LifeLine.HrPanel.Desktop.Models
             set => SetProperty(ref _genderName, value);
         }
 
-        private string? _personalPhone = model.ContactInformation?.PersonalPhone;
-        public string? PersonalPhone
+        public void RevertChanges()
         {
-            get => _personalPhone;
-            set => SetProperty(ref _personalPhone, value);
+            Surname = _model.Surname;
+            Name = _model.Name;
+            Patronymic = _model.Patronymic;
+            DateEntry = _model.DateEntry;
+            Rating = _model.Rating;
+            Avatar = _model.Avatar;
+            Gender = _model.Gender.GenderName;
         }
 
-        private string? _corporatePhone = model.ContactInformation?.CorporatePhone;
-        public string? CorporatePhone
+        public void CommitChanges()
         {
-            get => _corporatePhone;
-            set => SetProperty(ref _corporatePhone, value);
-        }
-
-        private string? _personalEmail = model.ContactInformation?.PersonalEmail;
-        public string? PersonalEmail
-        {
-            get => _personalEmail;
-            set => SetProperty(ref _personalEmail, value);
-        }
-
-        private string? _corporateEmail = model.ContactInformation?.CorporateEmail;
-        public string? CorporateEmail
-        {
-            get => _corporateEmail;
-            set => SetProperty(ref _corporateEmail, value);
-        }
-
-        private string? _postalCode = model.ContactInformation?.PostalCode;
-        public string? PostalCode
-        {
-            get => _postalCode;
-            set => SetProperty(ref _postalCode, value);
-        }
-
-        private string? _region = model.ContactInformation?.Region;
-        public string? Region
-        {
-            get => _region;
-            set => SetProperty(ref _region, value);
-        }
-
-        private string? _city = model.ContactInformation?.City;
-        public string? City
-        {
-            get => _city;
-            set => SetProperty(ref _city, value);
-        }
-
-        private string? _street = model.ContactInformation?.Street;
-        public string? Street
-        {
-            get => _street;
-            set => SetProperty(ref _street, value);
-        }
-
-        private string? _building = model.ContactInformation?.Building;
-        public string? Building
-        {
-            get => _building;
-            set => SetProperty(ref _building, value);
-        }
-
-        private string? _apartment = model.ContactInformation?.Apartment;
-        public string? Apartment
-        {
-            get => _apartment;
-            set => SetProperty(ref _apartment, value);
+            _model = _model with
+            {
+                Surname = Surname,
+                Name = Name,
+                Patronymic = Patronymic,
+                DateEntry = DateEntry,
+                Rating = Rating,
+                Avatar = Avatar,
+                Gender = new GenderDetailsResponseData(Guid.Parse(GenderId), Gender!)
+            };
         }
     }
 }

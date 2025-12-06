@@ -5,7 +5,7 @@ namespace LifeLine.HrPanel.Desktop.Models
 {
     public sealed class ContactInformationDisplay(ContactInformationResponse model) : BaseViewModel
     {
-        private readonly ContactInformationResponse _model = model;
+        private ContactInformationResponse _model = model;
 
         public string ContactInformationId => _model.Id;
 
@@ -77,6 +77,37 @@ namespace LifeLine.HrPanel.Desktop.Models
         {
             get => _apartment;
             set => SetProperty(ref _apartment, value);
+        }
+
+        public void ReversChanches()
+        {
+            PersonalPhone = _model.PersonalPhone;
+            CorporatePhone = _model.CorporatePhone;
+            PersonalEmail = _model.PersonalEmail;
+            CorporateEmail = _model.CorporateEmail;
+            PostalCode = _model.PostalCode;
+            Region = _model.Region;
+            City = _model.City;
+            Street = _model.Street;
+            Building = _model.Building;
+            Apartment = _model.Apartment;
+        }
+
+        public void CommitChanges()
+        {
+            _model = _model with
+            {
+                PersonalPhone = PersonalPhone,
+                CorporatePhone = CorporatePhone,
+                PersonalEmail = PersonalEmail,
+                CorporateEmail = CorporateEmail,
+                PostalCode = PostalCode,
+                Region = Region,
+                City = City,
+                Street = Street,
+                Building = Building,
+                Apartment = Apartment
+            };
         }
     }
 }

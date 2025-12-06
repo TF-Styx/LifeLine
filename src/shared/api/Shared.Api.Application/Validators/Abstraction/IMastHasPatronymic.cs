@@ -1,7 +1,7 @@
 ﻿namespace Shared.Api.Application.Validators.Abstraction
 {
-    public interface IHasPatronymic
+    public interface IMastHasPatronymic
     {
-        string Patronymic {  get; }
+        string Patronymic { get; }
     }
 }

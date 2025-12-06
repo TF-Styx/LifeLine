@@ -88,6 +88,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         async Task IAsyncInitializable.InitializeAsync()
         {
+            if (IsInitialize)
+                return;
+
+            IsInitialize = false;
+
             await GetAllSpecialty();
             await GetAllGenderAsync();
             await GetAllStatusAsync();
@@ -98,6 +103,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             await GetAllEmployeeTypeAsync();
             await GetAllEducationLevelAsync();
             await GetAllAdmissionStatusAsync();
+
+            IsInitialize = true;
         }
 
         #region bool

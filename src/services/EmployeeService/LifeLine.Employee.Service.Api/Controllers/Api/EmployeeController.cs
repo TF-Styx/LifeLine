@@ -116,7 +116,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         public async Task<IActionResult> GetFullDetailsForEmployee([FromRoute] Guid id, CancellationToken cancellationToken = default)
             => Ok(await _mediator.Send(new GetFullDetailsForEmployeeQuery(id), cancellationToken));
 
-        [HttpPut("{id}/update-employee")]
+        [HttpPatch("{id}/update-employee")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateEmployeeRequest request, CancellationToken cancellationToken = default)
         {
             var command = new UpdateEmployeeCommand(id, request.Surname, request.Name, request.Patronymic, Guid.Parse(request.GenderId));

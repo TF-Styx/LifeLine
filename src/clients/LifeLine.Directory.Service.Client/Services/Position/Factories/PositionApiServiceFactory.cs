@@ -3,7 +3,7 @@
     public sealed class PositionApiServiceFactory(IHttpClientFactory httpClientFactory) : IPositionApiServiceFactory
     {
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-        private readonly string _clientName = "DirectoryApiClient";
+        private readonly string _clientName = "DirectoryServiceHttp";
 
         public IPositionService Create(string departmentId)
         {

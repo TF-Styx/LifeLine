@@ -1,0 +1,110 @@
+﻿<Page x:Class="LifeLine.HrPanel.Desktop.Views.Pages.EditContactInformationEmployeePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.Pages"
+      xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF" 
+      xmlns:pages="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Pages" 
+      xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+      xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF"
+      d:DataContext="{d:DesignInstance Type=pages:EditContactInformationEmployeePageVM}"
+      mc:Ignorable="d" 
+      d:Height="auto" d:Width="auto"
+      Title="EditContactInformationEmployeePage">
+
+    <b:Interaction.Behaviors>
+        <behaviors:AsyncInitializeBehavior/>
+    </b:Interaction.Behaviors>
+
+    <Page.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Arial"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Background="{StaticResource App.MainColor}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" Margin="5" CornerRadius="6" BorderThickness="0">
+                    <StackPanel Margin="5">
+                        <!-- Персональные данные -->
+                        <TextBlock Text="Персональные данные" HorizontalAlignment="Center" FontSize="20" Margin="0 0 0 10"/>
+
+                        <!-- Фотография сотрудника -->
+                        <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 10">
+                            <Border BorderBrush="#386FD6" Background="{StaticResource App.MainColor}" BorderThickness="2" CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5 10 5 10">
+                                <StackPanel>
+                                    <!--Картинка-->
+                                    <Border BorderThickness="0 0 0 2" BorderBrush="#386FD6">
+                                        <Image Source="{Binding SelectImage}" d:Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png" Width="200" Height="200" Margin="5"/>
+                                    </Border>
+
+                                    <!--Кнопки-->
+                                    <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 2">
+                                        <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Command="{Binding AddImageCommand}">
+                                            <Control Template="{StaticResource AddIcon}"/>
+                                        </Button>
+                                        <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Margin="15 0 15 0" Command="{Binding ViewImageCommand}">
+                                            <Control Template="{StaticResource Magnifier}"/>
+                                        </Button>
+                                        <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Foreground="#F06870" Command="{Binding DeleteImageCommand}">
+                                            <Control Template="{StaticResource Trash}"/>
+                                        </Button>
+                                    </WrapPanel>
+                                </StackPanel>
+                            </Border>
+                        </Border>
+
+                        <!-- ФИО -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Фамилия" Text="{Binding CurrentEmployeeDetails.Surname}" Margin="0 0 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <cc:PlaceHolderTextBox PlaceHolder="Имя" Margin="0 0 0 5" Text="{Binding CurrentEmployeeDetails.Name}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <cc:PlaceHolderTextBox PlaceHolder="Отчество" Margin="0 0 0 10" Text="{Binding CurrentEmployeeDetails.Patronymic}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                        <ComboBox ItemsSource="{Binding Genders}" 
+                                  SelectedItem="{Binding SelectedGender}"
+                                  DisplayMemberPath="GenderName" 
+                                  Margin="0 0 0 0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1" Background="{StaticResource App.SecondColor}" Margin="5" CornerRadius="6" BorderThickness="0">
+                    <StackPanel Margin="5">
+                        <!-- Контактная информация -->
+                        <TextBlock Text="Контактная информация" HorizontalAlignment="Center" FontSize="20" Margin="0 0 0 10"/>
+
+                        <!-- Персональный ... -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Персональный телефон" Text="{Binding ContactInformationDisplay.PersonalPhone}" Margin="0 0 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <cc:PlaceHolderTextBox PlaceHolder="Персональная почта" Text="{Binding ContactInformationDisplay.PersonalEmail}" Margin="0 0 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                        <!-- Корпоративный ... -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Корпоративный телефон" Text="{Binding ContactInformationDisplay.CorporatePhone}" Margin="0 5 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <cc:PlaceHolderTextBox PlaceHolder="Корпоративная почта" Text="{Binding ContactInformationDisplay.CorporateEmail}" Margin="0 0 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                        <!-- Адрес -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Почтовый индекс" Text="{Binding ContactInformationDisplay.PostalCode}" Margin="0 5 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <cc:PlaceHolderTextBox PlaceHolder="Регион" Text="{Binding ContactInformationDisplay.Region}" Margin="0 0 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <cc:PlaceHolderTextBox PlaceHolder="Город" Text="{Binding ContactInformationDisplay.City}" Margin="0 0 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <cc:PlaceHolderTextBox PlaceHolder="Улица" Text="{Binding ContactInformationDisplay.Street}" Margin="0 0 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <cc:PlaceHolderTextBox PlaceHolder="Дом / строение" Text="{Binding ContactInformationDisplay.Building}" Margin="0 0 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <cc:PlaceHolderTextBox PlaceHolder="Квартира" Text="{Binding ContactInformationDisplay.Apartment}" Margin="0 0 0 0" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+        
+        <Button Content="Сохранить" Command="{Binding UpdateContactInformationemployeeCommand}" Height="40" VerticalAlignment="Bottom" Margin="5" Style="{StaticResource App.Button}"/>
+    </Grid>
+</Page>

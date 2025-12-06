@@ -26,7 +26,7 @@ namespace Shared.WPF.ViewModels.Components
             set => SetProperty(ref _authUcVisibility, value);
         }
 
-        private string _login = null!;
+        private string _login = "Styx";
         public string Login
         {
             get => _login;
@@ -37,7 +37,7 @@ namespace Shared.WPF.ViewModels.Components
             }
         }
 
-        private string _password = null!;
+        private string _password = "Csgofast567!";
         public string Password
         {
             get => _password;

@@ -25,5 +25,6 @@
         ExistContactInformation,
         ExistDependentData,
         ExistEducationInformation,
+        ExistPersonalDocument,
     }
 }

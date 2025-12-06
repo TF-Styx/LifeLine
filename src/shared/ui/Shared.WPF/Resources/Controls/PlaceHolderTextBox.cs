@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace Shared.WPF.Resources.Controls
 {
-    internal class PlaceHolderTextBox : TextBox
+    public class PlaceHolderTextBox : TextBox
     {
         public string PlaceHolder
         {

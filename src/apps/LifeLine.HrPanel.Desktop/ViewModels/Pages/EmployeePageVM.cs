@@ -8,17 +8,21 @@ using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.HrPanel.Desktop.Models;
-using Shared.Contracts.Response.DirectoryService;
 using Shared.Contracts.Response.EmployeeService;
+using Shared.WPF.Commands;
+using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
+using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 {
-    public sealed class EmployeePageVM : BasePageViewModel, IAsyncInitializable
+    public sealed class EmployeePageVM : BasePageViewModel, IUpdatable, IAsyncInitializable
     {
+        private readonly INavigationPage _navigationPage;
+
         private readonly IEmployeeService _employeeService;
         private readonly IStatusReadOnlyService _statusReadOnlyService;
         private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
@@ -31,6 +35,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         public EmployeePageVM
             (
+                INavigationPage navigationPage,
+
                 IEmployeeService employeeService, 
                 IStatusReadOnlyService statusReadOnlyService,
                 IPermitTypeReadOnlyService permitTypeReadOnlyService,
@@ -42,6 +48,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IPositionReadOnlyApiServiceFactory positionReadOnlyApiServiceFactory
             ) 
         {
+            _navigationPage = navigationPage;
+
             _employeeService = employeeService;
             _statusReadOnlyService = statusReadOnlyService;
             _permitTypeReadOnlyService = permitTypeReadOnlyService;
@@ -51,10 +59,18 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _educationLevelReadOnlyService = educationLevelReadOnlyService;
             _admissionStatusReadOnlyService = admissionStatusReadOnlyService;
             _positionReadOnlyApiServiceFactory = positionReadOnlyApiServiceFactory;
+
+            OpenEditContactInformationEmployeeCommand = new RelayCommand(Execute_OpenEditContactInformationEmployeeCommand, CanExecute_OpenEditContactInformationEmployeeCommand);
+            CloseEditContactInformationEmployeeCommand = new RelayCommand(Execute_CloseEditContactInformationEmployeeCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
         {
+            if (IsInitialize)
+                return;
+
+            IsInitialize = false;
+
             await GetAllAdmissionStatus();
             await GetAllDepartmentAsync();
             await GetAllEducationLevel();
@@ -68,19 +84,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             CreateNewBaseInfoEmployee();
 
-            //string a = string.Empty;
+            IsInitialize = true;
+        }
 
-            //foreach (var item in Managers)
-            //    a += $"{item.Name}\n";
-
-            //MessageBox.Show(a);
-
-            //string b = string.Empty;
-
-            //foreach (var item in EmployeeTypes)
-            //    b += $"{item.Name}\n";
-
-            //MessageBox.Show(b);
+        void IUpdatable.Update<TData>(TData value, TransmittingParameter parameter)
+        {
+            if (parameter is TransmittingParameter.Update)
+            {
+                if (value is ValueTuple<EmployeeDetailsDisplay, GenderDisplay, ContactInformationDisplay> employeeUpdateData)
+                {
+                    CurrentEmployeeDetails = employeeUpdateData.Item1;
+                    GenderDisplay = employeeUpdateData.Item2;
+                    ContactInformationDisplay = employeeUpdateData.Item3;
+                }
+            }
         }
 
         #region Display
@@ -161,6 +178,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
+        #region Установка значений
+
         private EmployeeHrDisplay _selectedEmployee = null!;
         public EmployeeHrDisplay SelectedEmployee
         {
@@ -168,6 +187,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set
             {
                 SetProperty(ref _selectedEmployee, value);
+
+                OpenEditContactInformationEmployeeCommand?.RaiseCanExecuteChanged();
 
                 ListClear();
 
@@ -320,14 +341,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         Departments, Positions, Managers, Statuses, EmployeeTypes
                     );
 
-                //display.SetDepartment(item.DepartmentId.ToString());
-                //display.SetPosition(item.PositionId.ToString());
-                //display.SetStatus(item.StatusId.ToString());
-                //display.SetManager(item.ManagerId.ToString()!);
-                //display.SetEmployeeType(contractsResponse!.EmployeeTypeId.ToString());
-
-                //MessageBox.Show($"EmployeeType: {contractsResponse.EmployeeTypeId}");
-
                 AssignmentContracts.Add(display);
             }
 
@@ -371,6 +384,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             #endregion
         }
+
+        #endregion
+
+        #region Получение данных
 
         public ObservableCollection<EmployeeHrDisplay> EmployeeHrs { get; private init; } = [];
         private async Task GetAllForHr()
@@ -478,5 +495,48 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             WorkPermits.Clear();
             AssignmentContracts.Clear();
         }
+
+        #endregion
+
+        #region Модальное окно редактирования контактных данных
+
+        private Visibility _editContactInformationEmployeeVisibility = Visibility.Collapsed;
+        public Visibility EditContactInformationEmployeeVisibility
+        {
+            get => _editContactInformationEmployeeVisibility;
+            set => SetProperty(ref _editContactInformationEmployeeVisibility, value);
+        }
+
+        public RelayCommand OpenEditContactInformationEmployeeCommand { get; private set; }
+        private void Execute_OpenEditContactInformationEmployeeCommand()
+        {
+            if (EditContactInformationEmployeeVisibility == Visibility.Collapsed)
+            {
+                EditContactInformationEmployeeVisibility = Visibility.Visible;
+
+                _navigationPage.NavigateTo(FrameName.EditContactInformationEmployeeFrame, PageName.EditContactInformationEmployeePage);
+                _navigationPage.TransmittingValue
+                    (
+                        (
+                            CurrentEmployeeDetails, 
+                            GenderDisplay, 
+                            ContactInformationDisplay
+                        ), 
+                        FrameName.EditContactInformationEmployeeFrame, 
+                        PageName.EditContactInformationEmployeePage, 
+                        TransmittingParameter.None
+                    );
+            }
+        }
+        private bool CanExecute_OpenEditContactInformationEmployeeCommand() => SelectedEmployee != null;
+
+        public RelayCommand CloseEditContactInformationEmployeeCommand { get; private set; }
+        private void Execute_CloseEditContactInformationEmployeeCommand()
+        {
+            if (EditContactInformationEmployeeVisibility == Visibility.Visible)
+                EditContactInformationEmployeeVisibility = Visibility.Collapsed;
+        }
+
+        #endregion
     }
 }

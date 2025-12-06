@@ -2,6 +2,7 @@
 {
     public enum FrameName
     {
-        MainFrame
+        MainFrame,
+        EditContactInformationEmployeeFrame
     }
 }

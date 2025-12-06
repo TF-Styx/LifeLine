@@ -2,5 +2,8 @@
 {
     public enum PageName
     {
+        EmployeePage, 
+        EmployeeCreatePage,
+        EditContactInformationEmployeePage
     }
 }

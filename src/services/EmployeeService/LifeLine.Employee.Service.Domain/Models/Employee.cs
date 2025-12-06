@@ -82,9 +82,8 @@ namespace LifeLine.Employee.Service.Domain.Models
         /// <exception cref="IdenticalValuesException"></exception>
         public void UpdateSurname(Surname surname)
         {
-            GuardException.Against.That(surname == Surname, () => new IdenticalValuesException("Вы пытаетесь установить тоже значение!"));
-
-            Surname = surname;
+            if (surname != Surname)
+                Surname = surname;
         }
 
         /// <summary>
@@ -94,9 +93,8 @@ namespace LifeLine.Employee.Service.Domain.Models
         /// <exception cref="IdenticalValuesException"></exception>
         public void UpdateName(Name name)
         {
-            GuardException.Against.That(name == Name, () => new IdenticalValuesException("Вы пытаетесь установить тоже значение!"));
-
-            Name = name;
+            if (name != Name)
+                Name = name;
         }
 
         /// <summary>
@@ -106,9 +104,8 @@ namespace LifeLine.Employee.Service.Domain.Models
         /// <exception cref="IdenticalValuesException"></exception>
         public void UpdatePatronymic(Patronymic patronymic)
         {
-            GuardException.Against.That(patronymic == Patronymic, () => new IdenticalValuesException("Вы пытаетесь установить тоже значение!"));
-
-            Patronymic = patronymic;
+            if (patronymic != Patronymic)
+                Patronymic = patronymic;
         }
 
         /// <summary>
@@ -118,9 +115,8 @@ namespace LifeLine.Employee.Service.Domain.Models
         /// <exception cref="IdenticalValuesException"></exception>
         public void UpdateGenderId(GenderId genderId)
         {
-            GuardException.Against.That(genderId == GenderId, () => new IdenticalValuesException("Вы пытаетесь установить тоже значение!"));
-
-            GenderId = genderId;
+            if (genderId != GenderId)
+                GenderId = genderId;
         }
 
         #endregion
