@@ -20,6 +20,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             SetDocumentType(_model.DocumentTypeId.ToString());
         }
 
+        public Guid PersonalDocumentId => _model.Id;
         public Guid DocumentTypeId => _model.DocumentTypeId;
 
         private string _documentNumber;

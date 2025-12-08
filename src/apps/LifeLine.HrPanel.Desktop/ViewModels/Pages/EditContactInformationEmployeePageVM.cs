@@ -37,17 +37,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _genderService = genderService;
             _contactInformationApiServiceFactory = contactInformationApiServiceFactory;
 
-            UpdateContactInformationemployeeCommand = new RelayCommandAsync(Execute_UpdateContactInformationemployeeCommand);
-        }
-
-        public void Update<TData>(TData value, TransmittingParameter parameter)
-        {
-            if (value is ValueTuple<EmployeeDetailsDisplay, GenderDisplay, ContactInformationDisplay> tuple)
-            {
-                CurrentEmployeeDetails = tuple.Item1;
-                GenderDisplay = tuple.Item2;
-                ContactInformationDisplay = tuple.Item3;
-            }
+            UpdateContactInformationEmployeeCommand = new RelayCommandAsync(Execute_UpdateContactInformationEmployeeCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -62,6 +52,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             SelectedGender = Genders.FirstOrDefault(x => x.GenderId == GenderDisplay.GenderId)!;
 
             IsInitialize = true;
+        }
+
+        public void Update<TData>(TData value, TransmittingParameter parameter)
+        {
+            if (value is ValueTuple<EmployeeDetailsDisplay, GenderDisplay, ContactInformationDisplay> tuple)
+            {
+                CurrentEmployeeDetails = tuple.Item1;
+                GenderDisplay = tuple.Item2;
+                ContactInformationDisplay = tuple.Item3;
+            }
         }
 
         #region Dispalay
@@ -90,9 +90,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public ObservableCollection<GenderDisplay> Genders { get; private init; } = [];
         private async Task GetAllGenderAsync()
         {
-            var gender = await _genderService.GetAllAsync();
+            var genders = await _genderService.GetAllAsync();
 
-            Genders.Load(gender.Select(x => new GenderDisplay(x)).ToList());
+            Genders.Load(genders.Select(gender => new GenderDisplay(gender)).ToList());
         }
 
         private ContactInformationDisplay _contactInformationDisplay = null!;
@@ -104,8 +104,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
-        public RelayCommandAsync UpdateContactInformationemployeeCommand { get; private set; }
-        private async Task Execute_UpdateContactInformationemployeeCommand()
+        public RelayCommandAsync UpdateContactInformationEmployeeCommand { get; private set; }
+        private async Task Execute_UpdateContactInformationEmployeeCommand()
         {
             var resultUpdateEmployee = await _employeeService.UpdateEmployeeAsync
                 (

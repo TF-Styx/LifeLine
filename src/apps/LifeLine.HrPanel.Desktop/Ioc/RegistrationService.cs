@@ -7,6 +7,7 @@ using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.Employee.ContactInformation;
+using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.Employee.Service.Client.Services.Specialty;
@@ -33,6 +34,7 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddHttpClient<IEmployeeTypeReadOnlyService, EmployeeTypeService>(employeeHttp);
             services.AddHttpClient<ISpecialtyReadOnlyService, SpecialtyService>(employeeHttp);
             services.AddSingleton<IContactInformationApiServiceFactory, ContactInformationApiServiceFactory>();
+            services.AddSingleton<IPersonalDocumentApiServiceFactory, PersonalDocumentApiServiceFactory>();
 
             var directoryService = configuration.GetValue<string>("DirectoryService");
             string directoryHttp = "DirectoryServiceHttp";

@@ -27,12 +27,12 @@ namespace LifeLine.HrPanel.Desktop.Factories.Pages
             {
                 var navigationPage = _serviceProvider.GetRequiredService<INavigationPage>();
 
-                if (navigationPage.CheckFrame(FrameName.EditContactInformationEmployeeFrame))
+                if (navigationPage.CheckFrame(FrameName.ModalFrame))
                     return;
 
-                var frame = page.FindName(FrameName.EditContactInformationEmployeeFrame.ToString()) as Frame;
+                var frame = page.FindName(FrameName.ModalFrame.ToString()) as Frame;
                 //_navigationPage().SetFrame(FrameName.EditContactInformationEmployeeFrame, frame);
-                navigationPage.SetFrame(FrameName.EditContactInformationEmployeeFrame, frame);
+                navigationPage.SetFrame(FrameName.ModalFrame, frame);
             };
 
             return page;

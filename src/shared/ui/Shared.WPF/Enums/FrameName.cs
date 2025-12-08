@@ -3,6 +3,6 @@
     public enum FrameName
     {
         MainFrame,
-        EditContactInformationEmployeeFrame
+        ModalFrame,
     }
 }

@@ -1,6 +1,7 @@
 ﻿using LifeLine.Employee.Service.Domain.Exceptions;
 using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
 using LifeLine.Employee.Service.Domain.ValueObjects.Genders;
+using LifeLine.Employee.Service.Domain.ValueObjects.Shared;
 using Shared.Domain.Exceptions;
 using Shared.Domain.ValueObjects;
 using Shared.Kernel.Guard;
@@ -122,6 +123,7 @@ namespace LifeLine.Employee.Service.Domain.Models
         #endregion
 
         #region ContactInformation
+
         /// <exception cref="ExistContactInformationException"></exception>
         /// <exception cref="EmptyIdentifierException"></exception>
         /// <exception cref="PhoneNumberException"></exception>
@@ -273,6 +275,39 @@ namespace LifeLine.Employee.Service.Domain.Models
                 );
 
             _personalDocuments.Add(personalDocument);
+        }
+
+        public void UpdateDocumentType(Guid id, Guid documentTypeId)
+        {
+            GuardException.Against.That(PersonalDocuments.Count == 0, () => new EmptyPersonalDocumentException($"Тип Персональных документов у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var document = this.PersonalDocuments.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Персональный документ не найден!"));
+
+            document!.UpdateDocumentType(DocumentTypeId.Create(documentTypeId));
+        }
+
+        public void UpdateDocumentNumber(Guid id, string documentNumber)
+        {
+            GuardException.Against.That(PersonalDocuments.Count == 0, () => new EmptyPersonalDocumentException($"Номер Персональных документов у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var document = this.PersonalDocuments.FirstOrDefault(d => d.Id == id);
+            
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Персональный документ не найден!"));
+
+            document!.UpdateDocumentNumber(DocumentNumber.Create(documentNumber));
+        }
+
+        public void UpdateDocumentSeries(Guid id, string? documentSeries)
+        {
+            GuardException.Against.That(PersonalDocuments.Count == 0, () => new EmptyPersonalDocumentException($"Серия Персональных документов у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var document = this.PersonalDocuments.FirstOrDefault(d => d.Id == id);
+            
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Персональный документ не найден!"));
+            
+            document!.UpdateDocumentSeries(documentSeries != null ? DocumentSeries.Create(documentSeries) : DocumentSeries.Null);
         }
 
         #endregion

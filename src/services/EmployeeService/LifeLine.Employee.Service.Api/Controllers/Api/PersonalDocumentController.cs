@@ -1,7 +1,9 @@
 ﻿using LifeLine.Employee.Service.Api.Models.Request;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Create;
+using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
@@ -21,6 +23,22 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное создание!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpPatch("{personalDocumentId}")]
+        public async Task<IActionResult> Update([FromRoute] Guid employeeId, [FromRoute] Guid personalDocumentId, [FromBody] UpdatePersonalDocumentRequest request, CancellationToken cancellationToken = default)
+        {
+            Console.WriteLine("Пришло");
+            var command = new UpdatePersonalDocumentCommand(personalDocumentId.ToString(), employeeId.ToString(), request.DocumentTypeId, request.DocumentNumber, request.DocumentSeries);
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok("Успешное обновление!"),
                     onFailure: errors => BadRequest(errors)
                 );
         }

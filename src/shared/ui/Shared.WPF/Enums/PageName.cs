@@ -4,6 +4,7 @@
     {
         EmployeePage, 
         EmployeeCreatePage,
-        EditContactInformationEmployeePage
+        EditContactInformationEmployeePage,
+        EditPersonalDocumentEmployeePage
     }
 }

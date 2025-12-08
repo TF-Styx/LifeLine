@@ -61,7 +61,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _positionReadOnlyApiServiceFactory = positionReadOnlyApiServiceFactory;
 
             OpenEditContactInformationEmployeeCommand = new RelayCommand(Execute_OpenEditContactInformationEmployeeCommand, CanExecute_OpenEditContactInformationEmployeeCommand);
-            CloseEditContactInformationEmployeeCommand = new RelayCommand(Execute_CloseEditContactInformationEmployeeCommand);
+            OpenEditPersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_OpenEditPersonalDocumentCommand, CanExecute_OpenEditPersonalDocumentCommand);
+
+            CloseModalCommand = new RelayCommand(Execute_CloseModalCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -498,23 +500,25 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
-        #region Модальное окно редактирования контактных данных
+        #region Модальное окно редактирования
 
-        private Visibility _editContactInformationEmployeeVisibility = Visibility.Collapsed;
-        public Visibility EditContactInformationEmployeeVisibility
+        // Видимость модального окна
+        private Visibility _modalVisibility = Visibility.Collapsed;
+        public Visibility ModalVisibility
         {
-            get => _editContactInformationEmployeeVisibility;
-            set => SetProperty(ref _editContactInformationEmployeeVisibility, value);
+            get => _modalVisibility;
+            set => SetProperty(ref _modalVisibility, value);
         }
 
+        // Открытие модального окна редактирования контактной информации
         public RelayCommand OpenEditContactInformationEmployeeCommand { get; private set; }
         private void Execute_OpenEditContactInformationEmployeeCommand()
         {
-            if (EditContactInformationEmployeeVisibility == Visibility.Collapsed)
+            if (ModalVisibility == Visibility.Collapsed)
             {
-                EditContactInformationEmployeeVisibility = Visibility.Visible;
+                ModalVisibility = Visibility.Visible;
 
-                _navigationPage.NavigateTo(FrameName.EditContactInformationEmployeeFrame, PageName.EditContactInformationEmployeePage);
+                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditContactInformationEmployeePage);
                 _navigationPage.TransmittingValue
                     (
                         (
@@ -522,7 +526,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                             GenderDisplay, 
                             ContactInformationDisplay
                         ), 
-                        FrameName.EditContactInformationEmployeeFrame, 
+                        FrameName.ModalFrame, 
                         PageName.EditContactInformationEmployeePage, 
                         TransmittingParameter.None
                     );
@@ -530,11 +534,35 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         }
         private bool CanExecute_OpenEditContactInformationEmployeeCommand() => SelectedEmployee != null;
 
-        public RelayCommand CloseEditContactInformationEmployeeCommand { get; private set; }
-        private void Execute_CloseEditContactInformationEmployeeCommand()
+        // Открытие модального окна редактирования персонального документа
+        public RelayCommand<PersonalDocumentDisplay> OpenEditPersonalDocumentCommand { get; private set; }
+        private void Execute_OpenEditPersonalDocumentCommand(PersonalDocumentDisplay display)
         {
-            if (EditContactInformationEmployeeVisibility == Visibility.Visible)
-                EditContactInformationEmployeeVisibility = Visibility.Collapsed;
+            if (ModalVisibility == Visibility.Collapsed)
+            {
+                ModalVisibility = Visibility.Visible;
+
+                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditPersonalDocumentEmployeePage);
+                _navigationPage.TransmittingValue
+                    (
+                        (
+                            CurrentEmployeeDetails,
+                            display
+                        ),
+                        FrameName.ModalFrame,
+                        PageName.EditPersonalDocumentEmployeePage,
+                        TransmittingParameter.None
+                    );
+            }
+        }
+        private bool CanExecute_OpenEditPersonalDocumentCommand(PersonalDocumentDisplay display) => SelectedEmployee != null;
+
+        // Закрытие модального окна
+        public RelayCommand CloseModalCommand { get; private set; }
+        private void Execute_CloseModalCommand()
+        {
+            if (ModalVisibility == Visibility.Visible)
+                ModalVisibility = Visibility.Collapsed;
         }
 
         #endregion

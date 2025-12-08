@@ -86,13 +86,13 @@
               Panel.ZIndex="2" 
               Background="#7F000000" 
               d:Visibility="Collapsed"
-              Visibility="{Binding EditContactInformationEmployeeVisibility}">
+              Visibility="{Binding ModalVisibility}">
             <Border Background="{StaticResource App.MainColor}" 
-                    BorderBrush="#386FD6" BorderThickness="3" 
-                    CornerRadius="11" HorizontalAlignment="Center" 
+                    BorderBrush="#386FD6" BorderThickness="3" CornerRadius="11" 
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
                     Margin="0 10 0 10">
                 <DockPanel Margin="5">
-                    <Button Command="{Binding CloseEditContactInformationEmployeeCommand}" 
+                    <Button Command="{Binding CloseModalCommand}" 
                             Width="25" Foreground="#F06870" 
                             HorizontalAlignment="Right"
                             DockPanel.Dock="Top"
@@ -100,7 +100,7 @@
                         <Control Template="{StaticResource Close}"/>
                     </Button>
                     
-                    <Frame x:Name="EditContactInformationEmployeeFrame" NavigationUIVisibility="Hidden"/>
+                    <Frame x:Name="ModalFrame" NavigationUIVisibility="Hidden"/>
                 </DockPanel>
             </Border>
         </Grid>
@@ -316,7 +316,9 @@
                                     <DataGridTemplateColumn Width="35">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                <Button Width="25" Command="{Binding DataContext.OpenEditPersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                        CommandParameter="{Binding }"
+                                                        Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource Magnifier}"/>
                                                     <Button.ToolTip>
                                                         <StackPanel>
@@ -335,9 +337,9 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Width="25" Foreground="#F06870" 
-                                                                Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                                                CommandParameter="{Binding }" 
-                                                                Style="{StaticResource Button.Icon}">
+                                                        Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                        CommandParameter="{Binding }" 
+                                                        Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource Trash}"/>
                                                 </Button>
                                             </DataTemplate>

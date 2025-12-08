@@ -44,5 +44,23 @@ namespace LifeLine.Employee.Service.Domain.Models
                     documentSeries != null ? DocumentSeries.Create(documentSeries) : null,
                     imageKey ?? null
                 );
+
+        internal void UpdateDocumentType(DocumentTypeId documentTypeId)
+        {
+            if (documentTypeId != DocumentTypeId)
+                DocumentTypeId = documentTypeId;
+        }
+
+        internal void UpdateDocumentNumber(DocumentNumber documentNumber)
+        {
+            if (documentNumber != DocumentNumber)
+                DocumentNumber = documentNumber;
+        }
+
+        internal void UpdateDocumentSeries(DocumentSeries? documentSeries)
+        {
+            if (documentSeries != DocumentSeries)
+                DocumentSeries = documentSeries;
+        }
     }
 }

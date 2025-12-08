@@ -24,7 +24,6 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.ContactInformation
             {
                 return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при изменении данных в контактной информации!\n{ex}"));
             }
-            
         }
     }
 }
