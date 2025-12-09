@@ -386,7 +386,9 @@
                                     <DataGridTemplateColumn Width="35">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                <Button Width="25" Command="{Binding DataContext.OpenEditEducationDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                        CommandParameter="{Binding }"
+                                                        Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource Magnifier}"/>
                                                     <Button.ToolTip>
                                                         <StackPanel>

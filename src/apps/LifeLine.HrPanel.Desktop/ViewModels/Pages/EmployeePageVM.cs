@@ -62,6 +62,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             OpenEditContactInformationEmployeeCommand = new RelayCommand(Execute_OpenEditContactInformationEmployeeCommand, CanExecute_OpenEditContactInformationEmployeeCommand);
             OpenEditPersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_OpenEditPersonalDocumentCommand, CanExecute_OpenEditPersonalDocumentCommand);
+            OpenEditEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Evecute_OpenEditEducationDocumentCommand, CanExecute_OpenEditEducationDocumentCommand);
 
             CloseModalCommand = new RelayCommand(Execute_CloseModalCommand);
         }
@@ -191,6 +192,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 SetProperty(ref _selectedEmployee, value);
 
                 OpenEditContactInformationEmployeeCommand?.RaiseCanExecuteChanged();
+                OpenEditPersonalDocumentCommand?.RaiseCanExecuteChanged();
+                OpenEditEducationDocumentCommand?.RaiseCanExecuteChanged();
 
                 ListClear();
 
@@ -256,6 +259,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 (
                                     new EducationDocumentResponse
                                         (
+                                            x.EducationDocumentId.ToString(),
                                             details.EmployeeId.ToString(),
                                             x.EducationLevelId.ToString(),
                                             x.EducationDocumentTypeId.ToString(),
@@ -556,6 +560,29 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             }
         }
         private bool CanExecute_OpenEditPersonalDocumentCommand(PersonalDocumentDisplay display) => SelectedEmployee != null;
+
+        // Открытие модального окна редактирования образовательного документа
+        public RelayCommand<EducationDocumentDisplay> OpenEditEducationDocumentCommand { get; private set; }
+        private void Evecute_OpenEditEducationDocumentCommand(EducationDocumentDisplay display)
+        {
+            if (ModalVisibility == Visibility.Collapsed)
+            {
+                ModalVisibility = Visibility.Visible;
+
+                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditEducationDocumentEmployeePage);
+                _navigationPage.TransmittingValue
+                    (
+                        (
+                            CurrentEmployeeDetails,
+                            display
+                        ),
+                        FrameName.ModalFrame,
+                        PageName.EditEducationDocumentEmployeePage,
+                        TransmittingParameter.None
+                    );
+            }
+        }
+        private bool CanExecute_OpenEditEducationDocumentCommand(EducationDocumentDisplay display) => SelectedEmployee != null;
 
         // Закрытие модального окна
         public RelayCommand CloseModalCommand { get; private set; }

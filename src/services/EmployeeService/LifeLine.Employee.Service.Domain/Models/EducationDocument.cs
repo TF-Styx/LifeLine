@@ -80,5 +80,59 @@ namespace LifeLine.Employee.Service.Domain.Models
 
             return educationDocument;
         }
+
+        internal void UpdateEducationLevel(EducationLevelId educationLevelId)
+        {
+            if (educationLevelId != EducationLevelId)
+                EducationLevelId = educationLevelId;
+        }
+
+        internal void UpdateDocumentType(DocumentTypeId documentTypeId)
+        {
+            if (documentTypeId != DocumentTypeId)
+                DocumentTypeId = documentTypeId;
+        }
+
+        internal void UpdateDocumentNumber(DocumentNumber documentNumber)
+        {
+            if (documentNumber != DocumentNumber)
+                DocumentNumber = documentNumber;
+        }
+
+        internal void UpdateIssuedDate(DateTime issuedDate)
+        {
+            if (issuedDate != IssuedDate)
+                IssuedDate = issuedDate.ToUniversalTime();
+        }
+
+        internal void UpdateOrganizationName(IssuingAuthority issuingAuthority)
+        {
+            if (issuingAuthority != OrganizationName)
+                OrganizationName = issuingAuthority;
+        }
+
+        internal void UpdateQualificationAwardedName(QualificationAwardedName? qualificationAwardedName)
+        {
+            if (qualificationAwardedName != QualificationAwardedName)
+                QualificationAwardedName = qualificationAwardedName;
+        }
+
+        internal void UpdateSpecialtyName(SpecialtyName? specialtyName)
+        {
+            if (specialtyName != SpecialtyName)
+                SpecialtyName = specialtyName;
+        }
+
+        internal void UpdateProgramName(ProgramEducationName? programEducationName)
+        {
+            if (programEducationName != ProgramName)
+                ProgramName = programEducationName;
+        }
+
+        internal void UpdateTotalHours(Hours? totalHours)
+        {
+            if (totalHours != TotalHours)
+                TotalHours = totalHours;
+        }
     }
 }

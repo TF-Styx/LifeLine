@@ -23,6 +23,8 @@ namespace LifeLine.Employee.Service.Domain.ValueObjects.Shared
             return new SpecialtyName(value);
         }
 
+        public static SpecialtyName? Null => null;
+
         public override string ToString() => Value.ToString();
 
         public static implicit operator string(SpecialtyName name) => name.Value;

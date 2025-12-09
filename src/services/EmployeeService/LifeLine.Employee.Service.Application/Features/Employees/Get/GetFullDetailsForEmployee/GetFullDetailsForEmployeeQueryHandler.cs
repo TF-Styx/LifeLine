@@ -73,7 +73,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Get.GetFullDe
                         (
                             x => new EducationDocumentDetailsResponseData
                                 (
-                                    x.EducationDocumentTypeId,
+                                    x.EducationDocumentId,
                                     x.EducationLevelId,
                                     x.EducationDocumentTypeId,
                                     x.EducationDocumentNumber,

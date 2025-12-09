@@ -35,6 +35,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             SetDocumentType(_model.DocumentTypeId);
         }
 
+        public string EducationDocumentId => _model.Id;
         public string EmployeeId => _model.EmployeeId;
         public string EducationLevelId => _model.EducationLevelId;
         public string DocumentTypeId => _model.DocumentTypeId;

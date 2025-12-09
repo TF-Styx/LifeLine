@@ -23,6 +23,8 @@ namespace LifeLine.Employee.Service.Domain.ValueObjects.Shared
             return new QualificationAwardedName(value);
         }
 
+        public static QualificationAwardedName? Null => null;
+
         public override string ToString() => Value.ToString();
 
         public static implicit operator string(QualificationAwardedName name) => name.Value;

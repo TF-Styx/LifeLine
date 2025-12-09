@@ -20,6 +20,8 @@ namespace LifeLine.Employee.Service.Domain.ValueObjects.Shared
             return new Hours(timeSpan);
         }
 
+        public static Hours? Null => null;
+
         public override string ToString() => Value.ToString();
 
         public static implicit operator TimeSpan(Hours value) => value.Value;

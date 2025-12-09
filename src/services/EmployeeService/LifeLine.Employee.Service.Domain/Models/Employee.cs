@@ -245,6 +245,104 @@ namespace LifeLine.Employee.Service.Domain.Models
             _educationDocuments.Add(educationDocument);
         }
 
+        public void UpdateEducationLevel(Guid id, Guid educationLevelId)
+        {
+            GuardException.Against.That(EducationDocuments.Count == 0, () => new EmptyEducationDocumentException($"Уровень Документов об образовании у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var document = this.EducationDocuments.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+
+            document!.UpdateEducationLevel(EducationLevelId.Create(educationLevelId));
+        }
+
+        public void UpdateDocumentTypeED(Guid id,  Guid documentTypeId)
+        {
+            GuardException.Against.That(EducationDocuments.Count == 0, () => new EmptyEducationDocumentException($"Тип Документов об образовании у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var document = this.EducationDocuments.FirstOrDefault(d => d.Id == id);
+            
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+            
+            document!.UpdateDocumentType(DocumentTypeId.Create(documentTypeId));
+        }
+
+        public void UpdateDocumentNumberED(Guid id, string documentNumber)
+        {
+            GuardException.Against.That(EducationDocuments.Count == 0, () => new EmptyEducationDocumentException($"Номер Документов об образовании у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var document = this.EducationDocuments.FirstOrDefault(d => d.Id == id);
+            
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+            
+            document!.UpdateDocumentNumber(DocumentNumber.Create(documentNumber));
+        }
+
+        public void UpdateIssuedDate(Guid id, DateTime issuedDate)
+        {
+            GuardException.Against.That(EducationDocuments.Count == 0, () => new EmptyEducationDocumentException($"Дата выдачи Документов об образовании у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var document = this.EducationDocuments.FirstOrDefault(d => d.Id == id);
+            
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+            
+            document!.UpdateIssuedDate(issuedDate);
+        }
+
+        public void UpdateOrganizationName(Guid id, string organizationName)
+        {
+            GuardException.Against.That(EducationDocuments.Count == 0, () => new EmptyEducationDocumentException($"Название организации Документов об образовании у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var document = this.EducationDocuments.FirstOrDefault(d => d.Id == id);
+            
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+            
+            document!.UpdateOrganizationName(IssuingAuthority.Create(organizationName));
+        }
+
+        public void UpdateQualificationAwardedName(Guid id, string? qualificationAwardedName)
+        {
+            GuardException.Against.That(EducationDocuments.Count == 0, () => new EmptyEducationDocumentException($"Название квалификации Документов об образовании у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var document = this.EducationDocuments.FirstOrDefault(d => d.Id == id);
+            
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+            
+            document!.UpdateQualificationAwardedName(qualificationAwardedName != null ? QualificationAwardedName.Create(qualificationAwardedName) : QualificationAwardedName.Null);
+        }
+
+        public void UpdateSpecialtyName(Guid id, string? specialtyName)
+        {
+            GuardException.Against.That(EducationDocuments.Count == 0, () => new EmptyEducationDocumentException($"Название специальности Документов об образовании у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var document = this.EducationDocuments.FirstOrDefault(d => d.Id == id);
+            
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+            
+            document!.UpdateSpecialtyName(specialtyName != null ? SpecialtyName.Create(specialtyName) : SpecialtyName.Null);
+        }
+
+        public void UpdateProgramName(Guid id, string? programName)
+        {
+            GuardException.Against.That(EducationDocuments.Count == 0, () => new EmptyEducationDocumentException($"Название программы Документов об образовании у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var document = this.EducationDocuments.FirstOrDefault(d => d.Id == id);
+            
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+            
+            document!.UpdateProgramName(programName != null ? ProgramEducationName.Create(programName) : ProgramEducationName.Null);
+        }
+
+        public void UpdateTotalHours(Guid id, TimeSpan? totalHours)
+        {
+            GuardException.Against.That(EducationDocuments.Count == 0, () => new EmptyEducationDocumentException($"Общее количество часов Документов об образовании у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var document = this.EducationDocuments.FirstOrDefault(d => d.Id == id);
+            
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+            
+            document!.UpdateTotalHours(totalHours != null ? Hours.Create(totalHours.Value.TotalHours) : Hours.Null);
+        }
         #endregion
 
         #region EmployeeSpecialty
@@ -277,7 +375,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             _personalDocuments.Add(personalDocument);
         }
 
-        public void UpdateDocumentType(Guid id, Guid documentTypeId)
+        public void UpdateDocumentTypePD(Guid id, Guid documentTypeId)
         {
             GuardException.Against.That(PersonalDocuments.Count == 0, () => new EmptyPersonalDocumentException($"Тип Персональных документов у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
 
@@ -288,7 +386,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             document!.UpdateDocumentType(DocumentTypeId.Create(documentTypeId));
         }
 
-        public void UpdateDocumentNumber(Guid id, string documentNumber)
+        public void UpdateDocumentNumberPD(Guid id, string documentNumber)
         {
             GuardException.Against.That(PersonalDocuments.Count == 0, () => new EmptyPersonalDocumentException($"Номер Персональных документов у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
             

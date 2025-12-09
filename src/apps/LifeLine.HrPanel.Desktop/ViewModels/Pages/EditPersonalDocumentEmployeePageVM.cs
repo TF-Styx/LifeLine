@@ -57,13 +57,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 CurrentEmployeeDetails = tuple.Item1;
                 PersonalDocumentDisplay = tuple.Item2;
 
-                // Устанавливаем выбранный тип документа при приходе данных и обновляем CanExecute команды
                 if (PersonalDocumentDisplay != null && DocumentTypes.Count > 0)
-                {
                     SelectedDocumentType = DocumentTypes.FirstOrDefault(x => x.Id == PersonalDocumentDisplay.DocumentType.Id);
-                }
 
-                // Пересчитываем доступность команды (RelayCommandAsync наследует BaseCommand => RaiseCanExecuteChanged доступен)
                 UpdatePersonalDocumentEmployeeCommand?.RaiseCanExecuteChanged();
             }
         }
@@ -120,6 +116,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             else
                 MessageBox.Show($"Обновление персональных документов: {resultUpdate.StringMessage}");
         }
-        private bool CanExecute_UpdatePersonalDocumentEmployeeCommand() => SelectedDocumentType != null;
+        private bool CanExecute_UpdatePersonalDocumentEmployeeCommand() => true; /*SelectedDocumentType != null;*/
     }
 }

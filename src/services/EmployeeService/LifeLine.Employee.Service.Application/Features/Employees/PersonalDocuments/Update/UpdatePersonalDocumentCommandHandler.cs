@@ -27,8 +27,8 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.PersonalDocum
                 if (employee is null)
                     return Result.Failure(new Error(ErrorCode.NotFound, "Пользователь не найден!"));
 
-                employee.UpdateDocumentType(Guid.Parse(request.Id), Guid.Parse(request.DocumentTypeId));
-                employee.UpdateDocumentNumber(Guid.Parse(request.Id), request.DocumentNumber);
+                employee.UpdateDocumentTypePD(Guid.Parse(request.Id), Guid.Parse(request.DocumentTypeId));
+                employee.UpdateDocumentNumberPD(Guid.Parse(request.Id), request.DocumentNumber);
                 employee.UpdateDocumentSeries(Guid.Parse(request.Id), request.DocumentSeries);
 
                 await _writeContext.SaveChangesAsync(cancellationToken);

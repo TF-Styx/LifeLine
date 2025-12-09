@@ -5,6 +5,7 @@
         EmployeePage, 
         EmployeeCreatePage,
         EditContactInformationEmployeePage,
-        EditPersonalDocumentEmployeePage
+        EditPersonalDocumentEmployeePage,
+        EditEducationDocumentEmployeePage
     }
 }
