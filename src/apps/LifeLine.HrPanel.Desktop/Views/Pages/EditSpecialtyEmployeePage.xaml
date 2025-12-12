@@ -1,0 +1,78 @@
+﻿<Page x:Class="LifeLine.HrPanel.Desktop.Views.Pages.EditSpecialtyEmployeePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.Pages" 
+      xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+      xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+      xmlns:pages="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Pages" 
+      d:DataContext="{d:DesignInstance Type=pages:EditSpecialtyEmployeePageVM}"
+      mc:Ignorable="d" 
+      d:Height="auto" d:Width="auto"
+      Title="EditSpecialtyEmployeePage">
+
+    <b:Interaction.Behaviors>
+        <behaviors:AsyncInitializeBehavior/>
+    </b:Interaction.Behaviors>
+
+    <Page.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Arial"/>
+        </Style>
+    </Page.Resources>
+
+    <Border Background="{StaticResource App.MainColor}" CornerRadius="6" BorderThickness="0">
+        <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" BorderThickness="0" Margin="5">
+            <StackPanel>
+                <TextBlock Text="{Binding SpecialtyDisplay.SpecialtyName, StringFormat=Специальность: {0}}" Margin="0 0 0 10"/>
+
+                <ComboBox ItemsSource="{Binding Specialties}" 
+                          SelectedItem="{Binding SelectedSpecialty}"
+                          DisplayMemberPath="SpecialtyName" Margin="0 0 0 10"/>
+
+                <Button Grid.Row="1" Content="Сохранить" Command="{Binding UpdateSpecialtyEmployeeCommand}" Height="40" VerticalAlignment="Bottom" Margin="5" Style="{StaticResource App.Button}"/>
+            </StackPanel>
+            
+            <!--<DataGrid ItemsSource="{Binding Specialties}"
+                      d:ItemsSource="{d:SampleData ItemCount=10}"
+                      SelectionMode="Extended"
+                      AutoGenerateColumns="False" 
+                      CanUserAddRows="False"
+                      HeadersVisibility="Column"
+                      MaxHeight="500">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="✓">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox Margin="2.5 0" IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource BaseChechBox}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    --><!--Наименование--><!--
+                    <DataGridTemplateColumn Header="Наименование">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SpecialtyName}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    --><!--Описание--><!--
+                    <DataGridTemplateColumn Header="Описание">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Description}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                </DataGrid.Columns>
+            </DataGrid>-->
+        </Border>
+    </Border>
+
+</Page>

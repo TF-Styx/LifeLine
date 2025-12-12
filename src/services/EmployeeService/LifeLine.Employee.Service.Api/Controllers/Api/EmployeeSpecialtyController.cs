@@ -1,4 +1,5 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Add;
+using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts.Request.EmployeeService.EmployeeSpecialty;
@@ -21,6 +22,25 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное создание!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> Update([FromRoute] Guid employeeId, [FromBody] UpdateEmployeeSpecialtyRequest request, CancellationToken cancellationToken = default)
+        {
+            var command = new UpdateEmployeeSpecialtyCommand
+                (
+                    employeeId,
+                    Guid.Parse(request.SpecialtyIdOld),
+                    Guid.Parse(request.SpecialtyIdNew)
+                );
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok("Успешное обновление!"),
                     onFailure: errors => BadRequest(errors)
                 );
         }

@@ -20,5 +20,11 @@ namespace LifeLine.Employee.Service.Domain.Models
 
         internal static EmployeeSpecialty Create(Guid employeeId, Guid specialtyId)
             => new EmployeeSpecialty(EmployeeId.Create(employeeId), SpecialtyId.Create(specialtyId));
+
+        internal void UpdateSpecialty(SpecialtyId specialtyId)
+        {
+            if (specialtyId != SpecialtyId)
+                SpecialtyId = specialtyId;
+        }
     }
 }

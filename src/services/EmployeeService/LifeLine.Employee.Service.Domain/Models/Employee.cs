@@ -2,6 +2,7 @@
 using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
 using LifeLine.Employee.Service.Domain.ValueObjects.Genders;
 using LifeLine.Employee.Service.Domain.ValueObjects.Shared;
+using LifeLine.Employee.Service.Domain.ValueObjects.Specialties;
 using Shared.Domain.Exceptions;
 using Shared.Domain.ValueObjects;
 using Shared.Kernel.Guard;
@@ -350,6 +351,9 @@ namespace LifeLine.Employee.Service.Domain.Models
         // TODO : Сделать проверки
         public void AddSpecialty(Guid specialtyId) 
             => _employeeSpecialties.Add(EmployeeSpecialty.Create(this.Id, specialtyId));
+
+        public void RemoveSpecialty(Guid specialtyIdOld) => 
+            _employeeSpecialties.Remove(_employeeSpecialties.FirstOrDefault(x => x.SpecialtyId == specialtyIdOld));
 
         #endregion
 

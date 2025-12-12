@@ -62,7 +62,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             OpenEditContactInformationEmployeeCommand = new RelayCommand(Execute_OpenEditContactInformationEmployeeCommand, CanExecute_OpenEditContactInformationEmployeeCommand);
             OpenEditPersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_OpenEditPersonalDocumentCommand, CanExecute_OpenEditPersonalDocumentCommand);
-            OpenEditEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Evecute_OpenEditEducationDocumentCommand, CanExecute_OpenEditEducationDocumentCommand);
+            OpenEditEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Execute_OpenEditEducationDocumentCommand, CanExecute_OpenEditEducationDocumentCommand);
+            OpenEmployeeSpecialtyCommand = new RelayCommand<SpecialtyDisplay>(Execute_OpenEmployeeSpecialtyCommand, CanExecute_OpenEmployeeSpecialtyCommand);
 
             CloseModalCommand = new RelayCommand(Execute_CloseModalCommand);
         }
@@ -99,6 +100,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     CurrentEmployeeDetails = employeeUpdateData.Item1;
                     GenderDisplay = employeeUpdateData.Item2;
                     ContactInformationDisplay = employeeUpdateData.Item3;
+                }
+
+                if (value is ValueTuple<SpecialtyDisplay, SpecialtyDisplay> specialtyUpdate)
+                {
+                    Specialties.Remove(Specialties.FirstOrDefault(x => x.SpecialtyId == specialtyUpdate.Item1.SpecialtyId));
+                    Specialties.Add(specialtyUpdate.Item2);
+                    SpecialtyDisplay = specialtyUpdate.Item2;
                 }
             }
         }
@@ -563,7 +571,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         // Открытие модального окна редактирования образовательного документа
         public RelayCommand<EducationDocumentDisplay> OpenEditEducationDocumentCommand { get; private set; }
-        private void Evecute_OpenEditEducationDocumentCommand(EducationDocumentDisplay display)
+        private void Execute_OpenEditEducationDocumentCommand(EducationDocumentDisplay display)
         {
             if (ModalVisibility == Visibility.Collapsed)
             {
@@ -583,6 +591,29 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             }
         }
         private bool CanExecute_OpenEditEducationDocumentCommand(EducationDocumentDisplay display) => SelectedEmployee != null;
+
+        // Открытие модального окна редактирования специальности
+        public RelayCommand<SpecialtyDisplay> OpenEmployeeSpecialtyCommand { get; private set; }
+        private void Execute_OpenEmployeeSpecialtyCommand(SpecialtyDisplay display)
+        {
+            if (ModalVisibility == Visibility.Collapsed)
+            {
+                ModalVisibility = Visibility.Visible;
+
+                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditSpecialtyEmployeePage);
+                _navigationPage.TransmittingValue
+                    (
+                        (
+                            CurrentEmployeeDetails,
+                            display
+                        ),
+                        FrameName.ModalFrame,
+                        PageName.EditSpecialtyEmployeePage,
+                        TransmittingParameter.None
+                    );
+            }
+        }
+        private bool CanExecute_OpenEmployeeSpecialtyCommand(SpecialtyDisplay display) => SelectedEmployee != null;
 
         // Закрытие модального окна
         public RelayCommand CloseModalCommand { get; private set; }
