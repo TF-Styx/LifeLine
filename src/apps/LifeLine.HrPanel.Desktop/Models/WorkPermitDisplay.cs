@@ -35,6 +35,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             SetAdmissionStatus(_model.AdmissionStatusId);
         }
 
+        public string Id => _model.Id;
         public string EmployeeId => _model.EmployeeId;
         public string PermitTypeId => _model.PermitTypeId;
         public string AdmissionStatusId => _model.AdmissionStatusId;

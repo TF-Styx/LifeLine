@@ -32,7 +32,7 @@
         </Grid.RowDefinitions>
 
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Background="{StaticResource App.MainColor}">
-            <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" Margin="5" CornerRadius="6" BorderThickness="0">
+            <Border Background="{StaticResource App.SecondColor}" Margin="5" CornerRadius="6" BorderThickness="0">
                 <StackPanel Margin="5">
                     <!-- Персональные данные -->
                     <TextBlock Text="Персональные документы" HorizontalAlignment="Center" FontSize="20" Margin="0 0 0 10"/>

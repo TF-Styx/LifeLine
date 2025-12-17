@@ -63,7 +63,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             OpenEditContactInformationEmployeeCommand = new RelayCommand(Execute_OpenEditContactInformationEmployeeCommand, CanExecute_OpenEditContactInformationEmployeeCommand);
             OpenEditPersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_OpenEditPersonalDocumentCommand, CanExecute_OpenEditPersonalDocumentCommand);
             OpenEditEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Execute_OpenEditEducationDocumentCommand, CanExecute_OpenEditEducationDocumentCommand);
-            OpenEmployeeSpecialtyCommand = new RelayCommand<SpecialtyDisplay>(Execute_OpenEmployeeSpecialtyCommand, CanExecute_OpenEmployeeSpecialtyCommand);
+            OpenEditSpecialtyCommand = new RelayCommand<SpecialtyDisplay>(Execute_OpenEditSpecialtyCommand, CanExecute_OpenEditSpecialtyCommand);
+            OpenEditWorkPermitCommand = new RelayCommand<WorkPermitDisplay>(Execute_OpenEditWorkPermitCommand, CanExecute_OpenEditWorkPermitCommand);
 
             CloseModalCommand = new RelayCommand(Execute_CloseModalCommand);
         }
@@ -307,6 +308,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 (
                                     new WorkPermitResponse
                                         (
+                                            x.WorkPermitId.ToString(),
                                             details.EmployeeId.ToString(),
                                             x.WorkPermitName,
                                             x.WorkPermitDocumentSeries,
@@ -593,8 +595,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private bool CanExecute_OpenEditEducationDocumentCommand(EducationDocumentDisplay display) => SelectedEmployee != null;
 
         // Открытие модального окна редактирования специальности
-        public RelayCommand<SpecialtyDisplay> OpenEmployeeSpecialtyCommand { get; private set; }
-        private void Execute_OpenEmployeeSpecialtyCommand(SpecialtyDisplay display)
+        public RelayCommand<SpecialtyDisplay> OpenEditSpecialtyCommand { get; private set; }
+        private void Execute_OpenEditSpecialtyCommand(SpecialtyDisplay display)
         {
             if (ModalVisibility == Visibility.Collapsed)
             {
@@ -613,7 +615,30 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     );
             }
         }
-        private bool CanExecute_OpenEmployeeSpecialtyCommand(SpecialtyDisplay display) => SelectedEmployee != null;
+        private bool CanExecute_OpenEditSpecialtyCommand(SpecialtyDisplay display) => SelectedEmployee != null;
+
+        // Открытие модального окна редактирования рабочего разрешения
+        public RelayCommand<WorkPermitDisplay> OpenEditWorkPermitCommand { get; private set; }
+        private void Execute_OpenEditWorkPermitCommand(WorkPermitDisplay display)
+        {
+            if (ModalVisibility == Visibility.Collapsed)
+            {
+                ModalVisibility = Visibility.Visible;
+
+                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditWorkPermitEmployeePage);
+                _navigationPage.TransmittingValue
+                    (
+                        (
+                            CurrentEmployeeDetails,
+                            display
+                        ),
+                        FrameName.ModalFrame,
+                        PageName.EditWorkPermitEmployeePage,
+                        TransmittingParameter.None
+                    );
+            }
+        }
+        private bool CanExecute_OpenEditWorkPermitCommand(WorkPermitDisplay display) => SelectedEmployee != null;
 
         // Закрытие модального окна
         public RelayCommand CloseModalCommand { get; private set; }

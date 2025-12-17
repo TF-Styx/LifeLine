@@ -1,4 +1,5 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Create;
+using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts.Request.EmployeeService.WorkPermit;
@@ -34,6 +35,34 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное создание!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpPatch("{workPermitId}")]
+        public async Task<IActionResult> UpdateWorkPermit([FromRoute] Guid employeeId, [FromRoute] Guid workPermitId, UpdateWorkPermitRequest request, CancellationToken cancellationToken = default)
+        {
+            var command = new UpdateWorkPermitCommand
+                (
+                    workPermitId,
+                    employeeId,
+                    request.WorkPermitName,
+                    request.DocumentSeries,
+                    request.WorkPermitNumber,
+                    request.ProtocolNumber,
+                    request.SpecialtyName,
+                    request.IssuingAuthority,
+                    request.IssueDate,
+                    request.ExpiryDate,
+                    Guid.Parse(request.PermitTypeId),
+                    Guid.Parse(request.AdmissionStatusId)
+                );
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok("Успешное обновление!"),
                     onFailure: errors => BadRequest(errors)
                 );
         }

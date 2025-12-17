@@ -23,6 +23,8 @@ namespace LifeLine.Employee.Service.Domain.ValueObjects.WorkPermits
             return new ProtocolNumber(value);
         }
 
+        public static ProtocolNumber? Null => null;
+
         public override string ToString() => Value.ToString();
 
         public static implicit operator string(ProtocolNumber value) => value.Value;

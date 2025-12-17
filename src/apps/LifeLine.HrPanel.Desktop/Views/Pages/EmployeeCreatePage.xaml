@@ -34,6 +34,12 @@
             <sys:String x:Key="String.Assigments.Contracts">Назначения / Контракты</sys:String>
             <sys:String x:Key="String.Assigments">Назначения</sys:String>
             <sys:String x:Key="String.Contracts">Контракты</sys:String>
+            
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
 
             <Style TargetType="ListView">
                 <Setter Property="Background" Value="Transparent"/>
@@ -571,7 +577,7 @@
 
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
@@ -670,79 +676,45 @@
                                               HorizontalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 0 10" 
                                               Style="{StaticResource BaseChechBox}"/>
 
+
                                     <!-- Тип документа / Статус -->
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                    <ComboBox Grid.Column="0" 
+                                              ItemsSource="{Binding PermitTypes}" 
+                                              SelectedItem="{Binding NewWorkPermit.PermitType}"
+                                              DisplayMemberPath="Name" 
+                                              Margin="0 0 0 5"/>
 
-                                        <ComboBox Grid.Column="0" 
-                                                  ItemsSource="{Binding PermitTypes}" 
-                                                  SelectedItem="{Binding NewWorkPermit.PermitType}"
-                                                  DisplayMemberPath="Name" 
-                                                  Margin="0 0 5 0"/>
-
-                                        <ComboBox Grid.Column="1" 
-                                                  ItemsSource="{Binding AdmissionStatuses}" 
-                                                  SelectedItem="{Binding NewWorkPermit.AdmissionStatus}"
-                                                  DisplayMemberPath="Name" 
-                                                  Margin="5 0 0 0"/>
-                                    </Grid>
+                                    <ComboBox Grid.Column="1" 
+                                              ItemsSource="{Binding AdmissionStatuses}" 
+                                              SelectedItem="{Binding NewWorkPermit.AdmissionStatus}"
+                                              DisplayMemberPath="Name" 
+                                              Margin="0 5 0 10"/>
 
                                     <!-- Наименование документа / Наименование специальности -->
-                                    <Grid Margin="0 10 0 0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                    <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование документа*" Margin="0 0 0 5"
+                                                           Text="{Binding NewWorkPermit.WorkPermitName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                                        <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование документа*" Margin="0 0 5 0"
-                                                               Text="{Binding NewWorkPermit.WorkPermitName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-
-                                        <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Наименование специальности*" Margin="0 0 5 0"
-                                                               Text="{Binding NewWorkPermit.SpecialtyName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    </Grid>
+                                    <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Наименование специальности*" Margin="0 0 0 5"
+                                                           Text="{Binding NewWorkPermit.SpecialtyName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
                                     <!-- Серия / Номер -->
-                                    <Grid Margin="0 10 0 0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                    <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Серия" Margin="0 0 0 5"
+                                                           Text="{Binding NewWorkPermit.DocumentSeries, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                                        <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Серия" Margin="0 0 5 0"
-                                                               Text="{Binding NewWorkPermit.DocumentSeries, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-
-                                        <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Номер*" Margin="0 0 5 0"
-                                                               Text="{Binding NewWorkPermit.WorkPermitNumber, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    </Grid>
+                                    <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Номер*" Margin="0 0 0 5"
+                                                           Text="{Binding NewWorkPermit.WorkPermitNumber, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
                                     <!-- Номер протокола / Орган выдающий документы -->
-                                    <Grid Margin="0 10 0 0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                    <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Номер протокола" Margin="0 0 0 5"
+                                                           Text="{Binding NewWorkPermit.ProtocolNumber}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                                        <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Номер протокола" Margin="0 0 5 0"
-                                                               Text="{Binding NewWorkPermit.ProtocolNumber}" Style="{StaticResource TextBox.PlaceHolder}"/>
-
-                                        <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Орган выдающий документы*" Margin="5 0 0 0"
-                                                               Text="{Binding NewWorkPermit.IssuingAuthority}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                                    </Grid>
+                                    <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Орган выдающий документы*" Margin="0 0 0 10"
+                                                           Text="{Binding NewWorkPermit.IssuingAuthority}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
                                     <!-- Дата выдачи / Дата окончания -->
-                                    <Grid Margin="0 10 0 0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                    <DatePicker Grid.Column="0" SelectedDate="{Binding NewWorkPermit.IssueDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 10"/>
 
-                                        <DatePicker Grid.Column="0" SelectedDate="{Binding NewWorkPermit.IssueDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 5 0"/>
-
-                                        <DatePicker Grid.Column="1" SelectedDate="{Binding NewWorkPermit.ExpiryDate, UpdateSourceTrigger=PropertyChanged}" Margin="5 0 0 0"/>
-                                    </Grid>
+                                    <DatePicker Grid.Column="1" SelectedDate="{Binding NewWorkPermit.ExpiryDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 10"/>
 
                                     <Button Content="Добавить документ"
                                             HorizontalAlignment="Center" Width="250" Height="40"
@@ -767,7 +739,7 @@
 
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 

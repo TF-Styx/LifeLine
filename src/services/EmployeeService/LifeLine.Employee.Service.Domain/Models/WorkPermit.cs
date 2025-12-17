@@ -89,5 +89,65 @@ namespace LifeLine.Employee.Service.Domain.Models
 
             return workPermit;
         }
+
+        internal void UpdateName(ProgramEducationName programEducationName)
+        {
+            if (programEducationName != WorkPermitName)
+                WorkPermitName = programEducationName;
+        }
+
+        internal void UpdateSeries(DocumentSeries? documentSeries)
+        {
+            if (documentSeries != DocumentSeries)
+                DocumentSeries = documentSeries;
+        }
+
+        internal void UpdateWorkPermitNumber(DocumentNumber documentNumber)
+        {
+            if (documentNumber != WorkPermitNumber)
+                WorkPermitNumber = documentNumber;
+        }
+
+        internal void UpdateProtocolNumber(ProtocolNumber? protocolNumber)
+        {
+            if (protocolNumber != ProtocolNumber)
+                ProtocolNumber = protocolNumber;
+        }
+
+        internal void UpdateSpecialtyName(SpecialtyName specialtyName)
+        {
+            if (specialtyName != SpecialtyName)
+                SpecialtyName = specialtyName;
+        }
+
+        internal void UpdateIssuingAuthority(IssuingAuthority issuingAuthority)
+        {
+            if (issuingAuthority != IssuingAuthority)
+                IssuingAuthority = issuingAuthority;
+        }
+
+        internal void UpdateIssueDate(DateTime issueDate)
+        {
+            if (issueDate.ToUniversalTime() != IssueDate)
+                IssueDate = issueDate.ToUniversalTime();
+        }
+
+        internal void UpdateExpiryDate(DateTime expiryDate)
+        {
+            if (expiryDate.ToUniversalTime() != ExpiryDate)
+                ExpiryDate = expiryDate.ToUniversalTime();
+        }
+
+        internal void UpdatePermitType(PermitTypeId permitTypeId)
+        {
+            if (permitTypeId != PermitTypeId)
+                PermitTypeId = permitTypeId;
+        }
+
+        internal void UpdateAdmissionStatus(AdmissionStatusId admissionStatusId)
+        {
+            if (admissionStatusId != AdmissionStatusId)
+                AdmissionStatusId = admissionStatusId;
+        }
     }
 }

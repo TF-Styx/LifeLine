@@ -3,6 +3,7 @@ using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
 using LifeLine.Employee.Service.Domain.ValueObjects.Genders;
 using LifeLine.Employee.Service.Domain.ValueObjects.Shared;
 using LifeLine.Employee.Service.Domain.ValueObjects.Specialties;
+using LifeLine.Employee.Service.Domain.ValueObjects.WorkPermits;
 using Shared.Domain.Exceptions;
 using Shared.Domain.ValueObjects;
 using Shared.Kernel.Guard;
@@ -210,6 +211,116 @@ namespace LifeLine.Employee.Service.Domain.Models
                 );
 
             _workPermits.Add(workPermit);
+        }
+
+        public void UpdateNameWP(Guid id, string workPermitName)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Наименование: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var workPermit = this.WorkPermits.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(workPermit == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
+
+            workPermit!.UpdateName(ProgramEducationName.Create(workPermitName));
+        }
+
+        public void UpdateDocumentSeriesWP(Guid id, string? documentSeries)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Серия документа: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var workPermit = this.WorkPermits.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(workPermit == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
+
+            workPermit!.UpdateSeries(documentSeries != null ? DocumentSeries.Create(documentSeries) : DocumentSeries.Null);
+        }
+
+        public void UpdateDocumentNumberWP(Guid id, string workPermitNumber)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Номер документа: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var workPermit = this.WorkPermits.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(workPermit == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
+
+            workPermit!.UpdateWorkPermitNumber(DocumentNumber.Create(workPermitNumber));
+        }
+
+        public void UpdateProtocolNumberWP(Guid id, string? protocolNumber)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Номер протокола: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var workPermit = this.WorkPermits.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(workPermit == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
+
+            workPermit!.UpdateProtocolNumber(protocolNumber != null ? ProtocolNumber.Create(protocolNumber) : ProtocolNumber.Null);
+        }
+
+        public void UpdateSpecialtyNameWP(Guid id, string specialtyName)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Наименование специальности: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var workPermit = this.WorkPermits.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(workPermit == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
+
+            workPermit!.UpdateSpecialtyName(SpecialtyName.Create(specialtyName));
+        }
+
+        public void UpdateIssuingAuthorityWP(Guid id, string issuingAuthority)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Орган выдачи: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var workPermit = this.WorkPermits.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(workPermit == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
+
+            workPermit!.UpdateIssuingAuthority(IssuingAuthority.Create(issuingAuthority));
+        }
+
+        public void UpdateIssueDateWP(Guid id, DateTime issueDate)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Дата выдачи: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var workPermit = this.WorkPermits.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(workPermit == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
+
+            workPermit!.UpdateIssueDate(issueDate);
+        }
+
+        public void UpdateExpiryDateWP(Guid id, DateTime expiryDate)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Дата окончания: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var workPermit = this.WorkPermits.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(workPermit == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
+
+            workPermit!.UpdateExpiryDate(expiryDate);
+        }
+
+        public void UpdatePermitTypeIdWP(Guid id, Guid permitTypeId)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyEducationDocumentException($"Тип разрешения: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var document = this.WorkPermits.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+
+            document!.UpdatePermitType(PermitTypeId.Create(permitTypeId));
+        }
+
+        public void UpdateAdmissionStatusIdWP(Guid id, Guid admissionStatusId)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyEducationDocumentException($"Статус допуска: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var document = this.WorkPermits.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+
+            document!.UpdateAdmissionStatus(AdmissionStatusId.Create(admissionStatusId));
         }
 
         #endregion

@@ -10,6 +10,7 @@ using LifeLine.Employee.Service.Client.Services.Employee.ContactInformation;
 using LifeLine.Employee.Service.Client.Services.Employee.EducationDocument;
 using LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry;
 using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
+using LifeLine.Employee.Service.Client.Services.Employee.WorkPermit;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.Employee.Service.Client.Services.Specialty;
@@ -39,6 +40,7 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddSingleton<IPersonalDocumentApiServiceFactory, PersonalDocumentApiServiceFactory>();
             services.AddSingleton<IEducationDocumentApiServiceFactory, EducationDocumentApiServiceFactory>();
             services.AddSingleton<IEmployeeSpecialtyApiServiceFactory, EmployeeSpecialtyApiServiceFactory>();
+            services.AddSingleton<IWorkPermitApiServiceFactory, WorkPermitApiServiceFactory>();
 
             var directoryService = configuration.GetValue<string>("DirectoryService");
             string directoryHttp = "DirectoryServiceHttp";

@@ -7,6 +7,7 @@
         EditContactInformationEmployeePage,
         EditPersonalDocumentEmployeePage,
         EditEducationDocumentEmployeePage,
-        EditSpecialtyEmployeePage
+        EditSpecialtyEmployeePage,
+        EditWorkPermitEmployeePage
     }
 }

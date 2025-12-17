@@ -452,7 +452,7 @@
                                     <DataGridTemplateColumn Width="35">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Width="25" Command="{Binding DataContext.OpenEmployeeSpecialtyCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                <Button Width="25" Command="{Binding DataContext.OpenEditSpecialtyCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
                                                         CommandParameter="{Binding }"
                                                         Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource Magnifier}"/>
@@ -539,7 +539,9 @@
                                     <DataGridTemplateColumn Width="35">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                                <Button Width="25" Command="{Binding DataContext.OpenEditWorkPermitCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                        CommandParameter="{Binding }"
+                                                        Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource Magnifier}"/>
                                                     <Button.ToolTip>
                                                         <StackPanel>
