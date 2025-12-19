@@ -61,5 +61,35 @@ namespace LifeLine.Employee.Service.Domain.Models
                     Salary.FromRubles(salary),
                     fileKey
                 );
+
+        internal void UpdateEmployeeType(EmployeeTypeId employeeTypeId)
+        {
+            if (employeeTypeId != EmployeeTypeId)
+                EmployeeTypeId = employeeTypeId;
+        }
+
+        internal void UpdateNumber(ContractNumber contractNumber)
+        {
+            if (contractNumber != ContractNumber)
+                ContractNumber = contractNumber;
+        }
+
+        internal void UpdateStartDate(DateTime startDate)
+        {
+            if (startDate.ToUniversalTime() != StartDate)
+                StartDate = startDate.ToUniversalTime();
+        }
+
+        internal void UpdateEndDate(DateTime endDate)
+        {
+            if (endDate.ToUniversalTime() != EndDate)
+                EndDate = endDate.ToUniversalTime();
+        }
+
+        internal void UpdateSalary(Salary salary)
+        {
+            if (salary != Salary)
+                Salary = salary;
+        }
     }
 }

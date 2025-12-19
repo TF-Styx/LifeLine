@@ -457,16 +457,26 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #region Department
 
-        public ObservableCollection<DepartmentResponse> Departments { get; private init; } = [];
-        private async Task GetAllDepartmentAsync() => Departments.Load(await _departmentReadOnlyService.GetAllAsync());
+        public ObservableCollection<DepartmentDisplay> Departments { get; private init; } = [];
+        private async Task GetAllDepartmentAsync()
+        {
+            var departments = await _departmentReadOnlyService.GetAllAsync();
+
+            Departments.Load([.. departments.Select(department => new DepartmentDisplay(department))]);
+        }
 
         #endregion
 
         #region Position
 
-        public ObservableCollection<PositionResponse> Positions { get; private init; } = [];
-        private async Task GetAllPositionByIdDepartmentAsync() 
-            => Positions.Load(await _positionReadOnlyApiServiceFactory.Create(NewAssignmentContract.Department.Id.ToString()).GetAllAsync(), cleaning: true);
+        public ObservableCollection<PositionDisplay> Positions { get; private init; } = [];
+        private async Task GetAllPositionByIdDepartmentAsync()
+        {
+            var positions = await _positionReadOnlyApiServiceFactory.Create(NewAssignmentContract.Department.Id).GetAllAsync();
+
+            Positions.Load([.. positions.Select(position => new PositionDisplay(position))], cleaning: true);
+        }
+            //=> Positions.Load(await _positionReadOnlyApiServiceFactory.Create(NewAssignmentContract.Department.Id.ToString()).GetAllAsync(), cleaning: true);
 
         #endregion
 

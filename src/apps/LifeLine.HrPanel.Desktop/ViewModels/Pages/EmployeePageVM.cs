@@ -65,6 +65,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             OpenEditEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Execute_OpenEditEducationDocumentCommand, CanExecute_OpenEditEducationDocumentCommand);
             OpenEditSpecialtyCommand = new RelayCommand<SpecialtyDisplay>(Execute_OpenEditSpecialtyCommand, CanExecute_OpenEditSpecialtyCommand);
             OpenEditWorkPermitCommand = new RelayCommand<WorkPermitDisplay>(Execute_OpenEditWorkPermitCommand, CanExecute_OpenEditWorkPermitCommand);
+            OpenEditAssignmentCommand = new RelayCommand<AssignmentContractDisplay>(Execute_OpenEditAssignmentCommand, CanExecute_OpenEditAssignmentCommand);
 
             CloseModalCommand = new RelayCommand(Execute_CloseModalCommand);
         }
@@ -210,6 +211,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             }
         }
 
+        // Получение деталей сотрудника
         private async Task GetEmployeeDetailsAsync(string id)
         {
             var details = await _employeeService.GetDetailsAsync(id);
@@ -639,6 +641,29 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             }
         }
         private bool CanExecute_OpenEditWorkPermitCommand(WorkPermitDisplay display) => SelectedEmployee != null;
+
+        // Открытие модального окна редактирования разначения
+        public RelayCommand<AssignmentContractDisplay> OpenEditAssignmentCommand { get; private set; }
+        private void Execute_OpenEditAssignmentCommand(AssignmentContractDisplay display)
+        {
+            if (ModalVisibility == Visibility.Collapsed)
+            {
+                ModalVisibility = Visibility.Visible;
+
+                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditAssignmentEmployeePage);
+                _navigationPage.TransmittingValue
+                    (
+                        (
+                            CurrentEmployeeDetails,
+                            display
+                        ),
+                        FrameName.ModalFrame,
+                        PageName.EditAssignmentEmployeePage,
+                        TransmittingParameter.None
+                    );
+            }
+        }
+        private bool CanExecute_OpenEditAssignmentCommand(AssignmentContractDisplay display) => SelectedEmployee != null;
 
         // Закрытие модального окна
         public RelayCommand CloseModalCommand { get; private set; }

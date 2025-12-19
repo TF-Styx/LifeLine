@@ -86,5 +86,37 @@ namespace LifeLine.Employee.Service.Domain.Models
                     StatusId.Create(statusId), 
                     ContractId.Create(contractId)
                 );
+
+        internal void UpdatePosition(PositionId positionId)
+        {
+            if (positionId != PositionId)
+                PositionId = positionId;
+        }
+
+        internal void UpdateDepartment(DepartmentId departmentId)
+        {
+            if (departmentId != DepartmentId)
+                DepartmentId = departmentId;
+        }
+
+        internal void UpdateHireDate(DateTime hireDate)
+        {
+            if (hireDate.ToUniversalTime() != HireDate)
+                HireDate = hireDate.ToUniversalTime();
+        }
+
+        internal void UpdateTerminationDate(DateTime? terminationDate)
+        {
+            DateTime? newTerminationDate = terminationDate != null ? terminationDate.Value.ToUniversalTime() : null;
+
+            if (newTerminationDate != TerminationDate)
+                TerminationDate = newTerminationDate;
+        }
+
+        internal void UpdateStatus(StatusId statusId)
+        {
+            if (statusId != StatusId)
+                StatusId = statusId;
+        }
     }
 }

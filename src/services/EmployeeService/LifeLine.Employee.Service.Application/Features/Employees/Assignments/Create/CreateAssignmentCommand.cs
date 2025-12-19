@@ -2,7 +2,7 @@
 using Shared.Contracts.Request.Shared;
 using Shared.Kernel.Results;
 
-namespace LifeLine.Employee.Service.Application.Features.Assignments.Create
+namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.Create
 {
     public sealed record CreateAssignmentCommand(Guid EmployeeId, Guid PositionId, Guid DepartmentId, Guid? ManagerId, DateTime HireDate, DateTime? TerminationDate, Guid StatusId, CreateAssignmentContractCommand Contract) : IRequest<Result>;
 

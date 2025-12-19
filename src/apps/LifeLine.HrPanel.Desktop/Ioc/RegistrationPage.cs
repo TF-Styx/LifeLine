@@ -37,6 +37,10 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddTransient<EditWorkPermitEmployeePageVM>();
             services.AddSingleton<Func<EditWorkPermitEmployeePageVM>>(provider => () => provider.GetRequiredService<EditWorkPermitEmployeePageVM>());
 
+            services.AddTransient<IPageFactory, EditAssignmentEmployeePageFactory>();
+            services.AddTransient<EditAssignmentEmployeePageVM>();
+            services.AddSingleton<Func<EditAssignmentEmployeePageVM>>(provider => () => provider.GetRequiredService<EditAssignmentEmployeePageVM>());
+
             return services;
         }
     }

@@ -6,6 +6,7 @@ using LifeLine.Directory.Service.Client.Services.PermitType;
 using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
+using LifeLine.Employee.Service.Client.Services.Employee.Assignment;
 using LifeLine.Employee.Service.Client.Services.Employee.ContactInformation;
 using LifeLine.Employee.Service.Client.Services.Employee.EducationDocument;
 using LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry;
@@ -41,6 +42,7 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddSingleton<IEducationDocumentApiServiceFactory, EducationDocumentApiServiceFactory>();
             services.AddSingleton<IEmployeeSpecialtyApiServiceFactory, EmployeeSpecialtyApiServiceFactory>();
             services.AddSingleton<IWorkPermitApiServiceFactory, WorkPermitApiServiceFactory>();
+            services.AddSingleton<IAssignmentApiServiceFactory, AssignmentApiServiceFactory>();
 
             var directoryService = configuration.GetValue<string>("DirectoryService");
             string directoryHttp = "DirectoryServiceHttp";
@@ -51,7 +53,9 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddHttpClient<IPermitTypeReadOnlyService, PermitTypeService>(directoryHttp);
             services.AddHttpClient<IStatusReadOnlyService, StatusService>(directoryHttp);
             services.AddHttpClient<IDepartmentReadOnlyService, DepartmentService>(directoryHttp);
+            services.AddHttpClient<IDepartmentService, DepartmentService>(directoryHttp);
             services.AddSingleton<IPositionReadOnlyApiServiceFactory, PositionReadOnlyApiServiceFactory>();
+            services.AddSingleton<IPositionApiServiceFactory, PositionApiServiceFactory>();
 
             return services;
         }

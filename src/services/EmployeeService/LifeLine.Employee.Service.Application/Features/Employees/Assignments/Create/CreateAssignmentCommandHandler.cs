@@ -6,7 +6,7 @@ using Shared.Domain.Exceptions;
 using Shared.Kernel.Exceptions;
 using Shared.Kernel.Results;
 
-namespace LifeLine.Employee.Service.Application.Features.Assignments.Create
+namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.Create
 {
     public sealed class CreateAssignmentCommandHandler
         (

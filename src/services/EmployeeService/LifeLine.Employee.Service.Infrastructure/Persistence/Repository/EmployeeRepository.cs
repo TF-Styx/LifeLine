@@ -14,6 +14,8 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Repository
                 .Include(x => x.PersonalDocuments)
                 .Include(x => x.EducationDocuments)
                 .Include(x => x.WorkPermits)
+                .Include(x => x.Assignments)
+                .Include(x => x.Contracts)
                     .AsSplitQuery()
                         .FirstOrDefaultAsync(x => x.Id == id);
     }

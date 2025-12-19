@@ -52,6 +52,8 @@ namespace LifeLine.HrPanel.Desktop.Models
 
         #region Assignment
 
+        public string AssignmentId => _assignmentModel.AssignmentId.ToString();
+
         private DepartmentDisplay _department = null!;
         public DepartmentDisplay Department
         {
@@ -101,6 +103,8 @@ namespace LifeLine.HrPanel.Desktop.Models
         #endregion
 
         #region Contract
+
+        public string ContractId => _contractModel.ContractId.ToString();
 
         private EmployeeTypeDisplay _employeeType = null!;
         public EmployeeTypeDisplay EmployeeType

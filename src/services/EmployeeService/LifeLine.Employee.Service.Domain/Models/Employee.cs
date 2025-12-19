@@ -1,5 +1,7 @@
 ﻿using LifeLine.Employee.Service.Domain.Exceptions;
+using LifeLine.Employee.Service.Domain.ValueObjects.Contracts;
 using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
+using LifeLine.Employee.Service.Domain.ValueObjects.EmployeeType;
 using LifeLine.Employee.Service.Domain.ValueObjects.Genders;
 using LifeLine.Employee.Service.Domain.ValueObjects.Shared;
 using LifeLine.Employee.Service.Domain.ValueObjects.Specialties;
@@ -553,6 +555,71 @@ namespace LifeLine.Employee.Service.Domain.Models
             return contract;
         }
 
+        public void UpdateAssignmentContractEmploymentTypeId(Guid id, Guid employeeTypeId)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Тип сотрудника: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            var contract = this.Contracts.FirstOrDefault(c => c.Id == assignment!.ContractId);
+            GuardException.Against.That(contract == null, () => new NotFoundContractException($"Контракт не найден!"));
+
+            contract!.UpdateEmployeeType(EmployeeTypeId.Create(employeeTypeId));
+        }
+
+        public void UpdateAssignmentContractContractNumber(Guid id, string contractNumber)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Номер контракта: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            var contract = this.Contracts.FirstOrDefault(c => c.Id == assignment!.ContractId);
+            GuardException.Against.That(contract == null, () => new NotFoundContractException($"Контракт не найден!"));
+
+            contract!.UpdateNumber(ContractNumber.Create(contractNumber));
+        }
+
+        public void UpdateAssignmentContractStartDate(Guid id, DateTime startDate)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Дата начала: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            var contract = this.Contracts.FirstOrDefault(c => c.Id == assignment!.ContractId);
+            GuardException.Against.That(contract == null, () => new NotFoundContractException($"Контракт не найден!"));
+
+            contract!.UpdateStartDate(startDate);
+        }
+
+        public void UpdateAssignmentContractEndDate(Guid id, DateTime endDate)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Дата окончания: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            var contract = this.Contracts.FirstOrDefault(c => c.Id == assignment!.ContractId);
+            GuardException.Against.That(contract == null, () => new NotFoundContractException($"Контракт не найден!"));
+
+            contract!.UpdateEndDate(endDate);
+        }
+
+        public void UpdateAssignmentContractSalary(Guid id, decimal salary)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Зарплата: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            var contract = this.Contracts.FirstOrDefault(c => c.Id == assignment!.ContractId);
+            GuardException.Against.That(contract == null, () => new NotFoundContractException($"Контракт не найден!"));
+
+            contract!.UpdateSalary(Salary.FromRubles(salary));
+        }
+
         #endregion
 
         #region Assignemnt
@@ -581,6 +648,72 @@ namespace LifeLine.Employee.Service.Domain.Models
                 );
 
             _assignments.Add(assignment);
+        }
+
+        public void UpdateAssignmentPositionId(Guid id, Guid positionId)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Должность: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            assignment!.UpdatePosition(PositionId.Create(positionId));
+        }
+
+        public void UpdateAssignmentDepartmentId(Guid id, Guid departmentId)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Отдел: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            assignment!.UpdateDepartment(DepartmentId.Create(departmentId));
+        }
+
+        public void UpdateAssignmentManagerId(Guid id, Guid? managerId)
+        {
+            //GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Должность: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            //var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+
+            //GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            //assignment!.UpdatePosition(EmployeeId.Create(managerId));
+        }
+
+        public void UpdateAssignmentHireDate(Guid id, DateTime hireDate)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Дата найма: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            assignment!.UpdateHireDate(hireDate);
+        }
+
+        public void UpdateAssignmentTerminationDate(Guid id, DateTime? terminationDate)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Дата расторжения: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            assignment!.UpdateTerminationDate(terminationDate);
+        }
+
+        public void UpdateAssignmentStatusId(Guid id, Guid statusId)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Статус: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            assignment!.UpdateStatus(StatusId.Create(statusId));
         }
 
         #endregion
