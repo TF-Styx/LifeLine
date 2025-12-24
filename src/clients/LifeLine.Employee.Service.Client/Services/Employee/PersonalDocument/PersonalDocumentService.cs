@@ -25,5 +25,22 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument
                 return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при изменении данных в персональных документах!\n{ex}"));
             }
         }
+
+        public async Task<Result> DeletePersonalDocumentAsync(Guid personalDocumentId)
+        {
+            try
+            {
+                var response = await HttpClient.DeleteAsync($"{Url}/{personalDocumentId}");
+
+                if (!response.IsSuccessStatusCode)
+                    return Result.Failure(new Error(ErrorCode.DeleteHttp, await response.Content.ReadAsStringAsync()));
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(ErrorCode.DeleteHttp, $"Произошла ошибка при удалении персонального документа!\n{ex}"));
+            }
+        }
     }
 }
