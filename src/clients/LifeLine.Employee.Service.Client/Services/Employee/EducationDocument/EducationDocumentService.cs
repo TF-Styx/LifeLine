@@ -25,5 +25,22 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EducationDocument
                 return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при изменении данных в послеучебных документах!\n{ex}"));
             }
         }
+
+        public async Task<Result> DeleteEducationDocumentAsync(Guid educationDocumentId)
+        {
+            try
+            {
+                var response = await HttpClient.DeleteAsync($"{Url}/{educationDocumentId}");
+
+                if (!response.IsSuccessStatusCode)
+                    return Result.Failure(new Error(ErrorCode.DeleteHttp, await response.Content.ReadAsStringAsync()));
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(ErrorCode.DeleteHttp, $"Произошла ошибка при удалении послеучебного документа!\n{ex}"));
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ using LifeLine.Employee.Service.Domain.ValueObjects.Contracts;
 using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
 using LifeLine.Employee.Service.Domain.ValueObjects.EmployeeType;
 using LifeLine.Employee.Service.Domain.ValueObjects.Genders;
+using LifeLine.Employee.Service.Domain.ValueObjects.PersonalDocuments;
 using LifeLine.Employee.Service.Domain.ValueObjects.Shared;
 using LifeLine.Employee.Service.Domain.ValueObjects.Specialties;
 using LifeLine.Employee.Service.Domain.ValueObjects.WorkPermits;
@@ -457,6 +458,18 @@ namespace LifeLine.Employee.Service.Domain.Models
             
             document!.UpdateTotalHours(totalHours != null ? Hours.Create(totalHours.Value.TotalHours) : Hours.Null);
         }
+
+        public void DeleteEducationDocument(Guid educationDocumentId)
+        {
+            GuardException.Against.That(EducationDocuments.Count == 0, () => new EmptyEducationDocumentException($"Документов об образовании у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var document = this.EducationDocuments.FirstOrDefault(d => d.Id == educationDocumentId);
+
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+
+            _educationDocuments.Remove(document!);
+        }
+
         #endregion
 
         #region EmployeeSpecialty
@@ -523,6 +536,19 @@ namespace LifeLine.Employee.Service.Domain.Models
             GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Персональный документ не найден!"));
             
             document!.UpdateDocumentSeries(documentSeries != null ? DocumentSeries.Create(documentSeries) : DocumentSeries.Null);
+        }
+
+        public void DeletePersonalDocument(Guid personalDocumentId)
+        {
+            GuardException.Against.That(PersonalDocuments.Count == 0, () => new EmptyPersonalDocumentException($"Серия Персональных документов у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var document = this.PersonalDocuments.FirstOrDefault(d => d.Id == personalDocumentId);
+
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Персональный документ не найден!"));
+
+            _personalDocuments.Remove(document!);
+
+            //this.AddDomainEvent(new PersonalDocumentDeletedEvent(document.Id));
         }
 
         #endregion

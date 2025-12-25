@@ -6,6 +6,7 @@ using LifeLine.Directory.Service.Client.Services.PermitType;
 using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
+using LifeLine.Employee.Service.Client.Services.Employee.EducationDocument;
 using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.HrPanel.Desktop.Models;
@@ -34,6 +35,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IAdmissionStatusReadOnlyService _admissionStatusReadOnlyService;
         private readonly IPositionReadOnlyApiServiceFactory _positionReadOnlyApiServiceFactory;
         private readonly IPersonalDocumentApiServiceFactory _personalDocumentApiServiceFactory;
+        private readonly IEducationDocumentApiServiceFactory _educationDocumentApiServiceFactory;
 
         public EmployeePageVM
             (
@@ -49,6 +51,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IAdmissionStatusReadOnlyService admissionStatusReadOnlyService,
                 IPositionReadOnlyApiServiceFactory positionReadOnlyApiServiceFactory,
                 IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory,
+                IEducationDocumentApiServiceFactory educationDocumentApiServiceFactory
             ) 
         {
             _navigationPage = navigationPage;
@@ -63,6 +66,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _admissionStatusReadOnlyService = admissionStatusReadOnlyService;
             _positionReadOnlyApiServiceFactory = positionReadOnlyApiServiceFactory;
             _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
+            _educationDocumentApiServiceFactory = educationDocumentApiServiceFactory;
 
             OpenEditContactInformationEmployeeCommand = new RelayCommand(Execute_OpenEditContactInformationEmployeeCommand, CanExecute_OpenEditContactInformationEmployeeCommand);
             OpenEditPersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_OpenEditPersonalDocumentCommand, CanExecute_OpenEditPersonalDocumentCommand);
@@ -74,6 +78,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             CloseModalCommand = new RelayCommand(Execute_CloseModalCommand);
 
             DeletePersonalDocumentCommand = new RelayCommandAsync<PersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand, CanExecute_DeletePersonalDocumentCommand);
+            DeleteEducationDocumentCommand = new RelayCommandAsync<EducationDocumentDisplay>(Execute_DeleteEducationDocumentCommand, CanExecute_DeleteEducationDocumentCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -699,6 +704,23 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private bool CanExecute_DeletePersonalDocumentCommand(PersonalDocumentDisplay display) => SelectedEmployee != null;
 
         #endregion
+
+        #region DeleteEducationDocumentCommand
+
+        public RelayCommandAsync<EducationDocumentDisplay> DeleteEducationDocumentCommand { get; private set; }
+        private async Task Execute_DeleteEducationDocumentCommand(EducationDocumentDisplay display)
+        {
+            var result = await _educationDocumentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).DeleteEducationDocumentAsync(Guid.Parse(display.EducationDocumentId));
+
+            if (!result.IsSuccess)
+            {
+                MessageBox.Show("Не удалось удалить послеобразовательный документ!");
+                return;
+            }
+
+            EducationDocuments.Remove(display);
+        }
+        private bool CanExecute_DeleteEducationDocumentCommand(EducationDocumentDisplay display) => SelectedEmployee != null;
 
         #endregion
     }
