@@ -83,7 +83,7 @@
                 <!--#region RecruitingPopup -->
                 <Popup IsOpen="{Binding RecruitingPopup.IsOpen}" 
                        StaysOpen="{Binding RecruitingPopup.StaysOpen}"
-                       PlacementTarget="{Binding RecruitingPopup.TargetElement}"
+                       PlacementTarget="{Binding ElementName=RecrutingBtn}"
                        Placement="Bottom" MaxHeight="{Binding RecruitingPopup.MaxHeight}"
                        AllowsTransparency="True" PopupAnimation="Slide">
                     <Border Background="{StaticResource App.SecondColor}" 
@@ -105,7 +105,7 @@
                 <!--#region ManagementPopup -->
                 <Popup IsOpen="{Binding ManagementPopup.IsOpen}" 
                        StaysOpen="{Binding ManagementPopup.StaysOpen}"
-                       PlacementTarget="{Binding ManagementPopup.TargetElement}"
+                       PlacementTarget="{Binding ElementName=ManagementBtn}"
                        Placement="Bottom" MaxHeight="{Binding ManagementPopup.MaxHeight}"
                        AllowsTransparency="True" PopupAnimation="Slide">
                     <Border Background="{StaticResource App.SecondColor}" 
@@ -140,11 +140,11 @@
                             Orientation="Horizontal" 
                             HorizontalAlignment="Left" 
                             Margin="10 5 10 0">
-                    <Button Content="Рекрутинг v" 
+                    <Button Content="Рекрутинг v" x:Name="RecrutingBtn"
                             Command="{Binding RecruitingPopup.ShowCommand}" 
                             CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                             Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
-                    <Button Content="Управление v"
+                    <Button Content="Управление v" x:Name="ManagementBtn"
                             Command="{Binding ManagementPopup.ShowCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                             Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>

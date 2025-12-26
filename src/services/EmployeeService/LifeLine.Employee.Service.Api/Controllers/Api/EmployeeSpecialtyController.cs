@@ -1,4 +1,5 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Add;
+using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +42,20 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное обновление!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpDelete("{specialtyId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid employeeId, [FromRoute] Guid specialtyId, CancellationToken cancellationToken = default)
+        {
+            var command = new DeleteEmployeeSpecialtyCommand(employeeId, specialtyId);
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok("Успешное удаление!"),
                     onFailure: errors => BadRequest(errors)
                 );
         }

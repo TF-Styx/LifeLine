@@ -99,7 +99,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             var resultUpdate = await _employeeSpecialtyApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdateEmployeeSpecialtyAsync
                 (
-                    Guid.Parse(CurrentEmployeeDetails.EmployeeId),
                     new UpdateEmployeeSpecialtyRequest
                         (
                             SpecialtyDisplay.SpecialtyId,

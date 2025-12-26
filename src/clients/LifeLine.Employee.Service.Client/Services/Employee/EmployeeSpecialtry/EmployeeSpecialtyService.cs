@@ -8,7 +8,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
     internal sealed class EmployeeSpecialtyService(HttpClient httpClient, string employeeId) 
         : BaseHttpService<HttpClient, string>(httpClient, $"api/employees/{employeeId}/employee-specialties"), IEmployeeSpecialtyService
     {
-        public async Task<Result> UpdateEmployeeSpecialtyAsync(Guid employeeId, UpdateEmployeeSpecialtyRequest request)
+        public async Task<Result> UpdateEmployeeSpecialtyAsync(UpdateEmployeeSpecialtyRequest request)
         {
             try
             {
@@ -22,6 +22,23 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
             catch (Exception ex)
             {
                 return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при изменении специальности!\n{ex}"));
+            }
+        }
+
+        public async Task<Result> DeleteEmployeeSpecialtyAsync(Guid specialtyId)
+        {
+            try
+            {
+                var response = await HttpClient.DeleteAsync($"{Url}/{specialtyId}");
+
+                if (!response.IsSuccessStatusCode)
+                    return Result.Failure(new Error(ErrorCode.DeleteHttp, await response.Content.ReadAsStringAsync()));
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(ErrorCode.DeleteHttp, $"Произошла ошибка при удалении специальности!\n{ex}"));
             }
         }
     }

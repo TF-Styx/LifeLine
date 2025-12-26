@@ -413,9 +413,9 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Width="25" Foreground="#F06870" 
-                                                                Command="{Binding DataContext.DeleteEducationDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                                                CommandParameter="{Binding }" 
-                                                                Style="{StaticResource Button.Icon}">
+                                                        Command="{Binding DataContext.DeleteEducationDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                        CommandParameter="{Binding }" 
+                                                        Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource Trash}"/>
                                                 </Button>
                                             </DataTemplate>
@@ -472,9 +472,9 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Width="25" Foreground="#F06870" 
-                                                                Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                                                CommandParameter="{Binding }" 
-                                                                Style="{StaticResource Button.Icon}">
+                                                        Command="{Binding DataContext.DeleteEmployeeSpecialtyCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                        CommandParameter="{Binding }" 
+                                                        Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource Trash}"/>
                                                 </Button>
                                             </DataTemplate>
@@ -567,7 +567,7 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Width="25" Foreground="#F06870" 
-                                                                Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                                Command="{Binding DataContext.DeleteWorkPermitCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
                                                                 CommandParameter="{Binding }" 
                                                                 Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource Trash}"/>

@@ -5,6 +5,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
 {
     public interface IEmployeeSpecialtyService
     {
-        Task<Result> UpdateEmployeeSpecialtyAsync(Guid employeeId, UpdateEmployeeSpecialtyRequest request);
+        Task<Result> UpdateEmployeeSpecialtyAsync(UpdateEmployeeSpecialtyRequest request);
+        Task<Result> DeleteEmployeeSpecialtyAsync(Guid specialtyId);
     }
 }
