@@ -8,5 +8,6 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.WorkPermit
     public interface IWorkPermitService : IBaseHttpService<WorkPermitResponse, string>
     {
         Task<Result> UpdateWorkPermitAsync(Guid workPermitId, UpdateWorkPermitRequest request);
+        Task<Result> DeleteWorkPermitAsync(Guid workPermitId);
     }
 }

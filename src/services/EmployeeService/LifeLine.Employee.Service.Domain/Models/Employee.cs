@@ -306,24 +306,35 @@ namespace LifeLine.Employee.Service.Domain.Models
 
         public void UpdatePermitTypeIdWP(Guid id, Guid permitTypeId)
         {
-            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyEducationDocumentException($"Тип разрешения: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Тип разрешения: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
 
             var document = this.WorkPermits.FirstOrDefault(d => d.Id == id);
 
-            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Разрешения на работу не найдено!"));
 
             document!.UpdatePermitType(PermitTypeId.Create(permitTypeId));
         }
 
         public void UpdateAdmissionStatusIdWP(Guid id, Guid admissionStatusId)
         {
-            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyEducationDocumentException($"Статус допуска: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Статус допуска: Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
 
             var document = this.WorkPermits.FirstOrDefault(d => d.Id == id);
 
-            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Разрешения на работу не найдено!"));
 
             document!.UpdateAdmissionStatus(AdmissionStatusId.Create(admissionStatusId));
+        }
+
+        public void DeleteWorkPermit(Guid workPermitId)
+        {
+            GuardException.Against.That(WorkPermits.Count == 0, () => new EmptyWorkPermitException($"Разрешения на работу у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var document = this.WorkPermits.FirstOrDefault(d => d.Id == workPermitId);
+
+            GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Разрешения на работу не найдено!"));
+
+            _workPermits.Remove(document!);
         }
 
         #endregion

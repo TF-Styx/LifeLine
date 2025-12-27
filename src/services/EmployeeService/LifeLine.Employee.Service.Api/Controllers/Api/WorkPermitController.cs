@@ -1,4 +1,5 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Create;
+using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -63,6 +64,20 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное обновление!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpDelete("{workPermitId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid employeeId, [FromRoute] Guid workPermitId, CancellationToken cancellationToken = default)
+        {
+            var command = new DeleteWorkPermitCommand(employeeId, workPermitId);
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok("Успешное удаление!"),
                     onFailure: errors => BadRequest(errors)
                 );
         }

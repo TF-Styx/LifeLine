@@ -25,5 +25,22 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.WorkPermit
                 return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при изменении данных в разрешении на работу!\n{ex}"));
             }
         }
+
+        public async Task<Result> DeleteWorkPermitAsync(Guid workPermitId)
+        {
+            try
+            {
+                var response = await HttpClient.DeleteAsync($"{Url}/{workPermitId}");
+
+                if (!response.IsSuccessStatusCode)
+                    return Result.Failure(new Error(ErrorCode.DeleteHttp, await response.Content.ReadAsStringAsync()));
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(ErrorCode.DeleteHttp, $"Произошла ошибка при удалении данных в разрешении на работу!\n{ex}"));
+            }
+        }
     }
 }

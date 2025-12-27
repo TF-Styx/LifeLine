@@ -7,7 +7,9 @@ using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.Employee.EducationDocument;
+using LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry;
 using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
+using LifeLine.Employee.Service.Client.Services.Employee.WorkPermit;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Response.EmployeeService;
@@ -29,6 +31,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IStatusReadOnlyService _statusReadOnlyService;
         private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
         private readonly IDepartmentReadOnlyService _departmentReadOnlyService;
+        private readonly IWorkPermitApiServiceFactory _workPermitApiServiceFactory;
         private readonly IDocumentTypeReadOnlyService _documentTypeReadOnlyService;
         private readonly IEmployeeTypeReadOnlyService _employeeTypeReadOnlyService;
         private readonly IEducationLevelReadOnlyService _educationLevelReadOnlyService;
@@ -46,6 +49,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IStatusReadOnlyService statusReadOnlyService,
                 IPermitTypeReadOnlyService permitTypeReadOnlyService,
                 IDepartmentReadOnlyService departmentReadOnlyService,
+                IWorkPermitApiServiceFactory workPermitApiServiceFactory,
                 IDocumentTypeReadOnlyService documentTypeReadOnlyService,
                 IEmployeeTypeReadOnlyService employeeTypeReadOnlyService,
                 IEducationLevelReadOnlyService educationLevelReadOnlyService,
@@ -62,6 +66,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _statusReadOnlyService = statusReadOnlyService;
             _permitTypeReadOnlyService = permitTypeReadOnlyService;
             _departmentReadOnlyService = departmentReadOnlyService;
+            _workPermitApiServiceFactory = workPermitApiServiceFactory;
             _documentTypeReadOnlyService = documentTypeReadOnlyService;
             _employeeTypeReadOnlyService = employeeTypeReadOnlyService;
             _educationLevelReadOnlyService = educationLevelReadOnlyService;
@@ -83,6 +88,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             DeletePersonalDocumentCommand = new RelayCommandAsync<PersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand, CanExecute_DeletePersonalDocumentCommand);
             DeleteEducationDocumentCommand = new RelayCommandAsync<EducationDocumentDisplay>(Execute_DeleteEducationDocumentCommand, CanExecute_DeleteEducationDocumentCommand);
             DeleteEmployeeSpecialtyCommand = new RelayCommandAsync<SpecialtyDisplay>(Execute_DeleteEmployeeSpecialtyCommand, CanExecute_DeleteEmployeeSpecialtyCommand);
+            DeleteWorkPermitCommand = new RelayCommandAsync<WorkPermitDisplay>(Execute_DeleteWorkPermitCommand, CanExecute_DeleteWorkPermitCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -744,6 +750,24 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             Specialties.Remove(display);
         }
         private bool CanExecute_DeleteEmployeeSpecialtyCommand(SpecialtyDisplay display) => SelectedEmployee != null;
+
+        #endregion
+
+        #region DeleteWorkPermitCommand
+
+        public RelayCommandAsync<WorkPermitDisplay> DeleteWorkPermitCommand { get; private set; }
+        private async Task Execute_DeleteWorkPermitCommand(WorkPermitDisplay display)
+        {
+            var result = await _workPermitApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).DeleteWorkPermitAsync(Guid.Parse(display.Id));
+
+            if (!result.IsSuccess)
+            {
+                MessageBox.Show($"Не удалось удалить рабочее разрешение!");
+                return;
+            }
+            WorkPermits.Remove(display);
+        }
+        private bool CanExecute_DeleteWorkPermitCommand(WorkPermitDisplay display) => SelectedEmployee != null;
 
         #endregion
     }
