@@ -1,5 +1,6 @@
 ﻿using LifeLine.Employee.Service.Api.Models.Request;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Create;
+using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -76,6 +77,20 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное обновление!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpDelete("{assignmentId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid employeeId, [FromRoute] Guid assignmentId, CancellationToken cancellationToken = default)
+        {
+            var command = new DeleteAssignmentCommand(employeeId, assignmentId);
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok("Успешное удаление!"),
                     onFailure: errors => BadRequest(errors)
                 );
         }

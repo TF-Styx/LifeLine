@@ -25,5 +25,22 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
                 return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при изменении данных в назначении!\n{ex}"));
             }
         }
+
+        public async Task<Result> DeleteAssignmentContractAsync(Guid assignmentId)
+        {
+            try
+            {
+                var response = await HttpClient.DeleteAsync($"{Url}/{assignmentId}");
+
+                if (!response.IsSuccessStatusCode)
+                    return Result.Failure(new Error(ErrorCode.DeleteHttp, await response.Content.ReadAsStringAsync()));
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(ErrorCode.DeleteHttp, $"Произошла ошибка при удалении назначения!\n{ex}"));
+            }
+        }
     }
 }

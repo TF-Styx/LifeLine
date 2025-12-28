@@ -6,6 +6,7 @@ using LifeLine.Directory.Service.Client.Services.PermitType;
 using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
+using LifeLine.Employee.Service.Client.Services.Employee.Assignment;
 using LifeLine.Employee.Service.Client.Services.Employee.EducationDocument;
 using LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry;
 using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
@@ -31,6 +32,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IStatusReadOnlyService _statusReadOnlyService;
         private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
         private readonly IDepartmentReadOnlyService _departmentReadOnlyService;
+        private readonly IAssignmentApiServiceFactory _assignmentApiServiceFactory;
         private readonly IWorkPermitApiServiceFactory _workPermitApiServiceFactory;
         private readonly IDocumentTypeReadOnlyService _documentTypeReadOnlyService;
         private readonly IEmployeeTypeReadOnlyService _employeeTypeReadOnlyService;
@@ -49,6 +51,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IStatusReadOnlyService statusReadOnlyService,
                 IPermitTypeReadOnlyService permitTypeReadOnlyService,
                 IDepartmentReadOnlyService departmentReadOnlyService,
+                IAssignmentApiServiceFactory assignmentApiServiceFactory,
                 IWorkPermitApiServiceFactory workPermitApiServiceFactory,
                 IDocumentTypeReadOnlyService documentTypeReadOnlyService,
                 IEmployeeTypeReadOnlyService employeeTypeReadOnlyService,
@@ -66,6 +69,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _statusReadOnlyService = statusReadOnlyService;
             _permitTypeReadOnlyService = permitTypeReadOnlyService;
             _departmentReadOnlyService = departmentReadOnlyService;
+            _assignmentApiServiceFactory = assignmentApiServiceFactory;
             _workPermitApiServiceFactory = workPermitApiServiceFactory;
             _documentTypeReadOnlyService = documentTypeReadOnlyService;
             _employeeTypeReadOnlyService = employeeTypeReadOnlyService;
@@ -89,6 +93,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             DeleteEducationDocumentCommand = new RelayCommandAsync<EducationDocumentDisplay>(Execute_DeleteEducationDocumentCommand, CanExecute_DeleteEducationDocumentCommand);
             DeleteEmployeeSpecialtyCommand = new RelayCommandAsync<SpecialtyDisplay>(Execute_DeleteEmployeeSpecialtyCommand, CanExecute_DeleteEmployeeSpecialtyCommand);
             DeleteWorkPermitCommand = new RelayCommandAsync<WorkPermitDisplay>(Execute_DeleteWorkPermitCommand, CanExecute_DeleteWorkPermitCommand);
+            DeleteAssignmentCommand = new RelayCommandAsync<AssignmentContractDisplay>(Execute_DeleteAssignmentCommand, CanExecute_DeleteAssignmentCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -765,9 +770,29 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 MessageBox.Show($"Не удалось удалить рабочее разрешение!");
                 return;
             }
+
             WorkPermits.Remove(display);
         }
         private bool CanExecute_DeleteWorkPermitCommand(WorkPermitDisplay display) => SelectedEmployee != null;
+
+        #endregion
+
+        #region DeleteAssignmentCommand
+
+        public RelayCommandAsync<AssignmentContractDisplay> DeleteAssignmentCommand { get; private set; }
+        private async Task Execute_DeleteAssignmentCommand(AssignmentContractDisplay display)
+        {
+            var result = await _assignmentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).DeleteAssignmentContractAsync(Guid.Parse(display.AssignmentId));
+
+            if (!result.IsSuccess)
+            {
+                MessageBox.Show($"Не удалось удалить назначение и контракт!");
+                return;
+            }
+
+            AssignmentContracts.Remove(display);
+        }
+        private bool CanExecute_DeleteAssignmentCommand(AssignmentContractDisplay display) => SelectedEmployee != null;
 
         #endregion
     }

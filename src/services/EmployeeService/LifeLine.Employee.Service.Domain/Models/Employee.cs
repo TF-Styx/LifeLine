@@ -753,6 +753,28 @@ namespace LifeLine.Employee.Service.Domain.Models
             assignment!.UpdateStatus(StatusId.Create(statusId));
         }
 
+        public void DeleteAssignmentContract(Guid assignmentId)
+        {
+            // Проверка на наличие назначений
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Назначения у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == assignmentId);
+
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+
+            // Проверка на наличие контрактов
+            GuardException.Against.That(Contracts.Count == 0, () => new EmptyContractException($"Контракт у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+            
+            var contract = this.Contracts.FirstOrDefault(c => c.Id == assignment!.ContractId);
+
+            GuardException.Against.That(contract == null, () => new NotFoundContractException($"Контракт не найден!"));
+
+            // Удаление контракта и назначения
+            _contracts.Remove(contract!);
+            _assignments.Remove(assignment!);
+        }
+
         #endregion
     }
 }

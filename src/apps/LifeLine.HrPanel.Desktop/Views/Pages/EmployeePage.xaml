@@ -567,9 +567,9 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Width="25" Foreground="#F06870" 
-                                                                Command="{Binding DataContext.DeleteWorkPermitCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                                                CommandParameter="{Binding }" 
-                                                                Style="{StaticResource Button.Icon}">
+                                                        Command="{Binding DataContext.DeleteWorkPermitCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                        CommandParameter="{Binding }" 
+                                                        Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource Trash}"/>
                                                 </Button>
                                             </DataTemplate>
@@ -683,9 +683,9 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Width="25" Foreground="#F06870" 
-                                                                Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                                                CommandParameter="{Binding }" 
-                                                                Style="{StaticResource Button.Icon}">
+                                                        Command="{Binding DataContext.DeleteAssignmentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                        CommandParameter="{Binding }" 
+                                                        Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource Trash}"/>
                                                 </Button>
                                             </DataTemplate>
