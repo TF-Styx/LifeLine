@@ -1,5 +1,4 @@
-﻿using LifeLine.Employee.Service.Api.Models.Request;
-using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Create;
+﻿using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Update;
 using MediatR;

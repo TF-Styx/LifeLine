@@ -2,6 +2,7 @@
 using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.EmployeeService.PersonalDocument;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
@@ -15,20 +16,19 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
     public sealed class EditPersonalDocumentEmployeePageVM : BasePageViewModel, IUpdatable, IAsyncInitializable
     {
         private readonly INavigationPage _navigationPage;
-
         private readonly IDocumentTypeReadOnlyService _documentTypeReadOnlyService;
         private readonly IPersonalDocumentApiServiceFactory _personalDocumentApiServiceFactory;
+
+        private bool _isEditMode;
 
         public EditPersonalDocumentEmployeePageVM
             (
                 INavigationPage navigationPage,
-
                 IDocumentTypeReadOnlyService documentTypeReadOnlyService,
                 IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory
             )
         {
             _navigationPage = navigationPage;
-
             _documentTypeReadOnlyService = documentTypeReadOnlyService;
             _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
 
@@ -37,28 +37,51 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         async Task IAsyncInitializable.InitializeAsync()
         {
-            if (IsInitialize)
+            if (IsInitialize) 
                 return;
 
             IsInitialize = false;
 
             await GetAllDocumentTypeAsync();
 
-            if (PersonalDocumentDisplay != null)
-                SelectedDocumentType = DocumentTypes.FirstOrDefault(x => x.Id == PersonalDocumentDisplay.DocumentType.Id)!;
+            CreateNewPersonalDocumentDisplay();
+
+            if (PersonalDocumentDisplay != null && SelectedDocumentType == null && _isEditMode)
+            {
+                if (PersonalDocumentDisplay.DocumentType != null)
+                    SelectedDocumentType = DocumentTypes.FirstOrDefault(x => x.Id == PersonalDocumentDisplay.DocumentType.Id);
+            }
 
             IsInitialize = true;
         }
 
+        // 2. Исправляем метод получения данных
         public void Update<TData>(TData value, TransmittingParameter parameter)
         {
-            if (value is ValueTuple<EmployeeDetailsDisplay, PersonalDocumentDisplay> tuple)
+            if (value is ValueTuple<EmployeeDetailsDisplay, PersonalDocumentDisplay?> tuple)
             {
                 CurrentEmployeeDetails = tuple.Item1;
-                PersonalDocumentDisplay = tuple.Item2;
+                var incomingDocument = tuple.Item2;
 
-                if (PersonalDocumentDisplay != null && DocumentTypes.Count > 0)
-                    SelectedDocumentType = DocumentTypes.FirstOrDefault(x => x.Id == PersonalDocumentDisplay.DocumentType.Id);
+                if (incomingDocument != null)
+                {
+                    // === РЕЖИМ РЕДАКТИРОВАНИЯ ===
+                    _isEditMode = true;
+
+                    PersonalDocumentDisplay = incomingDocument;
+
+                    if (DocumentTypes.Count > 0 && PersonalDocumentDisplay.DocumentType != null)
+                        SelectedDocumentType = DocumentTypes.FirstOrDefault(x => x.Id == PersonalDocumentDisplay.DocumentType.Id);
+                }
+                else
+                {
+                    // === РЕЖИМ СОЗДАНИЯ ===
+                    _isEditMode = false;
+
+                    PersonalDocumentDisplay = new PersonalDocumentDisplay(new PersonalDocumentResponse(Guid.Empty, Guid.Empty, string.Empty, string.Empty), DocumentTypes);
+
+                    SelectedDocumentType = null;
+                }
 
                 UpdatePersonalDocumentEmployeeCommand?.RaiseCanExecuteChanged();
             }
@@ -94,28 +117,65 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             get => _personalDocumentDisplay;
             set => SetProperty(ref _personalDocumentDisplay, value);
         }
+        private void CreateNewPersonalDocumentDisplay()
+            => PersonalDocumentDisplay = new PersonalDocumentDisplay(new PersonalDocumentResponse(Guid.Empty, Guid.Empty, string.Empty, string.Empty), DocumentTypes);
 
         #endregion
 
         public RelayCommandAsync UpdatePersonalDocumentEmployeeCommand { get; private set; }
+
         private async Task Execute_UpdatePersonalDocumentEmployeeCommand()
         {
-            var resultUpdate = await _personalDocumentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdatePersonalDocumentAsync
+            // Простейшая валидация
+            if (SelectedDocumentType == null)
+            {
+                MessageBox.Show("Выберите тип документа");
+                return;
+            }
+
+            if (_isEditMode)
+            {
+                // UPDATE
+                var resultUpdate = await _personalDocumentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdatePersonalDocumentAsync
                 (
                     PersonalDocumentDisplay.PersonalDocumentId,
                     new UpdatePersonalDocumentRequest
-                        (
-                            SelectedDocumentType!.Id,
-                            PersonalDocumentDisplay.DocumentNumber,
-                            PersonalDocumentDisplay.DocumentSeries
-                        )
+                    (
+                        SelectedDocumentType.Id,
+                        PersonalDocumentDisplay.DocumentNumber,
+                        PersonalDocumentDisplay.DocumentSeries
+                    )
                 );
 
-            if (resultUpdate.IsSuccess)
-                _navigationPage.TransmittingValue(PersonalDocumentDisplay, FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Update);
+                if (resultUpdate.IsSuccess)
+                    _navigationPage.TransmittingValue(PersonalDocumentDisplay, FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Update);
+                else
+                    MessageBox.Show($"Обновление персональных документов: {resultUpdate.StringMessage}");
+            }
             else
-                MessageBox.Show($"Обновление персональных документов: {resultUpdate.StringMessage}");
+            {
+                // CREATE
+                var resultCreate = await _personalDocumentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).CreateAsync
+                (
+                    new CreatePersonalDocumentRequest
+                    (
+                        Guid.Parse(SelectedDocumentType.Id),
+                        PersonalDocumentDisplay.DocumentNumber,
+                        PersonalDocumentDisplay.DocumentSeries
+                    )
+                );
+
+                if (resultCreate.IsSuccess)
+                {
+                    PersonalDocumentDisplay.SetDocumentType(SelectedDocumentType.Id);
+
+                    _navigationPage.TransmittingValue(PersonalDocumentDisplay, FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Create);
+                }
+                else
+                    MessageBox.Show($"Внесение персональных документов: {resultCreate.StringMessage}");
+            }
         }
-        private bool CanExecute_UpdatePersonalDocumentEmployeeCommand() => true; /*SelectedDocumentType != null;*/
+
+        private bool CanExecute_UpdatePersonalDocumentEmployeeCommand() => true;
     }
 }
