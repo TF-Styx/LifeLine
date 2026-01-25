@@ -1,4 +1,4 @@
-﻿namespace LifeLine.Employee.Service.Api.Models.Request
+﻿namespace Shared.Contracts.Request.EmployeeService.Assignment
 {
     public sealed record CreateAssignmentRequest(Guid PositionId, Guid DepartmentId, Guid? ManagerId, DateTime HireDate, DateTime? TerminationDate, Guid StatusId, CreateAssignmentContractRequest Contract);
 

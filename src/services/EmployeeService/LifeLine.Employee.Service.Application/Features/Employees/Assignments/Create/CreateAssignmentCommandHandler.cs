@@ -1,5 +1,6 @@
 ﻿using LifeLine.Employee.Service.Domain.Models;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
+using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Domain.Exceptions;
@@ -11,30 +12,35 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
     public sealed class CreateAssignmentCommandHandler
         (
             IWriteContext context,
+            IEmployeeRepository employeeRepository,
             ILogger<CreateAssignmentCommandHandler> logger
         ) : IRequestHandler<CreateAssignmentCommand, Result>
     {
         private readonly IWriteContext _context = context;
+        private readonly IEmployeeRepository _employeeRepository = employeeRepository;
         private readonly ILogger<CreateAssignmentCommandHandler> _logger = logger;
 
         public async Task<Result> Handle(CreateAssignmentCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var contract = Contract.Create
+                var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId);
+
+                if (employee == null)
+                    return Result.Failure(new Error(ErrorCode.NotFound, "Пользователь не найден!"));
+
+                var contract = employee.AddContract
                     (
-                        request.EmployeeId, 
-                        request.Contract.EmployeeTypeId, 
-                        request.Contract.ContractNumber, 
-                        request.Contract.StartDate, 
-                        request.Contract.EndDate, 
-                        request.Contract.Salary, 
+                        request.Contract.EmployeeTypeId,
+                        request.Contract.ContractNumber,
+                        request.Contract.StartDate,
+                        request.Contract.EndDate,
+                        request.Contract.Salary,
                         null
                     );
 
-                var assignment = Assignment.Create
+                employee.AddAssignment
                     (
-                        request.EmployeeId,
                         request.PositionId,
                         request.DepartmentId,
                         request.ManagerId,
@@ -43,10 +49,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
                         request.StatusId,
                         contract.Id
                     );
-
-                //await _contractRepository.AddAsync(contract, cancellationToken);
-                //await _assignmentRepository.AddAsync(assignment, cancellationToken);
-
+                
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return Result.Success();

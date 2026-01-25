@@ -1,5 +1,4 @@
-﻿using LifeLine.Employee.Service.Api.Models.Request;
-using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Create;
+﻿using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Update;
 using MediatR;
