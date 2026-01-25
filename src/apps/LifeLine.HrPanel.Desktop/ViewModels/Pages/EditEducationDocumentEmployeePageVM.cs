@@ -3,6 +3,7 @@ using LifeLine.Directory.Service.Client.Services.EducationLevel;
 using LifeLine.Employee.Service.Client.Services.Employee.EducationDocument;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.EmployeeService.EducationDocument;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
@@ -20,6 +21,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IDocumentTypeReadOnlyService _documentTypeReadOnlyService;
         private readonly IEducationLevelReadOnlyService _educationLevelReadOnlyService;
         private readonly IEducationDocumentApiServiceFactory _educationDocumentApiServiceFactory;
+
+        private bool _isEditMode;
 
         public EditEducationDocumentEmployeePageVM
             (
@@ -49,10 +52,15 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             await GetAllDocumentTypeAsync();
             await GetAllEducationLevelsAsync();
 
+            CreateNewEducationDocumentDisplay();
+
             if (EducationDocumentDisplay != null && DocumentTypes.Count > 0 && EducationLevels.Count > 0)
             {
-                SelectedDocumentType = DocumentTypes.FirstOrDefault(x => x.Id == EducationDocumentDisplay.DocumentType.Id)!;
-                SelectedEducationLevel = EducationLevels.FirstOrDefault(x => x.Id == EducationDocumentDisplay.EducationLevel.Id)!;
+                if (EducationDocumentDisplay.DocumentType != null)
+                    SelectedDocumentType = DocumentTypes.FirstOrDefault(x => x.Id == EducationDocumentDisplay.DocumentType.Id)!;
+
+                if (EducationDocumentDisplay.EducationLevel != null)
+                    SelectedEducationLevel = EducationLevels.FirstOrDefault(x => x.Id == EducationDocumentDisplay.EducationLevel.Id)!;
             }
 
             IsInitialize = true;
@@ -63,13 +71,31 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             if (value is ValueTuple<EmployeeDetailsDisplay, EducationDocumentDisplay> tuple)
             {
                 CurrentEmployeeDetails = tuple.Item1;
-                EducationDocumentDisplay = tuple.Item2;
+                var incomingDocument = tuple.Item2;
 
-                if (EducationDocumentDisplay != null && DocumentTypes.Count > 0 && EducationLevels.Count > 0)
+                if (incomingDocument != null)
                 {
-                    SelectedDocumentType = DocumentTypes.FirstOrDefault(x => x.Id == EducationDocumentDisplay.DocumentType.Id)!;
-                    SelectedEducationLevel = EducationLevels.FirstOrDefault(x => x.Id == EducationDocumentDisplay.EducationLevel.Id)!;
+                    _isEditMode = true;
+
+                    EducationDocumentDisplay = incomingDocument;
+
+                    if (EducationDocumentDisplay != null && DocumentTypes.Count > 0 && EducationLevels.Count > 0)
+                    {
+                        SelectedDocumentType = DocumentTypes.FirstOrDefault(x => x.Id == EducationDocumentDisplay.DocumentType.Id)!;
+                        SelectedEducationLevel = EducationLevels.FirstOrDefault(x => x.Id == EducationDocumentDisplay.EducationLevel.Id)!;
+                    }
                 }
+                else
+                {
+                    _isEditMode = false;
+
+                    CreateNewEducationDocumentDisplay();
+
+                    SelectedDocumentType = null;
+                    SelectedEducationLevel = null;
+                }
+
+                UpdateEducationDocumentEmployeeCommand?.RaiseCanExecuteChanged();
             }
         }
 
@@ -118,24 +144,35 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             get => _educationDocumentDisplay;
             set => SetProperty(ref _educationDocumentDisplay, value);
         }
+        private void CreateNewEducationDocumentDisplay()
+            => EducationDocumentDisplay = new EducationDocumentDisplay
+                   (
+                       new EducationDocumentResponse
+                           (
+                               string.Empty,
+                               string.Empty,
+                               string.Empty,
+                               string.Empty,
+                               string.Empty,
+                               DateTime.Now.ToString(),
+                               string.Empty,
+                               string.Empty,
+                               string.Empty,
+                               string.Empty,
+                               TimeSpan.Zero.ToString()
+                           ),
+                       EducationLevels,
+                       DocumentTypes
+                   );
 
         #endregion
 
         public RelayCommandAsync UpdateEducationDocumentEmployeeCommand { get; private set; }
         public async Task Execute_UpdateEducationDocumentEmployeeCommand()
         {
-            //MessageBox.Show($"{SelectedEducationLevel!.Id}\n" +
-            //                $"{SelectedDocumentType!.Id}\n" +
-            //                $"{EducationDocumentDisplay.EducationDocumentId}\n" +
-            //                $"{EducationDocumentDisplay.DocumentNumber}\n" +
-            //                $"{EducationDocumentDisplay.IssuedDate}\n" +
-            //                $"{EducationDocumentDisplay.OrganizationName}\n" +
-            //                $"{EducationDocumentDisplay.QualificationAwardedName}\n" +
-            //                $"{EducationDocumentDisplay.SpecialtyName}\n" +
-            //                $"{EducationDocumentDisplay.ProgramName}\n" +
-            //                $"{EducationDocumentDisplay.TotalHours}");
-
-            var resultUpdate = await _educationDocumentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdateEducationDocumentAsync
+            if (_isEditMode)
+            {
+                var resultUpdate = await _educationDocumentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdateEducationDocumentAsync
                 (
                     Guid.Parse(EducationDocumentDisplay.EducationDocumentId),
                     new UpdateEducationDocumentRequest
@@ -151,6 +188,44 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                             EducationDocumentDisplay.TotalHours
                         )
                 );
+
+                if (resultUpdate.IsSuccess)
+                    _navigationPage.TransmittingValue(EducationDocumentDisplay, FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Update);
+                else
+                    MessageBox.Show($"Обновление послеучебных документов: {resultUpdate.StringMessage}");
+            }
+            else
+            {
+                double totalHours = 0;
+                if (EducationDocumentDisplay.TotalHours != null)
+                    totalHours = EducationDocumentDisplay.TotalHours.Value.TotalHours;
+
+                var resultCreate = await _educationDocumentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).CreateAsync
+                    (
+                        new CreateEducationDocumentRequest
+                            (
+                                Guid.Parse(SelectedEducationLevel!.Id),
+                                Guid.Parse(SelectedDocumentType!.Id),
+                                EducationDocumentDisplay.DocumentNumber,
+                                EducationDocumentDisplay.IssuedDate,
+                                EducationDocumentDisplay.OrganizationName,
+                                EducationDocumentDisplay.QualificationAwardedName,
+                                EducationDocumentDisplay.SpecialtyName,
+                                EducationDocumentDisplay.ProgramName,
+                                totalHours
+                            )
+                    );
+
+                if (resultCreate.IsSuccess)
+                {
+                    EducationDocumentDisplay.SetEducationLevel(SelectedEducationLevel.Id);
+                    EducationDocumentDisplay.SetDocumentType(SelectedDocumentType.Id);
+
+                    _navigationPage.TransmittingValue(EducationDocumentDisplay, FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Create);
+                }
+                else
+                    MessageBox.Show($"Внесение послеучебных документов: {resultCreate.StringMessage}");
+            }
         }
         private bool CanExecute_UpdateEducationDocumentEmployeeCommand() => true; /*SelectedEducationLevel != null && SelectedDocumentType != null;*/
     }

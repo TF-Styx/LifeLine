@@ -1,5 +1,4 @@
-﻿using Shared.Contracts.Response.DirectoryService;
-using Shared.Contracts.Response.EmployeeService;
+﻿using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models

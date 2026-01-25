@@ -355,7 +355,17 @@
                             Margin="5" CornerRadius="6" 
                             HorizontalAlignment="Stretch" DockPanel.Dock="Top">
                         <StackPanel>
+                            <DockPanel>
+                                <Button Width="25" Foreground="#F06870" 
+                                        Command="{Binding OpenEditEducationDocumentCommand}" DockPanel.Dock="Right"
+                                        Style="{StaticResource Button.Icon}">
+                                    <Control Template="{StaticResource AddIcon}"/>
+                                    <Button.ToolTip>
+                                        <TextBlock Text="Добавить документ об образовании"/>
+                                    </Button.ToolTip>
+                                </Button>
                             <TextBlock Text="Документы об образовании" FontSize="15" HorizontalAlignment="Center"/>
+                            </DockPanel>
                             <DataGrid ItemsSource="{Binding EducationDocuments}" 
                                       AutoGenerateColumns="False" 
                                       CanUserAddRows="False"
