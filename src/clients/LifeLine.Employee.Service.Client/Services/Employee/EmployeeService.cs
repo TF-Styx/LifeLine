@@ -1,5 +1,4 @@
-﻿using Shared.Contracts.Request.EmployeeService.ContactInformation;
-using Shared.Contracts.Request.EmployeeService.Employee;
+﻿using Shared.Contracts.Request.EmployeeService.Employee;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
 using Shared.Kernel.Results;
@@ -54,6 +53,23 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
 			catch (Exception ex)
             {
                 return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при изменении данных пользователя!\n{ex}"));
+            }
+		}
+
+		public async Task<Result> SoftDeleteAsync(string employeeId)
+		{
+			try
+			{
+				var response = await HttpClient.PatchAsync($"{Url}/{employeeId}/soft-delete", null);
+
+				if (!response.IsSuccessStatusCode)
+					return Result.Failure(new Error(ErrorCode.DeleteHttp, await response.Content.ReadAsStringAsync()));
+
+				return Result.Success();
+            }
+			catch (Exception ex)
+            {
+                return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при деактивации пользователя!\n{ex}"));
             }
 		}
     }

@@ -10,5 +10,6 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
         Task<List<EmployeeHrItemResponse>> GetAllForHrAsync();
         Task<EmployeeFullDetailsResponse?> GetDetailsAsync(string id);
         Task<Result> UpdateEmployeeAsync(string employeeId, UpdateEmployeeRequest request);
+        Task<Result> SoftDeleteAsync(string employeeId);
     }
 }

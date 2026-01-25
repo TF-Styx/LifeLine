@@ -2,6 +2,7 @@
 using LifeLine.Employee.Service.Client.Services.Specialty;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.EmployeeService.EmployeeSpecialty;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
@@ -18,6 +19,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private readonly ISpecialtyReadOnlyService _specialtyReadOnlyService;
         private readonly IEmployeeSpecialtyApiServiceFactory _employeeSpecialtyApiServiceFactory;
+
+        private bool _isEditMode;
 
         public EditSpecialtyEmployeePageVM
             (
@@ -54,11 +57,28 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             if (value is ValueTuple<EmployeeDetailsDisplay, SpecialtyDisplay> tuple)
             {
                 CurrentEmployeeDetails = tuple.Item1;
-                SpecialtyDisplay = tuple.Item2;
+                var incomingDocument = tuple.Item2;
 
-                if (SpecialtyDisplay != null && Specialties.Count > 0)
-                    SelectedSpecialty = Specialties.FirstOrDefault(x => x.SpecialtyId == SpecialtyDisplay.SpecialtyId)!;
+                if (incomingDocument != null)
+                {
+                    _isEditMode = true;
+
+                    SpecialtyDisplay = incomingDocument;
+
+                    if (SpecialtyDisplay != null && Specialties.Count > 0)
+                        SelectedSpecialty = Specialties.FirstOrDefault(x => x.SpecialtyId == SpecialtyDisplay.SpecialtyId)!;
+                }
+                else
+                {
+                    _isEditMode = false;
+
+                    SpecialtyDisplay = new SpecialtyDisplay(new SpecialtyResponse(string.Empty, string.Empty, string.Empty));
+
+                    SelectedSpecialty = null;
+                }
             }
+
+            UpdateSpecialtyEmployeeCommand?.RaiseCanExecuteChanged();
         }
 
         #region Display
@@ -97,7 +117,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public RelayCommandAsync? UpdateSpecialtyEmployeeCommand { get; private set; }
         private async Task Execute_UpdateSpecialtyEmployeeCommand()
         {
-            var resultUpdate = await _employeeSpecialtyApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdateEmployeeSpecialtyAsync
+            if (_isEditMode)
+            {
+                var resultUpdate = await _employeeSpecialtyApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdateEmployeeSpecialtyAsync
                 (
                     new UpdateEmployeeSpecialtyRequest
                         (
@@ -106,10 +128,23 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         )
                 );
 
-            if (resultUpdate.IsSuccess)
-                _navigationPage.TransmittingValue((SpecialtyDisplay, SelectedSpecialty), FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Update);
+                if (resultUpdate.IsSuccess)
+                    _navigationPage.TransmittingValue((SpecialtyDisplay, SelectedSpecialty), FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Update);
+                else
+                    MessageBox.Show($"Обновление специальностей: {resultUpdate.StringMessage}");
+            }
             else
-                MessageBox.Show($"Обновление специальностей: {resultUpdate.StringMessage}");
+            {
+                var resultCreate = await _employeeSpecialtyApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).CreateAsync
+                    (
+                        new CreateEmployeeSpecialtyRequest(Guid.Parse(SelectedSpecialty.SpecialtyId))
+                    );
+
+                if (resultCreate.IsSuccess)
+                    _navigationPage.TransmittingValue(SelectedSpecialty, FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Create);
+                else
+                    MessageBox.Show($"Добавление специальностей: {resultCreate.StringMessage}");
+            }
         }
     }
 }
