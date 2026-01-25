@@ -125,6 +125,12 @@
                             <Image Grid.Column="0" Width="75" Height="75" Margin="0 0 10 0" Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png"/>
                             
                             <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Column="0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
@@ -285,7 +291,17 @@
                             Margin="5" CornerRadius="6" 
                             HorizontalAlignment="Stretch" DockPanel.Dock="Top">
                         <StackPanel>
+                            <DockPanel>
+                                <Button Width="25" Foreground="#F06870" 
+                                        Command="{Binding OpenEditPersonalDocumentCommand}" DockPanel.Dock="Right"
+                                        Style="{StaticResource Button.Icon}">
+                                    <Control Template="{StaticResource AddIcon}"/>
+                                    <Button.ToolTip>
+                                        <TextBlock Text="Добавить личный документ"/>
+                                    </Button.ToolTip>
+                                </Button>
                             <TextBlock Text="Личные документы" FontSize="15" HorizontalAlignment="Center"/>
+                            </DockPanel>
                             <DataGrid ItemsSource="{Binding PersonalDocuments}" 
                                       AutoGenerateColumns="False" 
                                       CanUserAddRows="False"
@@ -441,7 +457,17 @@
                             Margin="5" CornerRadius="6" 
                             HorizontalAlignment="Stretch" DockPanel.Dock="Top">
                         <StackPanel>
+                            <DockPanel>
+                                <Button Width="25" Foreground="#F06870" 
+                                        Command="{Binding OpenEditSpecialtyCommand}" DockPanel.Dock="Right"
+                                        Style="{StaticResource Button.Icon}">
+                                    <Control Template="{StaticResource AddIcon}"/>
+                                    <Button.ToolTip>
+                                        <TextBlock Text="Добавить специальность"/>
+                                    </Button.ToolTip>
+                                </Button>
                             <TextBlock Text="Специальности" FontSize="15" HorizontalAlignment="Center"/>
+                            </DockPanel>
                             <DataGrid ItemsSource="{Binding Specialties}" 
                                       AutoGenerateColumns="False" 
                                       CanUserAddRows="False"
@@ -500,7 +526,17 @@
                             Margin="5" CornerRadius="6" 
                             HorizontalAlignment="Stretch" DockPanel.Dock="Top">
                         <StackPanel>
+                            <DockPanel>
+                                <Button Width="25" Foreground="#F06870" 
+                                        Command="{Binding OpenEditWorkPermitCommand}" DockPanel.Dock="Right"
+                                        Style="{StaticResource Button.Icon}">
+                                    <Control Template="{StaticResource AddIcon}"/>
+                                    <Button.ToolTip>
+                                        <TextBlock Text="Добавить сертификат / аккредитацию"/>
+                                    </Button.ToolTip>
+                                </Button>
                             <TextBlock Text="Сертификаты / Аккредитация" FontSize="15" HorizontalAlignment="Center"/>
+                            </DockPanel>
                             <DataGrid ItemsSource="{Binding WorkPermits}" 
                                       AutoGenerateColumns="False" 
                                       CanUserAddRows="False"
@@ -595,7 +631,17 @@
                             Margin="5" CornerRadius="6" 
                             HorizontalAlignment="Stretch" DockPanel.Dock="Top">
                         <StackPanel>
+                            <DockPanel>
+                                <Button Width="25" Foreground="#F06870" 
+                                        Command="{Binding OpenEditAssignmentCommand}" DockPanel.Dock="Right"
+                                        Style="{StaticResource Button.Icon}">
+                                    <Control Template="{StaticResource AddIcon}"/>
+                                    <Button.ToolTip>
+                                        <TextBlock Text="Добавить назначение / контракт"/>
+                                    </Button.ToolTip>
+                                </Button>
                             <TextBlock Text="Назначение / Контракт" FontSize="15" HorizontalAlignment="Center"/>
+                            </DockPanel>
                             <DataGrid ItemsSource="{Binding AssignmentContracts}" 
                                       AutoGenerateColumns="False" 
                                       CanUserAddRows="False"

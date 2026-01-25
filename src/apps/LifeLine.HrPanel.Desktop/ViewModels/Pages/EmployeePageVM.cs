@@ -121,6 +121,39 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         void IUpdatable.Update<TData>(TData value, TransmittingParameter parameter)
         {
+            if (parameter is TransmittingParameter.Create)
+            {
+                if (value is PersonalDocumentDisplay createPersonalDocument)
+                {
+                    PersonalDocuments.Add(createPersonalDocument);
+                    ModalVisibility = Visibility.Collapsed;
+                }
+
+                if (value is EducationDocumentDisplay createEducationDocument)
+                {
+                    EducationDocuments.Add(createEducationDocument);
+                    ModalVisibility = Visibility.Collapsed;
+                }
+
+                if (value is SpecialtyDisplay createSpecialty)
+                {
+                    Specialties.Add(createSpecialty);
+                    ModalVisibility = Visibility.Collapsed;
+                }
+
+                if (value is WorkPermitDisplay createWorkPermit)
+                {
+                    WorkPermits.Add(createWorkPermit);
+                    ModalVisibility = Visibility.Collapsed;
+                }
+
+                if (value is AssignmentContractDisplay createAssignmentContrac)
+                {
+                    AssignmentContracts.Add(createAssignmentContrac);
+                    ModalVisibility = Visibility.Collapsed;
+                }
+            }
+
             if (parameter is TransmittingParameter.Update)
             {
                 if (value is ValueTuple<EmployeeDetailsDisplay, GenderDisplay, ContactInformationDisplay> employeeUpdateData)
