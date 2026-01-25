@@ -3,6 +3,7 @@ using LifeLine.Directory.Service.Client.Services.PermitType;
 using LifeLine.Employee.Service.Client.Services.Employee.WorkPermit;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.EmployeeService.WorkPermit;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
@@ -20,6 +21,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
         private readonly IAdmissionStatusReadOnlyService _admissionStatusReadOnlyService;
         private readonly IWorkPermitApiServiceFactory _workPermitApiServiceFactory;
+
+        private bool _isEditMode;
 
         public EditWorkPermitEmployeePageVM
             (
@@ -49,10 +52,15 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             await GetAllPermitTypeAsync();
             await GetAllAdmissionStatusAsync();
 
+            CreateNewWorkPermitDisplay();
+
             if (WorkPermitDisplay != null && PermitTypes.Count > 0 && AdmissionStatuses.Count > 0)
             {
-                WorkPermitDisplay.PermitType = PermitTypes.FirstOrDefault(x => x.Id == WorkPermitDisplay.PermitType.Id)!;
-                WorkPermitDisplay.AdmissionStatus = AdmissionStatuses.FirstOrDefault(x => x.Id == WorkPermitDisplay.AdmissionStatus.Id)!;
+                if (WorkPermitDisplay.PermitType != null)
+                    WorkPermitDisplay.PermitType = PermitTypes.FirstOrDefault(x => x.Id == WorkPermitDisplay.PermitType.Id)!;
+
+                if (WorkPermitDisplay.AdmissionStatus != null)
+                    WorkPermitDisplay.AdmissionStatus = AdmissionStatuses.FirstOrDefault(x => x.Id == WorkPermitDisplay.AdmissionStatus.Id)!;
             }
 
             IsInitialize = true;
@@ -63,12 +71,25 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             if (value is ValueTuple<EmployeeDetailsDisplay, WorkPermitDisplay> tuple)
             {
                 CurrentEmployeeDetails = tuple.Item1;
-                WorkPermitDisplay = tuple.Item2;
+                var incomingDocument = tuple.Item2;
 
-                if (WorkPermitDisplay != null && PermitTypes.Count > 0 && AdmissionStatuses.Count > 0)
+                if (incomingDocument != null)
                 {
-                    WorkPermitDisplay.PermitType = PermitTypes.FirstOrDefault(x => x.Id == WorkPermitDisplay.PermitType.Id)!;
-                    WorkPermitDisplay.AdmissionStatus = AdmissionStatuses.FirstOrDefault(x => x.Id == WorkPermitDisplay.AdmissionStatus.Id)!;
+                    _isEditMode = true;
+
+                    WorkPermitDisplay = incomingDocument;
+
+                    if (WorkPermitDisplay != null && PermitTypes.Count > 0 && AdmissionStatuses.Count > 0)
+                    {
+                        WorkPermitDisplay.PermitType = PermitTypes.FirstOrDefault(x => x.Id == WorkPermitDisplay.PermitType.Id)!;
+                        WorkPermitDisplay.AdmissionStatus = AdmissionStatuses.FirstOrDefault(x => x.Id == WorkPermitDisplay.AdmissionStatus.Id)!;
+                    }
+                }
+                else
+                {
+                    _isEditMode = false;
+
+                    CreateNewWorkPermitDisplay();
                 }
 
                 UpdateWorkPermitEmployeeCommand?.RaiseCanExecuteChanged();
@@ -106,13 +127,36 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             get => _workPermitDisplay;
             set => SetProperty(ref _workPermitDisplay, value);
         }
+        private void CreateNewWorkPermitDisplay() 
+            => WorkPermitDisplay = new WorkPermitDisplay
+                (
+                    new WorkPermitResponse
+                        (
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            DateTime.Now,
+                            DateTime.Now,
+                            string.Empty,
+                            string.Empty
+                        ),
+                    PermitTypes,
+                    AdmissionStatuses
+                );
 
         #endregion
 
         public RelayCommandAsync? UpdateWorkPermitEmployeeCommand { get; private set; }
         private async Task Execute_UpdateWorkPermitEmployeeCommand()
         {
-            var resultUpdate = await _workPermitApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdateWorkPermitAsync
+            if (_isEditMode)
+            {
+                var resultUpdate = await _workPermitApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdateWorkPermitAsync
                 (
                     Guid.Parse(WorkPermitDisplay.Id),
                     new UpdateWorkPermitRequest
@@ -130,11 +174,36 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         )
                 );
 
-            if (resultUpdate.IsSuccess)
-                _navigationPage.TransmittingValue(WorkPermitDisplay, FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Update);
+                if (resultUpdate.IsSuccess)
+                    _navigationPage.TransmittingValue(WorkPermitDisplay, FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Update);
+                else
+                    MessageBox.Show($"Обновление разрешения на работу: {resultUpdate.StringMessage}");
+            }
             else
-                MessageBox.Show($"Обновление разрешения на работу: {resultUpdate.StringMessage}");
+            {
+                var resultCreate =  await _workPermitApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).CreateAsync
+                (
+                    new CreateWorkPermitRequest
+                        (
+                            WorkPermitDisplay.WorkPermitName,
+                            WorkPermitDisplay.DocumentSeries,
+                            WorkPermitDisplay.WorkPermitNumber,
+                            WorkPermitDisplay.ProtocolNumber,
+                            WorkPermitDisplay.SpecialtyName,
+                            WorkPermitDisplay.IssuingAuthority,
+                            WorkPermitDisplay.IssueDate,
+                            WorkPermitDisplay.ExpiryDate,
+                            Guid.Parse(WorkPermitDisplay.PermitType.Id),
+                            Guid.Parse(WorkPermitDisplay.AdmissionStatus.Id)
+                        )
+                );
+
+                if (resultCreate.IsSuccess)
+                    _navigationPage.TransmittingValue(WorkPermitDisplay, FrameName.MainFrame, PageName.EmployeePage, TransmittingParameter.Create);
+                else
+                    MessageBox.Show($"Внесение разрешения на работу: {resultCreate.StringMessage}");
+            }
         }
-        private bool CanExecute_UpdateWorkPermitEmployeeCommand() => /*true;*/ WorkPermitDisplay.PermitType != null && WorkPermitDisplay.AdmissionStatus != null;
+        private bool CanExecute_UpdateWorkPermitEmployeeCommand() => true; /*WorkPermitDisplay.PermitType != null && WorkPermitDisplay.AdmissionStatus != null;*/
     }
 }
