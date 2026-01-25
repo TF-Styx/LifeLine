@@ -8,6 +8,34 @@ namespace Shared.Http.Base
         : BaseReadHttpService<TResponse, TKey>(httpClient, url), IBaseHttpService<TResponse, TKey>
             where TResponse : class
     {
+        public virtual async Task<Result> CreateAsync<TRequest>(TRequest request)
+        {
+            HttpResponseMessage response = null!;
+
+            try
+            {
+                response = await HttpClient.PostAsJsonAsync(Url, request, JsonSerializerOptions);
+                response.EnsureSuccessStatusCode();
+
+                return Result.Success();
+            }
+            catch (HttpRequestException ex)
+            {
+                if (response == null)
+                    return Result.Failure(new Error(ErrorCode.Create, $"Сетевая ошибка добавления элемента в {Url} : {ex.Message}"));
+
+                return Result.Failure(new Error(ErrorCode.Create, $"Ошибка добавления элемента в {Url} : {response.StatusCode} - {await response.Content.ReadAsStringAsync()}"));
+            }
+            catch (JsonException jsonEx)
+            {
+                return Result.Failure(new Error(ErrorCode.Create, $"Ошибка десериализации ответа от {Url}: {jsonEx.Message}"));
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(ErrorCode.Create, $"Непредвиденная ошибка добавления элемента в {Url} : {ex.Message}"));
+            }
+        }
+
         public virtual async Task<Result<TResponse>> AddAsync<TRequest>(TRequest request)
         {
             HttpResponseMessage response = null!;
