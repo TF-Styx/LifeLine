@@ -5,6 +5,7 @@
         e."Name",
         e."Patronymic",
         e."Avatar" AS "ImageKey",
+        e."IsActive",
 
         COALESCE(
             jsonb_agg(

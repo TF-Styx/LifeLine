@@ -3,6 +3,7 @@
     public enum TransmittingParameter
     {
         None,
-        Update,
+        Create,
+        Update
     }
 }

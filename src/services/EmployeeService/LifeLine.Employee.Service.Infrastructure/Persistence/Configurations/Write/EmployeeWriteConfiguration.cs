@@ -55,6 +55,10 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Wr
                    .HasColumnName("GenderId")
                    .HasConversion(inDB => inDB.Value, outDB => GenderId.Create(outDB));
 
+            builder.Property(x => x.IsActive)
+                   .HasColumnName("IsActive")
+                   .HasDefaultValue(true);
+
             builder.HasOne(x => x.Gender).WithMany().HasForeignKey(x => x.GenderId).IsRequired().OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.ContactInformation).WithOne(x => x.Employee).HasForeignKey<ContactInformation>(x => x.EmployeeId).IsRequired(false).OnDelete(DeleteBehavior.Cascade);

@@ -3,6 +3,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.Get.GetAll;
 using LifeLine.Employee.Service.Application.Features.Employees.Get.GetAllForHr;
 using LifeLine.Employee.Service.Application.Features.Employees.Get.GetFullDetailsForEmployee;
+using LifeLine.Employee.Service.Application.Features.Employees.SoftDelete;
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployee;
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployeeGenderId;
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployeeName;
@@ -196,6 +197,20 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное удаление!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpPatch("{id}/soft-delete")]
+        public async Task<IActionResult> SoftDelete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+        {
+            var command = new SoftDeleteEmployeeCommand(id);
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok("Успешная деактивация!"),
                     onFailure: errors => BadRequest(errors)
                 );
         }

@@ -11,6 +11,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Get.GetAllFor
 
         public async Task<List<EmployeeHrItemResponse>> Handle(GetAllEmployeeForHrQuery request, CancellationToken cancellationToken)
             => await _context.EmployeeHrItemViews
+                .Where(x => x.IsActive == true)
                 .Select
                 (
                     x => new EmployeeHrItemResponse
@@ -20,6 +21,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Get.GetAllFor
                             x.Name, 
                             x.Patronymic,
                             x.ImageKey,
+                            x.IsActive,
                             x.Assignments.Select
                                 (
                                     x => new AssignmentResponseInfo

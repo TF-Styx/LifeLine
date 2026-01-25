@@ -94,6 +94,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             DeleteEmployeeSpecialtyCommand = new RelayCommandAsync<SpecialtyDisplay>(Execute_DeleteEmployeeSpecialtyCommand, CanExecute_DeleteEmployeeSpecialtyCommand);
             DeleteWorkPermitCommand = new RelayCommandAsync<WorkPermitDisplay>(Execute_DeleteWorkPermitCommand, CanExecute_DeleteWorkPermitCommand);
             DeleteAssignmentCommand = new RelayCommandAsync<AssignmentContractDisplay>(Execute_DeleteAssignmentCommand, CanExecute_DeleteAssignmentCommand);
+
+            SoftDeleteEmployeeCommand = new RelayCommandAsync<EmployeeHrDisplay>(Execute_SoftDeleteEmployeeCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -181,7 +183,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set => SetProperty(ref _currentEmployeeDetails, value);
         }
 
-        //NewBaseInfoEmployee
         private EmployeeHrDisplay _newEmployeeHr = null!;
         public EmployeeHrDisplay NewEmployeeHr
         {
@@ -190,7 +191,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         }
         private void CreateNewBaseInfoEmployee()
         {
-            NewEmployeeHr = new(new EmployeeHrItemResponse(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, []), Departments, Positions, Statuses);
+            NewEmployeeHr = new(new EmployeeHrItemResponse(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, true, []), Departments, Positions, Statuses);
 
             //NewEmployeeHr.PropertyChanged += async (s, e) =>
             //{
@@ -263,6 +264,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 OpenEditContactInformationEmployeeCommand?.RaiseCanExecuteChanged();
                 OpenEditPersonalDocumentCommand?.RaiseCanExecuteChanged();
                 OpenEditEducationDocumentCommand?.RaiseCanExecuteChanged();
+                OpenEditSpecialtyCommand?.RaiseCanExecuteChanged();
+                OpenEditWorkPermitCommand?.RaiseCanExecuteChanged();
+                OpenEditAssignmentCommand?.RaiseCanExecuteChanged();
 
                 ListClear();
 
@@ -826,6 +830,25 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             AssignmentContracts.Remove(display);
         }
         private bool CanExecute_DeleteAssignmentCommand(AssignmentContractDisplay display) => SelectedEmployee != null;
+
+        #endregion
+
+        #region SoftDeleteEmployeeCommand
+
+        public RelayCommandAsync<EmployeeHrDisplay> SoftDeleteEmployeeCommand { get; private set; }
+        private async Task Execute_SoftDeleteEmployeeCommand(EmployeeHrDisplay display)
+        {
+            var result = await _employeeService.SoftDeleteAsync(display.Id);
+
+            if (!result.IsSuccess)
+            {
+                MessageBox.Show("Не удалось деактивировать пользователя!");
+                return;
+            }
+
+            EmployeeHrs.Remove(display);
+            CurrentEmployeeDetails = null!;
+        }
 
         #endregion
     }

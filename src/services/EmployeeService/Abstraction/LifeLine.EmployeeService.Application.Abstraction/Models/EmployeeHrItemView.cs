@@ -7,6 +7,7 @@
         public string Name { get; set; } = null!;
         public string? Patronymic { get; set; }
         public string? ImageKey { get; set; }
+        public bool IsActive { get; set; }
 
         public List<AssignmentInfo> Assignments { get; set; } = new();
     }

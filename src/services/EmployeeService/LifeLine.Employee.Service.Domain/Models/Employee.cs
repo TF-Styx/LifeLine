@@ -3,9 +3,7 @@ using LifeLine.Employee.Service.Domain.ValueObjects.Contracts;
 using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
 using LifeLine.Employee.Service.Domain.ValueObjects.EmployeeType;
 using LifeLine.Employee.Service.Domain.ValueObjects.Genders;
-using LifeLine.Employee.Service.Domain.ValueObjects.PersonalDocuments;
 using LifeLine.Employee.Service.Domain.ValueObjects.Shared;
-using LifeLine.Employee.Service.Domain.ValueObjects.Specialties;
 using LifeLine.Employee.Service.Domain.ValueObjects.WorkPermits;
 using Shared.Domain.Exceptions;
 using Shared.Domain.ValueObjects;
@@ -24,6 +22,7 @@ namespace LifeLine.Employee.Service.Domain.Models
         public Rating Rating { get; private set; }
         public ImageKey? Avatar { get; private set; }
         public GenderId GenderId { get; private set; }
+        public bool IsActive { get; private set; }
 
         public Gender Gender { get; private set; } = null!;
         public ContactInformation? ContactInformation { get; private set; }
@@ -124,6 +123,9 @@ namespace LifeLine.Employee.Service.Domain.Models
             if (genderId != GenderId)
                 GenderId = genderId;
         }
+
+        public void Activate() => IsActive = true;
+        public void Deactivate() => IsActive = false;
 
         #endregion
 

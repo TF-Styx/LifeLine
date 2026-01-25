@@ -7,6 +7,7 @@ SELECT
     e."DateEntry",
     e."Rating",
     e."Avatar",
+    e."IsActive",
     
     jsonb_build_object(
         'GenderId', g."Id",
