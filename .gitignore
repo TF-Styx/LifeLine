@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /src/apps/LifeLine.AdminPanel.Desktop/apiConfig.json
 /src/apps/LifeLine.HrPanel.Desktop/apiConfig.json
+
+# Ignore TemplateEngineHost/vs directory
+TemplateEngineHost/vs/
