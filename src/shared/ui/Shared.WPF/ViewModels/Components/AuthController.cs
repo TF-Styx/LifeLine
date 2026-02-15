@@ -1,5 +1,5 @@
-﻿using LifeLine.User.Service.Client.Models.Request;
-using LifeLine.User.Service.Client.Services;
+﻿using LifeLine.User.Service.Client.Services;
+using Shared.Contracts.Request.UserService.SRP;
 using Shared.WPF.Commands;
 using Shared.WPF.ViewModels.Abstract;
 using System.Windows;
@@ -26,7 +26,7 @@ namespace Shared.WPF.ViewModels.Components
             set => SetProperty(ref _authUcVisibility, value);
         }
 
-        private string _login = "Styx";
+        private string _login = "styx";
         public string Login
         {
             get => _login;
@@ -37,7 +37,7 @@ namespace Shared.WPF.ViewModels.Components
             }
         }
 
-        private string _password = "Csgofast567!";
+        private string _password = "Csgofast567";
         public string Password
         {
             get => _password;
@@ -51,17 +51,16 @@ namespace Shared.WPF.ViewModels.Components
         public RelayCommandAsync? AuthCommandAsync { get; private set; }
         private async Task Execute_AuthCommandAsync()
         {
-            var result = await _authorizationService.AuthAsync(new UserRequest(Login, Password));
+            var result = await _authorizationService.AuthAsync(Login, Password);
 
-            if (result.IsSuccess)
+            if (result.IsFailure)
             {
-                AuthVisibility = Visibility.Collapsed;
-                ResizeWindow?.Invoke();
-
+                MessageBox.Show(result.StringMessage);
                 return;
             }
 
-            MessageBox.Show(result.StringMessage);
+            AuthVisibility = Visibility.Collapsed;
+            ResizeWindow?.Invoke();
         }
         private bool CanExecute_AuthCommandAsync()
             => !string.IsNullOrWhiteSpace(Login) &&

@@ -2,6 +2,8 @@
 using LifeLine.User.Service.Client.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Client.Security.Abstraction;
+using Shared.Client.Security.SRP;
 
 namespace LifeLine.User.Service.Client.Ioc
 {
@@ -9,7 +11,7 @@ namespace LifeLine.User.Service.Client.Ioc
     {
         public static IServiceCollection UserClientConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            string? userServiceApiUrl = configuration.GetValue<string>("UserServiceUrl");
+            string? userServiceApiUrl = configuration.GetValue<string>("UserService");
 
             if (string.IsNullOrWhiteSpace(userServiceApiUrl))
                 throw new Exception("В файле конфигурации, нет такой строки!");
@@ -20,6 +22,7 @@ namespace LifeLine.User.Service.Client.Ioc
 
             services.AddHttpClient<IUserApiService, UserApiService>(userApiName);
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
+            services.AddSingleton<ISRPService, SRPService>();
 
             return services;
         }

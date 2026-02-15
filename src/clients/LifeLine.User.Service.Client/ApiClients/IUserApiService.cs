@@ -1,11 +1,12 @@
-﻿using LifeLine.User.Service.Client.Models.Request;
-using LifeLine.User.Service.Client.Models.Response;
+﻿using Shared.Contracts.Request.UserService.SRP;
+using Shared.Contracts.Response.UserService;
 using Shared.Kernel.Results;
 
 namespace LifeLine.User.Service.Client.ApiClients
 {
     public interface IUserApiService
     {
-        Task<Result<UserResponse?>> AuthAsync(UserRequest request, CancellationToken cancellationToken = default);
+        Task<Result<SRPChallengeResponse>> SRPChallengeAsync(SRPChallengeRequest request);
+        Task<Result<AuthResponse>> VerifySRPAsync(SRPVerifyRequest request);
     }
 }

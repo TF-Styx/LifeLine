@@ -1,13 +1,12 @@
-﻿using LifeLine.User.Service.Client.Models.Request;
-using LifeLine.User.Service.Client.Models.Response;
+﻿using Shared.Contracts.Desktop;
 using Shared.Kernel.Results;
 
 namespace LifeLine.User.Service.Client.Services
 {
     public interface IAuthorizationService
     {
-        UserResponse? CurrentUser { get; }
+        CurrentUser? CurrentUser { get; }
 
-        Task<Result<UserResponse?>> AuthAsync(UserRequest request);
+        Task<Result> AuthAsync(string login, string password);
     }
 }

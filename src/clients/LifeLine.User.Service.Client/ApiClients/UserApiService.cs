@@ -1,5 +1,5 @@
-﻿using LifeLine.User.Service.Client.Models.Request;
-using LifeLine.User.Service.Client.Models.Response;
+﻿using Shared.Contracts.Request.UserService.SRP;
+using Shared.Contracts.Response.UserService;
 using Shared.Kernel.Results;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -12,17 +12,32 @@ namespace LifeLine.User.Service.Client.ApiClients
         private readonly HttpClient _httpClient = httpClient;
         private readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
-        public async Task<Result<UserResponse?>> AuthAsync(UserRequest request, CancellationToken cancellationToken = default)
+        public async Task<Result<SRPChallengeResponse>> SRPChallengeAsync(SRPChallengeRequest request)
         {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Get, "api/users");
-            httpRequest.Content = JsonContent.Create(request);
-
-            var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+            var response = await _httpClient.PostAsJsonAsync("api/auth/srp/challenge", request, _jsonSerializerOptions);
 
             if (!response.IsSuccessStatusCode)
-                return Result<UserResponse?>.Failure(new Error(ErrorCode.InvalidResponse, await response.Content.ReadAsStringAsync(cancellationToken)));
+                return Result<SRPChallengeResponse>.Failure(new Error(ErrorCode.InvalidResponse, await response.Content.ReadAsStringAsync()));
 
-            return Result<UserResponse?>.Success(await response.Content.ReadFromJsonAsync<UserResponse>(cancellationToken));
+            var content = await response.Content.ReadAsStringAsync();
+
+            var result = JsonSerializer.Deserialize<SRPChallengeResponse>(content, _jsonSerializerOptions);
+
+            return Result<SRPChallengeResponse>.Success(result!);
+        }
+
+        public async Task<Result<AuthResponse>> VerifySRPAsync(SRPVerifyRequest request)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/auth/srp/verify", request, _jsonSerializerOptions);
+
+            if (!response.IsSuccessStatusCode)
+                return Result<AuthResponse>.Failure(new Error(ErrorCode.InvalidResponse, await response.Content.ReadAsStringAsync()));
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var result = JsonSerializer.Deserialize<AuthResponse>(content, _jsonSerializerOptions);
+
+            return Result<AuthResponse>.Success(result!);
         }
     }
 }

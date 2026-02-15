@@ -26,5 +26,7 @@
         ExistDependentData,
         ExistEducationInformation,
         ExistPersonalDocument,
+
+        SRPVerificationFailed
     }
 }

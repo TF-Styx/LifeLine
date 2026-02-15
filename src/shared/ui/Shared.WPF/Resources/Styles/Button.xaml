@@ -93,6 +93,16 @@
     <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource ManageWindowStyle}">
         <Setter Property="Content" Value="&#xE106;"/>
     </Style>
+    
 
+    <!-- ╔═════════════════════════════════════════════════════════════════════════════╗ -->
+    <!-- ║ || Кнопки управления окном || СВЕРНУТЬ || РАЗВЕРНУТЬ || ОКНО || ЗАКРЫТЬ ||  ║ -->
+    <!-- ╚═════════════════════════════════════════════════════════════════════════════╝ -->
+
+    <Style x:Key="Button.Icon" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
 
 </ResourceDictionary>

@@ -32,6 +32,7 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             var employeeService = configuration.GetValue<string>("EmployeeService");
             string employeeHttp = "EmployeeServiceHttp";
             services.AddHttpClient(employeeHttp, client => client.BaseAddress = new Uri(employeeService!));
+
             services.AddHttpClient<IEmployeeService, EmployeeService>(employeeHttp);
             services.AddHttpClient<IGenderReadOnlyService, GenderService>(employeeHttp);
             services.AddHttpClient<IGenderService, GenderService>(employeeHttp);
@@ -47,6 +48,7 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             var directoryService = configuration.GetValue<string>("DirectoryService");
             string directoryHttp = "DirectoryServiceHttp";
             services.AddHttpClient(directoryHttp, client => client.BaseAddress = new Uri(directoryService!));
+
             services.AddHttpClient<IDocumentTypeReadOnlyService, DocumentTypeService>(directoryHttp);
             services.AddHttpClient<IEducationLevelReadOnlyService, EducationLevelService>(directoryHttp);
             services.AddHttpClient<IAdmissionStatusReadOnlyService, AdmissionStatusService>(directoryHttp);

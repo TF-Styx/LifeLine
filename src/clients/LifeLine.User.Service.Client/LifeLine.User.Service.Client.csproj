@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -12,9 +12,13 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.10" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.10" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\shared\clients\security\Shared.Client.Security.Abstraction\Shared.Client.Security.Abstraction.csproj" />
+    <ProjectReference Include="..\..\shared\clients\security\Shared.Client.Security.SRP\Shared.Client.Security.SRP.csproj" />
+    <ProjectReference Include="..\..\shared\core\Shared.Contracts\Shared.Contracts.csproj" />
     <ProjectReference Include="..\..\shared\core\Shared.Kernel\Shared.Kernel.csproj" />
   </ItemGroup>
 
