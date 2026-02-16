@@ -10,8 +10,8 @@
         d:DataContext="{d:DesignInstance Type=windows:MainWindowVM}"
         mc:Ignorable="d"
         Title="MainWindow"  
-        d:Height="450" 
-        d:Width="800" 
+        d:Height="auto" 
+        d:Width="1000" 
         MinHeight="450" 
         MinWidth="800" 
         WindowStyle="SingleBorderWindow"
@@ -134,6 +134,36 @@
                     </Border>
                 </Popup>
                 <!--#endregion-->
+
+                <!--#region ProfilePopup -->
+                <Popup IsOpen="{Binding ProfilePopup.IsOpen}" 
+                       StaysOpen="{Binding ProfilePopup.StaysOpen}"
+                       PlacementTarget="{Binding ElementName=ProfileBtn}"
+                       Placement="Bottom" MaxHeight="{Binding ProfilePopup.MaxHeight}"
+                       AllowsTransparency="True" PopupAnimation="Slide">
+                    <Border Background="{StaticResource App.SecondColor}" 
+                            BorderBrush="#386FD6" 
+                            BorderThickness="2 0 2 2" 
+                            CornerRadius="0 0 6 6">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="30" ShadowDepth="20" Direction="315" Opacity="0.3"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <Button Content="Профиль" 
+                                    Command="{Binding OpenPageCommand}" 
+                                    CommandParameter="{x:Static enum:PageName.EmployeePage}" 
+                                    Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Настройки" 
+                                    Command="{Binding OpenPageCommand}" 
+                                    CommandParameter="{x:Static enum:PageName.EmployeePage}" 
+                                    Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                            <Button Content="Выйти" 
+                                    Command="{Binding LogoutCommand}" 
+                                    Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+                <!--#endregion-->
                 
                 <StackPanel Background="Transparent" 
                             WindowChrome.IsHitTestVisibleInChrome="True" 
@@ -154,12 +184,25 @@
                     <Button Content="KPI" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
                 </StackPanel>
 
-                <StackPanel Height="30" Background="Transparent" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Button x:Name="MinimizeButton" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding MinimizeWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource MinimizeButtonStyle}"/>
-                    <Button x:Name="MaximizeButton" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding MaximizeWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource MaximizeButtonStyle}"/>
-                    <Button x:Name="RestoreButton" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding RestoreWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource RestoreButtonStyle}"/>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding CloseWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource CloseButtonStyle}"/>
-                </StackPanel>
+                <Grid Grid.Row="0">
+                    <StackPanel Grid.Row="0" Height="30" Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Button x:Name="ProfileBtn"
+                                Command="{Binding ProfilePopup.ShowCommand}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}" 
+                                WindowChrome.IsHitTestVisibleInChrome="True" 
+                                Margin="0 0 10 0" 
+                                Style="{StaticResource App.Hr.MainWindow.Header.Button}">
+                            <Button.Content>
+                                <Control Template="{StaticResource Profile}"/>
+                            </Button.Content>
+                        </Button>
+                        
+                        <Button x:Name="MinimizeButton" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding MinimizeWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource MinimizeButtonStyle}"/>
+                        <Button x:Name="MaximizeButton" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding MaximizeWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource MaximizeButtonStyle}"/>
+                        <Button x:Name="RestoreButton" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding RestoreWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource RestoreButtonStyle}"/>
+                        <Button WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding CloseWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource CloseButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
 
             <Grid Grid.Row="1" Background="Transparent">

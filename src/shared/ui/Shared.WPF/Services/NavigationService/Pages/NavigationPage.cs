@@ -84,5 +84,8 @@ namespace Shared.WPF.Services.NavigationService.Pages
         public PageName GetCurrentOpenPage(FrameName frameName) => _currentOpenPages.GetValueOrDefault(frameName);
 
         private void SetCurrentOpenPage(FrameName frameName, PageName pageName) => _currentOpenPages.TryAdd(frameName, pageName);
+
+        public void CloseAll()
+            => _pages.Clear();
     }
 }

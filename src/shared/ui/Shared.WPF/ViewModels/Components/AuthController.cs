@@ -1,5 +1,4 @@
 ﻿using LifeLine.User.Service.Client.Services;
-using Shared.Contracts.Request.UserService.SRP;
 using Shared.WPF.Commands;
 using Shared.WPF.ViewModels.Abstract;
 using System.Windows;
@@ -17,7 +16,8 @@ namespace Shared.WPF.ViewModels.Components
             AuthCommandAsync = new RelayCommandAsync(Execute_AuthCommandAsync, CanExecute_AuthCommandAsync);
         }
 
-        public event Action? ResizeWindow;
+        public event Action? ResizeWindowAfterLogin;
+        public event Action? ResizeWindowAfterLogout;
 
         private Visibility _authUcVisibility = Visibility.Visible;
         public Visibility AuthVisibility
@@ -60,10 +60,12 @@ namespace Shared.WPF.ViewModels.Components
             }
 
             AuthVisibility = Visibility.Collapsed;
-            ResizeWindow?.Invoke();
+            ResizeWindowAfterLogin?.Invoke();
         }
         private bool CanExecute_AuthCommandAsync()
             => !string.IsNullOrWhiteSpace(Login) &&
                !string.IsNullOrWhiteSpace(Password);
+
+        public void ExecuteResizeWindowAfterLogout() => ResizeWindowAfterLogout?.Invoke();
     }
 }

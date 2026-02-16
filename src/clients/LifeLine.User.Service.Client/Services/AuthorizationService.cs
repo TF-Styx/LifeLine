@@ -4,7 +4,6 @@ using Shared.Contracts.Desktop;
 using Shared.Contracts.Request.UserService.SRP;
 using Shared.Kernel.Results;
 using System.IdentityModel.Tokens.Jwt;
-using System.Windows;
 
 namespace LifeLine.User.Service.Client.Services
 {
@@ -20,8 +19,6 @@ namespace LifeLine.User.Service.Client.Services
         private readonly ISRPService _srpService = srpService;
         private readonly ITokenStorage _tokenStorage = tokenStorage;
         private readonly IUserContext _userContext = userContext;
-
-        public CurrentUser? CurrentUser { get; private set; }
 
         public async Task<Result> AuthAsync(string login, string password)
         {
@@ -47,6 +44,12 @@ namespace LifeLine.User.Service.Client.Services
             _userContext.SetUser(new CurrentUser(ExtractUserIdFromAccessToken(verifyResult.Value.AccessToken).ToString()));
 
             return Result.Success();
+        }
+
+        public async Task LogoutAsync()
+        {
+            await _tokenStorage.ClearAsync();
+            _userContext.Clear();
         }
 
         private Guid ExtractUserIdFromAccessToken(string accessToken)

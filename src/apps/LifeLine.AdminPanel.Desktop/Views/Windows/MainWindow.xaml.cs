@@ -18,7 +18,7 @@ namespace LifeLine.AdminPanel.Desktop.Views.Windows
             this.Height = 650;
             this.ResizeMode = ResizeMode.NoResize;
 
-            vm.AuthController.ResizeWindow += () =>
+            vm.AuthController.ResizeWindowAfterLogin += () =>
             {
                 this.Width = 800;
                 this.Height = 450;

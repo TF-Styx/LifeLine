@@ -1,8 +1,10 @@
 ﻿using LifeLine.User.Service.Client.Services;
+using Shared.WPF.Commands;
 using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.Services.NavigationService.Windows;
 using Shared.WPF.ViewModels.Abstract;
 using Shared.WPF.ViewModels.Components;
+using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Windows
 {
@@ -12,8 +14,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Windows
 
         public MainWindowVM
             (
-                INavigationWindow navigationWindow, 
-                INavigationPage navigationPage, 
+                INavigationWindow navigationWindow,
+                INavigationPage navigationPage,
                 IAuthorizationService authorizationService
             ) : base(navigationWindow, navigationPage)
         {
@@ -22,6 +24,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Windows
             AuthController = new AuthController(_authorizationService);
             RecruitingPopup = new PopupController();
             ManagementPopup = new PopupController();
+            ProfilePopup = new PopupController();
 
             AuthController.AuthCommandAsync!.CanExecuteChanged += (s, e) =>
             {
@@ -29,10 +32,24 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Windows
                 MaximizeWindowCommand?.RaiseCanExecuteChanged();
                 RestoreWindowCommand?.RaiseCanExecuteChanged();
             };
+
+            LogoutCommand = new RelayCommandAsync(Execute_LogoutAsync);
         }
 
         public AuthController AuthController { get; }
         public PopupController RecruitingPopup { get; }
         public PopupController ManagementPopup { get; }
+        public PopupController ProfilePopup { get; }
+
+        public RelayCommandAsync LogoutCommand { get; private init; }
+        private async Task Execute_LogoutAsync()
+        {
+            await _authorizationService.LogoutAsync();
+
+            _navigationPage.CloseAll();
+
+            AuthController.AuthVisibility = Visibility.Visible;
+            AuthController.ExecuteResizeWindowAfterLogout();
+        }
     }
 }
