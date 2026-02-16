@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\shared\clients\security\Shared.Client.Security.Abstraction\Shared.Client.Security.Abstraction.csproj" />
     <ProjectReference Include="..\..\shared\clients\security\Shared.Client.Security.SRP\Shared.Client.Security.SRP.csproj" />
+    <ProjectReference Include="..\..\shared\clients\security\Shared.Client.Security.Windows\Shared.Client.Security.Windows.csproj" />
     <ProjectReference Include="..\..\shared\core\Shared.Contracts\Shared.Contracts.csproj" />
     <ProjectReference Include="..\..\shared\core\Shared.Kernel\Shared.Kernel.csproj" />
   </ItemGroup>

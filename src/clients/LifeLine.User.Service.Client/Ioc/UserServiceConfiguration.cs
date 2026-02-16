@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Client.Security.Abstraction;
 using Shared.Client.Security.SRP;
+using Shared.Client.Security.Windows;
 
 namespace LifeLine.User.Service.Client.Ioc
 {
@@ -23,6 +24,7 @@ namespace LifeLine.User.Service.Client.Ioc
             services.AddHttpClient<IUserApiService, UserApiService>(userApiName);
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<ISRPService, SRPService>();
+            services.AddSingleton<ITokenStorage, TokenStorage>();
 
             return services;
         }

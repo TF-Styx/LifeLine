@@ -4,13 +4,15 @@ using Shared.Contracts.Desktop;
 using Shared.Contracts.Request.UserService.SRP;
 using Shared.Kernel.Results;
 using System.IdentityModel.Tokens.Jwt;
+using System.Windows;
 
 namespace LifeLine.User.Service.Client.Services
 {
-    public class AuthorizationService(IUserApiService userApiService, ISRPService srpService) : IAuthorizationService
+    public class AuthorizationService(IUserApiService userApiService, ISRPService srpService, ITokenStorage tokenStorage) : IAuthorizationService
     {
         private readonly IUserApiService _userApiService = userApiService;
         private readonly ISRPService _srpService = srpService;
+        private readonly ITokenStorage _tokenStorage = tokenStorage;
 
         public CurrentUser? CurrentUser { get; private set; }
 
@@ -27,6 +29,8 @@ namespace LifeLine.User.Service.Client.Services
 
             if (verifyResult.IsFailure)
                 return Result.Failure(verifyResult.Errors);
+
+            await _tokenStorage.SaveAsync(verifyResult.Value.AccessToken, verifyResult.Value.RefreshToken);
 
             bool serverVerification = _srpService.VerifyServerM2(A, M1, S, verifyResult.Value.M2!);
 
