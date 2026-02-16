@@ -8,11 +8,18 @@ using System.Windows;
 
 namespace LifeLine.User.Service.Client.Services
 {
-    public class AuthorizationService(IUserApiService userApiService, ISRPService srpService, ITokenStorage tokenStorage) : IAuthorizationService
+    public class AuthorizationService
+        (
+            IUserApiService userApiService, 
+            ISRPService srpService, 
+            ITokenStorage tokenStorage, 
+            IUserContext userContext
+        ) : IAuthorizationService
     {
         private readonly IUserApiService _userApiService = userApiService;
         private readonly ISRPService _srpService = srpService;
         private readonly ITokenStorage _tokenStorage = tokenStorage;
+        private readonly IUserContext _userContext = userContext;
 
         public CurrentUser? CurrentUser { get; private set; }
 
@@ -37,7 +44,7 @@ namespace LifeLine.User.Service.Client.Services
             if (!serverVerification)
                 return Result.Failure(new Error(ErrorCode.SRPVerificationFailed, "Сервер не прошел верификацию!"));
 
-            CurrentUser = new CurrentUser(ExtractUserIdFromAccessToken(verifyResult.Value.AccessToken).ToString());
+            _userContext.SetUser(new CurrentUser(ExtractUserIdFromAccessToken(verifyResult.Value.AccessToken).ToString()));
 
             return Result.Success();
         }

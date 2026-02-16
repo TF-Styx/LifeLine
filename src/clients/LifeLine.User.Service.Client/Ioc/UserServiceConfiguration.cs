@@ -25,6 +25,7 @@ namespace LifeLine.User.Service.Client.Ioc
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<ISRPService, SRPService>();
             services.AddSingleton<ITokenStorage, TokenStorage>();
+            services.AddSingleton<IUserContext, UserContext>();
 
             return services;
         }
