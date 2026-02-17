@@ -33,7 +33,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Windows
                 RestoreWindowCommand?.RaiseCanExecuteChanged();
             };
 
+            AuthController.ResizeWindowAfterLogin += () => IsLoggedIn = true;
+            AuthController.ResizeWindowAfterLogout += () => IsLoggedIn = false;
+
             LogoutCommand = new RelayCommandAsync(Execute_LogoutAsync);
+        }
+
+        public bool IsLoggedIn
+        { 
+            get => field;
+            set => SetProperty(ref field, value);
         }
 
         public AuthController AuthController { get; }
@@ -44,6 +53,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Windows
         public RelayCommandAsync LogoutCommand { get; private init; }
         private async Task Execute_LogoutAsync()
         {
+            IsLoggedIn = false;
+
             await _authorizationService.LogoutAsync();
 
             AuthController.AuthVisibility = Visibility.Visible;

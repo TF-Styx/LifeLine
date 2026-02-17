@@ -20,7 +20,7 @@ namespace LifeLine.HrPanel.Desktop.Views.Windows
 
             vm.AuthController.ResizeWindowAfterLogin += () =>
             {
-                this.Width = 800;
+                this.Width = 900;
                 this.Height = 450;
                 this.ResizeMode = ResizeMode.CanResize;
 

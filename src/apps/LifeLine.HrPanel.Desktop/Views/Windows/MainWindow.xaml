@@ -169,7 +169,8 @@
                             WindowChrome.IsHitTestVisibleInChrome="True" 
                             Orientation="Horizontal" 
                             HorizontalAlignment="Left" 
-                            Margin="10 5 10 0">
+                            Margin="10 5 10 0"
+                            Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Button Content="Рекрутинг v" x:Name="RecrutingBtn"
                             Command="{Binding RecruitingPopup.ShowCommand}" 
                             CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -185,13 +186,19 @@
                 </StackPanel>
 
                 <Grid Grid.Row="0">
-                    <StackPanel Grid.Row="0" Height="30" Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <StackPanel Grid.Row="0" 
+                                Height="30" 
+                                Background="Transparent" 
+                                Orientation="Horizontal" 
+                                HorizontalAlignment="Right" 
+                                VerticalAlignment="Top">
                         <Button x:Name="ProfileBtn"
                                 Command="{Binding ProfilePopup.ShowCommand}"
                                 CommandParameter="{Binding RelativeSource={RelativeSource Self}}" 
                                 WindowChrome.IsHitTestVisibleInChrome="True" 
                                 Margin="0 0 10 0" 
-                                Style="{StaticResource App.Hr.MainWindow.Header.Button}">
+                                Style="{StaticResource App.Hr.MainWindow.Header.Button}"
+                                Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}}">
                             <Button.Content>
                                 <Control Template="{StaticResource Profile}"/>
                             </Button.Content>

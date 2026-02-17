@@ -6,6 +6,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <converters:FullNameValueConverter x:Key="FullNameValueConverter"/>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Brushes/AppBrushes.xaml"/>
