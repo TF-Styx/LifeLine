@@ -1,5 +1,4 @@
 ﻿using LifeLine.User.Service.Client.ApiClients;
-using LifeLine.User.Service.Client.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Client.Security.Abstraction;
@@ -22,7 +21,6 @@ namespace LifeLine.User.Service.Client.Ioc
             services.AddHttpClient(userApiName, client => client.BaseAddress = new Uri(userServiceApiUrl));
 
             services.AddHttpClient<IUserApiService, UserApiService>(userApiName);
-            services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<ISRPService, SRPService>();
             services.AddSingleton<ITokenStorage, TokenStorage>();
             services.AddSingleton<IUserContext, UserContext>();

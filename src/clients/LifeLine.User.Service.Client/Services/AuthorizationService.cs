@@ -12,13 +12,16 @@ namespace LifeLine.User.Service.Client.Services
             IUserApiService userApiService, 
             ISRPService srpService, 
             ITokenStorage tokenStorage, 
-            IUserContext userContext
+            IUserContext userContext,
+            Action onLogoutCallback
         ) : IAuthorizationService
     {
         private readonly IUserApiService _userApiService = userApiService;
         private readonly ISRPService _srpService = srpService;
         private readonly ITokenStorage _tokenStorage = tokenStorage;
         private readonly IUserContext _userContext = userContext;
+
+        private readonly Action _onLogoutCallback = onLogoutCallback;
 
         public async Task<Result> AuthAsync(string login, string password)
         {
@@ -50,6 +53,7 @@ namespace LifeLine.User.Service.Client.Services
         {
             await _tokenStorage.ClearAsync();
             _userContext.Clear();
+            _onLogoutCallback.Invoke();
         }
 
         private Guid ExtractUserIdFromAccessToken(string accessToken)

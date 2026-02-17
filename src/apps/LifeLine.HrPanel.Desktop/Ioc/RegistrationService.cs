@@ -15,8 +15,11 @@ using LifeLine.Employee.Service.Client.Services.Employee.WorkPermit;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.Employee.Service.Client.Services.Specialty;
+using LifeLine.User.Service.Client.ApiClients;
+using LifeLine.User.Service.Client.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Client.Security.Abstraction;
 using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.Services.NavigationService.Windows;
 
@@ -28,6 +31,19 @@ namespace LifeLine.HrPanel.Desktop.Ioc
         {
             services.AddSingleton<INavigationPage, NavigationPage>();
             services.AddSingleton<INavigationWindow, NavigationWindow>();
+
+            services.AddSingleton<IAuthorizationService>(sp =>
+            {
+                var navigationPage = sp.GetRequiredService<INavigationPage>();
+                return new AuthorizationService
+                    (
+                        sp.GetRequiredService<IUserApiService>(),
+                        sp.GetRequiredService<ISRPService>(),
+                        sp.GetRequiredService<ITokenStorage>(),
+                        sp.GetRequiredService<IUserContext>(),
+                        onLogoutCallback: () => { navigationPage.CloseAll(); }
+                    );
+            });
 
             var employeeService = configuration.GetValue<string>("EmployeeService");
             string employeeHttp = "EmployeeServiceHttp";

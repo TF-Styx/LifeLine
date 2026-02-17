@@ -12,6 +12,7 @@
     <Folder Include="Services\DialogService\" />
     <Folder Include="Services\FileDialog\" />
     <Folder Include="Builder\" />
+    <Folder Include="Services\Authentication\" />
   </ItemGroup>
 
   <ItemGroup>

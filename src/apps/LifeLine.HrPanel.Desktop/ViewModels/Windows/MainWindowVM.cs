@@ -46,8 +46,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Windows
         {
             await _authorizationService.LogoutAsync();
 
-            _navigationPage.CloseAll();
-
             AuthController.AuthVisibility = Visibility.Visible;
             AuthController.ExecuteResizeWindowAfterLogout();
         }
