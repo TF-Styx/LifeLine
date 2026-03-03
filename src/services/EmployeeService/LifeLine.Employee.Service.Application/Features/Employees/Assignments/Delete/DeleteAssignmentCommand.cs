@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.Delete
 {

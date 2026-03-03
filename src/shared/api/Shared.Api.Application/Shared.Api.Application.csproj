@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation"/>
+    <PackageReference Include="Terminex.Common"/>
     <PackageReference Include="MediatR"/>
   </ItemGroup>
 

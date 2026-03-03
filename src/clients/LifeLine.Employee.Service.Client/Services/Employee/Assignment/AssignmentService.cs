@@ -1,8 +1,9 @@
 ﻿using Shared.Contracts.Request.EmployeeService.Assignment;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
-using Shared.Kernel.Results;
 using System.Net.Http.Json;
+using Terminex.Common.Results;
+using Shared.Kernel.Errors;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
 {
@@ -16,13 +17,13 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
                 var response = await HttpClient.PatchAsJsonAsync($"{Url}/{assignmentId}/{contractId}", request, JsonSerializerOptions);
 
                 if (!response.IsSuccessStatusCode)
-                    return Result.Failure(new Error(ErrorCode.UpdateHttp, await response.Content.ReadAsStringAsync()));
+                    return Result.Failure(new Error(AppErrors.UpdateHttp, await response.Content.ReadAsStringAsync()));
 
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при изменении данных в назначении!\n{ex}"));
+                return Result.Failure(new Error(AppErrors.UpdateHttp, $"Произошла ошибка при изменении данных в назначении!\n{ex}"));
             }
         }
 
@@ -33,13 +34,13 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
                 var response = await HttpClient.DeleteAsync($"{Url}/{assignmentId}");
 
                 if (!response.IsSuccessStatusCode)
-                    return Result.Failure(new Error(ErrorCode.DeleteHttp, await response.Content.ReadAsStringAsync()));
+                    return Result.Failure(new Error(AppErrors.DeleteHttp, await response.Content.ReadAsStringAsync()));
 
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                return Result.Failure(new Error(ErrorCode.DeleteHttp, $"Произошла ошибка при удалении назначения!\n{ex}"));
+                return Result.Failure(new Error(AppErrors.DeleteHttp, $"Произошла ошибка при удалении назначения!\n{ex}"));
             }
         }
     }

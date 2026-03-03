@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Shared.Contracts.Response.EmployeeService;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Genders.Get.GetById
 {

@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Directory.Service.Application.Features.AdmissionStatuses.Create
 {

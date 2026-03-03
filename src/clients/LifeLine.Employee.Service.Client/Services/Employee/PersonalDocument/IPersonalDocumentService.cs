@@ -1,7 +1,7 @@
 ﻿using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument
 {

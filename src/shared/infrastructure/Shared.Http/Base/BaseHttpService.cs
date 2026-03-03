@@ -1,6 +1,6 @@
-﻿using Shared.Kernel.Results;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
+using Terminex.Common.Results;
 
 namespace Shared.Http.Base
 {

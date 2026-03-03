@@ -1,6 +1,6 @@
 ﻿using Shared.Contracts.Request.UserService.SRP;
 using Shared.Contracts.Response.UserService;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;

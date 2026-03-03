@@ -1,6 +1,5 @@
 ﻿using MediatR;
-using Shared.Domain.ValueObjects;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Create
 {

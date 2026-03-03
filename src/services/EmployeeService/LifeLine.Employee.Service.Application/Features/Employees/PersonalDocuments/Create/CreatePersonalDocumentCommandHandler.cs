@@ -5,8 +5,9 @@ using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Domain.Exceptions;
+using Shared.Kernel.Errors;
 using Shared.Kernel.Exceptions;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Create
 {
@@ -39,7 +40,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.PersonalDocum
             catch (DomainException domainEX)
             {
                 if (domainEX is ExistPersonalDocumentException existPersDocEX)
-                    return Result.Failure(new Error(ErrorCode.ExistPersonalDocument, existPersDocEX.Message));
+                    return Result.Failure(new Error(AppErrors.ExistPersonalDocument, existPersDocEX.Message));
 
                 if (domainEX is EmptyIdentifierException emptyEX)
                 {

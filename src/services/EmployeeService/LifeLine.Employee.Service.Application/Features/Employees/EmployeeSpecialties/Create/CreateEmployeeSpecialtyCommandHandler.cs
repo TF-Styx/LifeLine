@@ -1,10 +1,9 @@
-﻿using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Add;
-using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
+﻿using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Kernel.Exceptions;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Create
 {

@@ -1,7 +1,7 @@
 ﻿using Shared.Contracts.Response.DirectoryService;
 using Shared.Http.Base;
-using Shared.Kernel.Results;
 using System.Text.Json;
+using Terminex.Common.Results;
 
 namespace LifeLine.Directory.Service.Client.Services.Department
 {

@@ -1,7 +1,8 @@
 ﻿using Shared.Contracts.Request.EmployeeService.EmployeeSpecialty;
 using Shared.Http.Base;
-using Shared.Kernel.Results;
 using System.Net.Http.Json;
+using Terminex.Common.Results;
+using Shared.Kernel.Errors;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
 {
@@ -15,13 +16,13 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
                 var response = await HttpClient.PatchAsJsonAsync($"{Url}", request, JsonSerializerOptions);
 
                 if (!response.IsSuccessStatusCode)
-                    return Result.Failure(new Error(ErrorCode.UpdateHttp, await response.Content.ReadAsStringAsync()));
+                    return Result.Failure(new Error(AppErrors.UpdateHttp, await response.Content.ReadAsStringAsync()));
 
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                return Result.Failure(new Error(ErrorCode.UpdateHttp, $"Произошла ошибка при изменении специальности!\n{ex}"));
+                return Result.Failure(new Error(AppErrors.UpdateHttp, $"Произошла ошибка при изменении специальности!\n{ex}"));
             }
         }
 
@@ -32,13 +33,13 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
                 var response = await HttpClient.DeleteAsync($"{Url}/{specialtyId}");
 
                 if (!response.IsSuccessStatusCode)
-                    return Result.Failure(new Error(ErrorCode.DeleteHttp, await response.Content.ReadAsStringAsync()));
+                    return Result.Failure(new Error(AppErrors.DeleteHttp, await response.Content.ReadAsStringAsync()));
 
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                return Result.Failure(new Error(ErrorCode.DeleteHttp, $"Произошла ошибка при удалении специальности!\n{ex}"));
+                return Result.Failure(new Error(AppErrors.DeleteHttp, $"Произошла ошибка при удалении специальности!\n{ex}"));
             }
         }
     }

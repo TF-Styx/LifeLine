@@ -6,8 +6,9 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Domain.Exceptions;
 using Shared.Domain.ValueObjects;
+using Shared.Kernel.Errors;
 using Shared.Kernel.Exceptions;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.ContactInformation.Create
 {
@@ -55,7 +56,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.ContactInform
             catch (DomainException domainEX)
             {
                 if (domainEX is ExistContactInformationException existContInfoEX)
-                    return Result.Failure(new Error(ErrorCode.ExistContactInformation, existContInfoEX.Message));
+                    return Result.Failure(new Error(AppErrors.ExistContactInformation, existContInfoEX.Message));
 
                 if (domainEX is EmptyIdentifierException emptyEX)
                 {

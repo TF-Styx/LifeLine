@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Shared.Contracts.Request.Shared;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.Create
 {
