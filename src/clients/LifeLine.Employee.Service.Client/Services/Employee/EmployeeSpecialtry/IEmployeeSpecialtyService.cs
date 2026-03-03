@@ -1,6 +1,6 @@
 ﻿using Shared.Contracts.Request.EmployeeService.EmployeeSpecialty;
 using Shared.Http.Interfaces;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
 {

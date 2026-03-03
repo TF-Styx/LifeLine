@@ -2,7 +2,8 @@
 using LifeLine.Directory.Service.Application.Common.Repository;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Shared.Kernel.Results;
+using Shared.Kernel.Errors;
+using Terminex.Common.Results;
 
 namespace LifeLine.Directory.Service.Application.Features.Departments.Delete
 {
@@ -27,7 +28,7 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Delete
                     return Result.Failure(new Error(ErrorCode.NotFound, "Запись департамента не найдена!"));
 
                 if (department.Positions.Any())
-                    return Result.Failure(new Error(ErrorCode.ExistDependentData, "У департамента существуют зависимые данные!"));
+                    return Result.Failure(new Error(AppErrors.ExistDependentData, "У департамента существуют зависимые данные!"));
 
                 _repository.Remove(department);
 

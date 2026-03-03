@@ -1,4 +1,4 @@
-﻿using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Add;
+﻿using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Update;
 using MediatR;

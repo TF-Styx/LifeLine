@@ -2,8 +2,9 @@
 using Shared.Client.Security.Abstraction;
 using Shared.Contracts.Desktop;
 using Shared.Contracts.Request.UserService.SRP;
-using Shared.Kernel.Results;
 using System.IdentityModel.Tokens.Jwt;
+using Terminex.Common.Results;
+using Shared.Kernel.Errors;
 
 namespace LifeLine.User.Service.Client.Services
 {
@@ -42,7 +43,7 @@ namespace LifeLine.User.Service.Client.Services
             bool serverVerification = _srpService.VerifyServerM2(A, M1, S, verifyResult.Value.M2!);
 
             if (!serverVerification)
-                return Result.Failure(new Error(ErrorCode.SRPVerificationFailed, "Сервер не прошел верификацию!"));
+                return Result.Failure(new Error(AppErrors.SRPVerificationFailed, "Сервер не прошел верификацию!"));
 
             _userContext.SetUser(new CurrentUser(ExtractUserIdFromAccessToken(verifyResult.Value.AccessToken).ToString()));
 

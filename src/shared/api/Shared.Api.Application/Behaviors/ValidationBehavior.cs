@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 using System.Reflection;
 
 namespace Shared.Api.Application.Behaviors

@@ -8,7 +8,8 @@ using LifeLine.Employee.Service.Application.Features.Employees.ContactInformatio
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts.Request.EmployeeService.ContactInformation;
-using Shared.Kernel.Results;
+using Shared.Kernel.Errors;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
@@ -32,14 +33,13 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     {
                         var error = errors.FirstOrDefault();
 
-                        Func<IActionResult> func = error?.ErrorCode switch
+                        return error?.ErrorCode switch
                         {
-                            ErrorCode.ExistContactInformation => () => StatusCode(StatusCodes.Status409Conflict, error.Message),
+                            var code when code == AppErrors.ExistContactInformation => 
+                                StatusCode(StatusCodes.Status409Conflict, error.Message),
 
-                            _ => () => BadRequest(errors)
+                            _ => BadRequest(errors)
                         };
-
-                        return func.Invoke();
                     } 
                 );
         }

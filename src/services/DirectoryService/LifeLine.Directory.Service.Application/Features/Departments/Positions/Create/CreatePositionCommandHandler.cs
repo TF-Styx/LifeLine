@@ -1,12 +1,9 @@
 ﻿using LifeLine.Directory.Service.Application.Common;
 using LifeLine.Directory.Service.Application.Common.Repository;
-using LifeLine.Directory.Service.Application.Features.Departments.Create;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Shared.Domain.Exceptions;
-using Shared.Domain.ValueObjects;
 using Shared.Kernel.Exceptions;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Directory.Service.Application.Features.Departments.Positions.Create
 {

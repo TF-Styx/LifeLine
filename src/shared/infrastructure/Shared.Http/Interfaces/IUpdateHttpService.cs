@@ -1,4 +1,4 @@
-﻿using Shared.Kernel.Results;
+﻿using Terminex.Common.Results;
 
 namespace Shared.Http.Interfaces
 {

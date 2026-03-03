@@ -5,8 +5,9 @@ using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Domain.Exceptions;
+using Shared.Kernel.Errors;
 using Shared.Kernel.Exceptions;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Create
 {
@@ -50,7 +51,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.EducationDocu
             catch (DomainException domainEX)
             {
                 if (domainEX is ExistContactInformationException existContInfoEX)
-                    return Result.Failure(new Error(ErrorCode.ExistEducationInformation, existContInfoEX.Message));
+                    return Result.Failure(new Error(AppErrors.ExistEducationInformation, existContInfoEX.Message));
 
                 if (domainEX is EmptyIdentifierException emptyEX)
                 {

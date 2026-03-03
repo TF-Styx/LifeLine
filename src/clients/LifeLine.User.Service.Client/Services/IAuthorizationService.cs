@@ -1,5 +1,4 @@
-﻿using Shared.Contracts.Desktop;
-using Shared.Kernel.Results;
+﻿using Terminex.Common.Results;
 
 namespace LifeLine.User.Service.Client.Services
 {

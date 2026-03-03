@@ -3,7 +3,7 @@ using LifeLine.Directory.Service.Application.Common.Repository;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Kernel.Exceptions;
-using Shared.Kernel.Results;
+using Terminex.Common.Results;
 
 namespace LifeLine.Directory.Service.Application.Features.Departments.Positions.Update
 {
