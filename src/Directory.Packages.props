@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="Terminex.Common" Version="1.0.0" />
+    <PackageVersion Include="Terminex.Common" Version="1.0.1" />
     <!-- WPF.Admin & HttpClient -->
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
