@@ -10,14 +10,14 @@
   <ItemGroup>
     <Folder Include="Resources\Images\" />
     <Folder Include="Services\DialogService\" />
-    <Folder Include="Services\FileDialog\" />
     <Folder Include="Builder\" />
     <Folder Include="Services\Authentication\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf"/>
-    <PackageReference Include="System.Drawing.Common"/>
+	<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+    <PackageReference Include="System.Drawing.Common" />
   </ItemGroup>
 
   <ItemGroup>
