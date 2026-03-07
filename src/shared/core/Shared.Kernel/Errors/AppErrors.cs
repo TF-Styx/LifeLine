@@ -12,5 +12,6 @@ namespace Shared.Kernel.Errors
         public static readonly ErrorCode ExistContactInformation = ErrorCode.Custom(nameof(ExistContactInformation), 10004);
         public static readonly ErrorCode ExistEducationInformation = ErrorCode.Custom(nameof(ExistEducationInformation), 10005);
         public static readonly ErrorCode ExistPersonalDocument = ErrorCode.Custom(nameof(ExistPersonalDocument), 10005);
+        public static readonly ErrorCode Upload = ErrorCode.Custom(nameof(Upload), 10006);
     }
 }
