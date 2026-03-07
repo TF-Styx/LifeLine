@@ -15,6 +15,7 @@ using LifeLine.Employee.Service.Client.Services.Employee.WorkPermit;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.Employee.Service.Client.Services.Specialty;
+using LifeLine.File.Service.Client;
 using LifeLine.User.Service.Client.ApiClients;
 using LifeLine.User.Service.Client.Services;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,8 @@ namespace LifeLine.HrPanel.Desktop.Ioc
     {
         public static IServiceCollection UseHrPanelServices(this ServiceCollection services, IConfiguration configuration)
         {
+            services.UseFileService(configuration);
+
             services.AddSingleton<INavigationPage, NavigationPage>();
             services.AddSingleton<INavigationWindow, NavigationWindow>();
 
