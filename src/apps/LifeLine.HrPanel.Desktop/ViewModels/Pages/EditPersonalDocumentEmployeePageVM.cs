@@ -6,8 +6,10 @@ using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
+using Shared.WPF.Constants;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
+using Shared.WPF.Helpers;
 using Shared.WPF.Services.FileDialog;
 using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.ViewModels.Abstract;
@@ -239,7 +241,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         public RelayCommand SelectFileCommand { get; private set; }
         private void Execute_SelectFileCommand()
-            => FilePath = _fileDialogService.GetFile("Выберите файл", "Изображения (*.jpg; *.jpeg; *.png)|*.jpg; *.jpeg; *.png");
+            => FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.PERSONAL_DOCUMENT}", FileFilters.Images);
         private bool CanExecute_SelectFileCommand() => true;
     }
 }
