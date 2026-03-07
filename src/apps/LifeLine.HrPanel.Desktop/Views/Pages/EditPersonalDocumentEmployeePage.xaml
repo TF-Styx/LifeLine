@@ -46,6 +46,11 @@
                     <!-- Данные документа -->
                     <cc:PlaceHolderTextBox PlaceHolder="Номер документа" Text="{Binding PersonalDocumentDisplay.DocumentNumber}" Margin="0 0 0 5" Style="{StaticResource TextBox.PlaceHolder}"/>
                     <cc:PlaceHolderTextBox PlaceHolder="Серия документа" Text="{Binding PersonalDocumentDisplay.DocumentSeries}" Margin="0 0 0 0" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    
+                    <DockPanel>
+                        <Button Content="+" DockPanel.Dock="Right" Command="{Binding SelectFileCommand}"/>
+                        <cc:PlaceHolderTextBox PlaceHolder="Файл" Text="{Binding FilePath}" Margin="0 10 0 0" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    </DockPanel>
                 </StackPanel>
             </Border>
         </ScrollViewer>

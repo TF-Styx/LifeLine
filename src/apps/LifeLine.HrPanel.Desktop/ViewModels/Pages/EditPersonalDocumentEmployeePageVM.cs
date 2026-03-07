@@ -1,11 +1,14 @@
 ﻿using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
+using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.EmployeeService.PersonalDocument;
+using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
+using Shared.WPF.Services.FileDialog;
 using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
@@ -16,23 +19,30 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
     public sealed class EditPersonalDocumentEmployeePageVM : BasePageViewModel, IUpdatable, IAsyncInitializable
     {
         private readonly INavigationPage _navigationPage;
+        private readonly IFileStorageService _fileStorageService;
         private readonly IDocumentTypeReadOnlyService _documentTypeReadOnlyService;
         private readonly IPersonalDocumentApiServiceFactory _personalDocumentApiServiceFactory;
+        private readonly IFileDialogService _fileDialogService;
 
         private bool _isEditMode;
 
         public EditPersonalDocumentEmployeePageVM
             (
                 INavigationPage navigationPage,
+                IFileDialogService fileDialogService,
+                IFileStorageService fileStorageService,
                 IDocumentTypeReadOnlyService documentTypeReadOnlyService,
                 IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory
             )
         {
             _navigationPage = navigationPage;
+            _fileDialogService = fileDialogService;
+            _fileStorageService = fileStorageService;
             _documentTypeReadOnlyService = documentTypeReadOnlyService;
             _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
 
             UpdatePersonalDocumentEmployeeCommand = new RelayCommandAsync(Execute_UpdatePersonalDocumentEmployeeCommand, CanExecute_UpdatePersonalDocumentEmployeeCommand);
+            SelectFileCommand = new RelayCommand(Execute_SelectFileCommand, CanExecute_SelectFileCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -55,7 +65,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             IsInitialize = true;
         }
 
-        // 2. Исправляем метод получения данных
         public void Update<TData>(TData value, TransmittingParameter parameter)
         {
             if (value is ValueTuple<EmployeeDetailsDisplay, PersonalDocumentDisplay?> tuple)
@@ -100,7 +109,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public DocumentTypeDisplay? SelectedDocumentType
         {
             get => _selectedDocumentType;
-            set => SetProperty(ref _selectedDocumentType, value);
+            set
+            {
+                SetProperty(ref _selectedDocumentType, value);
+                UpdatePersonalDocumentEmployeeCommand?.RaiseCanExecuteChanged();
+            }
         }
 
         public ObservableCollection<DocumentTypeDisplay> DocumentTypes { get; private init; } = [];
@@ -122,20 +135,43 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
-        public RelayCommandAsync UpdatePersonalDocumentEmployeeCommand { get; private set; }
+        public string? FilePath
+        {
+            get => field;
+            set
+            {
+                SetProperty(ref field, value);
+                UpdatePersonalDocumentEmployeeCommand?.RaiseCanExecuteChanged();
+            }
+        }
 
+        public RelayCommandAsync UpdatePersonalDocumentEmployeeCommand { get; private set; }
         private async Task Execute_UpdatePersonalDocumentEmployeeCommand()
         {
-            // Простейшая валидация
-            if (SelectedDocumentType == null)
-            {
-                MessageBox.Show("Выберите тип документа");
-                return;
-            }
-
             if (_isEditMode)
             {
                 // UPDATE
+                var resultMiniO = await _fileStorageService.UploadFileAsync
+                    (
+                        new UploadFileRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                SelectedDocumentType!.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        CurrentEmployeeDetails.EmployeeId, 
+                                        EmployeeFolderType.PersonalDocument
+                                    ),
+                                FilePath!
+                            )
+                    );
+
+                if (resultMiniO.IsFailure)
+                {
+                    MessageBox.Show(resultMiniO.StringMessage);
+                    return;
+                }
+
                 var resultUpdate = await _personalDocumentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdatePersonalDocumentAsync
                 (
                     PersonalDocumentDisplay.PersonalDocumentId,
@@ -144,6 +180,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         SelectedDocumentType.Id,
                         PersonalDocumentDisplay.DocumentNumber,
                         PersonalDocumentDisplay.DocumentSeries
+                        // TODO : Добавить id для pdf файла 
                     )
                 );
 
@@ -155,6 +192,27 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             else
             {
                 // CREATE
+                var resultMiniO = await _fileStorageService.UploadFileAsync
+                    (
+                        new UploadFileRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                SelectedDocumentType!.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        CurrentEmployeeDetails.EmployeeId, 
+                                        EmployeeFolderType.PersonalDocument
+                                    ),
+                                FilePath!
+                            )
+                    );
+
+                if (resultMiniO.IsFailure)
+                {
+                    MessageBox.Show(resultMiniO.StringMessage);
+                    return;
+                }
+
                 var resultCreate = await _personalDocumentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).CreateAsync
                 (
                     new CreatePersonalDocumentRequest
@@ -162,6 +220,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         Guid.Parse(SelectedDocumentType.Id),
                         PersonalDocumentDisplay.DocumentNumber,
                         PersonalDocumentDisplay.DocumentSeries
+                        // TODO : Добавить id для pdf файла 
                     )
                 );
 
@@ -175,7 +234,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     MessageBox.Show($"Внесение персональных документов: {resultCreate.StringMessage}");
             }
         }
+        private bool CanExecute_UpdatePersonalDocumentEmployeeCommand() 
+            => SelectedDocumentType != null && !string.IsNullOrWhiteSpace(FilePath);
 
-        private bool CanExecute_UpdatePersonalDocumentEmployeeCommand() => true;
+        public RelayCommand SelectFileCommand { get; private set; }
+        private void Execute_SelectFileCommand()
+            => FilePath = _fileDialogService.GetFile("Выберите файл", "Изображения (*.jpg; *.jpeg; *.png)|*.jpg; *.jpeg; *.png");
+        private bool CanExecute_SelectFileCommand() => true;
     }
 }
