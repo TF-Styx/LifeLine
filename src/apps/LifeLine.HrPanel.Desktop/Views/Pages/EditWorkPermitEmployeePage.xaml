@@ -25,57 +25,75 @@
         </Style>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{StaticResource App.MainColor}">
-        <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5" BorderThickness="0">
-            <StackPanel Margin="5">
-                <!-- Сертификаты / Аккредитация -->
-                <TextBlock Text="Сертификаты / Аккредитация" HorizontalAlignment="Center" FontSize="20" Margin="0 0 0 10"/>
-                
-                <!-- Тип документа / Статус -->
-                <ComboBox Grid.Column="0" 
-                          ItemsSource="{Binding PermitTypes}" 
-                          SelectedItem="{Binding WorkPermitDisplay.PermitType}"
-                          DisplayMemberPath="Name" 
-                          Margin="0 0 0 5"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Background="{StaticResource App.MainColor}">
+            <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5" BorderThickness="0">
+                <StackPanel Margin="5">
+                    <!-- Сертификаты / Аккредитация -->
+                    <TextBlock Text="Сертификаты / Аккредитация" HorizontalAlignment="Center" FontSize="20" Margin="0 0 0 10"/>
 
-                <ComboBox Grid.Column="1" 
-                          ItemsSource="{Binding AdmissionStatuses}" 
-                          SelectedItem="{Binding WorkPermitDisplay.AdmissionStatus}"
-                          DisplayMemberPath="Name" 
-                          Margin="0 5 0 10"/>
+                    <!-- Тип документа / Статус -->
+                    <ComboBox Grid.Column="0" 
+                              ItemsSource="{Binding PermitTypes}" 
+                              SelectedItem="{Binding WorkPermitDisplay.PermitType}"
+                              DisplayMemberPath="Name" 
+                              Margin="0 0 0 5"/>
 
-                <!-- Наименование документа / Наименование специальности -->
-                <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование документа*" Margin="0 0 0 5"
-                                       Text="{Binding WorkPermitDisplay.WorkPermitName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    <ComboBox Grid.Column="1" 
+                              ItemsSource="{Binding AdmissionStatuses}" 
+                              SelectedItem="{Binding WorkPermitDisplay.AdmissionStatus}"
+                              DisplayMemberPath="Name" 
+                              Margin="0 5 0 10"/>
 
-                <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Наименование специальности*" Margin="0 0 0 5"
-                                       Text="{Binding WorkPermitDisplay.SpecialtyName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    <!-- Наименование документа / Наименование специальности -->
+                    <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование документа*" Margin="0 0 0 5"
+                                           Text="{Binding WorkPermitDisplay.WorkPermitName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                <!-- Серия / Номер -->
-                <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Серия" Margin="0 0 0 5"
-                                       Text="{Binding WorkPermitDisplay.DocumentSeries, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Наименование специальности*" Margin="0 0 0 5"
+                                           Text="{Binding WorkPermitDisplay.SpecialtyName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Номер*" Margin="0 0 0 5"
-                                       Text="{Binding WorkPermitDisplay.WorkPermitNumber, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    <!-- Серия / Номер -->
+                    <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Серия" Margin="0 0 0 5"
+                                           Text="{Binding WorkPermitDisplay.DocumentSeries, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                <!-- Номер протокола / Орган выдающий документы -->
-                <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Номер протокола" Margin="0 0 0 5"
-                                       Text="{Binding WorkPermitDisplay.ProtocolNumber}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Номер*" Margin="0 0 0 5"
+                                           Text="{Binding WorkPermitDisplay.WorkPermitNumber, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Орган выдающий документы*" Margin="0 0 0 10"
-                                       Text="{Binding WorkPermitDisplay.IssuingAuthority}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    <!-- Номер протокола / Орган выдающий документы -->
+                    <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Номер протокола" Margin="0 0 0 5"
+                                           Text="{Binding WorkPermitDisplay.ProtocolNumber}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                <!-- Дата выдачи / Дата окончания -->
-                <DatePicker Grid.Column="0" SelectedDate="{Binding WorkPermitDisplay.IssueDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 10"/>
+                    <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Орган выдающий документы*" Margin="0 0 0 10"
+                                           Text="{Binding WorkPermitDisplay.IssuingAuthority}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                <DatePicker Grid.Column="1" SelectedDate="{Binding WorkPermitDisplay.ExpiryDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 10"/>
+                    <!-- Дата выдачи / Дата окончания -->
+                    <DatePicker Grid.Column="0" SelectedDate="{Binding WorkPermitDisplay.IssueDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 10"/>
 
-                <Button Content="Сохранить"
-                        HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                        Width="250" Height="40"
-                        Command="{Binding UpdateWorkPermitEmployeeCommand}"
-                        Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
-            </StackPanel>
-        </Border>
-    </ScrollViewer>
+                    <DatePicker Grid.Column="1" SelectedDate="{Binding WorkPermitDisplay.ExpiryDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 10"/>
+
+                    <DockPanel Margin="0 10 0 0">
+                        <Button Width="25" Foreground="#F06870" 
+                                Command="{Binding SelectFileCommand}" DockPanel.Dock="Right"
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource AddIcon}"/>
+                            <Button.ToolTip>
+                                <TextBlock Text="Добавить специальность"/>
+                            </Button.ToolTip>
+                        </Button>
+                        <cc:PlaceHolderTextBox PlaceHolder="Файл" Text="{Binding FilePath}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+
+        <Button Content="Сохранить" Grid.Row="1" VerticalAlignment="Bottom" Height="40"
+                Command="{Binding UpdateWorkPermitEmployeeCommand}"
+                Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+
+    </Grid>
 </Page>

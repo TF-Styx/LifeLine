@@ -1,12 +1,17 @@
 ﻿using LifeLine.Directory.Service.Client.Services.AdmissionStatus;
 using LifeLine.Directory.Service.Client.Services.PermitType;
 using LifeLine.Employee.Service.Client.Services.Employee.WorkPermit;
+using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.EmployeeService.WorkPermit;
+using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
+using Shared.WPF.Constants;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
+using Shared.WPF.Helpers;
+using Shared.WPF.Services.FileDialog;
 using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
@@ -18,9 +23,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
     {
         private readonly INavigationPage _navigationPage;
 
+        private readonly IFileDialogService _fileDialogService;
+        private readonly IFileStorageService _fileStorageService;
         private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
-        private readonly IAdmissionStatusReadOnlyService _admissionStatusReadOnlyService;
         private readonly IWorkPermitApiServiceFactory _workPermitApiServiceFactory;
+        private readonly IAdmissionStatusReadOnlyService _admissionStatusReadOnlyService;
 
         private bool _isEditMode;
 
@@ -28,6 +35,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             (
                 INavigationPage navigationPage,
 
+                IFileDialogService fileDialogService,
+                IFileStorageService fileStorageService,
                 IPermitTypeReadOnlyService permitTypeReadOnlyService,
                 IAdmissionStatusReadOnlyService admissionStatusReadOnlyService,
                 IWorkPermitApiServiceFactory workPermitApiServiceFactory
@@ -35,11 +44,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             _navigationPage = navigationPage;
 
+            _fileDialogService = fileDialogService;
+            _fileStorageService = fileStorageService;
             _permitTypeReadOnlyService = permitTypeReadOnlyService;
             _admissionStatusReadOnlyService = admissionStatusReadOnlyService;
             _workPermitApiServiceFactory = workPermitApiServiceFactory;
 
             UpdateWorkPermitEmployeeCommand = new RelayCommandAsync(Execute_UpdateWorkPermitEmployeeCommand, CanExecute_UpdateWorkPermitEmployeeCommand);
+            SelectFileCommand = new RelayCommand(Execute_SelectFileCommand, CanExecute_SelectFileCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -149,6 +161,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     AdmissionStatuses
                 );
 
+        public string? FilePath
+        {
+            get => field;
+            set
+            {
+                SetProperty(ref field, value);
+                UpdateWorkPermitEmployeeCommand?.RaiseCanExecuteChanged();
+            }
+        }
+
         #endregion
 
         public RelayCommandAsync? UpdateWorkPermitEmployeeCommand { get; private set; }
@@ -156,6 +178,28 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             if (_isEditMode)
             {
+                // UPDATE
+                var resultMiniO = await _fileStorageService.UploadFileAsync
+                    (
+                        new UploadFileRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                WorkPermitDisplay.WorkPermitName,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        CurrentEmployeeDetails.EmployeeId,
+                                        EmployeeFolderType.WorkPermit
+                                    ),
+                                FilePath!
+                            )
+                    );
+
+                if (resultMiniO.IsFailure)
+                {
+                    MessageBox.Show(resultMiniO.StringMessage);
+                    return;
+                }
+
                 var resultUpdate = await _workPermitApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdateWorkPermitAsync
                 (
                     Guid.Parse(WorkPermitDisplay.Id),
@@ -181,6 +225,28 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             }
             else
             {
+                // CREATE
+                var resultMiniO = await _fileStorageService.UploadFileAsync
+                    (
+                        new UploadFileRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                WorkPermitDisplay.WorkPermitName,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        CurrentEmployeeDetails.EmployeeId,
+                                        EmployeeFolderType.WorkPermit
+                                    ),
+                                FilePath!
+                            )
+                    );
+
+                if (resultMiniO.IsFailure)
+                {
+                    MessageBox.Show(resultMiniO.StringMessage);
+                    return;
+                }
+
                 var resultCreate =  await _workPermitApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).CreateAsync
                 (
                     new CreateWorkPermitRequest
@@ -204,6 +270,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     MessageBox.Show($"Внесение разрешения на работу: {resultCreate.StringMessage}");
             }
         }
-        private bool CanExecute_UpdateWorkPermitEmployeeCommand() => true; /*WorkPermitDisplay.PermitType != null && WorkPermitDisplay.AdmissionStatus != null;*/
+        private bool CanExecute_UpdateWorkPermitEmployeeCommand() 
+            => WorkPermitDisplay.PermitType != null && WorkPermitDisplay.AdmissionStatus != null;
+
+        public RelayCommand SelectFileCommand { get; private set; }
+        private void Execute_SelectFileCommand()
+            => FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.WORK_PERMIT}", FileFilters.Images);
+        private bool CanExecute_SelectFileCommand() => true;
     }
 }
