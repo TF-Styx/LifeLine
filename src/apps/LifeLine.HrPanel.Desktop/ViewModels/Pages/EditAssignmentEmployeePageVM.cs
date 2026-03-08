@@ -4,12 +4,17 @@ using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.Employee.Assignment;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
+using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.EmployeeService.Assignment;
+using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
+using Shared.WPF.Constants;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
+using Shared.WPF.Helpers;
+using Shared.WPF.Services.FileDialog;
 using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
@@ -22,6 +27,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly INavigationPage _navigationPage;
 
         private readonly IEmployeeService _employeeService;
+        private readonly IFileDialogService _fileDialogService;
+        private readonly IFileStorageService _fileStorageService;
         private readonly IStatusReadOnlyService _statusReadOnlyService;
         private readonly IDepartmentReadOnlyService _departmentReadOnlyService;
         private readonly IAssignmentApiServiceFactory _assignmentApiServiceFactory;
@@ -35,6 +42,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 INavigationPage navigationPage,
 
                 IEmployeeService employeeService,
+                IFileDialogService fileDialogService,
+                IFileStorageService fileStorageService,
                 IStatusReadOnlyService statusReadOnlyService,
                 IDepartmentReadOnlyService departmentReadOnlyService,
                 IAssignmentApiServiceFactory assignmentApiServiceFactory,
@@ -45,6 +54,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _navigationPage = navigationPage;
 
             _employeeService = employeeService;
+            _fileDialogService = fileDialogService;
+            _fileStorageService = fileStorageService;
             _statusReadOnlyService = statusReadOnlyService;
             _departmentReadOnlyService = departmentReadOnlyService;
             _assignmentApiServiceFactory = assignmentApiServiceFactory;
@@ -52,6 +63,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _positionReadOnlyApiServiceFactory = positionReadOnlyApiServiceFactory;
 
             UpdateAssignmentEmployeeCommand = new RelayCommandAsync(Execute_UpdateAssignmentEmployeeCommand, CanExecute_UpdateAssignmentEmployeeCommand);
+            SelectFileCommand = new RelayCommand(Execute_SelectFileCommand, CanExecute_SelectFileCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -248,6 +260,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 // 2. Присваиваем новое значение
                 SetProperty(ref _assignmentContractDisplay, value);
 
+                UpdateAssignmentEmployeeCommand?.RaiseCanExecuteChanged();
+
                 // 3. Подписываемся на новый объект, ТОЛЬКО если он не null
                 if (_assignmentContractDisplay != null)
                     _assignmentContractDisplay.PropertyChanged += OnAssignmentContractDisplayChanged;
@@ -306,6 +320,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 );
         }
 
+        public string? FilePath
+        {
+            get => field;
+            set
+            {
+                SetProperty( ref field, value );
+                UpdateAssignmentEmployeeCommand?.RaiseCanExecuteChanged();
+            }
+        }
+
         #endregion
 
         public RelayCommandAsync? UpdateAssignmentEmployeeCommand { get; private set; }
@@ -313,8 +337,30 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             if (_isEditMode)
             {
+                // UPDATE
                 try
                 {
+                    var resultMiniO = await _fileStorageService.UploadFileAsync
+                        (
+                            new UploadFileRequest
+                                (
+                                    FileConst.BUCKET_NAME,
+                                    AssignmentContractDisplay.Position.Name,
+                                    FileConst.BuildEmployeeFolder
+                                        (
+                                            CurrentEmployeeDetails.EmployeeId,
+                                            EmployeeFolderType.Assignment
+                                        ),
+                                    FilePath!
+                                )
+                        );
+
+                    if (resultMiniO.IsFailure)
+                    {
+                        MessageBox.Show(resultMiniO.StringMessage);
+                        return;
+                    }
+
                     if (AssignmentContractDisplay == null)
                     {
                         MessageBox.Show("Данные о назначении не загружены");
@@ -365,6 +411,28 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             }
             else
             {
+                // CREATE
+                var resultMiniO = await _fileStorageService.UploadFileAsync
+                    (
+                        new UploadFileRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                AssignmentContractDisplay.Position.Name,
+                                FileConst.BuildPatientFolder
+                                    (
+                                        CurrentEmployeeDetails.EmployeeId,
+                                        EmployeeFolderType.Assignment
+                                    ),
+                                FilePath!
+                            )
+                    );
+
+                if (resultMiniO.IsFailure)
+                {
+                    MessageBox.Show(resultMiniO.StringMessage);
+                    return;
+                }
+
                 var resultCreate = await _assignmentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).CreateAsync
                     (
                         new CreateAssignmentRequest
@@ -432,5 +500,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             //   AssignmentContractDisplay.StartDate != DateTime.MinValue &&
             //   AssignmentContractDisplay.EndDate != DateTime.MinValue &&
             //   AssignmentContractDisplay.Salary > 0;
+
+
+        public RelayCommand SelectFileCommand { get; private set; }
+        private void Execute_SelectFileCommand()
+            => FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
+        private bool CanExecute_SelectFileCommand() => true;
     }
 }
