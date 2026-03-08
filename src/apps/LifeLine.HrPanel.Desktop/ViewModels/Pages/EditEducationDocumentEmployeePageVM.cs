@@ -1,12 +1,17 @@
 ﻿using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
 using LifeLine.Employee.Service.Client.Services.Employee.EducationDocument;
+using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.EmployeeService.EducationDocument;
+using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
+using Shared.WPF.Constants;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
+using Shared.WPF.Helpers;
+using Shared.WPF.Services.FileDialog;
 using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
@@ -18,6 +23,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
     {
         private readonly INavigationPage _navigationPage;
 
+        private readonly IFileDialogService _fileDialogService;
+        private readonly IFileStorageService _fileStorageService;
         private readonly IDocumentTypeReadOnlyService _documentTypeReadOnlyService;
         private readonly IEducationLevelReadOnlyService _educationLevelReadOnlyService;
         private readonly IEducationDocumentApiServiceFactory _educationDocumentApiServiceFactory;
@@ -28,6 +35,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             (
                 INavigationPage navigationPage,
 
+                IFileDialogService fileDialogService,
+                IFileStorageService fileStorageService,
                 IDocumentTypeReadOnlyService documentTypeReadOnlyService,
                 IEducationLevelReadOnlyService educationLevelReadOnlyService,
                 IEducationDocumentApiServiceFactory educationDocumentApiServiceFactory
@@ -35,11 +44,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             _navigationPage = navigationPage;
 
+            _fileDialogService = fileDialogService;
+            _fileStorageService = fileStorageService;
             _documentTypeReadOnlyService = documentTypeReadOnlyService;
             _educationLevelReadOnlyService = educationLevelReadOnlyService;
             _educationDocumentApiServiceFactory = educationDocumentApiServiceFactory;
 
             UpdateEducationDocumentEmployeeCommand = new RelayCommandAsync(Execute_UpdateEducationDocumentEmployeeCommand, CanExecute_UpdateEducationDocumentEmployeeCommand);
+            SelectFileCommand = new RelayCommand(Execute_SelectFileCommand, CanExecute_SelectFileCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -112,7 +124,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public DocumentTypeDisplay? SelectedDocumentType
         {
             get => _selectedDocumentType;
-            set => SetProperty(ref _selectedDocumentType, value);
+            set
+            {
+                SetProperty(ref _selectedDocumentType, value);
+                UpdateEducationDocumentEmployeeCommand?.RaiseCanExecuteChanged();
+            }
         }
 
         public ObservableCollection<DocumentTypeDisplay> DocumentTypes { get; private init; } = [];
@@ -127,7 +143,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public EducationLevelDisplay? SelectedEducationLevel
         {
             get => _selectedEducationLevel;
-            set => SetProperty(ref _selectedEducationLevel, value);
+            set
+            {
+                SetProperty(ref _selectedEducationLevel, value);
+                UpdateEducationDocumentEmployeeCommand?.RaiseCanExecuteChanged();
+            }
         }
 
         public ObservableCollection<EducationLevelDisplay> EducationLevels { get; private init; } = [];
@@ -165,6 +185,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                        DocumentTypes
                    );
 
+        public string? FilePath
+        {
+            get => field;
+            set
+            {
+                SetProperty(ref field, value);
+                UpdateEducationDocumentEmployeeCommand?.RaiseCanExecuteChanged();
+            }
+        }
+
         #endregion
 
         public RelayCommandAsync UpdateEducationDocumentEmployeeCommand { get; private set; }
@@ -172,6 +202,28 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             if (_isEditMode)
             {
+                // UPDATE
+                var resultMiniO = await _fileStorageService.UploadFileAsync
+                    (
+                        new UploadFileRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                SelectedDocumentType!.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        CurrentEmployeeDetails.EmployeeId,
+                                        EmployeeFolderType.EducationDocument
+                                    ),
+                                FilePath!
+                            )
+                    );
+
+                if (resultMiniO.IsFailure)
+                {
+                    MessageBox.Show(resultMiniO.StringMessage);
+                    return;
+                }
+
                 var resultUpdate = await _educationDocumentApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).UpdateEducationDocumentAsync
                 (
                     Guid.Parse(EducationDocumentDisplay.EducationDocumentId),
@@ -196,6 +248,28 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             }
             else
             {
+                // CREATE
+                var resultMiniO = await _fileStorageService.UploadFileAsync
+                    (
+                        new UploadFileRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                SelectedDocumentType!.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        CurrentEmployeeDetails.EmployeeId,
+                                        EmployeeFolderType.EducationDocument
+                                    ),
+                                FilePath!
+                            )
+                    );
+
+                if (resultMiniO.IsFailure)
+                {
+                    MessageBox.Show(resultMiniO.StringMessage);
+                    return;
+                }
+
                 double totalHours = 0;
                 if (EducationDocumentDisplay.TotalHours != null)
                     totalHours = EducationDocumentDisplay.TotalHours.Value.TotalHours;
@@ -227,6 +301,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     MessageBox.Show($"Внесение послеучебных документов: {resultCreate.StringMessage}");
             }
         }
-        private bool CanExecute_UpdateEducationDocumentEmployeeCommand() => true; /*SelectedEducationLevel != null && SelectedDocumentType != null;*/
+        private bool CanExecute_UpdateEducationDocumentEmployeeCommand() 
+            => SelectedEducationLevel != null && SelectedDocumentType != null;
+
+        public RelayCommand SelectFileCommand { get; private set; }
+        private void Execute_SelectFileCommand()
+            => FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.EDUCATION_DOCUMENT}", FileFilters.Images);
+        private bool CanExecute_SelectFileCommand() => true;
     }
 }
