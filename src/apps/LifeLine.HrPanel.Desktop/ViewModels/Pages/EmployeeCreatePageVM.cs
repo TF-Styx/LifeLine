@@ -9,12 +9,16 @@ using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.Employee.Service.Client.Services.Specialty;
+using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.EmployeeService.Employee;
-using Shared.Contracts.Response.DirectoryService;
+using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
+using Shared.WPF.Constants;
 using Shared.WPF.Extensions;
+using Shared.WPF.Helpers;
+using Shared.WPF.Services.FileDialog;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -24,6 +28,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
     internal sealed class EmployeeCreatePageVM : BasePageViewModel, IAsyncInitializable
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IFileDialogService _fileDialogService;
+        private readonly IFileStorageService _fileStorageService;
         private readonly IGenderReadOnlyService _genderReadOnlyService;
         private readonly IStatusReadOnlyService _statusReadOnlyService;
         private readonly ISpecialtyReadOnlyService _specialtyReadOnlyService;
@@ -37,7 +43,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         public EmployeeCreatePageVM
             (
-                IEmployeeService employeeService, 
+                IEmployeeService employeeService,
+                IFileDialogService fileDialogService,
+                IFileStorageService fileStorageService,
                 IGenderReadOnlyService genderReadOnlyService,
                 IStatusReadOnlyService statusReadOnlyService,
                 ISpecialtyReadOnlyService specialtyReadOnlyService,
@@ -51,6 +59,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             )
         {
             _employeeService = employeeService;
+            _fileDialogService = fileDialogService;
+            _fileStorageService = fileStorageService;
             _genderReadOnlyService = genderReadOnlyService;
             _statusReadOnlyService = statusReadOnlyService;
             _specialtyReadOnlyService = specialtyReadOnlyService;
@@ -72,18 +82,22 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             AddPersonalDocumentCommand = new RelayCommand(Execute_AddPersonalDocumentCommand, CanExecute_AddPersonalDocumentCommand);
             DeletePersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand);
+            SelectPersonalDocumentFileCommand = new RelayCommand(Execute_SelectPersonalDocumentFileCommand);
 
             AddEducationDocumentCommand = new RelayCommand(Execute_AddEducationDocumentCommand, CanExecute_AddEducationDocumentCommand);
             DeleteEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Execute_DeleteEducationDocumentCommand);
+            SelectEducationDocumentFileCommand = new RelayCommand(Execute_SelectEducationDocumentFileCommand);
 
             AddWorkPermitCommand = new RelayCommand(Execute_AddWorkPermitCommand, CanExecute_AddWorkPermitCommand);
             DeleteWorkPermitCommand = new RelayCommand<WorkPermitDisplay>(Execute_DeleteWorkPermitCommand);
+            SelectWorkPermitFileCommand = new RelayCommand(Execute_SelectWorkPermitFileCommand);
 
             AddEmployeeSpecialtyCommand = new RelayCommand(Execute_AddEmployeeSpecialtyCommand, CanExecute_AddEmployeeSpecialtyCommand);
             DeleteEmployeeSpecialtyCommand = new RelayCommand<SpecialtyResponse>(Execute_DeleteEmployeeSpecialtyCommand);
 
             AddAssignmentContractCommand = new RelayCommand(Execute_AddAssignmentContractCommand, CanExecute_AddAssignmentContractCommand);
             DeleteAssignmentContractCommand = new RelayCommand<AssignmentContractDisplay>(Execute_DeleteAssignmentContractCommand);
+            SelectAssignmentContractFileCommand = new RelayCommand(Execute_SelectAssignmentContractFileCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -292,22 +306,40 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #region DocumentType
 
-        public ObservableCollection<DocumentTypeResponse> DocumentTypes { get; private init; } = [];
-        private async Task GetAllDocumentTypeAsync() => DocumentTypes.Load(await _documentTypeReadOnlyService.GetAllAsync());
+        public ObservableCollection<DocumentTypeDisplay> DocumentTypes { get; private init; } = [];
+        private async Task GetAllDocumentTypeAsync()
+        {
+            var listResponse = await _documentTypeReadOnlyService.GetAllAsync();
+
+            foreach (var item in listResponse)
+                DocumentTypes.Add(new DocumentTypeDisplay(item));
+        }
 
         #endregion
 
         #region AmissionStatus
 
-        public ObservableCollection<AdmissionStatusResponse> AdmissionStatuses { get; private init; } = [];
-        private async Task GetAllAdmissionStatusAsync() => AdmissionStatuses.Load(await _admissionStatusReadOnlyService.GetAllAsync());
+        public ObservableCollection<AdmissionStatusDisplay> AdmissionStatuses { get; private init; } = [];
+        private async Task GetAllAdmissionStatusAsync()
+        {
+            var listResponse = await _admissionStatusReadOnlyService.GetAllAsync();
+
+            foreach (var item in listResponse)
+                AdmissionStatuses.Add(new AdmissionStatusDisplay(item));
+        }
 
         #endregion
 
         #region PermiteType
 
-        public ObservableCollection<PermitTypeResponse> PermitTypes { get; private init; } = [];
-        private async Task GetAllPermitTypeAsync() => PermitTypes.Load(await _permitTypeReadOnlyService.GetAllAsync());
+        public ObservableCollection<PermitTypeDisplay> PermitTypes { get; private init; } = [];
+        private async Task GetAllPermitTypeAsync()
+        {
+            var listResponse = await _permitTypeReadOnlyService.GetAllAsync();
+
+            foreach (var item in listResponse)
+                PermitTypes.Add(new PermitTypeDisplay(item));
+        }
 
         #endregion
 
@@ -336,12 +368,32 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private void Execute_DeletePersonalDocumentCommand(PersonalDocumentDisplay display)
             => LocalPersonalDocuments.Remove(display);
 
+        public string? FilePathPersonalDocument
+        {
+            get => field;
+            set
+            {
+                SetProperty(ref field, value);
+                CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
+            }
+        }
+
+        public RelayCommand SelectPersonalDocumentFileCommand { get; private set; }
+        private void Execute_SelectPersonalDocumentFileCommand() 
+            => FilePathPersonalDocument = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.PERSONAL_DOCUMENT}", FileFilters.Images);
+
         #endregion
 
         #region EducationLevel
 
-        public ObservableCollection<EducationLevelResponse> EducationLevels { get; private init; } = [];
-        private async Task GetAllEducationLevelAsync() => EducationLevels.Load(await _educationLevelReadOnlyService.GetAllAsync());
+        public ObservableCollection<EducationLevelDisplay> EducationLevels { get; private init; } = [];
+        private async Task GetAllEducationLevelAsync()
+        {
+            var listResponse = await _educationLevelReadOnlyService.GetAllAsync();
+
+            foreach (var item in listResponse)
+                EducationLevels.Add(new EducationLevelDisplay(item));
+        }
 
         #endregion
 
@@ -373,6 +425,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public RelayCommand<EducationDocumentDisplay>? DeleteEducationDocumentCommand { get; private set; }
         private void Execute_DeleteEducationDocumentCommand(EducationDocumentDisplay display)
             => LocalEducationDocuments.Remove(display);
+
+        public string? FilePathEducationDocument
+        {
+            get => field;
+            set
+            {
+                SetProperty(ref field, value);
+                CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
+            }
+        }
+
+        public RelayCommand SelectEducationDocumentFileCommand { get; private set; }
+        private void Execute_SelectEducationDocumentFileCommand()
+            => FilePathEducationDocument = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
 
         #endregion
 
@@ -409,12 +475,32 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private void Execute_DeleteWorkPermitCommand(WorkPermitDisplay display) 
             => LocalWorkPermits.Remove(display);
 
+        public string? FilePathWorkPermit
+        {
+            get => field;
+            set
+            {
+                SetProperty(ref field, value);
+                CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
+            }
+        }
+
+        public RelayCommand SelectWorkPermitFileCommand { get; private set; }
+        private void Execute_SelectWorkPermitFileCommand()
+            => FilePathWorkPermit = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.WORK_PERMIT}", FileFilters.Images);
+
         #endregion
 
         #region EmployeeType
 
-        public ObservableCollection<EmployeeTypeResponse> EmployeeTypes { get; private init; } = [];
-        private async Task GetAllEmployeeTypeAsync() => EmployeeTypes.Load(await _employeeTypeReadOnlyService.GetAllAsync());
+        public ObservableCollection<EmployeeTypeDisplay> EmployeeTypes { get; private init; } = [];
+        private async Task GetAllEmployeeTypeAsync()
+        {
+            var listResponse = await _employeeTypeReadOnlyService.GetAllAsync();
+
+            foreach (var item in listResponse)
+                EmployeeTypes.Add(new EmployeeTypeDisplay(item));
+        }
 
         #endregion
 
@@ -482,15 +568,27 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #region Status
 
-        public ObservableCollection<StatusResponse> Statuses { get; private init; } = [];
-        private async Task GetAllStatusAsync() => Statuses.Load(await _statusReadOnlyService.GetAllAsync());
+        public ObservableCollection<StatusDisplay> Statuses { get; private init; } = [];
+        private async Task GetAllStatusAsync()
+        {
+            var listResponse = await _statusReadOnlyService.GetAllAsync();
+
+            foreach (var item in listResponse)
+                Statuses.Add(new StatusDisplay(item));
+        }
 
         #endregion
 
         #region Manager
 
-        public ObservableCollection<EmployeeResponse> Managers { get; private init; } = [];
-        private async Task GetAllManagerAsync() => Managers.Load(await _employeeService.GetAllAsync());
+        public ObservableCollection<ManagerDisplay> Managers { get; private init; } = [];
+        private async Task GetAllManagerAsync()
+        {
+            var listResponse = await _employeeService.GetAllAsync();
+
+            foreach (var item in listResponse)
+                Managers.Add(new ManagerDisplay(item));
+        }
 
         #endregion
 
@@ -524,6 +622,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public RelayCommand<AssignmentContractDisplay> DeleteAssignmentContractCommand { get; private set; }
         private void Execute_DeleteAssignmentContractCommand(AssignmentContractDisplay display)
             => LocalAssignmentsContracts.Remove(display);
+
+        public string? FilePathAssignmentContract
+        {
+            get => field;
+            set
+            {
+                SetProperty(ref field, value);
+                CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
+            }
+        }
+
+        public RelayCommand SelectAssignmentContractFileCommand { get; private set; }
+        private void Execute_SelectAssignmentContractFileCommand()
+            => FilePathAssignmentContract = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
 
         #endregion
     }
