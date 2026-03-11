@@ -48,6 +48,43 @@ namespace LifeLine.File.Service.Client
             }
         }
 
+        public async Task<Result<List<UploadFileResponse>?>> UploadFilesAsync(UploadFilesRequest request)
+        {
+            using var formData = new MultipartFormDataContent();
+
+            for (int i = 0; i < request.Files.Count; i++)
+            {
+                var file = request.Files[i];
+                var prefix = $"Files[{i}]";
+
+                formData.Add(new StringContent(file.BucketName), $"{prefix}.BucketName");
+                formData.Add(new StringContent(file.AdditionalName), $"{prefix}.AdditionalName");
+
+                if (!string.IsNullOrWhiteSpace(file.SubFolder))
+                    formData.Add(new StringContent(file.SubFolder, Encoding.UTF8, "text/plain"), $"{prefix}.SubFolder");
+
+                if (!string.IsNullOrWhiteSpace(file.FilePath) && System.IO.File.Exists(file.FilePath))
+                {
+                    var fileStream = System.IO.File.OpenRead(file.FilePath);
+                    var streamContent = new StreamContent(fileStream);
+                    var mineType = GetMimeType(file.FilePath);
+                    streamContent.Headers.ContentType = new MediaTypeHeaderValue(mineType);
+                    formData.Add(streamContent, $"{prefix}.File", Path.GetFileName(file.FilePath));
+                }
+            }
+
+            try
+            {
+                var response = await _httpClient.PostAsync("files/batch", formData);
+                response.EnsureSuccessStatusCode();
+                return Result<List<UploadFileResponse>?>.Success(await response.Content.ReadFromJsonAsync<List<UploadFileResponse>>());
+            }
+            catch (Exception ex)
+            {
+                return Result<List<UploadFileResponse>?>.Failure(Error.New(AppErrors.Upload, $"Ошибка загрузки!\n{ex.Message}"));
+            }
+        }
+
         public async Task<string> GetLink(string key)
         {
             var encodeKey = Uri.EscapeDataString(key);
