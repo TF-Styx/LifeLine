@@ -11,7 +11,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Get.GetAll
 
         public async Task<List<EmployeeResponse>> Handle(GetAllEmployeeQuery request, CancellationToken cancellationToken)
             => await _context.EmployeeAdminListItemViews
-                .Select(x => new EmployeeResponse(x.Id, x.Surname, x.Name, x.Patronymic, x.GenderId, x.GenderName))
+                .Select(x => new EmployeeResponse(x.Id.ToString(), x.Surname, x.Name, x.Patronymic, x.GenderId.ToString(), x.GenderName))
                     .ToListAsync(cancellationToken);
     }
 }
