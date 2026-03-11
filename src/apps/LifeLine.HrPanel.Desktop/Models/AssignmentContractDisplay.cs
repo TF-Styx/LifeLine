@@ -23,7 +23,8 @@ namespace LifeLine.HrPanel.Desktop.Models
                 IReadOnlyCollection<PositionDisplay> positions,
                 IReadOnlyCollection<ManagerDisplay> managers,
                 IReadOnlyCollection<StatusDisplay> statuses,
-                IReadOnlyCollection<EmployeeTypeDisplay> employeeTypes
+                IReadOnlyCollection<EmployeeTypeDisplay> employeeTypes,
+                string? filePath
             )
         {
             _assignmentModel = assignmentModel;
@@ -46,6 +47,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             _startDate = contractModel.ContractStartDate;
             _endDate = contractModel.ContractEndDate;
             _salary = contractModel.Salary;
+            FilePath = filePath;
 
             SetEmployeeType(_contractModel.EmployeeTypeId);
         }
@@ -99,6 +101,12 @@ namespace LifeLine.HrPanel.Desktop.Models
             set => SetProperty(ref _status, value);
         }
         public void SetStatus(string id) => Status = _statuses.FirstOrDefault(x => x.Id == id)!;
+
+        public string? FilePath
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
 
         #endregion
 

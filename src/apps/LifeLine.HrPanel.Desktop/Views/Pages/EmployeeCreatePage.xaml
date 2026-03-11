@@ -124,11 +124,17 @@
                                 <Border BorderBrush="#386FD6" Background="{StaticResource App.MainColor}" BorderThickness="2" CornerRadius="10" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
                                     <StackPanel>
                                         <Border BorderThickness="0 0 0 2" BorderBrush="#386FD6">
-                                            <Image Source="{Binding SelectImage}" d:Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png" Width="200" Height="200" Margin="5"/>
+                                            <Image Source="{Binding Avatar}" d:Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png" Width="200" Height="200" Margin="5"/>
                                         </Border>
                                         <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 2">
-                                            <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Command="{Binding AddImageCommand}">
+                                            <Button Width="25" 
+                                                    Background="#00DDDDDD" 
+                                                    BorderBrush="#00707070" 
+                                                    Command="{Binding SelectAvatarEmployeeCommand}">
                                                 <Control Template="{StaticResource AddIcon}"/>
+                                                <Button.ToolTip>
+                                                    <TextBlock Text="Добавить аватарку"/>
+                                                </Button.ToolTip>
                                             </Button>
                                             <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Margin="15 0 15 0" Command="{Binding ViewImageCommand}">
                                                 <Control Template="{StaticResource Magnifier}"/>
@@ -164,6 +170,16 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
+                                            <!-- Файл -->
+                                            <DataGridTemplateColumn Header="Файл" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding FilePath}" 
+                                                                    TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
                                             <!--Информация-->
                                             <DataGridTemplateColumn Width="35">
                                                 <DataGridTemplateColumn.CellTemplate>
@@ -174,6 +190,7 @@
                                                                 <StackPanel>
                                                                     <TextBlock Text="{Binding DocumentSeries, StringFormat=Серия: {0}}"/>
                                                                     <TextBlock Text="{Binding DocumentNumber, StringFormat=Номер: {0}}"/>
+                                                                    <TextBlock Text="{Binding FilePath, StringFormat=Путь: {0}}"/>
                                                                 </StackPanel>
                                                             </Button.ToolTip>
                                                         </Button>
@@ -259,18 +276,19 @@
                                                 </Grid.ColumnDefinitions>
 
                                                 <cc:PlaceHolderTextBox Grid.Column="0" 
-                                                                       PlaceHolder="Серия" 
+                                                                       PlaceHolder="Номер*" 
                                                                        Margin="0 0 5 0"
-                                                                       Text="{Binding NewPersonalDocument.DocumentSeries, UpdateSourceTrigger=PropertyChanged}" 
+                                                                       Text="{Binding NewPersonalDocument.DocumentNumber, UpdateSourceTrigger=PropertyChanged}" 
                                                                        Style="{StaticResource TextBox.PlaceHolder}"/>
 
                                                 <cc:PlaceHolderTextBox Grid.Column="1" 
-                                                                       PlaceHolder="Номер*" 
+                                                                       PlaceHolder="Серия" 
                                                                        Margin="5 0 0 0"
-                                                                       Text="{Binding NewPersonalDocument.DocumentNumber, UpdateSourceTrigger=PropertyChanged}" 
+                                                                       Text="{Binding NewPersonalDocument.DocumentSeries, UpdateSourceTrigger=PropertyChanged}" 
                                                                        Style="{StaticResource TextBox.PlaceHolder}"/>
                                             </Grid>
 
+                                            <!-- Файл -->
                                             <DockPanel Grid.Row="1" Margin="0 10 0 0">
                                                 <Button Width="25" Foreground="#F06870" 
                                                         Command="{Binding SelectPersonalDocumentFileCommand}" 
@@ -278,11 +296,11 @@
                                                         Style="{StaticResource Button.Icon}">
                                                     <Control Template="{StaticResource AddIcon}"/>
                                                     <Button.ToolTip>
-                                                        <TextBlock Text="Добавить специальность"/>
+                                                        <TextBlock Text="Добавить файл персональных документов"/>
                                                     </Button.ToolTip>
                                                 </Button>
                                                 <cc:PlaceHolderTextBox PlaceHolder="Файл" 
-                                                                       Text="{Binding FilePathPersonalDocument}" 
+                                                                       Text="{Binding NewPersonalDocument.FilePath}" 
                                                                        HorizontalAlignment="Stretch" 
                                                                        Style="{StaticResource TextBox.PlaceHolder}"/>
                                             </DockPanel>
@@ -445,6 +463,16 @@
                                           Background="{StaticResource App.MainColor}"
                                           d:ItemsSource="{d:SampleData ItemCount=10}">
                                     <DataGrid.Columns>
+                                        <!-- Тип документа -->
+                                        <DataGridTemplateColumn Header="Тип документа" Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding DocumentType.Name}" 
+                                                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        
                                         <!-- Уровень образования -->
                                         <DataGridTemplateColumn Header="Уровень образования" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -454,12 +482,14 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
-                                        
-                                        <!-- Тип документа -->
-                                        <DataGridTemplateColumn Header="Тип документа" Width="*">
+
+
+
+                                        <!-- Файл -->
+                                        <DataGridTemplateColumn Header="Файл" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock Text="{Binding DocumentType.Name}" 
+                                                    <TextBlock Text="{Binding FilePath}" 
                                                                TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -482,6 +512,7 @@
                                                                 <TextBlock Text="{Binding SpecialtyName, StringFormat=Наименование специальности: {0}}"/>
                                                                 <TextBlock Text="{Binding ProgramName, StringFormat=Наименование программы: {0}}"/>
                                                                 <TextBlock Text="{Binding TotalHours, StringFormat=Кол-во часов: {0}}"/>
+                                                                <TextBlock Text="{Binding FilePath, StringFormat=Файл: {0}}"/>
                                                             </StackPanel>
                                                         </Button.ToolTip>
                                                     </Button>
@@ -521,16 +552,16 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        
-                                        <ComboBox Grid.Column="0" 
-                                                  ItemsSource="{Binding EducationLevels}" 
-                                                  SelectedItem="{Binding NewEducationDocument.EducationLevel}"
-                                                  DisplayMemberPath="Name" 
-                                                  Margin="0 0 5 0"/>
 
-                                        <ComboBox Grid.Column="1" 
+                                        <ComboBox Grid.Column="0" 
                                                   ItemsSource="{Binding DocumentTypes}" 
                                                   SelectedItem="{Binding NewEducationDocument.DocumentType}"
+                                                  DisplayMemberPath="Name" 
+                                                  Margin="0 0 5 0"/>
+                                        
+                                        <ComboBox Grid.Column="1" 
+                                                  ItemsSource="{Binding EducationLevels}" 
+                                                  SelectedItem="{Binding NewEducationDocument.EducationLevel}"
                                                   DisplayMemberPath="Name" 
                                                   Margin="5 0 0 0"/>
                                     </Grid>
@@ -580,6 +611,7 @@
                                     <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Количество часов" Margin="0 10 0 0"
                                                            Text="{Binding NewEducationDocument.TotalHours}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
+                                    <!-- Файл -->
                                     <DockPanel Margin="0 10 0 0">
                                         <Button Width="25" Foreground="#F06870" 
                                                 Command="{Binding SelectEducationDocumentFileCommand}" 
@@ -587,11 +619,11 @@
                                                 Style="{StaticResource Button.Icon}">
                                             <Control Template="{StaticResource AddIcon}"/>
                                             <Button.ToolTip>
-                                                <TextBlock Text="Добавить специальность"/>
+                                                <TextBlock Text="Добавить файл документов об образовании"/>
                                             </Button.ToolTip>
                                         </Button>
                                         <cc:PlaceHolderTextBox PlaceHolder="Файл" 
-                                                               Text="{Binding FilePathEducationDocument}" 
+                                                               Text="{Binding NewEducationDocument.FilePath}" 
                                                                Style="{StaticResource TextBox.PlaceHolder}"/>
                                     </DockPanel>
 
@@ -665,6 +697,16 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
+                                        <!-- Файл -->
+                                        <DataGridTemplateColumn Header="Файл" Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding FilePath}" 
+                                                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+
                                         <!--Информация-->
                                         <DataGridTemplateColumn Width="35">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -683,6 +725,7 @@
                                                                 <TextBlock Text="{Binding IssuingAuthority, StringFormat=Орган выдающий документы: {0}}"/>
                                                                 <TextBlock Text="{Binding IssueDate, StringFormat=Дата выдачи: {0}}"/>
                                                                 <TextBlock Text="{Binding ExpiryDate, StringFormat=Дата истечения срока действия: {0}}"/>
+                                                                <TextBlock Text="{Binding FilePath, StringFormat=Файл: {0}}"/>
                                                             </StackPanel>
                                                         </Button.ToolTip>
                                                     </Button>
@@ -757,6 +800,7 @@
 
                                     <DatePicker Grid.Column="1" SelectedDate="{Binding NewWorkPermit.ExpiryDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 10"/>
 
+                                    <!-- Файл -->
                                     <DockPanel Margin="0 10 0 0">
                                         <Button Width="25" Foreground="#F06870" 
                                                 Command="{Binding SelectWorkPermitFileCommand}" 
@@ -764,11 +808,11 @@
                                                 Style="{StaticResource Button.Icon}">
                                             <Control Template="{StaticResource AddIcon}"/>
                                             <Button.ToolTip>
-                                                <TextBlock Text="Добавить специальность"/>
+                                                <TextBlock Text="Добавить файл сертификатов или аккредитации"/>
                                             </Button.ToolTip>
                                         </Button>
                                         <cc:PlaceHolderTextBox PlaceHolder="Файл" 
-                                                               Text="{Binding FilePathWorkPermit}" 
+                                                               Text="{Binding NewWorkPermit.FilePath}" 
                                                                Style="{StaticResource TextBox.PlaceHolder}"/>
                                     </DockPanel>
 
@@ -959,6 +1003,16 @@
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
 
+                                                <!-- Файл -->
+                                                <DataGridTemplateColumn Header="Файл" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding FilePath}" 
+                                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
                                                 <!--Информация-->
                                                 <DataGridTemplateColumn Width="35">
                                                     <DataGridTemplateColumn.CellTemplate>
@@ -974,6 +1028,7 @@
                                                                         <TextBlock Text="{Binding HireDate, StringFormat=Дата найма: {0}}"/>
                                                                         <TextBlock Text="{Binding TerminationDate, StringFormat=Дата расторжения договора: {0}}"/>
                                                                         <TextBlock Text="{Binding Status.Name, StringFormat=Статус: {0}}"/>
+                                                                        <TextBlock Text="{Binding FilePath.Name, StringFormat=Файл: {0}}"/>
                                                                         
                                                                         <TextBlock Text="{StaticResource String.Contracts}" Margin="0 10 0 0"/>
                                                                         <TextBlock Text="{Binding EmployeeType.Name, StringFormat=Тип трудоустройства: {0}}"/>
@@ -1024,8 +1079,18 @@
                                                   Background="{StaticResource App.MainColor}"
                                                   d:ItemsSource="{d:SampleData ItemCount=10}">
                                             <DataGrid.Columns>
-                                                <!-- Тип документа -->
-                                                <DataGridTemplateColumn Header="Тип документа" Width="*">
+                                                <!-- Номер контракта -->
+                                                <DataGridTemplateColumn Header="Номер контракта" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding ContractNumber}" 
+                                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                
+                                                <!-- Тип контракта -->
+                                                <DataGridTemplateColumn Header="Тип контракта" Width="*">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding EmployeeType.Name}" 
@@ -1034,18 +1099,8 @@
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
 
-                                                <!-- Статус -->
-                                                <DataGridTemplateColumn Header="Статус" Width="*">
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock Text="{Binding ContractNumber}" 
-                                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
-
-                                                <!-- Наименование -->
-                                                <DataGridTemplateColumn Header="Наименование" Width="*">
+                                                <!-- Оклад -->
+                                                <DataGridTemplateColumn Header="Оклад" Width="*">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding Salary}" 
@@ -1192,6 +1247,7 @@
                                     <cc:PlaceHolderTextBox PlaceHolder="Зарплата*" Margin="0 10 0 0"
                                                            Text="{Binding NewAssignmentContract.Salary, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
+                                    <!-- Файл -->
                                     <DockPanel Margin="0 10 0 0">
                                         <Button Width="25" Foreground="#F06870" 
                                                 Command="{Binding SelectAssignmentContractFileCommand}" 
@@ -1199,11 +1255,11 @@
                                                 Style="{StaticResource Button.Icon}">
                                             <Control Template="{StaticResource AddIcon}"/>
                                             <Button.ToolTip>
-                                                <TextBlock Text="Добавить специальность"/>
+                                                <TextBlock Text="Добавить файл назначения"/>
                                             </Button.ToolTip>
                                         </Button>
                                         <cc:PlaceHolderTextBox PlaceHolder="Файл" 
-                                                               Text="{Binding FilePathAssignmentContract}" 
+                                                               Text="{Binding NewAssignmentContract.FilePath}" 
                                                                Style="{StaticResource TextBox.PlaceHolder}"/>
                                     </DockPanel>
 

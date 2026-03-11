@@ -15,7 +15,8 @@ namespace LifeLine.HrPanel.Desktop.Models
             (
                 WorkPermitResponse model, 
                 IReadOnlyCollection<PermitTypeDisplay> permitTypes, 
-                IReadOnlyCollection<AdmissionStatusDisplay> admissionStatuses
+                IReadOnlyCollection<AdmissionStatusDisplay> admissionStatuses,
+                string? filePath
             )
         {
             _model = model;
@@ -30,6 +31,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             _issuingAuthority = model.IssuingAuthority;
             _issueDate = model.IssueDate;
             _expiryDate = model.ExpiryDate;
+            FilePath = filePath;
 
             SetPermiteType(_model.PermitTypeId);
             SetAdmissionStatus(_model.AdmissionStatusId);
@@ -121,5 +123,11 @@ namespace LifeLine.HrPanel.Desktop.Models
             set => SetProperty(ref _admissionStatus, value);
         }
         public void SetAdmissionStatus(string id) => AdmissionStatus = _admissionStatuses.FirstOrDefault(x => x.Id.ToString() == id)!;
+
+        public string? FilePath
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
     }
 }

@@ -319,7 +319,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                             x.PersonalDocumentTypeId,
                                             x.PersonalDocumentNumber,
                                             x.PersonalDocumentSeries
-                                        ), DocumentTypes
+                                        ), DocumentTypes, string.Empty
                                 )
                         ).ToList()
                 );
@@ -344,7 +344,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                             x.EducationSpecialtyName,
                                             x.ProgramName,
                                             x.TotalHours.ToString()
-                                        ), EducationLevels, DocumentTypes
+                                        ), EducationLevels, DocumentTypes, string.Empty
                                 )
                         ).ToList()
                 );
@@ -386,7 +386,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                             x.PermitTypeId.ToString(),
                                             x.AdmissionStatusId.ToString()
                                         ),
-                                    PermitTypes, AdmissionStatuses
+                                    PermitTypes, AdmissionStatuses, string.Empty
                                 )
                         ).ToList()
                 );
@@ -419,7 +419,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 contractsResponse.Salary,
                                 contractsResponse?.ContractFileKey
                             ),
-                        Departments, Positions, Managers, Statuses, EmployeeTypes
+                        Departments, Positions, Managers, Statuses, EmployeeTypes,
+                        string.Empty
                     );
 
                 AssignmentContracts.Add(display);

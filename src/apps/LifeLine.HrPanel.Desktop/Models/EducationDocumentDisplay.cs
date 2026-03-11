@@ -14,7 +14,8 @@ namespace LifeLine.HrPanel.Desktop.Models
             (
                 EducationDocumentResponse model, 
                 IReadOnlyCollection<EducationLevelDisplay> educationLevels,
-                IReadOnlyCollection<DocumentTypeDisplay> documentTypes
+                IReadOnlyCollection<DocumentTypeDisplay> documentTypes,
+                string? filePath
             )
         {
             _model = model;
@@ -29,6 +30,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             _specialtyName = model.SpecialtyName;
             _programName = model.ProgramName;
             _totalHours = TimeSpan.Parse(model.TotalHours!);
+            FilePath = filePath;
 
             SetEducationLevel(_model.EducationLevelId);
             SetDocumentType(_model.DocumentTypeId);
@@ -112,5 +114,11 @@ namespace LifeLine.HrPanel.Desktop.Models
             set => SetProperty(ref _documentType, value);
         }
         public void SetDocumentType(string id) => DocumentType = _documentTypes.FirstOrDefault(x => x.Id == id)!;
+
+        public string? FilePath
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
     }
 }

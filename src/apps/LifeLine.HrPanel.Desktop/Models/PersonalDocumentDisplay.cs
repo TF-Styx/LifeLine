@@ -9,13 +9,14 @@ namespace LifeLine.HrPanel.Desktop.Models
 
         private readonly IReadOnlyCollection<DocumentTypeDisplay> _documentTypes;
 
-        public PersonalDocumentDisplay(PersonalDocumentResponse model, IReadOnlyCollection<DocumentTypeDisplay> documentTypes)
+        public PersonalDocumentDisplay(PersonalDocumentResponse model, IReadOnlyCollection<DocumentTypeDisplay> documentTypes, string? filePath)
         {
             _model = model;
             _documentTypes = documentTypes;
 
             _documentNumber = model.Number;
             _documentSeries = model.Series;
+            FilePath = filePath;
 
             SetDocumentType(_model.DocumentTypeId.ToString());
         }
@@ -45,6 +46,12 @@ namespace LifeLine.HrPanel.Desktop.Models
             set => SetProperty(ref _documentType, value);
         }
         public void SetDocumentType(string id) => DocumentType = _documentTypes.FirstOrDefault(x => x.Id.ToString() == id)!;
+
+        public string? FilePath
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
 
         public PersonalDocumentResponse GetUnderLineModel() => _model;
     }

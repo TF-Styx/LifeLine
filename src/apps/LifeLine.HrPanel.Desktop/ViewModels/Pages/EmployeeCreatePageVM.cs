@@ -22,6 +22,7 @@ using Shared.WPF.Services.FileDialog;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Media;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 {
@@ -79,6 +80,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             CreateNewAssignmentContract();
 
             CreateEmployeeCommandAsync = new RelayCommandAsync(Execute_CreateEmployeeCommandAsync);
+
+            SelectAvatarEmployeeCommand = new RelayCommand(Execute_SelectAvatarEmployeeCommand);
 
             AddPersonalDocumentCommand = new RelayCommand(Execute_AddPersonalDocumentCommand, CanExecute_AddPersonalDocumentCommand);
             DeletePersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand);
@@ -202,7 +205,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                             decimal.Zero,
                             string.Empty
                         ),
-                    [], [], [], [], []
+                    [], [], [], [], [], 
+                    string.Empty
                 );
 
             NewAssignmentContract.PropertyChanged += async (s, e) =>
@@ -223,7 +227,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         }
         private void CreateNewPersonalDocument()
         {
-            NewPersonalDocument = new(new PersonalDocumentResponse(Guid.Empty, Guid.Empty, string.Empty, string.Empty), []);
+            NewPersonalDocument = new(new PersonalDocumentResponse(Guid.Empty, Guid.Empty, string.Empty, string.Empty), [], string.Empty);
 
             NewPersonalDocument.PropertyChanged += (s, e) => AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
         }
@@ -237,7 +241,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         }
         private void CreateNewEducationDocument()
         {
-            NewEducationDocument = new(new EducationDocumentResponse(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, DateTime.UtcNow.ToString(), string.Empty, string.Empty, string.Empty, string.Empty, "0"), [], []);
+            NewEducationDocument = new(new EducationDocumentResponse(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, DateTime.UtcNow.ToString(), string.Empty, string.Empty, string.Empty, string.Empty, "0"), [], [], string.Empty);
 
             NewEducationDocument.PropertyChanged += (s, e) => AddEducationDocumentCommand?.RaiseCanExecuteChanged();
         }
@@ -251,9 +255,32 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         }
         private void CreateNewWorkPermit()
         {
-            NewWorkPermit = new(new WorkPermitResponse(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, DateTime.UtcNow, DateTime.UtcNow, string.Empty, string.Empty), [], []);
+            NewWorkPermit = new(new WorkPermitResponse(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, DateTime.UtcNow, DateTime.UtcNow, string.Empty, string.Empty), [], [], string.Empty);
 
             NewWorkPermit.PropertyChanged += (s, e) => AddWorkPermitCommand?.RaiseCanExecuteChanged();
+        }
+
+        #endregion
+
+        #region Avatar
+
+        public ImageSource? Avatar
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
+
+        private string? _avatarFilePath
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
+
+        public RelayCommand SelectAvatarEmployeeCommand { get; private set; }
+        private void Execute_SelectAvatarEmployeeCommand()
+        {
+            _avatarFilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.AVATAR}", FileFilters.Images);
+            Avatar = ImageHelper.ToImageFromFilePath(_avatarFilePath);
         }
 
         #endregion
@@ -268,7 +295,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             if (IsUseContactInformation)
                 createContactInformation = new CreateContactInformationRequest(NewBaseInfoEmployee.PersonalPhone, NewBaseInfoEmployee.CorporatePhone, NewBaseInfoEmployee.PersonalEmail, NewBaseInfoEmployee.CorporateEmail, NewBaseInfoEmployee.PostalCode, NewBaseInfoEmployee.Region, NewBaseInfoEmployee.City, NewBaseInfoEmployee.Street, NewBaseInfoEmployee.Building, NewBaseInfoEmployee.Apartment);
 
-            var result = await _employeeService.AddAsync
+            var resultEmployee = await _employeeService.AddAsync<CreateEmployeeRequest, EmployeeIdResponse>
                 (
                     new CreateEmployeeRequest
                     (
@@ -282,17 +309,180 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     )
                 );
 
-            result.Switch
+            resultEmployee.Switch
                 (
-                    () => MessageBox.Show("Успешное добавление!"),
-                    errors => MessageBox.Show(result.StringMessage)
+                    () => { },
+                    errors => MessageBox.Show(resultEmployee.StringMessage)
                 );
+
+            #region AvatarMiniO
+
+            var responseAvatarMiniO = await _fileStorageService.UploadFileAsync
+                (
+                    new UploadFileRequest
+                        (
+                            FileConst.BUCKET_NAME,
+                            nameof(Avatar),
+                            FileConst.BuildEmployeeFolder
+                                (
+                                    resultEmployee.Value.EmployeeId.ToString(),
+                                    EmployeeFolderType.Avatar
+                                ),
+                            _avatarFilePath!
+                        )
+                );
+
+            responseAvatarMiniO.Switch
+                (
+                    () => { },
+                    errors => MessageBox.Show($"Аватар: {responseAvatarMiniO.StringMessage}")
+                );
+
+            #endregion
+
+            #region PersonalDocumentMiniO
+
+            List<UploadFilesDataRequest> personalDocumentUploadFilesDataRequests = [];
+
+            foreach (var item in LocalPersonalDocuments)
+            {
+                personalDocumentUploadFilesDataRequests.Add
+                    (
+                        new UploadFilesDataRequest
+                                (
+                                    FileConst.BUCKET_NAME,
+                                    item.DocumentType.Name,
+                                    FileConst.BuildEmployeeFolder
+                                        (
+                                            resultEmployee.Value.EmployeeId.ToString(),
+                                            EmployeeFolderType.PersonalDocument
+                                        ),
+                                    item.FilePath!
+                                )
+                    );
+            }
+
+            var personalDocumentUploadFilesRequest = new UploadFilesRequest(personalDocumentUploadFilesDataRequests);
+
+            var responsePersonalDocumentMiniO = await _fileStorageService.UploadFilesAsync(personalDocumentUploadFilesRequest);
+
+            responsePersonalDocumentMiniO.Switch
+                (
+                    () => { },
+                    errors => MessageBox.Show($"Персональные документы: {responsePersonalDocumentMiniO.StringMessage}")
+                );
+
+            #endregion
+
+            #region EducationDocumentMiniO
+
+            List<UploadFilesDataRequest> educationDocumentFilesDataRequest = [];
+
+            foreach (var item in LocalEducationDocuments)
+            {
+                educationDocumentFilesDataRequest.Add
+                    (
+                        new UploadFilesDataRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                $"{item.DocumentType.Name}-{item.EducationLevel.Name}",
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        resultEmployee.Value.EmployeeId.ToString(),
+                                        EmployeeFolderType.EducationDocument
+                                    ),
+                                item.FilePath!
+                            )
+                    );
+            }
+
+            var educationDocumentUploadFilesRequest = new UploadFilesRequest(educationDocumentFilesDataRequest);
+
+            var responseEducationDocumentMiniO = await _fileStorageService.UploadFilesAsync(educationDocumentUploadFilesRequest);
+
+            responseEducationDocumentMiniO.Switch
+                (
+                    () => { },
+                    errors => MessageBox.Show($"Документы об образовании: {responseEducationDocumentMiniO.StringMessage}")
+                );
+
+            #endregion
+
+            #region WorkPermit
+
+            List<UploadFilesDataRequest> workPermitUploadFileDataRequest = [];
+
+            foreach (var item in LocalWorkPermits)
+            {
+                workPermitUploadFileDataRequest.Add
+                    (
+                        new UploadFilesDataRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                item.PermitType.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        resultEmployee.Value.EmployeeId.ToString(),
+                                        EmployeeFolderType.WorkPermit
+                                    ),
+                                item.FilePath!
+                            )
+                    );
+            }
+
+            var workPermitUploadFilesRequest = new UploadFilesRequest(workPermitUploadFileDataRequest);
+
+            var responseWorkPermitMiniO = await _fileStorageService.UploadFilesAsync(workPermitUploadFilesRequest);
+
+            responseWorkPermitMiniO.Switch
+                (
+                    () => { },
+                    errors => MessageBox.Show($"Аккредитация / сертификаты: {responseWorkPermitMiniO.StringMessage}")
+                );
+
+            #endregion
+
+            #region AssignemtnContract
+
+            List<UploadFilesDataRequest> assignmentContractUploadFilesDataReqiuest = [];
+
+            foreach (var item in LocalAssignmentsContracts)
+            {
+                assignmentContractUploadFilesDataReqiuest.Add
+                    (
+                        new UploadFilesDataRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                $"{item.Department.Name}-{item.Position.Name}-{item.EmployeeType.Name}",
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        resultEmployee.Value.EmployeeId.ToString(),
+                                        EmployeeFolderType.Assignment
+                                    ),
+                                item.FilePath!
+                            )
+                    );
+            }
+
+            var assignmentContractUploadFilesRequest = new UploadFilesRequest(assignmentContractUploadFilesDataReqiuest);
+
+            var responseAssignmentContractMiniO = await _fileStorageService.UploadFilesAsync(assignmentContractUploadFilesRequest);
+
+            responseAssignmentContractMiniO.Switch
+                (
+                    () => { },
+                    errors => MessageBox.Show($"Назначение: {responseAssignmentContractMiniO.StringMessage}")
+                );
+
+            #endregion
 
             CreateNewWorkPermit();
             CreateNewBaseInfoEmployee();
             CreateNewPersonalDocument();
             CreateNewEducationDocument();
             CreateNewAssignmentContract();
+
+            ClearLocalLists();
         }
 
         #endregion
@@ -368,19 +558,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private void Execute_DeletePersonalDocumentCommand(PersonalDocumentDisplay display)
             => LocalPersonalDocuments.Remove(display);
 
-        public string? FilePathPersonalDocument
-        {
-            get => field;
-            set
-            {
-                SetProperty(ref field, value);
-                CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
         public RelayCommand SelectPersonalDocumentFileCommand { get; private set; }
         private void Execute_SelectPersonalDocumentFileCommand() 
-            => FilePathPersonalDocument = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.PERSONAL_DOCUMENT}", FileFilters.Images);
+            => NewPersonalDocument.FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.PERSONAL_DOCUMENT}", FileFilters.Images);
 
         #endregion
 
@@ -426,19 +606,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private void Execute_DeleteEducationDocumentCommand(EducationDocumentDisplay display)
             => LocalEducationDocuments.Remove(display);
 
-        public string? FilePathEducationDocument
-        {
-            get => field;
-            set
-            {
-                SetProperty(ref field, value);
-                CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
         public RelayCommand SelectEducationDocumentFileCommand { get; private set; }
         private void Execute_SelectEducationDocumentFileCommand()
-            => FilePathEducationDocument = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
+            => NewEducationDocument.FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
 
         #endregion
 
@@ -475,19 +645,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private void Execute_DeleteWorkPermitCommand(WorkPermitDisplay display) 
             => LocalWorkPermits.Remove(display);
 
-        public string? FilePathWorkPermit
-        {
-            get => field;
-            set
-            {
-                SetProperty(ref field, value);
-                CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
         public RelayCommand SelectWorkPermitFileCommand { get; private set; }
         private void Execute_SelectWorkPermitFileCommand()
-            => FilePathWorkPermit = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.WORK_PERMIT}", FileFilters.Images);
+            => NewWorkPermit.FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.WORK_PERMIT}", FileFilters.Images);
 
         #endregion
 
@@ -623,19 +783,22 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private void Execute_DeleteAssignmentContractCommand(AssignmentContractDisplay display)
             => LocalAssignmentsContracts.Remove(display);
 
-        public string? FilePathAssignmentContract
-        {
-            get => field;
-            set
-            {
-                SetProperty(ref field, value);
-                CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
         public RelayCommand SelectAssignmentContractFileCommand { get; private set; }
         private void Execute_SelectAssignmentContractFileCommand()
-            => FilePathAssignmentContract = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
+            => NewAssignmentContract.FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
+
+        #endregion
+
+        #region Доп. методы
+
+        private void ClearLocalLists()
+        {
+            LocalPersonalDocuments.Clear();
+            LocalEducationDocuments.Clear();
+            LocalWorkPermits.Clear();
+            SelectedEmployeeSpecialties.Clear();
+            LocalAssignmentsContracts.Clear();
+        }
 
         #endregion
     }

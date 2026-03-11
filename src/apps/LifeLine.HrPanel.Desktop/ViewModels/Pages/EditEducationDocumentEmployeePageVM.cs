@@ -182,7 +182,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                TimeSpan.Zero.ToString()
                            ),
                        EducationLevels,
-                       DocumentTypes
+                       DocumentTypes,
+                       string.Empty
                    );
 
         public string? FilePath

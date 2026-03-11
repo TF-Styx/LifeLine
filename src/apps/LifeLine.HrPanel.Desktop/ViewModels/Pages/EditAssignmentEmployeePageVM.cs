@@ -316,7 +316,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     Positions,
                     Managers,
                     Statuses,
-                    EmployeeTypes
+                    EmployeeTypes,
+                    string.Empty
                 );
         }
 
