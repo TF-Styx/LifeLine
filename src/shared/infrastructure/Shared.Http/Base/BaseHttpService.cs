@@ -45,7 +45,7 @@ namespace Shared.Http.Base
                 response = await HttpClient.PostAsJsonAsync(Url, request, JsonSerializerOptions);
                 response.EnsureSuccessStatusCode();
 
-                var result = await response.Content.ReadFromJsonAsync<TResponse>(JsonSerializerOptions);
+                return Result<TResponse>.Success(await response.Content.ReadFromJsonAsync<TResponse>(JsonSerializerOptions));
 
                 if (result == null)
                     return Result<TResponse>.Failure(new Error(ErrorCode.InvalidResponse, $"Не удалось преобразовать ответ! - {typeof(TResponse)}"));
