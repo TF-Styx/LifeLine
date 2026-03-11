@@ -64,6 +64,34 @@ namespace Shared.Http.Base
             }
         }
 
+        public virtual async Task<Result<TCurrentResponse>> AddAsync<TRequest, TCurrentResponse>(TRequest request)
+        {
+            HttpResponseMessage response = null!;
+
+            try
+            {
+                response = await HttpClient.PostAsJsonAsync(Url, request, JsonSerializerOptions);
+                response.EnsureSuccessStatusCode();
+
+                return Result<TCurrentResponse>.Success(await response.Content.ReadFromJsonAsync<TCurrentResponse>(JsonSerializerOptions));
+            }
+            catch (HttpRequestException ex)
+            {
+                if (response == null)
+                    return Result<TCurrentResponse>.Failure(new Error(ErrorCode.Create, $"Сетевая ошибка добавления элемента в {Url} : {ex.Message}"));
+
+                return Result<TCurrentResponse>.Failure(new Error(ErrorCode.Create, $"Ошибка добавления элемента в {Url} : {response.StatusCode} - {await response.Content.ReadAsStringAsync()}"));
+            }
+            catch (JsonException jsonEx)
+            {
+                return Result<TCurrentResponse>.Failure(new Error(ErrorCode.Create, $"Ошибка десериализации ответа от {Url}: {jsonEx.Message}"));
+            }
+            catch (Exception ex)
+            {
+                return Result<TCurrentResponse>.Failure(new Error(ErrorCode.Create, $"Непредвиденная ошибка добавления элемента в {Url} : {ex.Message}"));
+            }
+        }
+
         public virtual async Task<Result> UpdateAsync<TRequest>(TKey id, TRequest request)
         {
             HttpResponseMessage response = null!;
