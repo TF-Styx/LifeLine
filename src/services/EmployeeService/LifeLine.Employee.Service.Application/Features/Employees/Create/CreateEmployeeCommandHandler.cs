@@ -3,6 +3,7 @@ using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.Domain.Exceptions;
 using Shared.Domain.ValueObjects;
 using Shared.Kernel.Exceptions;
@@ -15,13 +16,13 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
             IWriteContext context,
             IEmployeeRepository repository,
             ILogger<CreateEmployeeCommandHandler> logger
-        ) : IRequestHandler<CreateEmployeeCommand, Result>
+        ) : IRequestHandler<CreateEmployeeCommand, Result<EmployeeIdResponse>>
     {
         public readonly IWriteContext _context = context;
         public readonly IEmployeeRepository _repository = repository;
         public readonly ILogger<CreateEmployeeCommandHandler> _logger = logger;
 
-        public async Task<Result> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
+        public async Task<Result<EmployeeIdResponse>> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -118,23 +119,23 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
                 await _repository.AddAsync(employee, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                return Result.Success();
+                return Result<EmployeeIdResponse>.Success(new EmployeeIdResponse(employee.Id));
             }
             catch (DomainException domainEX)
             {
                 if (domainEX is EmptyIdentifierException emptyEX)
                 {
                     _logger.LogCritical(emptyEX, $"В методе '{nameof(Domain.Models.Employee.Create)}', в '{nameof(CreateEmployeeCommandHandler)}' при создании сотрудника не был сгенерирован {nameof(EmployeeId)}, в виде Guid!");
-                    return Result.Failure(new Error(ErrorCode.Create, "Ошибка на стороне сервера!"));
+                    return Result<EmployeeIdResponse>.Failure(new Error(ErrorCode.Create, "Ошибка на стороне сервера!"));
                 }
 
-                return Result.Failure(new Error(ErrorCode.Create, domainEX.Message));
+                return Result<EmployeeIdResponse>.Failure(new Error(ErrorCode.Create, domainEX.Message));
             }
             catch (Exception ex)
             {
                 _logger.LogCritical(ex, "Ошибка при создании Employee!");
 
-                return Result.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
+                return Result<EmployeeIdResponse>.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
             }
         }
     }

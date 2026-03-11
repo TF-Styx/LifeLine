@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Shared.Api.Application.Validators.Abstraction;
+using Shared.Contracts.Response.EmployeeService;
 using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.Create
@@ -13,7 +14,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Create
             List<CreateWorkPermitCommand>? CreateWorkPermit,
             List<CreateEmployeeSpecialtyCommand>? CreateEmployeeSpecialty,
             List<CreateAssignmentCommand>? CreateAssignment
-        ) : IRequest<Result>, IHasFIO;
+        ) : IRequest<Result<EmployeeIdResponse>>, IHasFIO;
 
     public sealed record CreatePersonalDocumentCommand(Guid DocumentTypeId, string Number, string? Series);
 

@@ -12,6 +12,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmpl
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts.Request.EmployeeService.Employee;
+using Shared.Contracts.Response.EmployeeService;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
@@ -100,7 +101,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное создание!"),
+                    onSuccess: () => Ok(result.Value),
                     onFailure: errors => BadRequest(errors)
                 );
         }
