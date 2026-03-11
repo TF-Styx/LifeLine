@@ -1,4 +1,4 @@
 ﻿namespace Shared.Contracts.Response.EmployeeService
 {
-    public sealed record EmployeeResponse(Guid Id, string Surname, string Name, string Patronymic, Guid GenderId, string GenderName);
+    public sealed record EmployeeResponse(string Id, string Surname, string Name, string Patronymic, string GenderId, string GenderName);
 }
