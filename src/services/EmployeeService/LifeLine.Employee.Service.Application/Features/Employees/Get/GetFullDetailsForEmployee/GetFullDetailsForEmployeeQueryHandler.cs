@@ -27,17 +27,17 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Get.GetFullDe
 
                     new ContactInformationDetailsResponseData
                         (
-                            employeeDetails.ContactInformation.ContactInformationId,
-                            employeeDetails.ContactInformation.PersonalPhone,
-                            employeeDetails.ContactInformation.CorporatePhone,
-                            employeeDetails.ContactInformation.PersonalEmail,
-                            employeeDetails.ContactInformation.CorporateEmail,
-                            employeeDetails.ContactInformation.PostalCode,
-                            employeeDetails.ContactInformation.Region,
-                            employeeDetails.ContactInformation.City,
-                            employeeDetails.ContactInformation.Street,
-                            employeeDetails.ContactInformation.Building,
-                            employeeDetails.ContactInformation.Apartment
+                            employeeDetails.ContactInformation?.ContactInformationId,
+                            employeeDetails.ContactInformation?.PersonalPhone,
+                            employeeDetails.ContactInformation?.CorporatePhone,
+                            employeeDetails.ContactInformation?.PersonalEmail,
+                            employeeDetails.ContactInformation?.CorporateEmail,
+                            employeeDetails.ContactInformation?.PostalCode,
+                            employeeDetails.ContactInformation?.Region,
+                            employeeDetails.ContactInformation?.City,
+                            employeeDetails.ContactInformation?.Street,
+                            employeeDetails.ContactInformation?.Building,
+                            employeeDetails.ContactInformation?.Apartment
                         ),
 
                     employeeDetails.Assignments?.Select
