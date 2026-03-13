@@ -10,7 +10,10 @@ using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.Employee.Service.Client.Services.Specialty;
 using LifeLine.File.Service.Client;
+using LifeLine.HrPanel.Desktop.Enums;
 using LifeLine.HrPanel.Desktop.Models;
+using LifeLine.HrPanel.Desktop.ViewModels.Features;
+using LifeLine.HrPanel.Desktop.Views.UserControls;
 using Shared.Contracts.Request.EmployeeService.Employee;
 using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
@@ -79,28 +82,35 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             CreateNewEducationDocument();
             CreateNewAssignmentContract();
 
+            Avatar = new(_fileDialogService);
+            WorkPermits = new(_fileDialogService);
+            AssigmentsContracts = new(_fileDialogService);
+            PersonalDocuments = new(_fileDialogService);
+
             CreateEmployeeCommandAsync = new RelayCommandAsync(Execute_CreateEmployeeCommandAsync);
 
-            SelectAvatarEmployeeCommand = new RelayCommand(Execute_SelectAvatarEmployeeCommand);
+            //SelectAvatarEmployeeCommand = new RelayCommand(Execute_SelectAvatarEmployeeCommand);
 
             AddPersonalDocumentCommand = new RelayCommand(Execute_AddPersonalDocumentCommand, CanExecute_AddPersonalDocumentCommand);
             DeletePersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand);
-            SelectPersonalDocumentFileCommand = new RelayCommand(Execute_SelectPersonalDocumentFileCommand);
+            //SelectPersonalDocumentFileCommand = new RelayCommand(Execute_SelectPersonalDocumentFileCommand);
 
             AddEducationDocumentCommand = new RelayCommand(Execute_AddEducationDocumentCommand, CanExecute_AddEducationDocumentCommand);
             DeleteEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Execute_DeleteEducationDocumentCommand);
-            SelectEducationDocumentFileCommand = new RelayCommand(Execute_SelectEducationDocumentFileCommand);
+            //SelectEducationDocumentFileCommand = new RelayCommand(Execute_SelectEducationDocumentFileCommand);
 
             AddWorkPermitCommand = new RelayCommand(Execute_AddWorkPermitCommand, CanExecute_AddWorkPermitCommand);
             DeleteWorkPermitCommand = new RelayCommand<WorkPermitDisplay>(Execute_DeleteWorkPermitCommand);
-            SelectWorkPermitFileCommand = new RelayCommand(Execute_SelectWorkPermitFileCommand);
+            //SelectWorkPermitFileCommand = new RelayCommand(Execute_SelectWorkPermitFileCommand);
 
             AddEmployeeSpecialtyCommand = new RelayCommand(Execute_AddEmployeeSpecialtyCommand, CanExecute_AddEmployeeSpecialtyCommand);
             DeleteEmployeeSpecialtyCommand = new RelayCommand<SpecialtyResponse>(Execute_DeleteEmployeeSpecialtyCommand);
 
             AddAssignmentContractCommand = new RelayCommand(Execute_AddAssignmentContractCommand, CanExecute_AddAssignmentContractCommand);
             DeleteAssignmentContractCommand = new RelayCommand<AssignmentContractDisplay>(Execute_DeleteAssignmentContractCommand);
-            SelectAssignmentContractFileCommand = new RelayCommand(Execute_SelectAssignmentContractFileCommand);
+            //SelectAssignmentContractFileCommand = new RelayCommand(Execute_SelectAssignmentContractFileCommand);
+
+            NextStepCommand = new RelayCommand<EmployeeCreationSteps>(Execute_NextStepCommand, CanExecute_NextStepCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -123,6 +133,75 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             IsInitialize = true;
         }
+
+        private PersonalInfoVM _personalInfo = new();
+        public PersonalInfoVM PersonalInfo
+        {
+            get => _personalInfo;
+            set => SetProperty(ref _personalInfo, value);
+        }
+
+        private PersonalDocumentsVM _personalDocuments;
+        public PersonalDocumentsVM PersonalDocuments
+        {
+            get => _personalDocuments;
+            set => SetProperty(ref _personalDocuments, value);
+        }
+
+        private AvatarVM _avatar;
+        public AvatarVM Avatar
+        {
+            get => _avatar;
+            set => SetProperty(ref _avatar, value);
+        }
+
+        private AddressVM _address = new();
+        public AddressVM Address
+        {
+            get => _address;
+            set => SetProperty(ref _address, value);
+        }
+
+        private ContactInformationVM _сontactInformation = new();
+        public ContactInformationVM ContactInformation
+        {
+            get => _сontactInformation;
+            set => SetProperty(ref _сontactInformation, value);
+        }
+
+        private WorkPermitsVM _workPermits;
+        public WorkPermitsVM WorkPermits
+        {
+            get => _workPermits;
+            set => SetProperty(ref _workPermits, value);
+        }
+
+        private SpecialtiesVM _specialties = new();
+        public SpecialtiesVM Specialties
+        {
+            get => _specialties;
+            set => SetProperty(ref _specialties, value);
+        }
+
+        private AssigmentsContractsVM _assigmentsContracts;
+        public AssigmentsContractsVM AssigmentsContracts
+        {
+            get => _assigmentsContracts;
+            set => SetProperty(ref _assigmentsContracts, value);
+        }
+
+        public EmployeeCreationSteps Steps
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
+
+        public RelayCommand<EmployeeCreationSteps> NextStepCommand { get; private set; }
+        private void Execute_NextStepCommand(EmployeeCreationSteps value)
+        {
+            Steps = value;
+        }
+        private bool CanExecute_NextStepCommand(EmployeeCreationSteps value) => true;
 
         #region bool
 
@@ -264,24 +343,24 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #region Avatar
 
-        public ImageSource? Avatar
-        {
-            get => field;
-            set => SetProperty(ref field, value);
-        }
+        //public ImageSource? Avatar
+        //{
+        //    get => field;
+        //    set => SetProperty(ref field, value);
+        //}
 
-        private string? _avatarFilePath
-        {
-            get => field;
-            set => SetProperty(ref field, value);
-        }
+        //private string? _avatarFilePath
+        //{
+        //    get => field;
+        //    set => SetProperty(ref field, value);
+        //}
 
-        public RelayCommand SelectAvatarEmployeeCommand { get; private set; }
-        private void Execute_SelectAvatarEmployeeCommand()
-        {
-            _avatarFilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.AVATAR}", FileFilters.Images);
-            Avatar = ImageHelper.ToImageFromFilePath(_avatarFilePath);
-        }
+        //public RelayCommand SelectAvatarEmployeeCommand { get; private set; }
+        //private void Execute_SelectAvatarEmployeeCommand()
+        //{
+        //    _avatarFilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.AVATAR}", FileFilters.Images);
+        //    Avatar = ImageHelper.ToImageFromFilePath(_avatarFilePath);
+        //}
 
         #endregion
 
@@ -328,7 +407,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                     resultEmployee.Value.EmployeeId.ToString(),
                                     EmployeeFolderType.Avatar
                                 ),
-                            _avatarFilePath!
+                            Avatar.GetPath()!
                         )
                 );
 
@@ -558,10 +637,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private void Execute_DeletePersonalDocumentCommand(PersonalDocumentDisplay display)
             => LocalPersonalDocuments.Remove(display);
 
-        public RelayCommand SelectPersonalDocumentFileCommand { get; private set; }
-        private void Execute_SelectPersonalDocumentFileCommand() 
-            => NewPersonalDocument.FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.PERSONAL_DOCUMENT}", FileFilters.Images);
-
         #endregion
 
         #region EducationLevel
@@ -606,10 +681,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private void Execute_DeleteEducationDocumentCommand(EducationDocumentDisplay display)
             => LocalEducationDocuments.Remove(display);
 
-        public RelayCommand SelectEducationDocumentFileCommand { get; private set; }
-        private void Execute_SelectEducationDocumentFileCommand()
-            => NewEducationDocument.FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
-
         #endregion
 
         #region WorkPermit
@@ -645,10 +716,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private void Execute_DeleteWorkPermitCommand(WorkPermitDisplay display) 
             => LocalWorkPermits.Remove(display);
 
-        public RelayCommand SelectWorkPermitFileCommand { get; private set; }
-        private void Execute_SelectWorkPermitFileCommand()
-            => NewWorkPermit.FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.WORK_PERMIT}", FileFilters.Images);
-
         #endregion
 
         #region EmployeeType
@@ -678,8 +745,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             }
         }
 
-        public ObservableCollection<SpecialtyResponse> Specialties { get; private init; } = [];
-        private async Task GetAllSpecialty() => Specialties.Load(await _specialtyReadOnlyService.GetAllAsync());
+        public ObservableCollection<SpecialtyResponse> SpecialtiesCollection { get; private init; } = [];
+        private async Task GetAllSpecialty() => SpecialtiesCollection.Load(await _specialtyReadOnlyService.GetAllAsync());
 
         #endregion
 
@@ -782,10 +849,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public RelayCommand<AssignmentContractDisplay> DeleteAssignmentContractCommand { get; private set; }
         private void Execute_DeleteAssignmentContractCommand(AssignmentContractDisplay display)
             => LocalAssignmentsContracts.Remove(display);
-
-        public RelayCommand SelectAssignmentContractFileCommand { get; private set; }
-        private void Execute_SelectAssignmentContractFileCommand()
-            => NewAssignmentContract.FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
 
         #endregion
 
