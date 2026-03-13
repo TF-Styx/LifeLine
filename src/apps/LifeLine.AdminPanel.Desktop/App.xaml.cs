@@ -26,8 +26,9 @@ namespace LifeLine.AdminPanel.Desktop
 
             // Регистрация сервисов
             servicesCollection.UserClientConfiguration(configuration);
-            servicesCollection.UseAdminPanelServices();
+            servicesCollection.UseAdminPanelServices(configuration);
             servicesCollection.UseWindow();
+            servicesCollection.UsePage();
             servicesCollection.UseFileService(configuration);
 
             ServiceProvider = servicesCollection.BuildServiceProvider();

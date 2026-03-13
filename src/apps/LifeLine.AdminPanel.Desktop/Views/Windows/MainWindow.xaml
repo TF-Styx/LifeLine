@@ -36,12 +36,28 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Background="Transparent" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" >
-                <Button x:Name="MinimizeButton" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding MinimizeWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource MinimizeButtonStyle}"/>
-                <Button x:Name="MaximizeButton" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding MaximizeWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource MaximizeButtonStyle}"/>
-                <Button x:Name="RestoreButton" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding RestoreWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource RestoreButtonStyle}"/>
-                <Button WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding CloseWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource CloseButtonStyle}"/>
-            </StackPanel>
+            <Grid Grid.Row="0">
+                <StackPanel Background="Transparent" 
+                            WindowChrome.IsHitTestVisibleInChrome="True" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center"
+                            Margin="10 5 10 0">
+                    <Button Content="Отдел" Width="100" Height="30"
+                            Command="{Binding OpenPageCommand}"
+                            CommandParameter="{x:Static enum:PageName.EditDepartmentPage}"
+                            Style="{StaticResource App.Button}"/>
+                </StackPanel>
+                
+                <Grid>
+                    <StackPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Right" >
+                        <Button x:Name="MinimizeButton" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding MinimizeWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource MinimizeButtonStyle}"/>
+                        <Button x:Name="MaximizeButton" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding MaximizeWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource MaximizeButtonStyle}"/>
+                        <Button x:Name="RestoreButton" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding RestoreWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource RestoreButtonStyle}"/>
+                        <Button WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding CloseWindowCommand}" CommandParameter="{x:Static enum:WindowName.MainWindow}" Style="{StaticResource CloseButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
 
             <Grid Grid.Row="1">
                 <uc:LoginControl Height="500" Width="400" 

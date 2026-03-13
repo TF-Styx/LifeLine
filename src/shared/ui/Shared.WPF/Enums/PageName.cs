@@ -9,6 +9,7 @@
         EditEducationDocumentEmployeePage,
         EditSpecialtyEmployeePage,
         EditWorkPermitEmployeePage,
-        EditAssignmentEmployeePage
+        EditAssignmentEmployeePage,
+        EditDepartmentPage
     }
 }
