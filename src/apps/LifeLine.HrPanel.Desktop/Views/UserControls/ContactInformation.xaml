@@ -1,0 +1,86 @@
+﻿<UserControl x:Class="LifeLine.HrPanel.Desktop.Views.UserControls.ContactInformation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF" 
+             xmlns:features="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features" 
+             d:DataContext="{d:DesignInstance Type=features:ContactInformationVM}"
+             xmlns:enum="clr-namespace:LifeLine.HrPanel.Desktop.Enums"
+             mc:Ignorable="d" 
+             d:Height="auto" 
+             d:Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!-- Место проживания -->
+    <Border Grid.Row="2" Background="{StaticResource App.SecondColor}" CornerRadius="6">
+        <!-- Контактная информация -->
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+            <!-- Персональная -->
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="Персональная" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 10 0 5"/>
+
+                <cc:PlaceHolderTextBox PlaceHolder="Телефон*" Margin="0 0 0 5"
+                                       Text="{Binding ContactInformation.PersonalPhone}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                <cc:PlaceHolderTextBox PlaceHolder="Почта*"
+                                       Text="{Binding ContactInformation.PersonalEmail}" Style="{StaticResource TextBox.PlaceHolder}"/>
+            </StackPanel>
+
+            <!-- Корпоративная -->
+            <StackPanel Grid.Row="1">
+                <TextBlock Text="Корпоративная" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 10 0 5"/>
+
+                <cc:PlaceHolderTextBox PlaceHolder="Телефон" Margin="0 0 0 5"
+                                       Text="{Binding ContactInformation.CorporatePhone}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                <cc:PlaceHolderTextBox PlaceHolder="Почта"
+                                       Text="{Binding ContactInformation.CorporateEmail}" Style="{StaticResource TextBox.PlaceHolder}"/>
+            </StackPanel>
+            
+            <Button Grid.Row="2" Content="Добавить контактную информацию" Height="40"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                    Command="{Binding NextStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.PersonalDocuments}"
+                    Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+
+            <!--#region Вериткальный вариант -->
+            <!-- Персональная -->
+            <!--<StackPanel Grid.Column="0" Margin="0 10 5 0">
+                    <TextBlock Text="Персональная" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 0 0 5"/>
+
+                    <cc:PlaceHolderTextBox PlaceHolder="Телефон*" Margin="0 0 0 5"
+                           Text="{Binding NewBaseInfoEmployee.PersonalPhone}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                    <cc:PlaceHolderTextBox PlaceHolder="Почта*"
+                           Text="{Binding NewBaseInfoEmployee.PersonalEmail}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                </StackPanel>-->
+
+            <!-- Корпоративная -->
+            <!--<StackPanel Grid.Column="1" Margin="5 10 0 0">
+                    <TextBlock Text="Корпоративная" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 0 0 5"/>
+
+                    <cc:PlaceHolderTextBox PlaceHolder="Телефон" Margin="0 0 0 5"
+                           Text="{Binding NewBaseInfoEmployee.CorporatePhone}" Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                    <cc:PlaceHolderTextBox PlaceHolder="Почта"
+                           Text="{Binding NewBaseInfoEmployee.CorporateEmail}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                </StackPanel>-->
+            <!--#endregion-->
+        </Grid>
+    </Border>
+</UserControl>
