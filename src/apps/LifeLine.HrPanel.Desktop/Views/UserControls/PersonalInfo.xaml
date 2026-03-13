@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="LifeLine.HrPanel.Desktop.Views.UserControls.PersonalInfo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls" 
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF" 
+             xmlns:features="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features" 
+             d:DataContext="{d:DesignInstance Type=features:PersonalInfoVM}"
+             xmlns:enum="clr-namespace:LifeLine.HrPanel.Desktop.Enums"
+             mc:Ignorable="d" 
+             d:Height="auto" 
+             d:Width="800">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            
+            <StackPanel Margin="5">
+                <TextBlock Text="Личная информация" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                <UniformGrid Columns="3" Margin="0 10 0 0">
+                    <cc:PlaceHolderTextBox PlaceHolder="Фамилия*" 
+                                       Margin="0 0 5 0" 
+                                       Text="{Binding PersonalInfo.Surname}" 
+                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                    <cc:PlaceHolderTextBox PlaceHolder="Имя*" 
+                                       Margin="5 0"
+                                       Text="{Binding PersonalInfo.Name}" 
+                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                    <cc:PlaceHolderTextBox PlaceHolder="Отчество" 
+                                       Margin="5 0 0 0"
+                                       Text="{Binding PersonalInfo.Patronymic}" 
+                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                    <ComboBox ItemsSource="{Binding Genders}" 
+                          SelectedItem="{Binding PersonalInfo.Gender}"
+                          DisplayMemberPath="Name" 
+                          Margin="0 10 0 0"/>
+                </UniformGrid>
+            </StackPanel>
+
+            <Button Grid.Row="1" Content="Создать пользователя" Height="40" Cursor="Hand"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                    Command="{Binding NextStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.Avatar}"
+                    Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+        </Grid>
+    </Border>
+</UserControl>

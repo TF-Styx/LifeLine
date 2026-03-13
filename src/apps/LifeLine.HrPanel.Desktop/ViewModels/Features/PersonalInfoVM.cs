@@ -1,5 +1,6 @@
-﻿using LifeLine.HrPanel.Desktop.Models;
+﻿using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.ViewModels.Abstract;
+using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
@@ -21,13 +22,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set => SetProperty(ref field, value);
         }
 
-        public GenderDisplay? SelectedGender
+        public GenderResponse? Gender
         {
             get => field;
-            set
-            {
-                SetProperty(ref field, value);
-            }
+            set => SetProperty(ref field, value);
         }
     }
 }
