@@ -31,8 +31,8 @@
         <!-- Список документов -->
         <Border Grid.Column="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
             <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                <DataGrid ItemsSource="{Binding LocalPersonalDocuments}" 
-                          SelectedItem="{Binding SelectedLocalPersonalDocument}"
+                <DataGrid ItemsSource="{Binding PersonalDocuments.LocalPersonalDocuments}" 
+                          SelectedItem="{Binding PersonalDocuments.SelectedLocalPersonalDocument}"
                           AutoGenerateColumns="False" 
                           CanUserAddRows="False"
                           HorizontalContentAlignment="Stretch" 
@@ -69,6 +69,7 @@
                                         <Control Template="{StaticResource Magnifier}"/>
                                         <Button.ToolTip>
                                             <StackPanel>
+                                                <TextBlock Text="{Binding DocumentTypeId, StringFormat=Тип документа: {0}}"/>
                                                 <TextBlock Text="{Binding DocumentSeries, StringFormat=Серия: {0}}"/>
                                                 <TextBlock Text="{Binding DocumentNumber, StringFormat=Номер: {0}}"/>
                                                 <TextBlock Text="{Binding FilePath, StringFormat=Путь: {0}}"/>
@@ -84,7 +85,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Width="25" Foreground="#F06870" 
-                                           Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                           Command="{Binding DataContext.PersonalDocuments.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
                                            CommandParameter="{Binding }" 
                                            Style="{StaticResource Button.Icon}">
                                         <Control Template="{StaticResource Trash}"/>
@@ -102,6 +103,7 @@
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
                     <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
 
@@ -126,13 +128,13 @@
                             <cc:PlaceHolderTextBox Grid.Column="0" 
                                                    PlaceHolder="Номер*" 
                                                    Margin="0 0 5 0"
-                                                   Text="{Binding PersonalDocuments.DocumentNumber, UpdateSourceTrigger=PropertyChanged}" 
+                                                   Text="{Binding PersonalDocuments.Number, UpdateSourceTrigger=PropertyChanged}" 
                                                    Style="{StaticResource TextBox.PlaceHolder}"/>
 
                             <cc:PlaceHolderTextBox Grid.Column="1" 
                                                    PlaceHolder="Серия" 
                                                    Margin="5 0 0 0"
-                                                   Text="{Binding PersonalDocuments.DocumentSeries, UpdateSourceTrigger=PropertyChanged}" 
+                                                   Text="{Binding PersonalDocuments.Series, UpdateSourceTrigger=PropertyChanged}" 
                                                    Style="{StaticResource TextBox.PlaceHolder}"/>
                         </Grid>
 
@@ -155,9 +157,14 @@
                     </Grid>
                 </StackPanel>
 
-                <Button Grid.Row="1" Content="Добавить персональный документ" Height="40"
+                <Button Grid.Row="1" Content="Добавить локально" Height="40"
                         HorizontalAlignment="Stretch" VerticalAlignment="Center" 
-                        Command="{Binding NextStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.EducationDocuments}"
+                        Command="{Binding PersonalDocuments.AddPersonalDocumentCommand}"
+                        Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+
+                <Button Grid.Row="2" Content="Продолжить" Height="40"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                        Command="{Binding ExecuteStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.EducationDocuments}"
                         Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
             </Grid>
         </Border>

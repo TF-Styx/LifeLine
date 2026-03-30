@@ -6,6 +6,12 @@ using LifeLine.Directory.Service.Client.Services.PermitType;
 using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
+using LifeLine.Employee.Service.Client.Services.Employee.Assignment;
+using LifeLine.Employee.Service.Client.Services.Employee.ContactInformation;
+using LifeLine.Employee.Service.Client.Services.Employee.EducationDocument;
+using LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry;
+using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
+using LifeLine.Employee.Service.Client.Services.Employee.WorkPermit;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.Employee.Service.Client.Services.Specialty;
@@ -13,19 +19,22 @@ using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Enums;
 using LifeLine.HrPanel.Desktop.Models;
 using LifeLine.HrPanel.Desktop.ViewModels.Features;
-using LifeLine.HrPanel.Desktop.Views.UserControls;
+using Shared.Contracts.Request.EmployeeService.Assignment;
+using Shared.Contracts.Request.EmployeeService.ContactInformation;
+using Shared.Contracts.Request.EmployeeService.EducationDocument;
 using Shared.Contracts.Request.EmployeeService.Employee;
+using Shared.Contracts.Request.EmployeeService.EmployeeSpecialty;
+using Shared.Contracts.Request.EmployeeService.PersonalDocument;
+using Shared.Contracts.Request.EmployeeService.WorkPermit;
 using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
-using Shared.WPF.Constants;
 using Shared.WPF.Extensions;
-using Shared.WPF.Helpers;
 using Shared.WPF.Services.FileDialog;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Media;
+using Terminex.Common.Results;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 {
@@ -45,6 +54,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IAdmissionStatusReadOnlyService _admissionStatusReadOnlyService;
         private readonly IPositionReadOnlyApiServiceFactory _positionReadOnlyApiServiceFactory;
 
+        private readonly IContactInformationApiServiceFactory _contactInformationApiServiceFactory;
+        private readonly IPersonalDocumentApiServiceFactory _personalDocumentApiServiceFactory;
+        private readonly IEducationDocumentApiServiceFactory _educationDocumentApiServiceFactory;
+        private readonly IWorkPermitApiServiceFactory _workPermitApiServiceFactory;
+        private readonly IEmployeeSpecialtyApiServiceFactory _employeeSpecialtyApiServiceFactory;
+        private readonly IAssignmentApiServiceFactory _assignmentApiServiceFactory;
+
         public EmployeeCreatePageVM
             (
                 IEmployeeService employeeService,
@@ -59,7 +75,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IEmployeeTypeReadOnlyService employeeTypeReadOnlyService,
                 IEducationLevelReadOnlyService educationLevelReadOnlyService,
                 IAdmissionStatusReadOnlyService admissionStatusReadOnlyService,
-                IPositionReadOnlyApiServiceFactory positionReadOnlyApiServiceFactory
+                IPositionReadOnlyApiServiceFactory positionReadOnlyApiServiceFactory,
+
+                IContactInformationApiServiceFactory contactInformationApiServiceFactory,
+                IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory,
+                IEducationDocumentApiServiceFactory educationDocumentApiServiceFactory,
+                IWorkPermitApiServiceFactory workPermitApiServiceFactory,
+                IEmployeeSpecialtyApiServiceFactory employeeSpecialtyApiServiceFactory,
+                IAssignmentApiServiceFactory assignmentApiServiceFactory
             )
         {
             _employeeService = employeeService;
@@ -76,41 +99,23 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _admissionStatusReadOnlyService = admissionStatusReadOnlyService;
             _positionReadOnlyApiServiceFactory = positionReadOnlyApiServiceFactory;
 
-            CreateNewWorkPermit();
-            CreateNewBaseInfoEmployee();
-            CreateNewPersonalDocument();
-            CreateNewEducationDocument();
-            CreateNewAssignmentContract();
+            _contactInformationApiServiceFactory = contactInformationApiServiceFactory;
+            _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
+            _educationDocumentApiServiceFactory = educationDocumentApiServiceFactory;
+            _workPermitApiServiceFactory = workPermitApiServiceFactory;
+            _employeeSpecialtyApiServiceFactory = employeeSpecialtyApiServiceFactory;
+            _assignmentApiServiceFactory = assignmentApiServiceFactory;
 
+            PersonalInfo = new();
+            ContactInformation = new();
             Avatar = new(_fileDialogService);
-            WorkPermits = new(_fileDialogService);
-            AssigmentsContracts = new(_fileDialogService);
-            PersonalDocuments = new(_fileDialogService);
+            PersonalDocuments = new(_fileDialogService, DocumentTypes);
+            EducationDocuments = new(_fileDialogService, DocumentTypes, EducationLevels);
+            WorkPermits = new(_fileDialogService, PermitTypes, AdmissionStatuses);
+            Specialties = new();
+            AssigmentsContracts = new(_fileDialogService, _positionReadOnlyApiServiceFactory, Departments, Managers, Statuses, EmployeeTypes);
 
-            CreateEmployeeCommandAsync = new RelayCommandAsync(Execute_CreateEmployeeCommandAsync);
-
-            //SelectAvatarEmployeeCommand = new RelayCommand(Execute_SelectAvatarEmployeeCommand);
-
-            AddPersonalDocumentCommand = new RelayCommand(Execute_AddPersonalDocumentCommand, CanExecute_AddPersonalDocumentCommand);
-            DeletePersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand);
-            //SelectPersonalDocumentFileCommand = new RelayCommand(Execute_SelectPersonalDocumentFileCommand);
-
-            AddEducationDocumentCommand = new RelayCommand(Execute_AddEducationDocumentCommand, CanExecute_AddEducationDocumentCommand);
-            DeleteEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Execute_DeleteEducationDocumentCommand);
-            //SelectEducationDocumentFileCommand = new RelayCommand(Execute_SelectEducationDocumentFileCommand);
-
-            AddWorkPermitCommand = new RelayCommand(Execute_AddWorkPermitCommand, CanExecute_AddWorkPermitCommand);
-            DeleteWorkPermitCommand = new RelayCommand<WorkPermitDisplay>(Execute_DeleteWorkPermitCommand);
-            //SelectWorkPermitFileCommand = new RelayCommand(Execute_SelectWorkPermitFileCommand);
-
-            AddEmployeeSpecialtyCommand = new RelayCommand(Execute_AddEmployeeSpecialtyCommand, CanExecute_AddEmployeeSpecialtyCommand);
-            DeleteEmployeeSpecialtyCommand = new RelayCommand<SpecialtyResponse>(Execute_DeleteEmployeeSpecialtyCommand);
-
-            AddAssignmentContractCommand = new RelayCommand(Execute_AddAssignmentContractCommand, CanExecute_AddAssignmentContractCommand);
-            DeleteAssignmentContractCommand = new RelayCommand<AssignmentContractDisplay>(Execute_DeleteAssignmentContractCommand);
-            //SelectAssignmentContractFileCommand = new RelayCommand(Execute_SelectAssignmentContractFileCommand);
-
-            NextStepCommand = new RelayCommand<EmployeeCreationSteps>(Execute_NextStepCommand, CanExecute_NextStepCommand);
+            ExecuteStepCommand = new RelayCommandAsync<EmployeeCreationSteps>(Execute_StepCommand, CanExecute_StepCommand);
         }
 
         async Task IAsyncInitializable.InitializeAsync()
@@ -134,18 +139,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             IsInitialize = true;
         }
 
-        private PersonalInfoVM _personalInfo = new();
+        #region Features new ViewModel
+
+        private PersonalInfoVM _personalInfo;
         public PersonalInfoVM PersonalInfo
         {
             get => _personalInfo;
             set => SetProperty(ref _personalInfo, value);
-        }
-
-        private PersonalDocumentsVM _personalDocuments;
-        public PersonalDocumentsVM PersonalDocuments
-        {
-            get => _personalDocuments;
-            set => SetProperty(ref _personalDocuments, value);
         }
 
         private AvatarVM _avatar;
@@ -155,18 +155,25 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set => SetProperty(ref _avatar, value);
         }
 
-        private AddressVM _address = new();
-        public AddressVM Address
-        {
-            get => _address;
-            set => SetProperty(ref _address, value);
-        }
-
-        private ContactInformationVM _сontactInformation = new();
+        private ContactInformationVM _сontactInformation;
         public ContactInformationVM ContactInformation
         {
             get => _сontactInformation;
             set => SetProperty(ref _сontactInformation, value);
+        }
+
+        private PersonalDocumentsVM _personalDocuments;
+        public PersonalDocumentsVM PersonalDocuments
+        {
+            get => _personalDocuments;
+            set => SetProperty(ref _personalDocuments, value);
+        }
+
+        private EducationDocumentsVM _educationDocuments;
+        public EducationDocumentsVM EducationDocuments
+        {
+            get => _educationDocuments;
+            set => SetProperty(ref _educationDocuments, value);
         }
 
         private WorkPermitsVM _workPermits;
@@ -176,7 +183,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set => SetProperty(ref _workPermits, value);
         }
 
-        private SpecialtiesVM _specialties = new();
+        private SpecialtiesVM _specialties;
         public SpecialtiesVM Specialties
         {
             get => _specialties;
@@ -196,12 +203,364 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set => SetProperty(ref field, value);
         }
 
-        public RelayCommand<EmployeeCreationSteps> NextStepCommand { get; private set; }
-        private void Execute_NextStepCommand(EmployeeCreationSteps value)
+        public RelayCommandAsync<EmployeeCreationSteps> ExecuteStepCommand { get; private set; }
+        private async Task Execute_StepCommand(EmployeeCreationSteps value)
         {
+            Func<Task<Result>> func = Steps switch
+            {
+                EmployeeCreationSteps.PersonalInfo => async () => await CreateEmployeeAsync(),
+                EmployeeCreationSteps.Avatar => async () => await CreateAvatarAsync(),
+                EmployeeCreationSteps.ContactInformation => async () => await CreateContactInformation(),
+                EmployeeCreationSteps.PersonalDocuments => async () => await CreatePersonalDocuments(),
+                EmployeeCreationSteps.EducationDocuments => async () => await CreateEducationDocuments(),
+                EmployeeCreationSteps.WorkPermits => async () => await CreateWorkPermits(),
+                EmployeeCreationSteps.Specialties => async () => await CreateEmployeeSpecialties(),
+                EmployeeCreationSteps.AssigmentsContracts => async () => await CreateAssignmentContracts()
+            };
+            var result = await func();
+
+            if (result.IsFailure)
+            {
+                MessageBox.Show(result.StringMessage);
+                return;
+            }
+
             Steps = value;
+            ClearLocalLists();
         }
-        private bool CanExecute_NextStepCommand(EmployeeCreationSteps value) => true;
+        private bool CanExecute_StepCommand(EmployeeCreationSteps value) => true;
+
+        private async Task<Result> CreateEmployeeAsync()
+        {
+            var result = await _employeeService.AddAsync<CreateEmployeeRequest, EmployeeIdResponse>
+                (
+                    new CreateEmployeeRequest
+                        (
+                            PersonalInfo.Surname,
+                            PersonalInfo.Name,
+                            PersonalInfo.Patronymic,
+                            PersonalInfo.Gender.Id
+                        )
+                );
+
+            if (result.IsFailure)
+                return Result.Failure(result.Errors);
+
+            SetEmployeeId(result.Value.EmployeeId.ToString());
+
+            return Result.Success();
+        }
+
+        private async Task<Result> CreateAvatarAsync()
+        {
+            var result = await _fileStorageService.UploadFileAsync
+                (
+                    new UploadFileRequest
+                        (
+                            FileConst.BUCKET_NAME,
+                            nameof(Avatar),
+                            FileConst.BuildEmployeeFolder
+                                (
+                                    Avatar.EmployeeId,
+                                    EmployeeFolderType.Avatar
+                                ),
+                            Avatar.GetPath()!
+                        )
+                );
+
+            if (result.IsFailure)
+                return Result.Failure(result.Errors);
+
+            return Result.Success();
+        }
+
+        private async Task<Result> CreateContactInformation()
+        {
+            var contactInformationService = _contactInformationApiServiceFactory.Create(ContactInformation.EmployeeId);
+
+            var result = await contactInformationService.CreateAsync
+                (
+                    new CreateContactInformationRequest
+                        (
+                            ContactInformation.PersonalPhone,
+                            string.IsNullOrWhiteSpace(ContactInformation.CorporatePhone) ? null : ContactInformation.CorporatePhone,
+                            ContactInformation.PersonalEmail,
+                            string.IsNullOrWhiteSpace(ContactInformation.CorporateEmail) ? null : ContactInformation.CorporateEmail,
+                            ContactInformation.PostalCode,
+                            ContactInformation.Region,
+                            ContactInformation.City,
+                            ContactInformation.Street,
+                            ContactInformation.Building,
+                            string.IsNullOrWhiteSpace(ContactInformation.Apartment) ? null : ContactInformation.Apartment
+                        )
+                );
+
+            return result;
+        }
+
+        private async Task<Result> CreatePersonalDocuments()
+        {
+            var personalDocumentService = _personalDocumentApiServiceFactory.Create(PersonalDocuments.EmployeeId);
+
+            var result = await personalDocumentService.CreateManyAsync
+                (
+                    new CreateManyPersonalDocumentsRequest
+                        (
+                            [.. PersonalDocuments.LocalPersonalDocuments.Select
+                                (
+                                    x => new CreateDataPersonalDocumentRequest
+                                        (
+                                            x.DocumentTypeId.ToString(),
+                                            x.DocumentNumber,
+                                            x.DocumentSeries,
+                                            null
+                                        )
+                                )]
+                        )
+                );
+
+            if (result.IsSuccess)
+            {
+                var resultMiniO = await _fileStorageService.UploadFilesAsync
+                    (
+                        new UploadFilesRequest
+                            (
+                                [.. PersonalDocuments.LocalPersonalDocuments.Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
+                                    .Select
+                                        (
+                                            x => new UploadFilesDataRequest
+                                                (
+                                                    FileConst.BUCKET_NAME,
+                                                    x.DocumentType.Name,
+                                                    FileConst.BuildEmployeeFolder
+                                                        (
+                                                            PersonalDocuments.EmployeeId,
+                                                            EmployeeFolderType.PersonalDocument
+                                                        ),
+                                                    x.FilePath!
+                                                )
+                                        )
+                                ]
+                            )
+                    );
+            }
+
+            return result;
+        }
+
+        private async Task<Result> CreateEducationDocuments()
+        {
+            var educationDocumentService = _educationDocumentApiServiceFactory.Create(EducationDocuments.EmployeeId);
+
+            var result = await educationDocumentService.CreateManyAsync
+                (
+                    new CreateManyEducationDocumentsReqeust
+                        (
+                            [.. EducationDocuments.LocalEducationDocuments.Select
+                                (
+                                    x => new CreateDataEducationDocumentReqeust
+                                        (
+                                            x.EducationLevel.Id,
+                                            x.DocumentType.Id,
+                                            x.DocumentNumber,
+                                            x.IssuedDate.ToString(),
+                                            x.OrganizationName,
+                                            x.QualificationAwardedName,
+                                            x.SpecialtyName,
+                                            x.ProgramName,
+                                            x.TotalHours
+                                        )
+                                )
+                            ]
+                        )
+                );
+
+            if (result.IsSuccess)
+            {
+                var resultMiniO = await _fileStorageService.UploadFilesAsync
+                    (
+                        new UploadFilesRequest
+                            (
+                                [.. EducationDocuments.LocalEducationDocuments.Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
+                                    .Select
+                                        (
+                                            x => new UploadFilesDataRequest
+                                                (
+                                                    FileConst.BUCKET_NAME,
+                                                    x.DocumentType.Name,
+                                                    FileConst.BuildEmployeeFolder
+                                                        (
+                                                            EducationDocuments.EmployeeId,
+                                                            EmployeeFolderType.EducationDocument
+                                                        ),
+                                                    x.FilePath!
+                                                )
+                                        )
+                                ]
+                            )
+                    );
+            }
+
+            return result;
+        }
+
+        private async Task<Result> CreateWorkPermits()
+        {
+            var workPermitService = _workPermitApiServiceFactory.Create(WorkPermits.EmployeeId);
+
+            var result = await workPermitService.CreateManyAsync
+                (
+                    new CreateManyWorkPermitsRequest
+                        (
+                            [.. WorkPermits.LocalWorkPermits.Select
+                                (
+                                    x => new CreateManyDataWorkPermitsRequest
+                                        (
+                                            x.WorkPermitName,
+                                            x.DocumentSeries,
+                                            x.WorkPermitNumber,
+                                            x.ProtocolNumber,
+                                            x.SpecialtyName,
+                                            x.IssuingAuthority,
+                                            x.IssueDate.ToString(),
+                                            x.ExpiryDate.ToString(),
+                                            x.PermitType.Id,
+                                            x.AdmissionStatus.Id
+                                        )
+                                )
+                            ]
+                        )
+                );
+
+            if (result.IsSuccess)
+            {
+                var resultMiniO = await _fileStorageService.UploadFilesAsync
+                    (
+                        new UploadFilesRequest
+                            (
+                                [.. WorkPermits.LocalWorkPermits.Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
+                                    .Select
+                                        (
+                                            x => new UploadFilesDataRequest
+                                                (
+                                                    FileConst.BUCKET_NAME,
+                                                    x.PermitType.Name,
+                                                    FileConst.BuildEmployeeFolder
+                                                        (
+                                                            WorkPermits.EmployeeId,
+                                                            EmployeeFolderType.WorkPermit
+                                                        ),
+                                                    x.FilePath
+                                                )
+                                        )
+                                ]
+                            )
+                    );
+            }
+
+            return result;
+        }
+
+        private async Task<Result> CreateEmployeeSpecialties()
+        {
+            var employeeSpecialtiesService = _employeeSpecialtyApiServiceFactory.Create(Specialties.EmployeeId);
+
+            var result = await employeeSpecialtiesService.CreateManyAsync
+                (
+                    new CreateManyEmployeeSpecialtiesRequest
+                        (
+                            [.. Specialties.LocalEmployeeSpecialties.Select
+                                (
+                                    x => new CreateManyDataEmployeeSpecialtiesRequest(x.SpecialtyId)
+                                )
+                            ]
+                        )
+                );
+
+            return result;
+        }
+
+        private async Task<Result> CreateAssignmentContracts()
+        {
+            var assignmentService = _assignmentApiServiceFactory.Create(AssigmentsContracts.EmployeeId);
+
+            var result = await assignmentService.CreateManyAsync
+                (
+                    new CreateManyAssignmentsReqeust
+                        (
+
+                            [.. AssigmentsContracts.LocalAssignmentsContracts.Select
+                                (
+                                    x => 
+                                    {
+                                        var a = new CreateManyDataAssignmentsReqeust
+                                        (
+                                            x.Position.Id,
+                                            x.Department.Id,
+                                            x.Manager?.Id,
+                                            x.HireDate,
+                                            x.TerminationDate,
+                                            x.Status.Id,
+                                            new CreateManyDataAssignmentContractReqeust
+                                                (
+                                                    x.EmployeeType.Id,
+                                                    x.ContractNumber,
+                                                    x.StartDate,
+                                                    x.EndDate,
+                                                    x.Salary,
+                                                    null
+                                                )
+                                        );
+
+                                        return a;
+                                    } 
+                                )
+                            ]
+                        )
+                );
+
+            if (result.IsSuccess)
+            {
+                var resultMiniO = await _fileStorageService.UploadFilesAsync
+                    (
+                        new UploadFilesRequest
+                            (
+                                [.. AssigmentsContracts.LocalAssignmentsContracts.Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
+                                    .Select
+                                        (
+                                            x => new UploadFilesDataRequest
+                                                (
+                                                    FileConst.BUCKET_NAME,
+                                                    x.Position.Name,
+                                                    FileConst.BuildEmployeeFolder
+                                                        (
+                                                            AssigmentsContracts.EmployeeId,
+                                                            EmployeeFolderType.Assignment
+                                                        ),
+                                                    x.FilePath!
+                                                )
+                                        )
+                                ]
+                            )
+                    );
+            }
+
+            return result;
+        }
+
+        private void SetEmployeeId(string id)
+        {
+            PersonalInfo.EmployeeId = id;
+            Avatar.EmployeeId = id;
+            ContactInformation.EmployeeId = id;
+            PersonalDocuments.EmployeeId = id;
+            EducationDocuments.EmployeeId = id;
+            WorkPermits.EmployeeId = id;
+            Specialties.EmployeeId = id;
+            AssigmentsContracts.EmployeeId = id;
+        }
+
+        #endregion
 
         #region bool
 
@@ -231,337 +590,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             get => _isUseWorkPermit;
             set => SetProperty(ref _isUseWorkPermit, value);
-        }
-
-        #endregion
-
-        #region Display
-
-        //NewBaseInfoEmployee
-        private BaseInfoEmployeeDisplay _newBaseInfoEmployee = null!;
-        public BaseInfoEmployeeDisplay NewBaseInfoEmployee
-        {
-            get => _newBaseInfoEmployee;
-            private set => SetProperty(ref _newBaseInfoEmployee, value);
-        }
-        private void CreateNewBaseInfoEmployee()
-        {
-            NewBaseInfoEmployee = new();
-
-            NewBaseInfoEmployee.PropertyChanged += (s, e) => CreateEmployeeCommandAsync?.RaiseCanExecuteChanged();
-        }
-
-        //NewAssignmentContract
-        private AssignmentContractDisplay _newAssignmentContract = null!;
-        public AssignmentContractDisplay NewAssignmentContract
-        {
-            get => _newAssignmentContract;
-            private set => SetProperty(ref _newAssignmentContract, value);
-        }
-        private void CreateNewAssignmentContract()
-        {
-            NewAssignmentContract = new
-                (
-                    new AssignmentResponse
-                        (
-                            Guid.Empty, 
-                            Guid.Empty, 
-                            Guid.Empty, 
-                            Guid.Empty, 
-                            Guid.Empty, 
-                            DateTime.UtcNow, 
-                            DateTime.UtcNow, 
-                            Guid.Empty
-                        ),
-                    new ContractResponse
-                        (
-                            string.Empty,
-                            string.Empty,
-                            string.Empty,
-                            string.Empty,
-                            DateTime.UtcNow,
-                            DateTime.UtcNow,
-                            decimal.Zero,
-                            string.Empty
-                        ),
-                    [], [], [], [], [], 
-                    string.Empty
-                );
-
-            NewAssignmentContract.PropertyChanged += async (s, e) =>
-            {
-                if (e.PropertyName == nameof(AssignmentContractDisplay.Department))
-                    await GetAllPositionByIdDepartmentAsync();
-
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
-            };
-        }
-
-        //NewPersonalDocument
-        private PersonalDocumentDisplay _newPersonalDocument = null!;
-        public PersonalDocumentDisplay NewPersonalDocument
-        {
-            get => _newPersonalDocument;
-            private set => SetProperty(ref _newPersonalDocument, value);
-        }
-        private void CreateNewPersonalDocument()
-        {
-            NewPersonalDocument = new(new PersonalDocumentResponse(Guid.Empty, Guid.Empty, string.Empty, string.Empty), [], string.Empty);
-
-            NewPersonalDocument.PropertyChanged += (s, e) => AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
-        }
-
-        //NewEducationDocument
-        private EducationDocumentDisplay _newEducationDocument = null!;
-        public EducationDocumentDisplay NewEducationDocument
-        {
-            get => _newEducationDocument;
-            private set => SetProperty(ref _newEducationDocument, value);
-        }
-        private void CreateNewEducationDocument()
-        {
-            NewEducationDocument = new(new EducationDocumentResponse(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, DateTime.UtcNow.ToString(), string.Empty, string.Empty, string.Empty, string.Empty, "0"), [], [], string.Empty);
-
-            NewEducationDocument.PropertyChanged += (s, e) => AddEducationDocumentCommand?.RaiseCanExecuteChanged();
-        }
-
-        //NewWorkPermit
-        private WorkPermitDisplay _newWorkPermit = null!;
-        public WorkPermitDisplay NewWorkPermit
-        {
-            get => _newWorkPermit;
-            private set => SetProperty(ref _newWorkPermit, value);
-        }
-        private void CreateNewWorkPermit()
-        {
-            NewWorkPermit = new(new WorkPermitResponse(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, DateTime.UtcNow, DateTime.UtcNow, string.Empty, string.Empty), [], [], string.Empty);
-
-            NewWorkPermit.PropertyChanged += (s, e) => AddWorkPermitCommand?.RaiseCanExecuteChanged();
-        }
-
-        #endregion
-
-        #region Avatar
-
-        //public ImageSource? Avatar
-        //{
-        //    get => field;
-        //    set => SetProperty(ref field, value);
-        //}
-
-        //private string? _avatarFilePath
-        //{
-        //    get => field;
-        //    set => SetProperty(ref field, value);
-        //}
-
-        //public RelayCommand SelectAvatarEmployeeCommand { get; private set; }
-        //private void Execute_SelectAvatarEmployeeCommand()
-        //{
-        //    _avatarFilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.AVATAR}", FileFilters.Images);
-        //    Avatar = ImageHelper.ToImageFromFilePath(_avatarFilePath);
-        //}
-
-        #endregion
-
-        #region Employees
-
-        public RelayCommandAsync CreateEmployeeCommandAsync { get; private set; }
-        private async Task Execute_CreateEmployeeCommandAsync()
-        {
-            CreateContactInformationRequest? createContactInformation = null;
-
-            if (IsUseContactInformation)
-                createContactInformation = new CreateContactInformationRequest(NewBaseInfoEmployee.PersonalPhone, NewBaseInfoEmployee.CorporatePhone, NewBaseInfoEmployee.PersonalEmail, NewBaseInfoEmployee.CorporateEmail, NewBaseInfoEmployee.PostalCode, NewBaseInfoEmployee.Region, NewBaseInfoEmployee.City, NewBaseInfoEmployee.Street, NewBaseInfoEmployee.Building, NewBaseInfoEmployee.Apartment);
-
-            var resultEmployee = await _employeeService.AddAsync<CreateEmployeeRequest, EmployeeIdResponse>
-                (
-                    new CreateEmployeeRequest
-                    (
-                        NewBaseInfoEmployee.Surname, NewBaseInfoEmployee.Name, NewBaseInfoEmployee.Patronymic!, NewBaseInfoEmployee.Gender!.Id,
-                        LocalPersonalDocuments.Select(x => new CreateEmployeePersonalDocumentRequest(Guid.Parse(x.DocumentType.Id), x.DocumentNumber, x.DocumentSeries)).ToList(),
-                        createContactInformation,
-                        LocalEducationDocuments.Select(x => new CreateEducationDocumentRequest(Guid.Parse(x.EducationLevel.Id), Guid.Parse(x.DocumentType.Id), x.DocumentNumber, x.IssuedDate, x.OrganizationName, x.QualificationAwardedName, x.SpecialtyName, x.ProgramName, x.TotalHours)).ToList(),
-                        LocalWorkPermits.Select(x => new CreateWorkPermitRequest(x.WorkPermitName, x.DocumentSeries, x.WorkPermitNumber, x.ProtocolNumber, x.SpecialtyName, x.IssuingAuthority, x.IssueDate, x.ExpiryDate, Guid.Parse(x.PermitType.Id), Guid.Parse(x.AdmissionStatus.Id))).ToList(),
-                        SelectedEmployeeSpecialties.Select(x => new CreateEmployeeSpecialtyRequest(Guid.Parse(x.Id))).ToList(),
-                        LocalAssignmentsContracts.Select(x => new CreateAssignmentRequest(Guid.Parse(x.Position.Id), Guid.Parse(x.Department.Id), Guid.Parse(x.Manager?.Id!), x.HireDate, x.TerminationDate, Guid.Parse(x.Status.Id), new CreateAssignmentContractRequest(Guid.Parse(x.EmployeeType.Id), x.ContractNumber, x.StartDate, x.EndDate, x.Salary))).ToList()
-                    )
-                );
-
-            resultEmployee.Switch
-                (
-                    () => { },
-                    errors => MessageBox.Show(resultEmployee.StringMessage)
-                );
-
-            #region AvatarMiniO
-
-            var responseAvatarMiniO = await _fileStorageService.UploadFileAsync
-                (
-                    new UploadFileRequest
-                        (
-                            FileConst.BUCKET_NAME,
-                            nameof(Avatar),
-                            FileConst.BuildEmployeeFolder
-                                (
-                                    resultEmployee.Value.EmployeeId.ToString(),
-                                    EmployeeFolderType.Avatar
-                                ),
-                            Avatar.GetPath()!
-                        )
-                );
-
-            responseAvatarMiniO.Switch
-                (
-                    () => { },
-                    errors => MessageBox.Show($"Аватар: {responseAvatarMiniO.StringMessage}")
-                );
-
-            #endregion
-
-            #region PersonalDocumentMiniO
-
-            List<UploadFilesDataRequest> personalDocumentUploadFilesDataRequests = [];
-
-            foreach (var item in LocalPersonalDocuments)
-            {
-                personalDocumentUploadFilesDataRequests.Add
-                    (
-                        new UploadFilesDataRequest
-                                (
-                                    FileConst.BUCKET_NAME,
-                                    item.DocumentType.Name,
-                                    FileConst.BuildEmployeeFolder
-                                        (
-                                            resultEmployee.Value.EmployeeId.ToString(),
-                                            EmployeeFolderType.PersonalDocument
-                                        ),
-                                    item.FilePath!
-                                )
-                    );
-            }
-
-            var personalDocumentUploadFilesRequest = new UploadFilesRequest(personalDocumentUploadFilesDataRequests);
-
-            var responsePersonalDocumentMiniO = await _fileStorageService.UploadFilesAsync(personalDocumentUploadFilesRequest);
-
-            responsePersonalDocumentMiniO.Switch
-                (
-                    () => { },
-                    errors => MessageBox.Show($"Персональные документы: {responsePersonalDocumentMiniO.StringMessage}")
-                );
-
-            #endregion
-
-            #region EducationDocumentMiniO
-
-            List<UploadFilesDataRequest> educationDocumentFilesDataRequest = [];
-
-            foreach (var item in LocalEducationDocuments)
-            {
-                educationDocumentFilesDataRequest.Add
-                    (
-                        new UploadFilesDataRequest
-                            (
-                                FileConst.BUCKET_NAME,
-                                $"{item.DocumentType.Name}-{item.EducationLevel.Name}",
-                                FileConst.BuildEmployeeFolder
-                                    (
-                                        resultEmployee.Value.EmployeeId.ToString(),
-                                        EmployeeFolderType.EducationDocument
-                                    ),
-                                item.FilePath!
-                            )
-                    );
-            }
-
-            var educationDocumentUploadFilesRequest = new UploadFilesRequest(educationDocumentFilesDataRequest);
-
-            var responseEducationDocumentMiniO = await _fileStorageService.UploadFilesAsync(educationDocumentUploadFilesRequest);
-
-            responseEducationDocumentMiniO.Switch
-                (
-                    () => { },
-                    errors => MessageBox.Show($"Документы об образовании: {responseEducationDocumentMiniO.StringMessage}")
-                );
-
-            #endregion
-
-            #region WorkPermit
-
-            List<UploadFilesDataRequest> workPermitUploadFileDataRequest = [];
-
-            foreach (var item in LocalWorkPermits)
-            {
-                workPermitUploadFileDataRequest.Add
-                    (
-                        new UploadFilesDataRequest
-                            (
-                                FileConst.BUCKET_NAME,
-                                item.PermitType.Name,
-                                FileConst.BuildEmployeeFolder
-                                    (
-                                        resultEmployee.Value.EmployeeId.ToString(),
-                                        EmployeeFolderType.WorkPermit
-                                    ),
-                                item.FilePath!
-                            )
-                    );
-            }
-
-            var workPermitUploadFilesRequest = new UploadFilesRequest(workPermitUploadFileDataRequest);
-
-            var responseWorkPermitMiniO = await _fileStorageService.UploadFilesAsync(workPermitUploadFilesRequest);
-
-            responseWorkPermitMiniO.Switch
-                (
-                    () => { },
-                    errors => MessageBox.Show($"Аккредитация / сертификаты: {responseWorkPermitMiniO.StringMessage}")
-                );
-
-            #endregion
-
-            #region AssignemtnContract
-
-            List<UploadFilesDataRequest> assignmentContractUploadFilesDataReqiuest = [];
-
-            foreach (var item in LocalAssignmentsContracts)
-            {
-                assignmentContractUploadFilesDataReqiuest.Add
-                    (
-                        new UploadFilesDataRequest
-                            (
-                                FileConst.BUCKET_NAME,
-                                $"{item.Department.Name}-{item.Position.Name}-{item.EmployeeType.Name}",
-                                FileConst.BuildEmployeeFolder
-                                    (
-                                        resultEmployee.Value.EmployeeId.ToString(),
-                                        EmployeeFolderType.Assignment
-                                    ),
-                                item.FilePath!
-                            )
-                    );
-            }
-
-            var assignmentContractUploadFilesRequest = new UploadFilesRequest(assignmentContractUploadFilesDataReqiuest);
-
-            var responseAssignmentContractMiniO = await _fileStorageService.UploadFilesAsync(assignmentContractUploadFilesRequest);
-
-            responseAssignmentContractMiniO.Switch
-                (
-                    () => { },
-                    errors => MessageBox.Show($"Назначение: {responseAssignmentContractMiniO.StringMessage}")
-                );
-
-            #endregion
-
-            CreateNewWorkPermit();
-            CreateNewBaseInfoEmployee();
-            CreateNewPersonalDocument();
-            CreateNewEducationDocument();
-            CreateNewAssignmentContract();
-
-            ClearLocalLists();
         }
 
         #endregion
@@ -612,33 +640,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
-        #region PersonalDocument
-
-        private PersonalDocumentDisplay _selectedLocalPersonalDocument = null!;
-        public PersonalDocumentDisplay SelectedLocalPersonalDocument
-        {
-            get => _selectedLocalPersonalDocument;
-            set => SetProperty(ref _selectedLocalPersonalDocument, value);
-        }
-
-        public ObservableCollection<PersonalDocumentDisplay> LocalPersonalDocuments { get; private init; } = [];
-
-        public RelayCommand? AddPersonalDocumentCommand { get; private set; }
-        private void Execute_AddPersonalDocumentCommand()
-        {
-            LocalPersonalDocuments.Add(NewPersonalDocument);
-
-            CreateNewPersonalDocument();
-        }
-        private bool CanExecute_AddPersonalDocumentCommand()
-            => NewPersonalDocument.DocumentType != null && !string.IsNullOrWhiteSpace(NewPersonalDocument.DocumentNumber);
-
-        public RelayCommand<PersonalDocumentDisplay>? DeletePersonalDocumentCommand { get; private set; }
-        private void Execute_DeletePersonalDocumentCommand(PersonalDocumentDisplay display)
-            => LocalPersonalDocuments.Remove(display);
-
-        #endregion
-
         #region EducationLevel
 
         public ObservableCollection<EducationLevelDisplay> EducationLevels { get; private init; } = [];
@@ -649,72 +650,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             foreach (var item in listResponse)
                 EducationLevels.Add(new EducationLevelDisplay(item));
         }
-
-        #endregion
-
-        #region EducationDocument
-
-        private EducationDocumentDisplay _selectedEducationDocumentDisplay = null!;
-        public EducationDocumentDisplay SelectedEducationDocumentDisplay
-        {
-            get => _selectedEducationDocumentDisplay;
-            set => SetProperty(ref _selectedEducationDocumentDisplay, value);
-        }
-
-        public ObservableCollection<EducationDocumentDisplay> LocalEducationDocuments { get; private init; } = [];
-
-        public RelayCommand AddEducationDocumentCommand { get; private set; }
-        private void Execute_AddEducationDocumentCommand()
-        {
-            LocalEducationDocuments.Add(NewEducationDocument);
-
-            CreateNewEducationDocument();
-        }
-        private bool CanExecute_AddEducationDocumentCommand()
-            => NewEducationDocument.EducationLevel != null && NewEducationDocument.DocumentType != null &&
-            !string.IsNullOrWhiteSpace(NewEducationDocument.DocumentNumber) && 
-            !string.IsNullOrWhiteSpace(NewEducationDocument.IssuedDate.ToString()) &&
-            NewWorkPermit.IssueDate != DateTime.MinValue &&
-            !string.IsNullOrWhiteSpace(NewEducationDocument.OrganizationName);
-
-        public RelayCommand<EducationDocumentDisplay>? DeleteEducationDocumentCommand { get; private set; }
-        private void Execute_DeleteEducationDocumentCommand(EducationDocumentDisplay display)
-            => LocalEducationDocuments.Remove(display);
-
-        #endregion
-
-        #region WorkPermit
-
-        private WorkPermitDisplay _selectedWorkPermit = null!;
-        public WorkPermitDisplay SelectedWorkPermit
-        {
-            get => _selectedWorkPermit;
-            set => SetProperty(ref _selectedWorkPermit, value);
-        }
-
-        public ObservableCollection<WorkPermitDisplay> LocalWorkPermits { get; private init; } = [];
-
-        public RelayCommand AddWorkPermitCommand { get; private set; }
-        private void Execute_AddWorkPermitCommand()
-        {
-            LocalWorkPermits.Add(NewWorkPermit);
-
-            CreateNewWorkPermit();
-        }
-        private bool CanExecute_AddWorkPermitCommand()
-            => NewWorkPermit.AdmissionStatus != null && NewWorkPermit.PermitType != null &&
-            !string.IsNullOrWhiteSpace(NewWorkPermit.WorkPermitName) &&
-            !string.IsNullOrWhiteSpace(NewWorkPermit.WorkPermitNumber) &&
-            !string.IsNullOrWhiteSpace(NewWorkPermit.SpecialtyName) &&
-            !string.IsNullOrWhiteSpace(NewWorkPermit.IssuingAuthority) &&
-            //NewWorkPermit.IssueDate != DateTime.MinValue && 
-            !string.IsNullOrWhiteSpace(NewWorkPermit.IssueDate.ToString()) &&
-            //NewWorkPermit.ExpiryDate != DateTime.MinValue &&
-            !string.IsNullOrWhiteSpace(NewWorkPermit.ExpiryDate.ToString());
-
-        public RelayCommand<WorkPermitDisplay> DeleteWorkPermitCommand { get; private set; }
-        private void Execute_DeleteWorkPermitCommand(WorkPermitDisplay display) 
-            => LocalWorkPermits.Remove(display);
 
         #endregion
 
@@ -731,43 +666,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
-        #region Specialty
-
-        private SpecialtyResponse _selectedSpecialty = null!;
-        public SpecialtyResponse SelectedSpecialty
-        {
-            get => _selectedSpecialty;
-            set
-            {
-                SetProperty(ref _selectedSpecialty, value);
-
-                AddEmployeeSpecialtyCommand?.RaiseCanExecuteChanged();
-            }
-        }
-
-        public ObservableCollection<SpecialtyResponse> SpecialtiesCollection { get; private init; } = [];
-        private async Task GetAllSpecialty() => SpecialtiesCollection.Load(await _specialtyReadOnlyService.GetAllAsync());
-
-        #endregion
-
-        #region EmployeeSpecialty
-
-        public ObservableCollection<SpecialtyResponse> SelectedEmployeeSpecialties { get; private init; } = [];
-        
-        public RelayCommand AddEmployeeSpecialtyCommand { get; private set; }
-        private void Execute_AddEmployeeSpecialtyCommand()
-        {
-            SelectedEmployeeSpecialties.Add(SelectedSpecialty);
-            SelectedSpecialty = null!;
-        }
-        private bool CanExecute_AddEmployeeSpecialtyCommand() => SelectedSpecialty != null;
-
-        public RelayCommand<SpecialtyResponse> DeleteEmployeeSpecialtyCommand { get; private set; }
-        private void Execute_DeleteEmployeeSpecialtyCommand(SpecialtyResponse display) 
-            => SelectedEmployeeSpecialties.Remove(display);
-
-        #endregion
-
         #region Department
 
         public ObservableCollection<DepartmentDisplay> Departments { get; private init; } = [];
@@ -780,19 +678,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
-        #region Position
-
-        public ObservableCollection<PositionDisplay> Positions { get; private init; } = [];
-        private async Task GetAllPositionByIdDepartmentAsync()
-        {
-            var positions = await _positionReadOnlyApiServiceFactory.Create(NewAssignmentContract.Department.Id).GetAllAsync();
-
-            Positions.Load([.. positions.Select(position => new PositionDisplay(position))], cleaning: true);
-        }
-            //=> Positions.Load(await _positionReadOnlyApiServiceFactory.Create(NewAssignmentContract.Department.Id.ToString()).GetAllAsync(), cleaning: true);
-
-        #endregion
-
         #region Status
 
         public ObservableCollection<StatusDisplay> Statuses { get; private init; } = [];
@@ -802,6 +687,19 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             foreach (var item in listResponse)
                 Statuses.Add(new StatusDisplay(item));
+        }
+
+        #endregion
+
+        #region Specialty
+
+        public ObservableCollection<SpecialtyDisplay> SpecialtiesCollection { get; private init; } = [];
+        private async Task GetAllSpecialty()
+        {
+            var specialties = await _specialtyReadOnlyService.GetAllAsync();
+
+            foreach (var item in specialties)
+                SpecialtiesCollection.Add(new SpecialtyDisplay(item));
         }
 
         #endregion
@@ -819,48 +717,28 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
-        #region AssignmentContract
-
-        private AssignmentContractDisplay _selectedAssignmentContract = null!;
-        public AssignmentContractDisplay SelectedAssignmentContract
-        {
-            get => _selectedAssignmentContract;
-            set => SetProperty(ref _selectedAssignmentContract, value);
-        }
-
-        public ObservableCollection<AssignmentContractDisplay> LocalAssignmentsContracts { get; private init; } = [];
-
-        public RelayCommand AddAssignmentContractCommand { get; private set; }
-        private void Execute_AddAssignmentContractCommand()
-        {
-            LocalAssignmentsContracts.Add(NewAssignmentContract);
-
-            CreateNewAssignmentContract();
-        }
-        private bool CanExecute_AddAssignmentContractCommand()
-            => NewAssignmentContract.Department != null && NewAssignmentContract.Position != null &&
-               NewAssignmentContract.EmployeeType != null && NewAssignmentContract.Status != null &&
-               !string.IsNullOrWhiteSpace(NewAssignmentContract.HireDate.ToString()) &&
-               !string.IsNullOrWhiteSpace(NewAssignmentContract.ContractNumber) &&
-               !string.IsNullOrWhiteSpace(NewAssignmentContract.StartDate.ToString()) &&
-               !string.IsNullOrWhiteSpace(NewAssignmentContract.EndDate.ToString()) &&
-               !string.IsNullOrWhiteSpace(NewAssignmentContract.Salary.ToString());
-
-        public RelayCommand<AssignmentContractDisplay> DeleteAssignmentContractCommand { get; private set; }
-        private void Execute_DeleteAssignmentContractCommand(AssignmentContractDisplay display)
-            => LocalAssignmentsContracts.Remove(display);
-
-        #endregion
-
         #region Доп. методы
 
         private void ClearLocalLists()
         {
-            LocalPersonalDocuments.Clear();
-            LocalEducationDocuments.Clear();
-            LocalWorkPermits.Clear();
-            SelectedEmployeeSpecialties.Clear();
-            LocalAssignmentsContracts.Clear();
+            PersonalInfo.ClearProperty();
+            Avatar.ClearProperty();
+            ContactInformation.ClearProperty();
+
+            PersonalDocuments.ClearProperty();
+            PersonalDocuments.LocalPersonalDocuments.Clear();
+
+            EducationDocuments.ClearProperty();
+            EducationDocuments.LocalEducationDocuments.Clear();
+
+            WorkPermits.ClearProperty();
+            WorkPermits.LocalWorkPermits.Clear();
+
+            Specialties.ClearProperty();
+            Specialties.LocalEmployeeSpecialties.Clear();
+
+            AssigmentsContracts.ClearProperty();
+            AssigmentsContracts.LocalAssignmentsContracts.Clear();
         }
 
         #endregion

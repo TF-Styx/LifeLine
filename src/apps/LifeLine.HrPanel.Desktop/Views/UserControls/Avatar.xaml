@@ -38,7 +38,7 @@
                 
                 <Button Content="Добавить аватар" Height="40"
                         HorizontalAlignment="Stretch" VerticalAlignment="Center" 
-                        Command="{Binding NextStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.Address}"
+                        Command="{Binding ExecuteStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.ContactInformation}"
                         Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
             </StackPanel>
         </Border>

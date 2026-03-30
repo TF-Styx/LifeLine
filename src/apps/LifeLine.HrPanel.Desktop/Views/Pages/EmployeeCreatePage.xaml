@@ -102,13 +102,12 @@
                 <Expander Header="Базовая информация" 
                           IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.PersonalInfo}}" 
                           IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.PersonalInfo}}" 
-                          Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
                     <hrus:PersonalInfo/>
                 </Expander>
 
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
@@ -117,23 +116,16 @@
                               Header="Аватар" 
                               IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.Avatar}}" 
                               IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.Avatar}}"  
-                              Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                              d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
                         <hrus:Avatar/>
                     </Expander>
 
                     <Expander Grid.Column="1" 
-                              Header="Адрес" 
-                              IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.Address}}" 
-                              IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.Address}}" 
-                              HorizontalAlignment="Stretch" Margin="5" Style="{StaticResource ModernExpanderStyle}">
-                        <hrus:Address/>
-                    </Expander>
-
-                    <Expander Grid.Column="2" 
                               Header="Контактная информация" 
                               IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.ContactInformation}}" 
                               IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.ContactInformation}}" 
-                              HorizontalAlignment="Stretch" Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                              HorizontalAlignment="Stretch" d:IsExpanded="True"
+                              Margin="5" Style="{StaticResource ModernExpanderStyle}">
                         <hrus:ContactInformation/>
                     </Expander>
                 </Grid>
@@ -141,35 +133,35 @@
                 <Expander Header="Персональные документы" 
                           IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.PersonalDocuments}}" 
                           IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.PersonalDocuments}}"   
-                          Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
                     <hrus:PersonalDocuments/>
                 </Expander>
 
                 <Expander Header="Документы об образовании" 
                           IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.EducationDocuments}}" 
                           IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.EducationDocuments}}"   
-                          Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
                     <hrus:EducationDocuments/>
                 </Expander>
 
                 <Expander Header="Аккредитация / Сертификаты" 
                           IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.WorkPermits}}" 
                           IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.WorkPermits}}"   
-                          Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
                     <hrus:WorkPermits/>
                 </Expander>
 
                 <Expander Header="Специальности" 
                           IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.Specialties}}" 
                           IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.Specialties}}"   
-                          Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
                     <hrus:Specialties/>
                 </Expander>
 
                 <Expander Header="Назначение / Контракт" 
                           IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.AssigmentsContracts}}" 
                           IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.AssigmentsContracts}}"   
-                          Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
                     <hrus:AssigmentsContracts/>
                 </Expander>
             </StackPanel>

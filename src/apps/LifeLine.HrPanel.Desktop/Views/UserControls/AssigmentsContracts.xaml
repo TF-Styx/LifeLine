@@ -27,7 +27,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="0 0 0 5">
@@ -42,8 +43,8 @@
                     <TextBlock Grid.Row="0" Text="Назначение" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
                     <Border Margin="5" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                        <DataGrid ItemsSource="{Binding LocalAssignmentsContracts}" 
-                                  SelectedItem="{Binding SelectedWorkPermit}"
+                        <DataGrid ItemsSource="{Binding AssigmentsContracts.LocalAssignmentsContracts}" 
+                                  SelectedItem="{Binding AssigmentsContracts.SelectedAssignmentContract}"
                                   AutoGenerateColumns="False" 
                                   CanUserAddRows="False"
                                   HorizontalContentAlignment="Stretch" 
@@ -123,7 +124,7 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Width="25" Foreground="#F06870" 
-                                                    Command="{Binding DataContext.DeleteWorkPermitCommand, 
+                                                    Command="{Binding AssigmentsContracts.DataContext.DeleteWorkPermitCommand, 
                                                     RelativeSource={RelativeSource AncestorType=DataGrid}}" 
                                                     CommandParameter="{Binding }" 
                                                     Style="{StaticResource Button.Icon}">
@@ -144,8 +145,8 @@
                     <TextBlock Grid.Row="0" Text="Контракт" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
                     <Border Margin="5" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                        <DataGrid ItemsSource="{Binding LocalAssignmentsContracts}" 
-                                  SelectedItem="{Binding SelectedWorkPermit}"
+                        <DataGrid ItemsSource="{Binding AssigmentsContracts.LocalAssignmentsContracts}" 
+                                  SelectedItem="{Binding AssigmentsContracts.SelectedAssignmentContract}"
                                   AutoGenerateColumns="False" 
                                   CanUserAddRows="False"
                                   HorizontalContentAlignment="Stretch" 
@@ -207,7 +208,7 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Width="25" Foreground="#F06870" 
-                                                    Command="{Binding DataContext.DeleteWorkPermitCommand, 
+                                                    Command="{Binding DataContext.AssigmentsContracts.DeleteAssignmentContractCommand, 
                                                     RelativeSource={RelativeSource AncestorType=DataGrid}}" 
                                                     CommandParameter="{Binding }" 
                                                     Style="{StaticResource Button.Icon}">
@@ -255,7 +256,7 @@
                                       Margin="0 0 5 0"/>
 
                                 <ComboBox Grid.Column="1" 
-                                      ItemsSource="{Binding Positions}" 
+                                      ItemsSource="{Binding AssigmentsContracts.Positions}" 
                                       SelectedItem="{Binding AssigmentsContracts.Position}"
                                       DisplayMemberPath="Name" 
                                       Margin="5 0 0 0"/>
@@ -353,9 +354,14 @@
             </Border>
         </ScrollViewer>
 
-        <Button Grid.Row="2" Content="Добавить назначение" Height="40"
+        <Button Grid.Row="2" Content="Добавить локально" Height="40"
                 HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                Command="{Binding NextStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.PersonalInfo}"
+                Command="{Binding AssigmentsContracts.AddAssignmentContractCommand}"
+                Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+
+        <Button Grid.Row="3" Content="Продолжить" Height="40"
+                HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                Command="{Binding ExecuteStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.PersonalInfo}"
                 Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
     </Grid>
     <!--#endregion-->

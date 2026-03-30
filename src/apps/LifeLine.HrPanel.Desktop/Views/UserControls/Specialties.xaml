@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls"
-             xmlns:enum="clr-namespace:LifeLine.HrPanel.Desktop.Enums"
+             xmlns:enum="clr-namespace:LifeLine.HrPanel.Desktop.Enums" 
+             xmlns:features="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features" 
+             d:DataContext="{d:DesignInstance Type=features:SpecialtiesVM}"
              mc:Ignorable="d" 
              d:Height="auto" 
              d:Width="auto">
@@ -19,8 +21,8 @@
         <!-- Список специальизаций -->
         <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 5">
             <Border Margin="5" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                <DataGrid ItemsSource="{Binding SelectedEmployeeSpecialties}" 
-                          SelectedItem="{Binding SelectedEmployeeSpecialty}"
+                <DataGrid ItemsSource="{Binding Specialties.LocalEmployeeSpecialties}" 
+                          SelectedItem="{Binding Specialties.SelectedEmployeeSpecialty}"
                           AutoGenerateColumns="False" 
                           CanUserAddRows="False"
                           HorizontalContentAlignment="Stretch" 
@@ -33,7 +35,7 @@
                         <DataGridTemplateColumn Header="Наименование" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" 
+                                    <TextBlock Text="{Binding SpecialtyName}" 
                                                TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -71,7 +73,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Width="25" Foreground="#F06870" 
-                                            Command="{Binding DataContext.DeleteEmployeeSpecialtyCommand, 
+                                            Command="{Binding DataContext.Specialties.DeleteEmployeeSpecialtyCommand, 
                                             RelativeSource={RelativeSource AncestorType=DataGrid}}" 
                                             CommandParameter="{Binding }" 
                                             Style="{StaticResource Button.Icon}">
@@ -92,13 +94,18 @@
                               HorizontalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 0 10" 
                               Style="{StaticResource BaseChechBox}"/>-->
 
-                <ComboBox ItemsSource="{Binding Specialties}" 
-                          SelectedItem="{Binding SelectedSpecialty}"
-                          DisplayMemberPath="Name"/>
+                <ComboBox ItemsSource="{Binding SpecialtiesCollection}" 
+                          SelectedItem="{Binding Specialties.SelectedSpecialty}"
+                          DisplayMemberPath="SpecialtyName"/>
 
-                <Button Content="Добавить специальность" Height="40"
+                <Button Content="Добавить локально" Height="40"
                         HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                        Command="{Binding NextStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.AssigmentsContracts}"
+                        Command="{Binding Specialties.AddEmployeeSpecialtyCommand}"
+                        Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+
+                <Button Content="Продолжить" Height="40"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                        Command="{Binding ExecuteStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.AssigmentsContracts}"
                         Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
             </StackPanel>
         </Border>

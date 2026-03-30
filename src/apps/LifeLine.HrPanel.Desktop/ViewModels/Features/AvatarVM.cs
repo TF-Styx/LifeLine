@@ -2,12 +2,11 @@
 using Shared.WPF.Constants;
 using Shared.WPF.Helpers;
 using Shared.WPF.Services.FileDialog;
-using Shared.WPF.ViewModels.Abstract;
 using System.Windows.Media;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
-    internal sealed class AvatarVM : BaseViewModel
+    internal sealed class AvatarVM : BaseEmployeeViewModel
     {
         private readonly IFileDialogService _fileDialogService;
 
@@ -34,5 +33,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         }
 
         public string? GetPath() => _path;
+
+        public void ClearProperty()
+        {
+            Ava = null;
+            _path = string.Empty;
+        }
     }
 }

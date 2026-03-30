@@ -31,8 +31,8 @@
         <!-- Список документов об образовании -->
         <Border Grid.Column="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 5 0">
             <Border Margin="5" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                <DataGrid ItemsSource="{Binding LocalEducationDocuments}" 
-                                          SelectedItem="{Binding SelectedEducationDocumentDisplay}"
+                <DataGrid ItemsSource="{Binding EducationDocuments.LocalEducationDocuments}" 
+                                          SelectedItem="{Binding EducationDocuments.SelectedEducationDocumentDisplay}"
                                           AutoGenerateColumns="False" 
                                           CanUserAddRows="False"
                                           HorizontalContentAlignment="Stretch" 
@@ -101,7 +101,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Width="25" Foreground="#F06870" 
-                                            Command="{Binding DataContext.DeleteEducationDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                            Command="{Binding DataContext.EducationDocuments.DeleteEducationDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
                                             CommandParameter="{Binding }" 
                                             Style="{StaticResource Button.Icon}">
                                         <Control Template="{StaticResource Trash}"/>
@@ -114,107 +114,120 @@
             </Border>
         </Border>
 
-        <ScrollViewer Grid.Column="1" Margin="5 0 0 0" VerticalScrollBarVisibility="Auto">
-            <Border Background="{StaticResource App.SecondColor}" CornerRadius="6">
-                <Grid Margin="5">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="50"/>
-                    </Grid.RowDefinitions>
-                    <!--<CheckBox Content="Использовать документы об образовании" 
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            
+            <ScrollViewer Grid.Row="0" Margin="5 0 0 0" VerticalScrollBarVisibility="Auto">
+                <Border Background="{StaticResource App.SecondColor}" CornerRadius="6">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="50"/>
+                        </Grid.RowDefinitions>
+                        <!--<CheckBox Content="Использовать документы об образовании" 
                               IsChecked="{Binding IsUseEducationDocument}" 
                               HorizontalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 0 10" 
                               Style="{StaticResource BaseChechBox}"/>-->
 
-                    <!-- Уровень образования / Тип документа -->
-                    <StackPanel Grid.Row="0">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                        <!-- Уровень образования / Тип документа -->
+                        <StackPanel Grid.Row="0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <ComboBox Grid.Column="0" 
-                                      ItemsSource="{Binding DocumentTypes}" 
-                                      SelectedItem="{Binding EducationDocuments.DocumentType}"
-                                      DisplayMemberPath="Name" 
-                                      Margin="0 0 5 0"/>
+                                <ComboBox Grid.Column="0" 
+                                          ItemsSource="{Binding DocumentTypes}" 
+                                          SelectedItem="{Binding EducationDocuments.DocumentType}"
+                                          DisplayMemberPath="Name" 
+                                          Margin="0 0 5 0"/>
 
-                            <ComboBox Grid.Column="1" 
-                                      ItemsSource="{Binding EducationLevels}" 
-                                      SelectedItem="{Binding EducationDocuments.EducationLevel}"
-                                      DisplayMemberPath="Name" 
-                                      Margin="5 0 0 0"/>
-                        </Grid>
+                                <ComboBox Grid.Column="1" 
+                                          ItemsSource="{Binding EducationLevels}" 
+                                          SelectedItem="{Binding EducationDocuments.EducationLevel}"
+                                          DisplayMemberPath="Name" 
+                                          Margin="5 0 0 0"/>
+                            </Grid>
 
-                        <!-- Номер документа / Дата выдачи -->
-                        <Grid Margin="0 10 0 0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                            <!-- Номер документа / Дата выдачи -->
+                            <Grid Margin="0 10 0 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Номер документа*" Margin="0 0 5 0"
-                                                   Text="{Binding EducationDocuments.DocumentNumber, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Номер документа*" Margin="0 0 5 0"
+                                                       Text="{Binding EducationDocuments.DocumentNumber, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                            <DatePicker Grid.Column="1" SelectedDate="{Binding EducationDocuments.IssuedDate, UpdateSourceTrigger=PropertyChanged}" Margin="5 0 0 0"/>
-                        </Grid>
+                                <DatePicker Grid.Column="1" SelectedDate="{Binding EducationDocuments.IssuedDate, UpdateSourceTrigger=PropertyChanged}" Margin="5 0 0 0"/>
+                            </Grid>
 
-                        <!-- Наименование организации / Наименование квалификации -->
-                        <Grid Margin="0 10 0 0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                            <!-- Наименование организации / Наименование квалификации -->
+                            <Grid Margin="0 10 0 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование организации*" Margin="0 0 5 0"
-                                                   Text="{Binding EducationDocuments.OrganizationName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование организации*" Margin="0 0 5 0"
+                                                       Text="{Binding EducationDocuments.OrganizationName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                            <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Наименование квалификации" Margin="5 0 0 0"
-                                                   Text="{Binding EducationDocuments.QualificationAwardedName}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                        </Grid>
+                                <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Наименование квалификации" Margin="5 0 0 0"
+                                                       Text="{Binding EducationDocuments.QualificationAwardedName}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                            </Grid>
 
-                        <!-- Наименование специальности / Наименование программы -->
-                        <Grid Margin="0 10 0 0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                            <!-- Наименование специальности / Наименование программы -->
+                            <Grid Margin="0 10 0 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование специальности" Margin="0 0 5 0"
-                                                   Text="{Binding EducationDocuments.SpecialtyName}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование специальности" Margin="0 0 5 0"
+                                                       Text="{Binding EducationDocuments.SpecialtyName}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                            <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Наименование программы" Margin="5 0 0 0"
-                                                   Text="{Binding EducationDocuments.ProgramName}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                        </Grid>
+                                <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Наименование программы" Margin="5 0 0 0"
+                                                       Text="{Binding EducationDocuments.ProgramName}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                            </Grid>
 
-                        <!-- Количество часов -->
-                        <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Количество часов" Margin="0 10 0 0"
-                                               Text="{Binding EducationDocuments.TotalHours}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                            <!-- Количество часов -->
+                            <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Количество часов" Margin="0 10 0 0"
+                                                   Text="{Binding EducationDocuments.TotalHours}" Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                        <!-- Файл -->
-                        <DockPanel Margin="0 10 0 0">
-                            <Button Width="25" Foreground="#F06870" 
-                                    Command="{Binding EducationDocuments.SelectCommand}" 
-                                    DockPanel.Dock="Right"
-                                    Style="{StaticResource Button.Icon}">
-                                <Control Template="{StaticResource AddIcon}"/>
-                                <Button.ToolTip>
-                                    <TextBlock Text="Добавить файл документов об образовании"/>
-                                </Button.ToolTip>
-                            </Button>
-                            <cc:PlaceHolderTextBox PlaceHolder="Файл" 
-                                                   Text="{Binding EducationDocuments.FilePath}" 
-                                                   Style="{StaticResource TextBox.PlaceHolder}"/>
-                        </DockPanel>
-                    </StackPanel>
+                            <!-- Файл -->
+                            <DockPanel Margin="0 10 0 0">
+                                <Button Width="25" Foreground="#F06870" 
+                                        Command="{Binding EducationDocuments.SelectCommand}" 
+                                        DockPanel.Dock="Right"
+                                        Style="{StaticResource Button.Icon}">
+                                    <Control Template="{StaticResource AddIcon}"/>
+                                    <Button.ToolTip>
+                                        <TextBlock Text="Добавить файл документов об образовании"/>
+                                    </Button.ToolTip>
+                                </Button>
+                                <cc:PlaceHolderTextBox PlaceHolder="Файл" 
+                                                       Text="{Binding EducationDocuments.FilePath}" 
+                                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+                            </DockPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </ScrollViewer>
 
-                    <Button Grid.Row="1" Content="Добавить документ об образовании" Height="40"
-                            HorizontalAlignment="Stretch" VerticalAlignment="Center" 
-                            Command="{Binding NextStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.WorkPermits}"
-                            Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
-                </Grid>
-            </Border>
-        </ScrollViewer>
+            <Button Grid.Row="1" Content="Добавить локально" Height="40"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                    Command="{Binding EducationDocuments.AddEducationDocumentCommand}" 
+                    Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+
+            <Button Grid.Row="2" Content="Продолжить" Height="40"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                    Command="{Binding ExecuteStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.WorkPermits}"
+                    Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+        </Grid>
     </Grid>
 </UserControl>

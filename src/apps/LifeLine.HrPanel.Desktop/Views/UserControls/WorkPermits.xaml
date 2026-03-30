@@ -21,15 +21,15 @@
         <!-- Список сертификатов -->
         <Border Grid.Column="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 5 0">
             <Border Margin="5" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                <DataGrid ItemsSource="{Binding LocalWorkPermits}" 
-                                          SelectedItem="{Binding SelectedWorkPermit}"
-                                          AutoGenerateColumns="False" 
-                                          CanUserAddRows="False"
-                                          HorizontalContentAlignment="Stretch" 
-                                          HeadersVisibility="Column"
-                                          Margin="2"
-                                          Background="{StaticResource App.MainColor}"
-                                          d:ItemsSource="{d:SampleData ItemCount=10}">
+                <DataGrid ItemsSource="{Binding WorkPermits.LocalWorkPermits}" 
+                          SelectedItem="{Binding SelectedWorkPermit}"
+                          AutoGenerateColumns="False" 
+                          CanUserAddRows="False"
+                          HorizontalContentAlignment="Stretch" 
+                          HeadersVisibility="Column"
+                          Margin="2"
+                          Background="{StaticResource App.MainColor}"
+                          d:ItemsSource="{d:SampleData ItemCount=10}">
                     <DataGrid.Columns>
                         <!-- Тип документа -->
                         <DataGridTemplateColumn Header="Тип документа" Width="*">
@@ -102,10 +102,10 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Width="25" Foreground="#F06870" 
-                                                            Command="{Binding DataContext.DeleteWorkPermitCommand, 
-                                                            RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                                            CommandParameter="{Binding }" 
-                                                            Style="{StaticResource Button.Icon}">
+                                            Command="{Binding DataContext.WorkPermits.DeleteWorkPermitCommand, 
+                                            RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                            CommandParameter="{Binding }" 
+                                            Style="{StaticResource Button.Icon}">
                                         <Control Template="{StaticResource Trash}"/>
                                     </Button>
                                 </DataTemplate>
@@ -122,6 +122,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0">
@@ -134,7 +135,7 @@
 
                         <ComboBox Grid.Column="1" 
                                   ItemsSource="{Binding AdmissionStatuses}" 
-                                  SelectedItem="{Binding NewWorkPermit.AdmissionStatus}"
+                                  SelectedItem="{Binding WorkPermits.AdmissionStatus}"
                                   DisplayMemberPath="Name" 
                                   Margin="0 5 0 10"/>
 
@@ -181,9 +182,14 @@
                         </DockPanel>
                     </StackPanel>
 
-                    <Button Grid.Row="1" Content="Добавить документ" Height="40"
+                    <Button Grid.Row="1" Content="Добавить локально" Height="40"
                             HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                            Command="{Binding NextStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.Specialties}"
+                            Command="{Binding WorkPermits.AddWorkPermitCommand}"
+                            Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+
+                    <Button Grid.Row="2" Content="Продолжить" Height="40"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                            Command="{Binding ExecuteStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.Specialties}"
                             Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
                 </Grid>
             </Border>

@@ -291,14 +291,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 (
                     new AssignmentResponse
                         (
-                            Guid.Empty,
-                            Guid.Empty,
-                            Guid.Empty,
-                            Guid.Empty,
-                            Guid.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
                             DateTime.Now,
                             DateTime.Now,
-                            Guid.Empty
+                            string.Empty
                         ),
 
                     new ContractResponse
