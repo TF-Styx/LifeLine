@@ -1,4 +1,5 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Create;
+using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Update;
 using MediatR;
@@ -35,6 +36,39 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное создание!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpPost("many")]
+        public async Task<IActionResult> CreateMany([FromRoute] Guid employeeId, [FromBody] CreateManyEducationDocumentsReqeust reqeust, CancellationToken cancellationToken = default)
+        {
+            var command = new CreateManyEducationDocumentsCommand
+                (
+                    employeeId,
+                    [.. reqeust.EducationDocuments.Select
+                        (
+                            x => new CreateDataEducationDocumentCommand
+                                (
+                                    Guid.Parse(x.EducationLevelId),
+                                    Guid.Parse(x.DocumentTypeId),
+                                    x.DocumentNumber,
+                                    DateTime.Parse(x.IssuedDate),
+                                    x.OrganizationName,
+                                    x.QualificationAwardedName,
+                                    x.SpecialtyName,
+                                    x.ProgramName,
+                                    x.TotalHours
+                                )
+                        )
+                    ]
+                );
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok(),
                     onFailure: errors => BadRequest(errors)
                 );
         }

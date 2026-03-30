@@ -10,6 +10,23 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EducationDocument
     internal sealed class EducationDocumentService(HttpClient httpClient, string employeeId) 
         : BaseHttpService<EducationDocumentResponse, string>(httpClient, $"api/employees/{employeeId}/education-documents"), IEducationDocumentService
     {
+        public async Task<Result> CreateManyAsync(CreateManyEducationDocumentsReqeust reqeust)
+        {
+            try
+            {
+                var response = await HttpClient.PostAsJsonAsync($"{Url}/many", reqeust, JsonSerializerOptions);
+
+                if (!response.IsSuccessStatusCode)
+                    return Result.Failure(new Error(AppErrors.CreateHttp, await response.Content.ReadAsStringAsync()));
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(AppErrors.CreateHttp, $"Произошла ошибка при сохранении данных в документы об образовании!\n{ex}"));
+            }
+        }
+
         public async Task<Result> UpdateEducationDocumentAsync(Guid educationDocumentId, UpdateEducationDocumentRequest request)
         {
             try
