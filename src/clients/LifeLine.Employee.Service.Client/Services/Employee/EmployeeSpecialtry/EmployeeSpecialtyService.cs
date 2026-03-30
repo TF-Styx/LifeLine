@@ -9,6 +9,23 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
     internal sealed class EmployeeSpecialtyService(HttpClient httpClient, string employeeId) 
         : BaseHttpService<HttpClient, string>(httpClient, $"api/employees/{employeeId}/employee-specialties"), IEmployeeSpecialtyService
     {
+        public async Task<Result> CreateManyAsync(CreateManyEmployeeSpecialtiesRequest request)
+        {
+            try
+            {
+                var response = await HttpClient.PostAsJsonAsync($"{Url}/many", request, JsonSerializerOptions);
+
+                if (!response.IsSuccessStatusCode)
+                    return Result.Failure(new Error(AppErrors.CreateHttp, await response.Content.ReadAsStringAsync()));
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(AppErrors.UpdateHttp, $"Произошла ошибка при добавлении специальности!\n{ex}"));
+            }
+        }
+
         public async Task<Result> UpdateEmployeeSpecialtyAsync(UpdateEmployeeSpecialtyRequest request)
         {
             try

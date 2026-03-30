@@ -1,9 +1,11 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Create;
+using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Create.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts.Request.EmployeeService.EmployeeSpecialty;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
@@ -23,6 +25,24 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное создание!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpPost("many")]
+        public async Task<IActionResult> CreateMany([FromRoute] Guid employeeId, [FromBody] CreateManyEmployeeSpecialtiesRequest request, CancellationToken cancellation = default)
+        {
+            var command = new CreateManyEmployeeSpecialtiesCommand
+                (
+                    employeeId, 
+                    [.. request.Specialties.Select(x => new CreateManyDataEmployeeSpecialtiesCommand(Guid.Parse(x.SpecialtyId)))]
+                );
+
+            var result = await _mediator.Send(command, cancellation);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok(),
                     onFailure: errors => BadRequest(errors)
                 );
         }
