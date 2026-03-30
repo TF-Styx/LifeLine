@@ -10,6 +10,8 @@
       xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
       d:DataContext="{d:DesignInstance Type=pages:EmployeeCreatePageVM}"
       xmlns:sys="clr-namespace:System;assembly=System.Runtime" 
+      xmlns:hrus="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls"
+      xmlns:enum="clr-namespace:LifeLine.HrPanel.Desktop.Enums"
       mc:Ignorable="d" 
       d:Height="auto" 
       d:Width="1000"
@@ -94,8 +96,78 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        
-        <TabControl Grid.Row="0" Background="Transparent">
+
+        <ScrollViewer>
+            <StackPanel Grid.Row="0" Visibility="Visible">
+                <Expander Header="Базовая информация" 
+                          IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.PersonalInfo}}" 
+                          IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.PersonalInfo}}" 
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <hrus:PersonalInfo/>
+                </Expander>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Expander Grid.Column="0" 
+                              Header="Аватар" 
+                              IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.Avatar}}" 
+                              IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.Avatar}}"  
+                              d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                        <hrus:Avatar/>
+                    </Expander>
+
+                    <Expander Grid.Column="1" 
+                              Header="Контактная информация" 
+                              IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.ContactInformation}}" 
+                              IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.ContactInformation}}" 
+                              HorizontalAlignment="Stretch" d:IsExpanded="True"
+                              Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                        <hrus:ContactInformation/>
+                    </Expander>
+                </Grid>
+
+                <Expander Header="Персональные документы" 
+                          IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.PersonalDocuments}}" 
+                          IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.PersonalDocuments}}"   
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <hrus:PersonalDocuments/>
+                </Expander>
+
+                <Expander Header="Документы об образовании" 
+                          IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.EducationDocuments}}" 
+                          IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.EducationDocuments}}"   
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <hrus:EducationDocuments/>
+                </Expander>
+
+                <Expander Header="Аккредитация / Сертификаты" 
+                          IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.WorkPermits}}" 
+                          IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.WorkPermits}}"   
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <hrus:WorkPermits/>
+                </Expander>
+
+                <Expander Header="Специальности" 
+                          IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.Specialties}}" 
+                          IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.Specialties}}"   
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <hrus:Specialties/>
+                </Expander>
+
+                <Expander Header="Назначение / Контракт" 
+                          IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.AssigmentsContracts}}" 
+                          IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.AssigmentsContracts}}"   
+                          d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <hrus:AssigmentsContracts/>
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
+
+        <TabControl Grid.Row="0" Background="Transparent" Visibility="Collapsed">
             <!-- Базовая информация -->
             <TabItem Header="{StaticResource String.BaseInfoEmployee}">
                 <Grid>
@@ -441,7 +513,7 @@
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    
+
                     <TextBlock Grid.Row="0" Text="{StaticResource String.EducationDocuments}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
                     <Grid Grid.Row="1">
@@ -472,7 +544,7 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
-                                        
+
                                         <!-- Уровень образования -->
                                         <DataGridTemplateColumn Header="Уровень образования" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -558,7 +630,7 @@
                                                   SelectedItem="{Binding NewEducationDocument.DocumentType}"
                                                   DisplayMemberPath="Name" 
                                                   Margin="0 0 5 0"/>
-                                        
+
                                         <ComboBox Grid.Column="1" 
                                                   ItemsSource="{Binding EducationLevels}" 
                                                   SelectedItem="{Binding NewEducationDocument.EducationLevel}"
@@ -637,7 +709,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            
+
             <!-- Добавление сертификатов -->
             <TabItem Header="{StaticResource String.WorkPermits}">
                 <Grid>
@@ -645,7 +717,7 @@
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    
+
                     <TextBlock Grid.Row="0" Text="{StaticResource String.WorkPermits}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
                     <Grid Grid.Row="1">
@@ -751,7 +823,7 @@
                                 </DataGrid>
                             </Border>
                         </Border>
-                        
+
                         <ScrollViewer Grid.Column="1" Margin="5 0 0 0" VerticalScrollBarVisibility="Auto">
                             <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 0 0">
                                 <StackPanel Margin="5">
@@ -875,7 +947,7 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
-                                        
+
                                         <!-- Информация -->
                                         <DataGridTemplateColumn Width="35">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -934,7 +1006,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            
+
             <!-- Добавление назначения / Контракт -->
             <TabItem Header="{StaticResource String.Assigments.Contracts}">
                 <Grid>
@@ -1029,7 +1101,7 @@
                                                                         <TextBlock Text="{Binding TerminationDate, StringFormat=Дата расторжения договора: {0}}"/>
                                                                         <TextBlock Text="{Binding Status.Name, StringFormat=Статус: {0}}"/>
                                                                         <TextBlock Text="{Binding FilePath.Name, StringFormat=Файл: {0}}"/>
-                                                                        
+
                                                                         <TextBlock Text="{StaticResource String.Contracts}" Margin="0 10 0 0"/>
                                                                         <TextBlock Text="{Binding EmployeeType.Name, StringFormat=Тип трудоустройства: {0}}"/>
                                                                         <TextBlock Text="{Binding ContractNumber, StringFormat=Номер контракта: {0}}"/>
@@ -1067,7 +1139,7 @@
                             <Border Grid.Row="1" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 5 5 0">
                                 <StackPanel>
                                     <TextBlock Grid.Row="0" Text="{StaticResource String.Contracts}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                                    
+
                                     <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
                                         <DataGrid ItemsSource="{Binding LocalAssignmentsContracts}" 
                                                   SelectedItem="{Binding SelectedWorkPermit}"
@@ -1088,7 +1160,7 @@
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
-                                                
+
                                                 <!-- Тип контракта -->
                                                 <DataGridTemplateColumn Header="Тип контракта" Width="*">
                                                     <DataGridTemplateColumn.CellTemplate>
@@ -1158,7 +1230,7 @@
                                               IsChecked="{Binding IsUseWorkPermit}" 
                                               HorizontalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 0 10" 
                                               Style="{StaticResource BaseChechBox}"/>
-                                    
+
                                     <TextBlock Grid.Row="0" Text="{StaticResource String.Assigments}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
                                     <!-- Отдел / Должность -->
@@ -1273,12 +1345,6 @@
                     </Grid>
                 </Grid>
             </TabItem>
-    </TabControl>
-        
-        <Button Grid.Row="1" 
-                Content="Добавить"
-                VerticalAlignment="Bottom" 
-                Command="{Binding CreateEmployeeCommandAsync}" 
-                Style="{StaticResource App.Button}" Margin="10"/>
+        </TabControl>
     </Grid>
 </Page>

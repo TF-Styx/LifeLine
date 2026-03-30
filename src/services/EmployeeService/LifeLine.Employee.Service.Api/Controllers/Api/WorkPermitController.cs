@@ -1,4 +1,5 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Create;
+using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Update;
 using MediatR;
@@ -36,6 +37,40 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное создание!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpPost("many")]
+        public async Task<IActionResult> CreateMany([FromRoute] Guid employeeId, CreateManyWorkPermitsRequest request, CancellationToken cancellationToken = default)
+        {
+            var command = new CreateManyWorkPermitsCommand
+                (
+                    employeeId,
+                    [.. request.WorkPermits.Select
+                        (
+                            x => new CreateManyDataWorkPermitsCommand
+                                (
+                                    x.WorkPermitName,
+                                    x.DocumentSeries,
+                                    x.WorkPermitNumber,
+                                    x.ProtocolNumber,
+                                    x.SpecialtyName,
+                                    x.IssuingAuthority,
+                                    DateTime.Parse(x.IssueDate),
+                                    DateTime.Parse(x.ExpiryDate),
+                                    Guid.Parse(x.PermitTypeId),
+                                    Guid.Parse(x.AdmissionStatusId)
+                                )
+                        )
+                    ]
+                );
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok(),
                     onFailure: errors => BadRequest(errors)
                 );
         }

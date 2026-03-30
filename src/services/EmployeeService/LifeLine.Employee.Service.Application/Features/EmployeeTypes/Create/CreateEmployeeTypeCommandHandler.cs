@@ -1,6 +1,4 @@
-﻿using LifeLine.Employee.Service.Application.Features.Employees.Create;
-using LifeLine.Employee.Service.Domain.Models;
-using LifeLine.Employee.Service.Domain.ValueObjects.Employees;
+﻿using LifeLine.Employee.Service.Domain.Models;
 using LifeLine.Employee.Service.Domain.ValueObjects.EmployeeType;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;

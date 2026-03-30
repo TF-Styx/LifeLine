@@ -1,9 +1,9 @@
 ﻿using LifeLine.HrPanel.Desktop.Models;
-using Shared.WPF.ViewModels.Abstract;
+using Shared.Contracts.Response.EmployeeService;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
-    internal sealed class PersonalInfoVM : BaseViewModel
+    internal sealed class PersonalInfoVM : BaseEmployeeViewModel
     {
         public string? Surname
         {
@@ -21,13 +21,18 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set => SetProperty(ref field, value);
         }
 
-        public GenderDisplay? SelectedGender
+        public GenderResponse? Gender
         {
             get => field;
-            set
-            {
-                SetProperty(ref field, value);
-            }
+            set => SetProperty(ref field, value);
+        }
+
+        public void ClearProperty()
+        {
+            Surname = string.Empty;
+            Name = string.Empty;
+            Patronymic = string.Empty;
+            Gender = null;
         }
     }
 }

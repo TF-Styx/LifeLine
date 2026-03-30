@@ -10,6 +10,23 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.WorkPermit
     public sealed class WorkPermitService(HttpClient httpClient, string employeeId) :
         BaseHttpService<WorkPermitResponse, string>(httpClient, $"api/employees/{employeeId}/work-permits"), IWorkPermitService
     {
+        public async Task<Result> CreateManyAsync(CreateManyWorkPermitsRequest request)
+        {
+            try
+            {
+                var response = await HttpClient.PostAsJsonAsync($"{Url}/many", request, JsonSerializerOptions);
+
+                if (!response.IsSuccessStatusCode)
+                    return Result.Failure(new Error(AppErrors.CreateHttp, await response.Content.ReadAsStringAsync()));
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(AppErrors.UpdateHttp, $"Произошла ошибка при сохранении данных в разрешении на работу!\n{ex}"));
+            }
+        }
+
         public async Task<Result> UpdateWorkPermitAsync(Guid workPermitId, UpdateWorkPermitRequest request)
         {
             try

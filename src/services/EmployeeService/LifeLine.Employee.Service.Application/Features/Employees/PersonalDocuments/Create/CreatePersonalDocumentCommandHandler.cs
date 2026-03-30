@@ -52,7 +52,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.PersonalDocum
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(ex, "Ошибка при создании документов об образовании!");
+                _logger.LogCritical(ex, "Ошибка при создании личных документов!");
 
                 return Result.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
             }

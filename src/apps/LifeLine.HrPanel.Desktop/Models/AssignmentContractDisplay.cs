@@ -10,7 +10,7 @@ namespace LifeLine.HrPanel.Desktop.Models
 
         private readonly IReadOnlyCollection<DepartmentDisplay> _departments;
         private readonly IReadOnlyCollection<PositionDisplay> _positions;
-        private readonly IReadOnlyCollection<ManagerDisplay> _managers;
+        private readonly IReadOnlyCollection<ManagerDisplay?> _managers;
         private readonly IReadOnlyCollection<StatusDisplay> _statuses;
         private readonly IReadOnlyCollection<EmployeeTypeDisplay> _employeeTypes;
 
@@ -21,7 +21,7 @@ namespace LifeLine.HrPanel.Desktop.Models
 
                 IReadOnlyCollection<DepartmentDisplay> departments,
                 IReadOnlyCollection<PositionDisplay> positions,
-                IReadOnlyCollection<ManagerDisplay> managers,
+                IReadOnlyCollection<ManagerDisplay?> managers,
                 IReadOnlyCollection<StatusDisplay> statuses,
                 IReadOnlyCollection<EmployeeTypeDisplay> employeeTypes,
                 string? filePath
@@ -38,7 +38,7 @@ namespace LifeLine.HrPanel.Desktop.Models
 
             SetDepartment(_assignmentModel.DepartmentId.ToString());
             SetPosition(_assignmentModel.PositionId.ToString());
-            SetManager(_assignmentModel.ManagerId.ToString()!);
+            SetManager(_assignmentModel.ManagerId?.ToString());
             SetStatus(_assignmentModel.StatusId.ToString());
 
             _hireDate = assignmentModel.HireDate;
@@ -50,6 +50,11 @@ namespace LifeLine.HrPanel.Desktop.Models
             FilePath = filePath;
 
             SetEmployeeType(_contractModel.EmployeeTypeId);
+        }
+
+        public override string ToString()
+        {
+            return $"{Department.Id} - {Position.Id} - {Manager?.Id} - {HireDate} - {TerminationDate} - {Status.Id} - {FilePath} - {EmployeeType.Id} - {ContractNumber} - {StartDate} - {EndDate} - {Salary}";
         }
 
         #region Assignment
@@ -78,7 +83,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             get => _manager;
             set => SetProperty(ref _manager, value);
         }
-        public void SetManager(string id) => Manager = _managers.FirstOrDefault(x => x.Id == id)!;
+        public void SetManager(string? id) => Manager = _managers.FirstOrDefault(x => x.Id == id)!;
 
         private DateTime _hireDate;
         public DateTime HireDate

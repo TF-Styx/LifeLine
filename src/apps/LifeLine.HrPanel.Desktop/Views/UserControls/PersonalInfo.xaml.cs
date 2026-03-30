@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LifeLine.HrPanel.Desktop.UserControls
+namespace LifeLine.HrPanel.Desktop.Views.UserControls
 {
     /// <summary>
     /// Логика взаимодействия для PersonalInfo.xaml

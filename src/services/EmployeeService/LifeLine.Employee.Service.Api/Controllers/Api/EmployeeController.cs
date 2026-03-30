@@ -1,4 +1,4 @@
-﻿using LifeLine.Employee.Service.Application.Features.Employees.Create;
+﻿using LifeLine.Employee.Service.Application.Features.Employees.CreateEmployee;
 using LifeLine.Employee.Service.Application.Features.Employees.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.Get.GetAll;
 using LifeLine.Employee.Service.Application.Features.Employees.Get.GetAllForHr;
@@ -12,7 +12,6 @@ using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmpl
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts.Request.EmployeeService.Employee;
-using Shared.Contracts.Response.EmployeeService;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
@@ -25,77 +24,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeRequest request, CancellationToken cancellationToken = default)
         {
-            var command = new CreateEmployeeCommand
-                (
-                    request.Surname, request.Name, request.Patronymic, Guid.Parse(request.GenderId),
-
-                    request.PersonalDocuments?.Select(x => new CreatePersonalDocumentCommand(x.DocumentTypeId, x.Number, x.Series)).ToList(),
-
-                    request.ContactInformation != null ?
-                    new CreateContactInformationCommand
-                    (
-                        request.ContactInformation.PersonalPhone,
-                        request.ContactInformation.CorporatePhone,
-                        request.ContactInformation.PersonalEmail,
-                        request.ContactInformation.CorporateEmail,
-                        new CreateAddressCommandData
-                        (
-                            request.ContactInformation.PostalCode,
-                            request.ContactInformation.Region,
-                            request.ContactInformation.City,
-                            request.ContactInformation.Street,
-                            request.ContactInformation.Building,
-                            request.ContactInformation.Apartment
-                        )
-                    ) : null,
-
-                    request.EducationDocument?.Select(x => new CreateEducationDocumentCommand
-                    (
-                        x.EducationLevelId,
-                        x.DocumentTypeId,
-                        x.DocumentNumber,
-                        x.IssuedDate,
-                        x.OrganizationName,
-                        x.QualificationAwardedName,
-                        x.SpecialtyName,
-                        x.ProgramName,
-                        x.TotalHours
-                    )).ToList(),
-
-                    request.WorkPermit?.Select(x => new CreateWorkPermitCommand
-                    (
-                        x.WorkPermitName,
-                        x.DocumentSeries,
-                        x.WorkPermitNumber,
-                        x.ProtocolNumber,
-                        x.SpecialtyName,
-                        x.IssuingAuthority,
-                        x.IssueDate,
-                        x.ExpiryDate,
-                        x.PermitTypeId,
-                        x.AdmissionStatusId
-                    )).ToList(),
-
-                    request.EmployeeSpecialty?.Select(x => new CreateEmployeeSpecialtyCommand(x.SpecialtyId)).ToList(),
-
-                    request.AssignmentContract?.Select(x => new CreateAssignmentCommand
-                    (
-                        x.PositionId,
-                        x.DepartmentId,
-                        x.ManagerId,
-                        x.HireDate,
-                        x.TerminationDate,
-                        x.StatusId,
-                        new CreateAssignmentContractCommand
-                        (
-                            x.Contract.EmployeeTypeId,
-                            x.Contract.ContractNumber,
-                            x.Contract.StartDate,
-                            x.Contract.EndDate,
-                            x.Contract.Salary
-                        )
-                    )).ToList()
-                );
+            var command = new CreateEmployeeCommand(request.Surname, request.Name, request.Patronymic, Guid.Parse(request.GenderId));
 
             var result = await _mediator.Send(command, cancellationToken);
 

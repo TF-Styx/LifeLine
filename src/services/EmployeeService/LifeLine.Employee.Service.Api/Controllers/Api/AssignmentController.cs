@@ -1,4 +1,5 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Create;
+using LifeLine.Employee.Service.Application.Features.Employees.Assignments.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Update;
 using MediatR;
@@ -41,6 +42,45 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное создание!"),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpPost("many")]
+        public async Task<IActionResult> CreateMany([FromRoute] Guid employeeId, [FromBody] CreateManyAssignmentsReqeust reqeust, CancellationToken cancellationToken = default)
+        {
+            var command = new CreateManyAssignmentsCommand
+                (
+                    employeeId,
+                    [.. reqeust.Assignments.Select
+                        (
+                            x => new CreateManyDataAssignmentsCommand
+                                (
+                                    Guid.Parse(x.PositionId),
+                                    Guid.Parse(x.DepartmentId),
+                                    !string.IsNullOrWhiteSpace(x.ManagerId) ? Guid.Parse(x.ManagerId) : null,
+                                    x.HireDate,
+                                    x.TerminationDate,
+                                    Guid.Parse(x.StatusId),
+                                    new CreateManyDataAssignmentContractCommand
+                                        (
+                                            Guid.Parse(x.Contracts.EmployeeTypeId),
+                                            x.Contracts.ContractNumber,
+                                            x.Contracts.StartDate,
+                                            x.Contracts.EndDate,
+                                            x.Contracts.Salary,
+                                            null
+                                        )
+                                )
+                        )                    
+                    ]
+                );
+
+            var result = await _mediator.Send(command);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok(),
                     onFailure: errors => BadRequest(errors)
                 );
         }
