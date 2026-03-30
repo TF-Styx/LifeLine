@@ -399,14 +399,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     (
                         new AssignmentResponse
                             (
-                                item.AssignmentId,
-                                details.EmployeeId,
-                                item.PositionId,
-                                item.DepartmentId,
-                                item.ManagerId,
+                                item.AssignmentId.ToString(),
+                                details.EmployeeId.ToString(),
+                                item.PositionId.ToString(),
+                                item.DepartmentId.ToString(),
+                                item.ManagerId.ToString(),
                                 item.HireDate,
                                 item.TerminationDate,
-                                item.StatusId
+                                item.StatusId.ToString()
                             ),
                         new ContractResponse
                             (
