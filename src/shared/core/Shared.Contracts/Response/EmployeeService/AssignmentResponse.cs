@@ -2,13 +2,13 @@
 {
     public sealed record AssignmentResponse
         (
-            Guid AssignmentId,
-            Guid EmployeeId,
-            Guid PositionId,
-            Guid DepartmentId,
-            Guid? ManagerId,
+            string AssignmentId,
+            string EmployeeId,
+            string PositionId,
+            string DepartmentId,
+            string? ManagerId,
             DateTime HireDate,
             DateTime? TerminationDate,
-            Guid StatusId
+            string StatusId
         );
 }
