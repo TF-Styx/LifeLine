@@ -1,4 +1,5 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Create;
+using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Update;
 using MediatR;
@@ -22,7 +23,35 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное создание!"),
+                    onSuccess: () => Ok(),
+                    onFailure: errors => BadRequest(errors)
+                );
+        }
+
+        [HttpPost("many")]
+        public async Task<IActionResult> CreateMany([FromRoute] Guid employeeId, [FromBody] CreateManyPersonalDocumentsRequest request, CancellationToken cancellationToken = default)
+        {
+            var command = new CreateManyPersonalDocumentsCommand
+                (
+                    employeeId,
+                    [.. request.PersonalDocuments.Select
+                        (
+                            x => new CreateDataPersonalDocumentCommand
+                                (
+                                    Guid.Parse(x.DocumentTypeId),
+                                    x.DocumentNumber,
+                                    x.DocumentSeries,
+                                    null
+                                )
+                        )
+                    ]
+                );
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return result.Match<IActionResult>
+                (
+                    onSuccess: () => Ok(),
                     onFailure: errors => BadRequest(errors)
                 );
         }

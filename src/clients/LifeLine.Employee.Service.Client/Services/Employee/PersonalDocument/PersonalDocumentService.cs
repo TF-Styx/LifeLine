@@ -10,6 +10,21 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument
     internal sealed class PersonalDocumentService(HttpClient httpClient, string employeeId)
         : BaseHttpService<PersonalDocumentResponse, string>(httpClient, $"api/employees/{employeeId}/personal-documents"), IPersonalDocumentService
     {
+        public async Task<Result> CreateManyAsync(CreateManyPersonalDocumentsRequest request)
+        {
+            try
+            {
+                var response = await HttpClient.PostAsJsonAsync($"{Url}/many", request, JsonSerializerOptions);
+                response.EnsureSuccessStatusCode();
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(AppErrors.CreateHttp, $"Произошла ошибка при сохранении данных в персональных документах!\n{ex}"));
+            }
+        }
+
         public async Task<Result> UpdatePersonalDocumentAsync(Guid personalDocumentId, UpdatePersonalDocumentRequest request)
         {
             try
