@@ -7,6 +7,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
 {
     public interface IAssignmentService : IBaseHttpService<AssignmentResponse, string>
     {
+        Task<Result> CreateManyAsync(CreateManyAssignmentsReqeust reqeust);
         Task<Result> UpdateAssignmentAsync(Guid assignmentId, Guid contractId, UpdateAssignmentRequest request);
         Task<Result> DeleteAssignmentContractAsync(Guid assignmentId);
     }

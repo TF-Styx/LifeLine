@@ -10,14 +10,27 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
     public sealed class AssignmentService(HttpClient httpClient, string employeeId) :
         BaseHttpService<AssignmentResponse, string>(httpClient, $"api/employees/{employeeId}/assignments"), IAssignmentService
     {
+        public async Task<Result> CreateManyAsync(CreateManyAssignmentsReqeust reqeust)
+        {
+            try
+            {
+                var response = await HttpClient.PostAsJsonAsync($"{Url}/many", reqeust, JsonSerializerOptions);
+                response.EnsureSuccessStatusCode();
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(AppErrors.CreateHttp, $"Произошла ошибка при сохранении данных в назначении!\n{ex}"));
+            }
+        }
+
         public async Task<Result> UpdateAssignmentAsync(Guid assignmentId, Guid contractId, UpdateAssignmentRequest request)
         {
             try
             {
                 var response = await HttpClient.PatchAsJsonAsync($"{Url}/{assignmentId}/{contractId}", request, JsonSerializerOptions);
-
-                if (!response.IsSuccessStatusCode)
-                    return Result.Failure(new Error(AppErrors.UpdateHttp, await response.Content.ReadAsStringAsync()));
+                response.EnsureSuccessStatusCode();
 
                 return Result.Success();
             }
@@ -32,9 +45,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
             try
             {
                 var response = await HttpClient.DeleteAsync($"{Url}/{assignmentId}");
-
-                if (!response.IsSuccessStatusCode)
-                    return Result.Failure(new Error(AppErrors.DeleteHttp, await response.Content.ReadAsStringAsync()));
+                response.EnsureSuccessStatusCode();
 
                 return Result.Success();
             }
