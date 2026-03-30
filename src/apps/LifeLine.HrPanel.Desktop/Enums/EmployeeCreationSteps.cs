@@ -5,7 +5,6 @@
         PersonalInfo,
         Avatar,
         PersonalDocuments,
-        Address,
         ContactInformation,
         EducationDocuments,
         WorkPermits,
