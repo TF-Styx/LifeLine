@@ -22,7 +22,7 @@
                     <Button Width="25" 
                             Background="#00DDDDDD" 
                             BorderBrush="#00707070" 
-                            Command="{Binding Avatar.SelectCommand}">
+                            Command="{Binding Avatar.SelectCommandAsync}">
                         <Control Template="{StaticResource AddIcon}"/>
                         <Button.ToolTip>
                             <TextBlock Text="Добавить аватарку"/>

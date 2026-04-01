@@ -1,7 +1,10 @@
 ﻿using Shared.WPF.Commands;
 using Shared.WPF.Constants;
 using Shared.WPF.Helpers;
+using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
@@ -9,12 +12,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
     internal sealed class AvatarVM : BaseEmployeeViewModel
     {
         private readonly IFileDialogService _fileDialogService;
+        private readonly IImageCompressionService _imageCompressionService;
 
-        public AvatarVM(IFileDialogService fileDialogService)
+        public AvatarVM(IFileDialogService fileDialogService, IImageCompressionService imageCompressionService)
         {
             _fileDialogService = fileDialogService;
+            _imageCompressionService = imageCompressionService;
 
-            SelectCommand = new RelayCommand(Execute_SelectCommand);
+            SelectCommandAsync = new RelayCommandAsync(Execute_SelectCommandAsync);
         }
 
         public ImageSource? Ava
@@ -23,21 +28,52 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set => SetProperty(ref field, value);
         }
 
-        private string? _path;
+        private byte[]? _compressedBytes;
+        private string? _fileName;
 
-        public RelayCommand? SelectCommand { get; private set; }
-        private void Execute_SelectCommand()
+        public RelayCommandAsync? SelectCommandAsync { get; private set; }
+        private async Task Execute_SelectCommandAsync()
         {
-            _path = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.AVATAR}", FileFilters.Images);
-            Ava = ImageHelper.ToImageFromFilePath(_path);
+            var path = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.AVATAR}", FileFilters.Images);
+
+            if (string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path))
+                return;
+
+            try
+            {
+                var originalBytes = await System.IO.File.ReadAllBytesAsync(path);
+                _compressedBytes = await _imageCompressionService.CompressImageAsync
+                    (
+                        originalBytes,
+                        fileName: path,
+                        quality: 85,
+                        maxDimension: 512,
+                        cancellationToken: default
+                    );
+
+                _fileName = Path.GetFileName(path);
+                Ava = ImageHelper.ToImageFromFilePath(path);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show
+                    (
+                        $"Ошибка при обработке изображения: {ex.Message}",
+                        "Ошибка",
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Error
+                    );
+            }
         }
 
-        public string? GetPath() => _path;
+        public byte[]? GetCompressedBytes() => _compressedBytes;
+        public string? GetFileName() => _fileName;
 
         public void ClearProperty()
         {
             Ava = null;
-            _path = string.Empty;
+            _compressedBytes = null;
+            _fileName = string.Empty;
         }
     }
 }

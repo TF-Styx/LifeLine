@@ -112,10 +112,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _assignmentApiServiceFactory = assignmentApiServiceFactory;
 
             _documentConversionService = documentConversionService;
+            _imageCompressionService = imageCompressionService;
 
             PersonalInfo = new();
             ContactInformation = new();
-            Avatar = new(_fileDialogService);
+            Avatar = new(_fileDialogService, _imageCompressionService);
             PersonalDocuments = new(_fileDialogService, DocumentTypes, _documentConversionService);
             EducationDocuments = new(_fileDialogService, DocumentTypes, EducationLevels);
             WorkPermits = new(_fileDialogService, PermitTypes, AdmissionStatuses);
@@ -260,6 +261,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private async Task<Result> CreateAvatarAsync()
         {
+            var avatarBytes = Avatar.GetCompressedBytes();
+            var fileName = Avatar.GetFileName();
+
+            if (avatarBytes == null || string.IsNullOrWhiteSpace(fileName))
+                return Result.Failure(Error.New(ErrorCode.Null, "Аватарка не нвыбрана!"));
+
             var result = await _fileStorageService.UploadFileAsync
                 (
                     new UploadFileRequest
@@ -271,7 +278,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                     Avatar.EmployeeId,
                                     EmployeeFolderType.Avatar
                                 ),
-                            Avatar.GetPath()!
+                            FilePath: null,
+                            FileBytes: avatarBytes,
+                            FileName: fileName
                         )
                 );
 
