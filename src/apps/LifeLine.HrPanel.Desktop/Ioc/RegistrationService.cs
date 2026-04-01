@@ -21,6 +21,7 @@ using LifeLine.User.Service.Client.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Client.Security.Abstraction;
+using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.Services.NavigationService.Windows;
@@ -37,6 +38,9 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddSingleton<INavigationWindow, NavigationWindow>();
 
             services.AddSingleton<IFileDialogService, FileDialogService>();
+
+            services.AddSingleton<IImageCompressionService, ImageCompressionService>();
+            services.AddSingleton<IDocumentConversionService, DocumentConversionService>();
 
             services.AddSingleton<IAuthorizationService>(sp =>
             {
