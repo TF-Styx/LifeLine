@@ -2,6 +2,7 @@
 {
     public static class FileFilters
     {
+        public static string ImagesAndPdf => Build("Изображения и PDF документы", ".jpg", ".jpeg", ".png", ".webp", ".pdf");
         public static string Images => Build("Изображения", ".jpg", ".jpeg", ".png", ".webp");
         public static string Pdf => Build("PDF документы", ".pdf");
         public static string Word => Build("Word документы", ".doc", ".docx");
