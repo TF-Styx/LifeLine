@@ -30,6 +30,7 @@ using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Extensions;
+using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
@@ -61,6 +62,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IEmployeeSpecialtyApiServiceFactory _employeeSpecialtyApiServiceFactory;
         private readonly IAssignmentApiServiceFactory _assignmentApiServiceFactory;
 
+        private readonly IDocumentConversionService _documentConversionService;
+
         public EmployeeCreatePageVM
             (
                 IEmployeeService employeeService,
@@ -82,7 +85,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IEducationDocumentApiServiceFactory educationDocumentApiServiceFactory,
                 IWorkPermitApiServiceFactory workPermitApiServiceFactory,
                 IEmployeeSpecialtyApiServiceFactory employeeSpecialtyApiServiceFactory,
-                IAssignmentApiServiceFactory assignmentApiServiceFactory
+                IAssignmentApiServiceFactory assignmentApiServiceFactory,
+
+                IDocumentConversionService documentConversionService
             )
         {
             _employeeService = employeeService;
@@ -106,10 +111,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _employeeSpecialtyApiServiceFactory = employeeSpecialtyApiServiceFactory;
             _assignmentApiServiceFactory = assignmentApiServiceFactory;
 
+            _documentConversionService = documentConversionService;
+
             PersonalInfo = new();
             ContactInformation = new();
             Avatar = new(_fileDialogService);
-            PersonalDocuments = new(_fileDialogService, DocumentTypes);
+            PersonalDocuments = new(_fileDialogService, DocumentTypes, _documentConversionService);
             EducationDocuments = new(_fileDialogService, DocumentTypes, EducationLevels);
             WorkPermits = new(_fileDialogService, PermitTypes, AdmissionStatuses);
             Specialties = new();
@@ -302,50 +309,81 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             var personalDocumentService = _personalDocumentApiServiceFactory.Create(PersonalDocuments.EmployeeId);
 
-            var result = await personalDocumentService.CreateManyAsync
+            // 1️⃣ Создаём записи в БД
+            var dbResult = await personalDocumentService.CreateManyAsync
                 (
                     new CreateManyPersonalDocumentsRequest
                         (
                             [.. PersonalDocuments.LocalPersonalDocuments.Select
-                                (
-                                    x => new CreateDataPersonalDocumentRequest
-                                        (
-                                            x.DocumentTypeId.ToString(),
-                                            x.DocumentNumber,
-                                            x.DocumentSeries,
-                                            null
-                                        )
-                                )]
+                                (x =>
+                                    new CreateDataPersonalDocumentRequest
+                                    (
+                                        x.DocumentTypeId.ToString(),
+                                        x.DocumentNumber,
+                                        x.DocumentSeries,
+                                        null
+                                    )
+                                )
+                            ]
                         )
                 );
 
-            if (result.IsSuccess)
+            if (dbResult.IsFailure)
+                return Result.Failure(dbResult.Errors);
+
+            // 2️⃣ Загружаем файлы в MinIO (поддержка и байтов, и путей)
+            var filesToUpload = PersonalDocuments.LocalPersonalDocuments.Where(x => x.HasFileForUpload)
+                .Select(x =>
+                {
+                    if (x.FileBytes != null && !string.IsNullOrWhiteSpace(x.FileName))
+                    {
+                        // 👇 Загрузка из памяти (после конвертации)
+                        return new UploadFilesDataRequest(
+                            BucketName: FileConst.BUCKET_NAME,
+                            AdditionalName: x.DocumentType.Name,
+                            SubFolder: FileConst.BuildEmployeeFolder
+                                (
+                                    PersonalDocuments.EmployeeId,
+                                    EmployeeFolderType.PersonalDocument
+                                ),
+                            FilePath: null,
+                            FileBytes: x.FileBytes,
+                            FileName: x.FileName,
+                            ContentType: x.ContentType ?? "application/pdf"
+                        );
+                    }
+                    else if (!string.IsNullOrWhiteSpace(x.FilePath) && System.IO.File.Exists(x.FilePath))
+                    {
+                        // 👇 Загрузка с диска (старая логика, для совместимости)
+                        return new UploadFilesDataRequest(
+                            BucketName: FileConst.BUCKET_NAME,
+                            AdditionalName: x.DocumentType.Name,
+                            SubFolder: FileConst.BuildEmployeeFolder
+                                (
+                                    PersonalDocuments.EmployeeId,
+                                    EmployeeFolderType.PersonalDocument
+                                ),
+                            FilePath: x.FilePath,
+                            FileBytes: null,
+                            FileName: null,
+                            ContentType: null
+                        );
+                    }
+                    return null;
+                })
+                .Where(x => x != null)
+                .ToArray();
+
+            if (filesToUpload.Any())
             {
-                var resultMiniO = await _fileStorageService.UploadFilesAsync
-                    (
-                        new UploadFilesRequest
-                            (
-                                [.. PersonalDocuments.LocalPersonalDocuments.Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
-                                    .Select
-                                        (
-                                            x => new UploadFilesDataRequest
-                                                (
-                                                    FileConst.BUCKET_NAME,
-                                                    x.DocumentType.Name,
-                                                    FileConst.BuildEmployeeFolder
-                                                        (
-                                                            PersonalDocuments.EmployeeId,
-                                                            EmployeeFolderType.PersonalDocument
-                                                        ),
-                                                    x.FilePath!
-                                                )
-                                        )
-                                ]
-                            )
-                    );
+                var uploadResult = await _fileStorageService.UploadFilesAsync(
+                    new UploadFilesRequest(filesToUpload.ToList()));
+
+                if (uploadResult.IsFailure)
+                    return Result.Failure(uploadResult.Errors);
             }
 
-            return result;
+            return Result.Success();
         }
 
         private async Task<Result> CreateEducationDocuments()

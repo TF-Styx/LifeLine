@@ -3,8 +3,12 @@ using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Constants;
 using Shared.WPF.Helpers;
+using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
@@ -14,16 +18,26 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
         private readonly IReadOnlyCollection<DocumentTypeDisplay> _documentTypes;
 
-        public PersonalDocumentsVM(IFileDialogService fileDialogService, IReadOnlyCollection<DocumentTypeDisplay> documentTypes)
+        private readonly IDocumentConversionService _documentConversionService;
+
+        public PersonalDocumentsVM
+            (
+                IFileDialogService fileDialogService, 
+                IReadOnlyCollection<DocumentTypeDisplay> documentTypes,
+
+                IDocumentConversionService documentConversionService
+            )
         {
             _fileDialogService = fileDialogService;
 
             _documentTypes = documentTypes;
 
+            _documentConversionService = documentConversionService;
+
             //CreateNewPersonalDocument();
 
-            SelectCommand = new RelayCommand(Execute_SelectCommand);
-            AddPersonalDocumentCommand = new RelayCommand(Execute_AddPersonalDocumentCommand, CanExecute_AddPersonalDocumentCommand);
+            SelectMultipleCommand = new RelayCommand(Execute_SelectMultipleCommand);
+            AddPersonalDocumentCommand = new RelayCommandAsync(Execute_AddPersonalDocumentCommand, CanExecute_AddPersonalDocumentCommand);
             DeletePersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand);
         }
 
@@ -67,13 +81,104 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set => SetProperty(ref field, value);
         }
 
-        public RelayCommand SelectCommand { get; private set; }
-        private void Execute_SelectCommand()
-            => FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.PERSONAL_DOCUMENT}", FileFilters.Images);
+        private PersonalDocumentDisplay _selectedLocalPersonalDocument = null!;
+        public PersonalDocumentDisplay SelectedLocalPersonalDocument
+        {
+            get => _selectedLocalPersonalDocument;
+            set => SetProperty(ref _selectedLocalPersonalDocument, value);
+        }
 
-        private PersonalDocumentDisplay _newPersonalDocument;
-        private void CreateNewPersonalDocument() 
-            => _newPersonalDocument = new(new PersonalDocumentResponse(Guid.Empty, Guid.Empty, string.Empty, string.Empty), [], string.Empty);
+        public ObservableCollection<string> PendingFilePaths { get; private set; } = [];
+
+        public RelayCommand SelectMultipleCommand { get; private set; }
+        private void Execute_SelectMultipleCommand()
+        {
+            var paths = _fileDialogService.GetFiles($"Выберите файлы: {FileDialogConsts.PERSONAL_DOCUMENT}", FileFilters.ImagesAndPdf);
+
+            if (paths?.Any() == true)
+                foreach (var item in paths) 
+                    PendingFilePaths.Add(item);
+        }
+
+        public ObservableCollection<PersonalDocumentDisplay> LocalPersonalDocuments { get; private init; } = [];
+
+        public RelayCommandAsync? AddPersonalDocumentCommand { get; private set; }
+        private async Task Execute_AddPersonalDocumentCommand()
+        {
+            var filesToProcess = PendingFilePaths.Any() ? [.. PendingFilePaths] : (FilePath != null ? [FilePath] : Array.Empty<string>());
+
+            if (!filesToProcess.Any())
+            {
+                MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                byte[] pdfBytes;
+
+                if (filesToProcess.Count() > 1)
+                {
+                    var images = new List<byte[]>();
+
+                    foreach (var path in filesToProcess)
+                        if (System.IO.File.Exists(path))
+                            images.Add(await System.IO.File.ReadAllBytesAsync(path));
+
+                    if (!images.Any())
+                    {
+                        MessageBox.Show("Не удалось прочитать выбранные файлы", "Ошибка",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync(images, DocumentType.Name, EmployeeId!);
+                }
+                else
+                {
+                    var imageBytes = await System.IO.File.ReadAllBytesAsync(filesToProcess.First());
+                    pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync([imageBytes], DocumentType.Name, EmployeeId!);
+                }
+
+                var fileName = $".pdf";
+
+                LocalPersonalDocuments.Add
+                    (
+                        new PersonalDocumentDisplay
+                            (
+                                new PersonalDocumentResponse
+                                    (
+                                        Guid.Empty,
+                                        Guid.Parse(DocumentType.Id),
+                                        Number,
+                                        Series
+                                    ),
+                                _documentTypes,
+                                FilePath
+                            )
+                        {
+                            FileBytes = pdfBytes,
+                            FileName = fileName,
+                            ContentType = "application/pdf",
+                        }
+                    );
+
+                ClearProperty();
+                PendingFilePaths.Clear();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при обработке файла: {ex.Message}", "Ошибка конвертации",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private bool CanExecute_AddPersonalDocumentCommand()
+            => DocumentType != null && !string.IsNullOrWhiteSpace(Number);
+
+        public RelayCommand<PersonalDocumentDisplay>? DeletePersonalDocumentCommand { get; private set; }
+        private void Execute_DeletePersonalDocumentCommand(PersonalDocumentDisplay display)
+            => LocalPersonalDocuments.Remove(display);
 
         public void ClearProperty()
         {
@@ -82,49 +187,5 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             DocumentType = null!;
             FilePath = string.Empty;
         }
-
-        private PersonalDocumentDisplay _selectedLocalPersonalDocument = null!;
-        public PersonalDocumentDisplay SelectedLocalPersonalDocument
-        {
-            get => _selectedLocalPersonalDocument;
-            set => SetProperty(ref _selectedLocalPersonalDocument, value);
-        }
-
-        public ObservableCollection<PersonalDocumentDisplay> LocalPersonalDocuments { get; private init; } = [];
-
-        public RelayCommand? AddPersonalDocumentCommand { get; private set; }
-        private void Execute_AddPersonalDocumentCommand()
-        {
-            //_newPersonalDocument.DocumentNumber = Number;
-            //_newPersonalDocument.DocumentSeries = Series;
-            //_newPersonalDocument.DocumentType = DocumentType;
-            //_newPersonalDocument.FilePath = FilePath;
-
-            LocalPersonalDocuments.Add
-                (
-                    new PersonalDocumentDisplay
-                        (
-                            new PersonalDocumentResponse
-                                (
-                                    Guid.Empty,
-                                    Guid.Parse(DocumentType.Id),
-                                    Number,
-                                    Series
-                                ),
-                            _documentTypes,
-                            FilePath
-                        )
-                );
-
-            //CreateNewPersonalDocument();
-
-            ClearProperty();
-        }
-        private bool CanExecute_AddPersonalDocumentCommand()
-            => DocumentType != null && !string.IsNullOrWhiteSpace(Number);
-
-        public RelayCommand<PersonalDocumentDisplay>? DeletePersonalDocumentCommand { get; private set; }
-        private void Execute_DeletePersonalDocumentCommand(PersonalDocumentDisplay display)
-            => LocalPersonalDocuments.Remove(display);
     }
 }

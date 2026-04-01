@@ -141,7 +141,7 @@
                         <!-- Файл -->
                         <DockPanel Grid.Row="1" Margin="0 10 0 0">
                             <Button Width="25" Foreground="#F06870" 
-                                    Command="{Binding PersonalDocuments.SelectCommand}" 
+                                    Command="{Binding PersonalDocuments.SelectMultipleCommand}" 
                                     DockPanel.Dock="Right"
                                     Style="{StaticResource Button.Icon}">
                                 <Control Template="{StaticResource AddIcon}"/>
@@ -149,10 +149,9 @@
                                     <TextBlock Text="Добавить файл персональных документов"/>
                                 </Button.ToolTip>
                             </Button>
-                            <cc:PlaceHolderTextBox PlaceHolder="Файл" 
-                                                   Text="{Binding PersonalDocuments.FilePath}" 
-                                                   HorizontalAlignment="Stretch" 
-                                                   Style="{StaticResource TextBox.PlaceHolder}"/>
+                            <ListView ItemsSource="{Binding PersonalDocuments}">
+                                
+                            </ListView>
                         </DockPanel>
                     </Grid>
                 </StackPanel>
