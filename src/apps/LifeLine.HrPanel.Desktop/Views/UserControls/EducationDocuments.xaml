@@ -202,7 +202,7 @@
                             <!-- Файл -->
                             <DockPanel Margin="0 10 0 0">
                                 <Button Width="25" Foreground="#F06870" 
-                                        Command="{Binding EducationDocuments.SelectCommand}" 
+                                        Command="{Binding EducationDocuments.SelectMultipleCommand}" 
                                         DockPanel.Dock="Right"
                                         Style="{StaticResource Button.Icon}">
                                     <Control Template="{StaticResource AddIcon}"/>
@@ -221,7 +221,7 @@
 
             <Button Grid.Row="1" Content="Добавить локально" Height="40"
                     HorizontalAlignment="Stretch" VerticalAlignment="Center" 
-                    Command="{Binding EducationDocuments.AddEducationDocumentCommand}" 
+                    Command="{Binding EducationDocuments.AddEducationDocumentCommandAsync}" 
                     Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
 
             <Button Grid.Row="2" Content="Продолжить" Height="40"

@@ -63,6 +63,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IAssignmentApiServiceFactory _assignmentApiServiceFactory;
 
         private readonly IDocumentConversionService _documentConversionService;
+        private readonly IImageCompressionService _imageCompressionService;
 
         public EmployeeCreatePageVM
             (
@@ -87,7 +88,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IEmployeeSpecialtyApiServiceFactory employeeSpecialtyApiServiceFactory,
                 IAssignmentApiServiceFactory assignmentApiServiceFactory,
 
-                IDocumentConversionService documentConversionService
+                IDocumentConversionService documentConversionService, 
+                IImageCompressionService imageCompressionService
             )
         {
             _employeeService = employeeService;
@@ -118,7 +120,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             ContactInformation = new();
             Avatar = new(_fileDialogService, _imageCompressionService);
             PersonalDocuments = new(_fileDialogService, DocumentTypes, _documentConversionService);
-            EducationDocuments = new(_fileDialogService, DocumentTypes, EducationLevels);
+            EducationDocuments = new(_fileDialogService, _documentConversionService, DocumentTypes, EducationLevels);
             WorkPermits = new(_fileDialogService, PermitTypes, AdmissionStatuses);
             Specialties = new();
             AssigmentsContracts = new(_fileDialogService, _positionReadOnlyApiServiceFactory, Departments, Managers, Statuses, EmployeeTypes);
@@ -385,8 +387,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             if (filesToUpload.Any())
             {
-                var uploadResult = await _fileStorageService.UploadFilesAsync(
-                    new UploadFilesRequest(filesToUpload.ToList()));
+                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest([.. filesToUpload]));
 
                 if (uploadResult.IsFailure)
                     return Result.Failure(uploadResult.Errors);
@@ -399,7 +400,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             var educationDocumentService = _educationDocumentApiServiceFactory.Create(EducationDocuments.EmployeeId);
 
-            var result = await educationDocumentService.CreateManyAsync
+            var dbResult = await educationDocumentService.CreateManyAsync
                 (
                     new CreateManyEducationDocumentsReqeust
                         (
@@ -422,33 +423,63 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         )
                 );
 
-            if (result.IsSuccess)
-            {
-                var resultMiniO = await _fileStorageService.UploadFilesAsync
-                    (
-                        new UploadFilesRequest
+            if (dbResult.IsFailure)
+                return Result.Failure(dbResult.Errors);
+
+
+            var filesToUpload = EducationDocuments.LocalEducationDocuments.Where(x => x.HasFileForUpload)
+                .Select(x =>
+                {
+                    if (x.FileBytes != null && !string.IsNullOrWhiteSpace(x.FileName))
+                    {
+                        return new UploadFilesDataRequest
                             (
-                                [.. EducationDocuments.LocalEducationDocuments.Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
-                                    .Select
-                                        (
-                                            x => new UploadFilesDataRequest
-                                                (
-                                                    FileConst.BUCKET_NAME,
-                                                    x.DocumentType.Name,
-                                                    FileConst.BuildEmployeeFolder
-                                                        (
-                                                            EducationDocuments.EmployeeId,
-                                                            EmployeeFolderType.EducationDocument
-                                                        ),
-                                                    x.FilePath!
-                                                )
-                                        )
-                                ]
-                            )
-                    );
+                                FileConst.BUCKET_NAME,
+                                x.DocumentType.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        EducationDocuments.EmployeeId,
+                                        EmployeeFolderType.EducationDocument
+                                    ),
+                                FilePath: null,
+                                FileBytes: x.FileBytes,
+                                FileName: x.FileName,
+                                ContentType: x.ContentType ?? "application/pdf"
+                            );
+                    }
+                    else if (!string.IsNullOrWhiteSpace(x.FilePath) && System.IO.File.Exists(x.FilePath))
+                    {
+
+                        return new UploadFilesDataRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                x.DocumentType.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        EducationDocuments.EmployeeId,
+                                        EmployeeFolderType.EducationDocument
+                                    ),
+                                FilePath: x.FilePath,
+                                FileBytes: null,
+                                FileName: null,
+                                ContentType: null
+                            );
+                    }
+
+                    return null;
+                })
+                .Where(x => x != null)
+                .ToArray();
+
+            if (filesToUpload.Any())
+            {
+                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest([.. filesToUpload]));
+
+                if (uploadResult.IsFailure)
+                    return Result.Failure(uploadResult.Errors);
             }
 
-            return result;
+            return Result.Success();
         }
 
         private async Task<Result> CreateWorkPermits()

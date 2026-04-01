@@ -3,34 +3,38 @@ using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Constants;
 using Shared.WPF.Helpers;
+using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
     internal sealed class EducationDocumentsVM : BaseEmployeeViewModel
     {
         private readonly IFileDialogService _fileDialogService;
+        private readonly IDocumentConversionService _documentConversionService;
 
         private readonly IReadOnlyCollection<DocumentTypeDisplay> _documentTypes;
         private readonly IReadOnlyCollection<EducationLevelDisplay> _educationLevels;
 
         public EducationDocumentsVM
             (
-                IFileDialogService fileDialogService, 
+                IFileDialogService fileDialogService,
+                IDocumentConversionService documentConversionService,
                 IReadOnlyCollection<DocumentTypeDisplay> documentTypes,
                 IReadOnlyCollection<EducationLevelDisplay> educationLevels
             )
         {
             _fileDialogService = fileDialogService;
+            _documentConversionService = documentConversionService;
 
             _documentTypes = documentTypes;
             _educationLevels = educationLevels;
 
-            //CreateNewEducationDocument();
-
-            SelectCommand = new RelayCommand(Execute_SelectCommand);
-            AddEducationDocumentCommand = new RelayCommand(Execute_AddEducationDocumentCommand, CanExecute_AddEducationDocumentCommand);
+            SelectMultipleCommand = new RelayCommand(Execute_SelectMultipleCommand);
+            AddEducationDocumentCommandAsync = new RelayCommandAsync(Execute_AddEducationDocumentCommandAsync, CanExecute_AddEducationDocumentCommand);
             DeleteEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Execute_DeleteEducationDocumentCommand);
         }
 
@@ -41,7 +45,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _documentNumber, value);
-                AddEducationDocumentCommand?.RaiseCanExecuteChanged();
+                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -52,7 +56,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _issuedDate, value);
-                AddEducationDocumentCommand?.RaiseCanExecuteChanged();
+                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -63,7 +67,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _organizationName, value);
-                AddEducationDocumentCommand?.RaiseCanExecuteChanged();
+                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -74,7 +78,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _qualificationAwardedName, value);
-                AddEducationDocumentCommand?.RaiseCanExecuteChanged();
+                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -85,7 +89,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _specialtyName, value);
-                AddEducationDocumentCommand?.RaiseCanExecuteChanged();
+                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -96,7 +100,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _programName, value);
-                AddEducationDocumentCommand?.RaiseCanExecuteChanged();
+                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -107,7 +111,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _totalHours, value);
-                AddEducationDocumentCommand?.RaiseCanExecuteChanged();
+                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -118,7 +122,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _educationLevel, value);
-                AddEducationDocumentCommand?.RaiseCanExecuteChanged();
+                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -129,7 +133,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _documentType, value);
-                AddEducationDocumentCommand?.RaiseCanExecuteChanged();
+                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -139,28 +143,115 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set => SetProperty(ref field, value);
         }
 
-        public RelayCommand SelectCommand { get; private set; }
-        private void Execute_SelectCommand()
-            => FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
+        private EducationDocumentDisplay _selectedEducationDocumentDisplay = null!;
+        public EducationDocumentDisplay SelectedEducationDocumentDisplay
+        {
+            get => _selectedEducationDocumentDisplay;
+            set => SetProperty(ref _selectedEducationDocumentDisplay, value);
+        }
 
-        private EducationDocumentDisplay _newEducationDocument = null!;
-        private void CreateNewEducationDocument()
-            => _newEducationDocument = new
-                (
-                    new EducationDocumentResponse
-                        (
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, 
-                            DateTime.UtcNow.ToString(), 
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, "0"
-                        ), [], [], string.Empty
-                );
+        public ObservableCollection<string> PendingFilePaths { get; private set; } = [];
+
+        public RelayCommand SelectMultipleCommand { get; private set; }
+        private void Execute_SelectMultipleCommand()
+        {
+            var paths = _fileDialogService.GetFiles($"Выберите файлы: {FileDialogConsts.ASSIGNMENT}", FileFilters.ImagesAndPdf);
+
+            if (paths.Any())
+                foreach (var path in paths)
+                    PendingFilePaths.Add(path);
+        }
+
+        public ObservableCollection<EducationDocumentDisplay> LocalEducationDocuments { get; private init; } = [];
+
+        public RelayCommandAsync AddEducationDocumentCommandAsync { get; private set; }
+        private async Task Execute_AddEducationDocumentCommandAsync()
+        {
+            var filesToProcess = PendingFilePaths.Any() ? [.. PendingFilePaths] : (FilePath != null ? [FilePath] : Array.Empty<string>());
+
+            if (!filesToProcess.Any())
+            {
+                MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                byte[] pdfBytes;
+
+                if (filesToProcess.Count() > 1)
+                {
+                    var images = new List<byte[]>();
+
+                    foreach (var path in filesToProcess)
+                        if (System.IO.File.Exists(path))
+                            images.Add(await System.IO.File.ReadAllBytesAsync(path));
+
+                    if (!images.Any())
+                    {
+                        MessageBox.Show("Не удалось прочитать выбранные файлы", "Ошибка",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync(images, DocumentType.Name, EmployeeId!);
+                }
+                else
+                {
+                    var imageBytes = await System.IO.File.ReadAllBytesAsync(filesToProcess.First());
+                    pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync([imageBytes], DocumentType.Name, EmployeeId!);
+                }
+
+                var fileName = ".pdf";
+
+                LocalEducationDocuments.Add
+                    (
+                        new EducationDocumentDisplay
+                            (
+                                new EducationDocumentResponse
+                                    (
+                                        string.Empty,
+                                        EmployeeId,
+                                        EducationLevel.Id,
+                                        DocumentType.Id,
+                                        DocumentNumber,
+                                        IssuedDate.ToString(),
+                                        OrganizationName,
+                                        QualificationAwardedName,
+                                        SpecialtyName,
+                                        ProgramName,
+                                        TotalHours.ToString()
+                                    ),
+                                _educationLevels, 
+                                _documentTypes, 
+                                FilePath
+                            )
+                        {
+                            FileBytes = pdfBytes,
+                            FileName = fileName,
+                            ContentType = "application/pdf"
+                        }
+                    );
+
+                ClearProperty();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при обработке файла: {ex.Message}", "Ошибка конвертации",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private bool CanExecute_AddEducationDocumentCommand()
+            => EducationLevel != null && DocumentType != null &&
+               !string.IsNullOrWhiteSpace(DocumentNumber) &&
+               !string.IsNullOrWhiteSpace(IssuedDate.ToString()) &&
+               IssuedDate != DateTime.MinValue &&
+               !string.IsNullOrWhiteSpace(OrganizationName);
+
+        public RelayCommand<EducationDocumentDisplay>? DeleteEducationDocumentCommand { get; private set; }
+        private void Execute_DeleteEducationDocumentCommand(EducationDocumentDisplay display)
+            => LocalEducationDocuments.Remove(display);
 
         public void ClearProperty()
         {
@@ -174,66 +265,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             EducationLevel = null!;
             DocumentType = null!;
             FilePath = string.Empty;
+
+            PendingFilePaths.Clear();
         }
-
-        private EducationDocumentDisplay _selectedEducationDocumentDisplay = null!;
-        public EducationDocumentDisplay SelectedEducationDocumentDisplay
-        {
-            get => _selectedEducationDocumentDisplay;
-            set => SetProperty(ref _selectedEducationDocumentDisplay, value);
-        }
-
-        public ObservableCollection<EducationDocumentDisplay> LocalEducationDocuments { get; private init; } = [];
-
-        public RelayCommand AddEducationDocumentCommand { get; private set; }
-        private void Execute_AddEducationDocumentCommand()
-        {
-            //_newEducationDocument.DocumentNumber = DocumentNumber;
-            //_newEducationDocument.IssuedDate = IssuedDate;
-            //_newEducationDocument.OrganizationName = OrganizationName;
-            //_newEducationDocument.QualificationAwardedName = QualificationAwardedName;
-            //_newEducationDocument.SpecialtyName = SpecialtyName;
-            //_newEducationDocument.ProgramName = ProgramName;
-            //_newEducationDocument.TotalHours = TotalHours;
-            //_newEducationDocument.EducationLevel = EducationLevel;
-            //_newEducationDocument.DocumentType = DocumentType;
-            //_newEducationDocument.FilePath = FilePath;
-
-            LocalEducationDocuments.Add
-                (
-                    new EducationDocumentDisplay
-                        (
-                            new EducationDocumentResponse
-                                (
-                                    string.Empty,
-                                    EmployeeId,
-                                    EducationLevel.Id,
-                                    DocumentType.Id,
-                                    DocumentNumber,
-                                    IssuedDate.ToString(),
-                                    OrganizationName,
-                                    QualificationAwardedName,
-                                    SpecialtyName,
-                                    ProgramName,
-                                    TotalHours.ToString()
-                                ),
-                            _educationLevels, _documentTypes, FilePath
-                        )
-                );
-
-            //CreateNewEducationDocument();
-
-            ClearProperty();
-        }
-        private bool CanExecute_AddEducationDocumentCommand()
-            => EducationLevel != null && DocumentType != null &&
-               !string.IsNullOrWhiteSpace(DocumentNumber) &&
-               !string.IsNullOrWhiteSpace(IssuedDate.ToString()) &&
-               IssuedDate != DateTime.MinValue &&
-               !string.IsNullOrWhiteSpace(OrganizationName);
-
-        public RelayCommand<EducationDocumentDisplay>? DeleteEducationDocumentCommand { get; private set; }
-        private void Execute_DeleteEducationDocumentCommand(EducationDocumentDisplay display)
-            => LocalEducationDocuments.Remove(display);
     }
 }

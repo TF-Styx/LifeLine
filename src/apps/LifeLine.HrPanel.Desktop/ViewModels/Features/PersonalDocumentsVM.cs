@@ -160,12 +160,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                         {
                             FileBytes = pdfBytes,
                             FileName = fileName,
-                            ContentType = "application/pdf",
+                            ContentType = "application/pdf"
                         }
                     );
 
                 ClearProperty();
-                PendingFilePaths.Clear();
             }
             catch (Exception ex)
             {
@@ -186,6 +185,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             Series = string.Empty;
             DocumentType = null!;
             FilePath = string.Empty;
+
+            PendingFilePaths.Clear();
         }
     }
 }
