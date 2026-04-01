@@ -9,15 +9,16 @@
 
   <ItemGroup>
     <Folder Include="Resources\Images\" />
-    <Folder Include="Services\DialogService\" />
     <Folder Include="Builder\" />
     <Folder Include="Services\Authentication\" />
+    <Folder Include="Services\DialogService\" />
   </ItemGroup>
 
   <ItemGroup>
 	<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
     <PackageReference Include="System.Drawing.Common" />
+    <PackageReference Include="PdfSharpCore" />
   </ItemGroup>
 
   <ItemGroup>
