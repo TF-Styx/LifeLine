@@ -32,8 +32,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
             _documentConversionService = documentConversionService;
 
-            //CreateNewPersonalDocument();
-
             SelectMultipleCommand = new RelayCommand(Execute_SelectMultipleCommand);
             AddPersonalDocumentCommand = new RelayCommandAsync(Execute_AddPersonalDocumentCommand, CanExecute_AddPersonalDocumentCommand);
             DeletePersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand);
