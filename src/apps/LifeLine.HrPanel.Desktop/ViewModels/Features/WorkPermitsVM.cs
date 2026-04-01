@@ -282,6 +282,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             PermitType = null!;
             AdmissionStatus = null!;
             FilePath = string.Empty;
+
+            PendingFilePaths.Clear();
         }
     }
 }
