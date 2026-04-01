@@ -7,25 +7,23 @@ using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
     internal sealed class PersonalDocumentsVM : BaseEmployeeViewModel
     {
         private readonly IFileDialogService _fileDialogService;
+        private readonly IDocumentConversionService _documentConversionService;
 
         private readonly IReadOnlyCollection<DocumentTypeDisplay> _documentTypes;
 
-        private readonly IDocumentConversionService _documentConversionService;
 
         public PersonalDocumentsVM
             (
-                IFileDialogService fileDialogService, 
-                IReadOnlyCollection<DocumentTypeDisplay> documentTypes,
+                IFileDialogService fileDialogService,
+                IDocumentConversionService documentConversionService, 
 
-                IDocumentConversionService documentConversionService
+                IReadOnlyCollection<DocumentTypeDisplay> documentTypes
             )
         {
             _fileDialogService = fileDialogService;
