@@ -5,14 +5,18 @@ using Shared.WPF.Commands;
 using Shared.WPF.Constants;
 using Shared.WPF.Extensions;
 using Shared.WPF.Helpers;
+using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
     internal sealed class AssigmentsContractsVM : BaseEmployeeViewModel
     {
         private readonly IFileDialogService _fileDialogService;
+        private readonly IDocumentConversionService _documentConversionService;
         private readonly IPositionReadOnlyApiServiceFactory _positionReadOnlyApiServiceFactory;
 
         private readonly IReadOnlyCollection<DepartmentDisplay> _departments;
@@ -22,7 +26,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
         public AssigmentsContractsVM
             (
-                IFileDialogService fileDialogService, 
+                IFileDialogService fileDialogService,
+                IDocumentConversionService documentConversionService,
                 IPositionReadOnlyApiServiceFactory positionReadOnlyApiServiceFactory,
 
                 IReadOnlyCollection<DepartmentDisplay> departments,
@@ -32,6 +37,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             )
         {
             _fileDialogService = fileDialogService;
+            _documentConversionService = documentConversionService;
             _positionReadOnlyApiServiceFactory = positionReadOnlyApiServiceFactory;
 
             _departments = departments;
@@ -39,10 +45,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _statuses = statuses;
             _employeeTypes = employeeTypes;
 
-            //CreateNewAssignmentContract();
-
-            SelectCommand = new RelayCommand(Execute_SelectCommand);
-            AddAssignmentContractCommand = new RelayCommand(Execute_AddAssignmentContractCommand, CanExecute_AddAssignmentContractCommand);
+            SelectMultipleCommand = new RelayCommand(Execute_SelectMultipleCommand);
+            AddAssignmentContractCommandAsync = new RelayCommandAsync(Execute_AddAssignmentContractCommandAsync, CanExecute_AddAssignmentContractCommand);
             DeleteAssignmentContractCommand = new RelayCommand<AssignmentContractDisplay>(Execute_DeleteAssignmentContractCommand);
 
             _getAllPositionByIdDepartmentCommandAsync = new RelayCommandAsync<DepartmentDisplay>(Execute_GetAllPositionByIdDepartmentCommandAsyn);
@@ -64,7 +68,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                         Positions.Clear();
                 }
 
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -75,7 +79,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _position, value);
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -86,7 +90,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _manager, value);
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -97,7 +101,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _hireDate, value);
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -108,7 +112,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _terminationDate, value);
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -119,7 +123,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _status, value);
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -129,9 +133,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set => SetProperty(ref field, value);
         }
 
-        public RelayCommand SelectCommand { get; private set; }
-        private void Execute_SelectCommand()
-            => FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
+        public ObservableCollection<string> PendingFilePaths { get; private set; } = [];
 
         #endregion
 
@@ -144,7 +146,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _employeeType, value);
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -155,7 +157,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _contractNumber, value);
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -166,7 +168,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _startDate, value);
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -177,7 +179,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _endDate, value);
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -188,55 +190,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _salary, value);
-                AddAssignmentContractCommand?.RaiseCanExecuteChanged();
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
         #endregion
 
-        private AssignmentContractDisplay? _newAssignmentContract;
-        private void CreateNewAssignmentContract()
-            => _newAssignmentContract = new
-                (
-                    new AssignmentResponse
-                        (
-                            string.Empty,
-                            string.Empty,
-                            string.Empty,
-                            string.Empty,
-                            string.Empty,
-                            DateTime.UtcNow,
-                            DateTime.UtcNow,
-                            string.Empty
-                        ),
-                    new ContractResponse
-                        (
-                            string.Empty,
-                            string.Empty,
-                            string.Empty,
-                            string.Empty,
-                            DateTime.UtcNow,
-                            DateTime.UtcNow,
-                            decimal.Zero,
-                            string.Empty
-                        ),
-                    [], [], [], [], [], string.Empty
-                );
-
-        public void ClearProperty()
+        public RelayCommand SelectMultipleCommand { get; private set; }
+        private void Execute_SelectMultipleCommand()
         {
-            Department = null!;
-            Position = null!;
-            Manager = null;
-            HireDate = HireDate;
-            Status = null!;
-            FilePath = string.Empty;
-            
-            EmployeeType = null!;
-            ContractNumber = string.Empty;
-            StartDate = DateTime.UtcNow;
-            EndDate = DateTime.UtcNow;
-            Salary = decimal.Zero;
+            var paths = _fileDialogService.GetFiles($"Выберите файл: {FileDialogConsts.ASSIGNMENT}", FileFilters.Images);
+
+            if (paths.Any())
+                foreach (var path in paths)
+                    PendingFilePaths.Add(path);
         }
 
         public ObservableCollection<PositionDisplay> Positions { get; private init; } = [];
@@ -256,55 +223,94 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
         public ObservableCollection<AssignmentContractDisplay> LocalAssignmentsContracts { get; private init; } = [];
 
-        public RelayCommand AddAssignmentContractCommand { get; private set; }
-        private void Execute_AddAssignmentContractCommand()
+        public RelayCommandAsync AddAssignmentContractCommandAsync { get; private set; }
+        private async Task Execute_AddAssignmentContractCommandAsync()
         {
-            //_newAssignmentContract.Department = Department;
-            //_newAssignmentContract.Position = Position;
-            //_newAssignmentContract.Manager = Manager;
-            //_newAssignmentContract.HireDate = HireDate;
-            //_newAssignmentContract.Status = Status;
-            //_newAssignmentContract.FilePath = FilePath;
+            var filesToProcess = PendingFilePaths.Any() ? [.. PendingFilePaths] : (FilePath != null ? [FilePath] : Array.Empty<string>());
+            
+            if (!filesToProcess.Any())
+            {
+                MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            //_newAssignmentContract.EmployeeType = EmployeeType;
-            //_newAssignmentContract.ContractNumber = ContractNumber;
-            //_newAssignmentContract.StartDate = StartDate;
-            //_newAssignmentContract.EndDate = EndDate;
-            //_newAssignmentContract.Salary = Salary;
+            try
+            {
+                byte[] pdfBytes;
 
-            LocalAssignmentsContracts.Add
-                (
-                    new AssignmentContractDisplay
-                        (
-                            new AssignmentResponse
-                                (
-                                    string.Empty,
-                                    EmployeeId,
-                                    Position.Id,
-                                    Department.Id,
-                                    Manager?.Id,
-                                    HireDate,
-                                    TerminationDate,
-                                    Status.Id
-                                ),
-                            new ContractResponse
-                                (
-                                    EmployeeId,
-                                    string.Empty,
-                                    ContractNumber,
-                                    EmployeeType.Id,
-                                    StartDate,
-                                    EndDate,
-                                    Salary,
-                                    null
-                                ),
-                            _departments, Positions, _managers, _statuses, _employeeTypes, FilePath
-                        )
-                );
+                if (filesToProcess.Count() > 1)
+                {
+                    var images = new List<byte[]>();
 
-            //CreateNewAssignmentContract();
+                    foreach (var path in filesToProcess)
+                        if (System.IO.File.Exists(path))
+                            images.Add(await System.IO.File.ReadAllBytesAsync(path));
 
-            ClearProperty();
+                    if (!images.Any())
+                    {
+                        MessageBox.Show("Не удалось прочитать выбранные файлы", "Ошибка",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync(images, Position.Name, EmployeeId!);
+                }
+                else
+                {
+                    var imageBytes = await System.IO.File.ReadAllBytesAsync(filesToProcess.First());
+                    pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync([imageBytes], Position.Name, EmployeeId!);
+                }
+
+                var fileName = $"Назначение.pdf";
+
+                LocalAssignmentsContracts.Add
+                    (
+                        new AssignmentContractDisplay
+                            (
+                                new AssignmentResponse
+                                    (
+                                        string.Empty,
+                                        EmployeeId,
+                                        Position.Id,
+                                        Department.Id,
+                                        Manager?.Id,
+                                        HireDate,
+                                        TerminationDate,
+                                        Status.Id
+                                    ),
+                                new ContractResponse
+                                    (
+                                        EmployeeId,
+                                        string.Empty,
+                                        ContractNumber,
+                                        EmployeeType.Id,
+                                        StartDate,
+                                        EndDate,
+                                        Salary,
+                                        null
+                                    ),
+                                _departments, 
+                                Positions, 
+                                _managers, 
+                                _statuses, 
+                                _employeeTypes, 
+                                FilePath
+                            )
+                        {
+                            FileBytes = pdfBytes,
+                            FileName = fileName,
+                            ContentType = "application/pdf"
+                        }
+                    );
+
+                ClearProperty();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при обработке файла: {ex.Message}", "Ошибка конвертации",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         private bool CanExecute_AddAssignmentContractCommand()
             => Department != null && Position != null &&
@@ -318,5 +324,23 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         public RelayCommand<AssignmentContractDisplay> DeleteAssignmentContractCommand { get; private set; }
         private void Execute_DeleteAssignmentContractCommand(AssignmentContractDisplay display)
             => LocalAssignmentsContracts.Remove(display);
+
+        public void ClearProperty()
+        {
+            Department = null!;
+            Position = null!;
+            Manager = null;
+            HireDate = HireDate;
+            Status = null!;
+            FilePath = string.Empty;
+
+            EmployeeType = null!;
+            ContractNumber = string.Empty;
+            StartDate = DateTime.UtcNow;
+            EndDate = DateTime.UtcNow;
+            Salary = decimal.Zero;
+
+            PendingFilePaths.Clear();
+        }
     }
 }

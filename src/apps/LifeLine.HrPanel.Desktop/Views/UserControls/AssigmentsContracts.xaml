@@ -338,7 +338,7 @@
                     <!-- Файл -->
                     <DockPanel Grid.Row="1" Margin="0 10 0 5">
                         <Button Width="25" Foreground="#F06870" 
-                                Command="{Binding AssigmentsContracts.SelectCommand}" 
+                                Command="{Binding AssigmentsContracts.SelectMultipleCommand}" 
                                 DockPanel.Dock="Right"
                                 Style="{StaticResource Button.Icon}">
                             <Control Template="{StaticResource AddIcon}"/>
@@ -356,7 +356,7 @@
 
         <Button Grid.Row="2" Content="Добавить локально" Height="40"
                 HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                Command="{Binding AssigmentsContracts.AddAssignmentContractCommand}"
+                Command="{Binding AssigmentsContracts.AddAssignmentContractCommandAsync}"
                 Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
 
         <Button Grid.Row="3" Content="Продолжить" Height="40"

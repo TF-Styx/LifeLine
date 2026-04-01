@@ -123,7 +123,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             EducationDocuments = new(_fileDialogService, _documentConversionService, DocumentTypes, EducationLevels);
             WorkPermits = new(_fileDialogService, _documentConversionService, PermitTypes, AdmissionStatuses);
             Specialties = new();
-            AssigmentsContracts = new(_fileDialogService, _positionReadOnlyApiServiceFactory, Departments, Managers, Statuses, EmployeeTypes);
+            AssigmentsContracts = new(_fileDialogService, _documentConversionService, _positionReadOnlyApiServiceFactory, Departments, Managers, Statuses, EmployeeTypes);
 
             ExecuteStepCommand = new RelayCommandAsync<EmployeeCreationSteps>(Execute_StepCommand, CanExecute_StepCommand);
         }
@@ -591,16 +591,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             var assignmentService = _assignmentApiServiceFactory.Create(AssigmentsContracts.EmployeeId);
 
-            var result = await assignmentService.CreateManyAsync
+            var dbResult = await assignmentService.CreateManyAsync
                 (
                     new CreateManyAssignmentsReqeust
                         (
-
                             [.. AssigmentsContracts.LocalAssignmentsContracts.Select
                                 (
-                                    x => 
-                                    {
-                                        var a = new CreateManyDataAssignmentsReqeust
+                                    x => new CreateManyDataAssignmentsReqeust
                                         (
                                             x.Position.Id,
                                             x.Department.Id,
@@ -617,42 +614,67 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                                     x.Salary,
                                                     null
                                                 )
-                                        );
-
-                                        return a;
-                                    } 
+                                        )
                                 )
                             ]
                         )
                 );
 
-            if (result.IsSuccess)
-            {
-                var resultMiniO = await _fileStorageService.UploadFilesAsync
-                    (
-                        new UploadFilesRequest
+            if (dbResult.IsFailure)
+                return Result.Failure(dbResult.Errors);
+
+            var filetsToUpload = AssigmentsContracts.LocalAssignmentsContracts.Where(x => x.HasFileForUpload)
+                .Select(x =>
+                {
+                    if (x.FileBytes != null && !string.IsNullOrWhiteSpace(x.FileName))
+                    {
+                        return new UploadFilesDataRequest
                             (
-                                [.. AssigmentsContracts.LocalAssignmentsContracts.Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
-                                    .Select
-                                        (
-                                            x => new UploadFilesDataRequest
-                                                (
-                                                    FileConst.BUCKET_NAME,
-                                                    x.Position.Name,
-                                                    FileConst.BuildEmployeeFolder
-                                                        (
-                                                            AssigmentsContracts.EmployeeId,
-                                                            EmployeeFolderType.Assignment
-                                                        ),
-                                                    x.FilePath!
-                                                )
-                                        )
-                                ]
-                            )
-                    );
+                                FileConst.BUCKET_NAME,
+                                x.Position.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        AssigmentsContracts.EmployeeId,
+                                        EmployeeFolderType.Assignment
+                                    ),
+                                FilePath: null,
+                                FileBytes: x.FileBytes,
+                                FileName: x.FileName,
+                                ContentType: x.ContentType ?? "application/pdf"
+                            );
+                    }
+                    else if (!string.IsNullOrWhiteSpace(x.FilePath) && System.IO.File.Exists(x.FilePath))
+                    {
+                        return new UploadFilesDataRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                x.Position.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        AssigmentsContracts.EmployeeId,
+                                        EmployeeFolderType.Assignment
+                                    ),
+                                FilePath: x.FilePath,
+                                FileBytes: null,
+                                FileName: null,
+                                ContentType: null
+                            );
+                    }
+
+                    return null;
+                })
+                .Where(x => x != null)
+                .ToArray();
+
+            if (filetsToUpload.Any())
+            {
+                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest([.. filetsToUpload]));
+
+                if (uploadResult.IsFailure)
+                    return Result.Failure(uploadResult.Errors);
             }
 
-            return result;
+            return Result.Success();
         }
 
         private void SetEmployeeId(string id)

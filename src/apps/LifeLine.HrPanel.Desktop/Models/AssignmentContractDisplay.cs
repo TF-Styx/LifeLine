@@ -156,5 +156,15 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         #endregion
+
+        public byte[]? FileBytes { get; set; }
+        public string? FileName { get; set; }
+        public string? ContentType { get; set; } = "application/pdf";
+
+        [System.ComponentModel.Browsable(false)]
+        public bool HasFileForUpload => FileBytes != null || (!string.IsNullOrWhiteSpace(FilePath) && System.IO.File.Exists(FilePath));
+
+        public AssignmentResponse GetUnderLineModelAssignment() => _assignmentModel;
+        public ContractResponse GetUnderLineModelContract() => _contractModel;
     }
 }
