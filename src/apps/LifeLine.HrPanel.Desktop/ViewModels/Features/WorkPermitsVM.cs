@@ -3,14 +3,18 @@ using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Constants;
 using Shared.WPF.Helpers;
+using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
     internal sealed class WorkPermitsVM : BaseEmployeeViewModel
     {
         private readonly IFileDialogService _fileDialogService;
+        private readonly IDocumentConversionService _documentConversionService;
 
         private readonly IReadOnlyCollection<PermitTypeDisplay> _permitTypes;
         private readonly IReadOnlyCollection<AdmissionStatusDisplay> _admissionStatuses;
@@ -18,22 +22,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         public WorkPermitsVM
             (
                 IFileDialogService fileDialogService, 
+                IDocumentConversionService documentConversionService,
                 IReadOnlyCollection<PermitTypeDisplay> permitTypes, 
                 IReadOnlyCollection<AdmissionStatusDisplay> admissionStatuses
             )
         {
             _fileDialogService = fileDialogService;
+            _documentConversionService = documentConversionService;
 
             _permitTypes = permitTypes;
             _admissionStatuses = admissionStatuses;
 
-            //CreateNewWorkPermit();
-
-            SelectCommand = new RelayCommand(Execute_SelectCommand);
-            AddWorkPermitCommand = new RelayCommand(Execute_AddWorkPermitCommand, CanExecute_AddWorkPermitCommand);
+            SelectMultipleCommand = new RelayCommand(Execute_SelectMultipleCommand);
+            AddWorkPermitCommandAsync = new RelayCommandAsync(Execute_AddWorkPermitCommandAsync, CanExecute_AddWorkPermitCommand);
             DeleteWorkPermitCommand = new RelayCommand<WorkPermitDisplay>(Execute_DeleteWorkPermitCommand);
-            _permitTypes = permitTypes;
-            _admissionStatuses = admissionStatuses;
         }
 
         private string _workPermitName = null!;
@@ -43,7 +45,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _workPermitName, value);
-                AddWorkPermitCommand?.RaiseCanExecuteChanged();
+                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -54,7 +56,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _documentSeries, value);
-                AddWorkPermitCommand?.RaiseCanExecuteChanged();
+                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -65,7 +67,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _workPermitNumber, value);
-                AddWorkPermitCommand?.RaiseCanExecuteChanged();
+                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -76,7 +78,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _protocolNumber, value);
-                AddWorkPermitCommand?.RaiseCanExecuteChanged();
+                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -87,7 +89,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _specialtyName, value);
-                AddWorkPermitCommand?.RaiseCanExecuteChanged();
+                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -98,7 +100,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _issuingAuthority, value);
-                AddWorkPermitCommand?.RaiseCanExecuteChanged();
+                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -109,7 +111,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _issueDate, value);
-                AddWorkPermitCommand?.RaiseCanExecuteChanged();
+                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -120,7 +122,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _expiryDate, value);
-                AddWorkPermitCommand?.RaiseCanExecuteChanged();
+                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -131,7 +133,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _permitType, value);
-                AddWorkPermitCommand?.RaiseCanExecuteChanged();
+                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -142,7 +144,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _admissionStatus, value);
-                AddWorkPermitCommand?.RaiseCanExecuteChanged();
+                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
@@ -152,46 +154,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set => SetProperty(ref field, value);
         }
 
-        public RelayCommand SelectCommand { get; private set; }
-        private void Execute_SelectCommand()
-            => FilePath = _fileDialogService.GetFile($"Выберите файл: {FileDialogConsts.WORK_PERMIT}", FileFilters.Images);
-
-        private WorkPermitDisplay _newWorkPermit = null!;
-        private void CreateNewWorkPermit()
-            => _newWorkPermit = new
-                (
-                    new WorkPermitResponse
-                        (
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, 
-                            string.Empty, 
-                            DateTime.UtcNow, 
-                            DateTime.UtcNow, 
-                            string.Empty, 
-                            string.Empty
-                        ), [], [], string.Empty
-                );
-
-        public void ClearProperty()
-        {
-            WorkPermitName = string.Empty;
-            DocumentSeries = string.Empty;
-            WorkPermitNumber = string.Empty;
-            ProtocolNumber = string.Empty;
-            SpecialtyName = string.Empty;
-            IssuingAuthority = string.Empty;
-            IssueDate = DateTime.UtcNow;
-            ExpiryDate = DateTime.UtcNow;
-            PermitType = null!;
-            AdmissionStatus = null!;
-            FilePath = string.Empty;
-        }
-
         private WorkPermitDisplay _selectedWorkPermit = null!;
         public WorkPermitDisplay SelectedWorkPermit
         {
@@ -199,49 +161,98 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set => SetProperty(ref _selectedWorkPermit, value);
         }
 
+        public ObservableCollection<string> PendingFilePaths { get; private set; } = [];
+
+        public RelayCommand SelectMultipleCommand { get; private set; }
+        private void Execute_SelectMultipleCommand()
+        {
+            var paths = _fileDialogService.GetFiles($"Выберите файлы: {FileDialogConsts.WORK_PERMIT}", FileFilters.Images);
+
+            if (paths.Any())
+                foreach (var path in paths)
+                    PendingFilePaths.Add(path);
+        }
+
         public ObservableCollection<WorkPermitDisplay> LocalWorkPermits { get; private init; } = [];
 
-        public RelayCommand AddWorkPermitCommand { get; private set; }
-        private void Execute_AddWorkPermitCommand()
+        public RelayCommandAsync AddWorkPermitCommandAsync { get; private set; }
+        private async Task Execute_AddWorkPermitCommandAsync()
         {
-            //_newWorkPermit.WorkPermitName = WorkPermitName;
-            //_newWorkPermit.DocumentSeries = DocumentSeries;
-            //_newWorkPermit.WorkPermitNumber = WorkPermitNumber;
-            //_newWorkPermit.ProtocolNumber = ProtocolNumber;
-            //_newWorkPermit.SpecialtyName = SpecialtyName;
-            //_newWorkPermit.IssuingAuthority = IssuingAuthority;
-            //_newWorkPermit.IssueDate = IssueDate;
-            //_newWorkPermit.ExpiryDate = ExpiryDate;
-            //_newWorkPermit.PermitType = PermitType;
-            //_newWorkPermit.AdmissionStatus = AdmissionStatus;
-            //_newWorkPermit.FilePath = FilePath;
+            var filesToProcess = PendingFilePaths.Any() ? [.. PendingFilePaths] : (FilePath != null ? [FilePath] : Array.Empty<string>());
 
-            LocalWorkPermits.Add
-                (
-                    new WorkPermitDisplay
-                        (
-                            new WorkPermitResponse
-                                (
-                                    string.Empty,
-                                    EmployeeId,
-                                    WorkPermitName,
-                                    DocumentSeries,
-                                    WorkPermitNumber,
-                                    ProtocolNumber,
-                                    SpecialtyName,
-                                    IssuingAuthority,
-                                    IssueDate,
-                                    ExpiryDate,
-                                    PermitType.Id,
-                                    AdmissionStatus.Id
-                                ),
-                            _permitTypes, _admissionStatuses, FilePath
-                        )
-                );
+            if (!filesToProcess.Any())
+            {
+                MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            //CreateNewWorkPermit();
+            try
+            {
+                byte[] pdfBytes;
 
-            ClearProperty();
+                if (filesToProcess.Count() > 1)
+                {
+                    var images = new List<byte[]>();
+
+                    foreach (var path in filesToProcess)
+                        if (System.IO.File.Exists(path))
+                            images.Add(await System.IO.File.ReadAllBytesAsync(path));
+
+                    if (!images.Any())
+                    {
+                        MessageBox.Show("Не удалось прочитать выбранные файлы", "Ошибка",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync(images, PermitType.Name, EmployeeId!);
+                }
+                else
+                {
+                    var imageBytes = await System.IO.File.ReadAllBytesAsync(filesToProcess.First());
+                    pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync([imageBytes], PermitType.Name, EmployeeId!);
+                }
+
+                var fileName = $".pdf";
+
+                LocalWorkPermits.Add
+                    (
+                        new WorkPermitDisplay
+                            (
+                                new WorkPermitResponse
+                                    (
+                                        string.Empty,
+                                        EmployeeId,
+                                        WorkPermitName,
+                                        DocumentSeries,
+                                        WorkPermitNumber,
+                                        ProtocolNumber,
+                                        SpecialtyName,
+                                        IssuingAuthority,
+                                        IssueDate,
+                                        ExpiryDate,
+                                        PermitType.Id,
+                                        AdmissionStatus.Id
+                                    ),
+                                _permitTypes, 
+                                _admissionStatuses, 
+                                FilePath
+                            )
+                        {
+                            FileBytes = pdfBytes,
+                            FileName = fileName,
+                            ContentType = "application/pdf"
+                        }
+                    );
+
+                ClearProperty();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при обработке файла: {ex.Message}", "Ошибка конвертации",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         private bool CanExecute_AddWorkPermitCommand()
             => AdmissionStatus != null && PermitType != null &&
@@ -257,5 +268,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         public RelayCommand<WorkPermitDisplay> DeleteWorkPermitCommand { get; private set; }
         private void Execute_DeleteWorkPermitCommand(WorkPermitDisplay display)
             => LocalWorkPermits.Remove(display);
+
+        public void ClearProperty()
+        {
+            WorkPermitName = string.Empty;
+            DocumentSeries = string.Empty;
+            WorkPermitNumber = string.Empty;
+            ProtocolNumber = string.Empty;
+            SpecialtyName = string.Empty;
+            IssuingAuthority = string.Empty;
+            IssueDate = DateTime.UtcNow;
+            ExpiryDate = DateTime.UtcNow;
+            PermitType = null!;
+            AdmissionStatus = null!;
+            FilePath = string.Empty;
+        }
     }
 }

@@ -119,9 +119,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             PersonalInfo = new();
             ContactInformation = new();
             Avatar = new(_fileDialogService, _imageCompressionService);
-            PersonalDocuments = new(_fileDialogService, DocumentTypes, _documentConversionService);
+            PersonalDocuments = new(_fileDialogService, _documentConversionService, DocumentTypes);
             EducationDocuments = new(_fileDialogService, _documentConversionService, DocumentTypes, EducationLevels);
-            WorkPermits = new(_fileDialogService, PermitTypes, AdmissionStatuses);
+            WorkPermits = new(_fileDialogService, _documentConversionService, PermitTypes, AdmissionStatuses);
             Specialties = new();
             AssigmentsContracts = new(_fileDialogService, _positionReadOnlyApiServiceFactory, Departments, Managers, Statuses, EmployeeTypes);
 
@@ -380,6 +380,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                             ContentType: null
                         );
                     }
+
                     return null;
                 })
                 .Where(x => x != null)
@@ -486,7 +487,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             var workPermitService = _workPermitApiServiceFactory.Create(WorkPermits.EmployeeId);
 
-            var result = await workPermitService.CreateManyAsync
+            var dbResult = await workPermitService.CreateManyAsync
                 (
                     new CreateManyWorkPermitsRequest
                         (
@@ -510,33 +511,61 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         )
                 );
 
-            if (result.IsSuccess)
-            {
-                var resultMiniO = await _fileStorageService.UploadFilesAsync
-                    (
-                        new UploadFilesRequest
+            if (dbResult.IsFailure)
+                return Result.Failure(dbResult.Errors);
+
+            var filesToUpload = WorkPermits.LocalWorkPermits.Where(x => x.HasFileForUpload)
+                .Select(x =>
+                {
+                    if (x.FileBytes != null && !string.IsNullOrWhiteSpace(x.FileName))
+                    {
+                        return new UploadFilesDataRequest
                             (
-                                [.. WorkPermits.LocalWorkPermits.Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
-                                    .Select
-                                        (
-                                            x => new UploadFilesDataRequest
-                                                (
-                                                    FileConst.BUCKET_NAME,
-                                                    x.PermitType.Name,
-                                                    FileConst.BuildEmployeeFolder
-                                                        (
-                                                            WorkPermits.EmployeeId,
-                                                            EmployeeFolderType.WorkPermit
-                                                        ),
-                                                    x.FilePath
-                                                )
-                                        )
-                                ]
-                            )
-                    );
+                                FileConst.BUCKET_NAME,
+                                x.PermitType.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        WorkPermits.EmployeeId,
+                                        EmployeeFolderType.WorkPermit
+                                    ),
+                                FilePath: null,
+                                FileBytes: x.FileBytes,
+                                FileName: x.FileName,
+                                ContentType: x.ContentType ?? "application/pdf"
+                            );
+                    }
+                    else if (!string.IsNullOrWhiteSpace(x.FileName) && System.IO.File.Exists(x.FilePath))
+                    {
+                        return new UploadFilesDataRequest
+                            (
+                                FileConst.BUCKET_NAME,
+                                x.PermitType.Name,
+                                FileConst.BuildEmployeeFolder
+                                    (
+                                        WorkPermits.EmployeeId,
+                                        EmployeeFolderType.WorkPermit
+                                    ),
+                                FilePath: x.FilePath,
+                                FileBytes: null,
+                                FileName: null,
+                                ContentType: null
+                            );
+                    }
+
+                    return null;
+                })
+                .Where(x => x != null)
+                .ToArray();
+
+            if (filesToUpload.Any())
+            {
+                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest([.. filesToUpload]));
+
+                if (uploadResult.IsFailure)
+                    return Result.Failure(uploadResult.Errors);
             }
 
-            return result;
+            return Result.Success();
         }
 
         private async Task<Result> CreateEmployeeSpecialties()
