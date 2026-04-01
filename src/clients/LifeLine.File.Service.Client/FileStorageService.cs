@@ -23,21 +23,34 @@ namespace LifeLine.File.Service.Client
             if (!string.IsNullOrWhiteSpace(request.SubFolder))
                 formData.Add(new StringContent(request.SubFolder, Encoding.UTF8, "text/plain"), nameof(request.SubFolder));
 
-            if (!string.IsNullOrWhiteSpace(request.FilePath) && System.IO.File.Exists(request.FilePath))
+            StreamContent? streamContent = null;
+            string? fileName = null;
+            string? mimeType = null;
+
+            if (request.FileBytes != null && !string.IsNullOrWhiteSpace(request.FileName))
             {
-                var fileStream = System.IO.File.OpenRead(request.FilePath);
-                var streamContent = new StreamContent(fileStream);
-
-                var mineType = GetMimeType(request.FilePath);
-                streamContent.Headers.ContentType = new MediaTypeHeaderValue(mineType);
-
-                formData.Add(streamContent, "File", Path.GetFileName(request.FilePath));
+                var ms = new MemoryStream(request.FileBytes);
+                streamContent = new StreamContent(ms);
+                fileName = request.FileName;
+                mimeType = request.ContentType ?? "application/pdf";
             }
+            else if (!string.IsNullOrWhiteSpace(request.FilePath) && System.IO.File.Exists(request.FilePath))
+            {
+                var fs = System.IO.File.OpenRead(request.FilePath);
+                streamContent = new StreamContent(fs);
+                fileName = Path.GetFileName(request.FilePath);
+                mimeType = GetMimeType(request.FilePath);
+            }
+
+            if (streamContent == null)
+                return Result<UploadFileResponse?>.Failure(Error.New(AppErrors.Upload, "Файл не указан или не найден!"));
+
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+            formData.Add(streamContent, "File", fileName);
 
             try
             {
                 var response = await _httpClient.PostAsync($"files", formData);
-
                 response.EnsureSuccessStatusCode();
 
                 return Result<UploadFileResponse?>.Success(await response.Content.ReadFromJsonAsync<UploadFileResponse?>());
@@ -63,13 +76,29 @@ namespace LifeLine.File.Service.Client
                 if (!string.IsNullOrWhiteSpace(file.SubFolder))
                     formData.Add(new StringContent(file.SubFolder, Encoding.UTF8, "text/plain"), $"{prefix}.SubFolder");
 
-                if (!string.IsNullOrWhiteSpace(file.FilePath) && System.IO.File.Exists(file.FilePath))
+                StreamContent? streamContent = null;
+                string? fileName = null;
+                string? mimeType = null;
+
+                if (file.FileBytes != null && !string.IsNullOrWhiteSpace(file.FileName))
                 {
-                    var fileStream = System.IO.File.OpenRead(file.FilePath);
-                    var streamContent = new StreamContent(fileStream);
-                    var mineType = GetMimeType(file.FilePath);
-                    streamContent.Headers.ContentType = new MediaTypeHeaderValue(mineType);
-                    formData.Add(streamContent, $"{prefix}.File", Path.GetFileName(file.FilePath));
+                    var ms = new MemoryStream(file.FileBytes);
+                    streamContent = new StreamContent(ms);
+                    fileName = file.FileName;
+                    mimeType = file.ContentType ?? "application/pdf";
+                } 
+                else if (!string.IsNullOrWhiteSpace(file.FilePath) && System.IO.File.Exists(file.FilePath))
+                {
+                    var fs = System.IO.File.OpenRead(file.FilePath);
+                    streamContent = new StreamContent(fs);
+                    fileName = Path.GetFileName(file.FilePath);
+                    mimeType = GetMimeType(file.FilePath);
+                }
+
+                if (streamContent != null)
+                {
+                    streamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+                    formData.Add(streamContent, $"{prefix}.File", fileName);
                 }
             }
 
@@ -77,6 +106,7 @@ namespace LifeLine.File.Service.Client
             {
                 var response = await _httpClient.PostAsync("files/batch", formData);
                 response.EnsureSuccessStatusCode();
+
                 return Result<List<UploadFileResponse>?>.Success(await response.Content.ReadFromJsonAsync<List<UploadFileResponse>>());
             }
             catch (Exception ex)
