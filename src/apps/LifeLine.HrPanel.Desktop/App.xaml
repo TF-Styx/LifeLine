@@ -8,6 +8,8 @@
         <ResourceDictionary>
             <converters:FullNameValueConverter x:Key="FullNameValueConverter"/>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <converters:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
             <hrConverters:EmployeeCreationsToBoolConverter x:Key="EmployeeCreationsToBoolConverter"/>
 
             <ResourceDictionary.MergedDictionaries>
