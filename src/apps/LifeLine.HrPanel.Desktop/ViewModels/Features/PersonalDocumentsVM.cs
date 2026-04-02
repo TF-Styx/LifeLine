@@ -6,6 +6,7 @@ using Shared.WPF.Helpers;
 using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
@@ -33,6 +34,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _documentConversionService = documentConversionService;
 
             SelectMultipleCommand = new RelayCommand(Execute_SelectMultipleCommand);
+            RemovePendingFileCommand = new RelayCommand<PendingFileItem>(Execute_RemovePendingFileCommand);
             AddPersonalDocumentCommand = new RelayCommandAsync(Execute_AddPersonalDocumentCommand, CanExecute_AddPersonalDocumentCommand);
             DeletePersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_DeletePersonalDocumentCommand);
         }
@@ -84,7 +86,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set => SetProperty(ref _selectedLocalPersonalDocument, value);
         }
 
-        public ObservableCollection<string> PendingFilePaths { get; private set; } = [];
+        public ObservableCollection<PendingFileItem> PendingFilePaths { get; private set; } = [];
 
         public RelayCommand SelectMultipleCommand { get; private set; }
         private void Execute_SelectMultipleCommand()
@@ -92,8 +94,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             var paths = _fileDialogService.GetFiles($"Выберите файлы: {FileDialogConsts.PERSONAL_DOCUMENT}", FileFilters.ImagesAndPdf);
 
             if (paths?.Any() == true)
-                foreach (var item in paths) 
-                    PendingFilePaths.Add(item);
+            {
+                var startIndex = PendingFilePaths.Count + 1;
+                foreach (var path in paths)
+                    PendingFilePaths.Add(new PendingFileItem(startIndex++, path));
+
+                UpdateIndexes();
+            }
+        }
+
+        public RelayCommand<PendingFileItem>? RemovePendingFileCommand { get; private set; }
+        private void Execute_RemovePendingFileCommand(PendingFileItem item)
+        {
+            if (item != null && PendingFilePaths.Remove(item))
+                UpdateIndexes();
         }
 
         public ObservableCollection<PersonalDocumentDisplay> LocalPersonalDocuments { get; private init; } = [];
@@ -101,7 +115,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         public RelayCommandAsync? AddPersonalDocumentCommand { get; private set; }
         private async Task Execute_AddPersonalDocumentCommand()
         {
-            var filesToProcess = PendingFilePaths.Any() ? [.. PendingFilePaths] : (FilePath != null ? [FilePath] : Array.Empty<string>());
+            var filesToProcess = PendingFilePaths.Any()
+                ? PendingFilePaths.Select(x => x.FilePath).ToArray()
+                : (FilePath != null ? [FilePath] : Array.Empty<string>());
 
             if (!filesToProcess.Any())
             {
@@ -112,30 +128,32 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
             try
             {
-                byte[] pdfBytes;
+                var fileBytes = new List<byte[]>();
+                var fileNames = new List<string>();
 
-                if (filesToProcess.Count() > 1)
+                foreach (var path in filesToProcess)
                 {
-                    var images = new List<byte[]>();
-
-                    foreach (var path in filesToProcess)
-                        if (System.IO.File.Exists(path))
-                            images.Add(await System.IO.File.ReadAllBytesAsync(path));
-
-                    if (!images.Any())
+                    if (System.IO.File.Exists(path))
                     {
-                        MessageBox.Show("Не удалось прочитать выбранные файлы", "Ошибка",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
+                        fileBytes.Add(await System.IO.File.ReadAllBytesAsync(path));
+                        fileNames.Add(Path.GetFileName(path));
                     }
+                }
 
-                    pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync(images, DocumentType.Name, EmployeeId!);
-                }
-                else
+                if (!fileBytes.Any())
                 {
-                    var imageBytes = await System.IO.File.ReadAllBytesAsync(filesToProcess.First());
-                    pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync([imageBytes], DocumentType.Name, EmployeeId!);
+                    MessageBox.Show("Не удалось прочитать выбранные файлы", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
+
+                var pdfBytes = await _documentConversionService.ConvertImagesToPdfAsync
+                    (
+                        DocumentType.Name,
+                        EmployeeId!,
+                        fileBytes,
+                        fileNames
+                    );
 
                 var fileName = $".pdf";
 
@@ -183,6 +201,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             FilePath = string.Empty;
 
             PendingFilePaths.Clear();
+        }
+
+        private void UpdateIndexes()
+        {
+            for (int i = 0; i < PendingFilePaths.Count; i++)
+                PendingFilePaths[i].Index = i + 1;
         }
     }
 }
