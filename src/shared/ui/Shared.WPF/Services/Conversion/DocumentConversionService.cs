@@ -9,7 +9,14 @@ namespace Shared.WPF.Services.Conversion
 {
     public class DocumentConversionService(IImageCompressionService imageCompressionService) : IDocumentConversionService
     {
-        public async Task<byte[]> ConvertImagesToPdfAsync(List<byte[]> images, string documentType, string employeeId, CancellationToken cancellationToken = default)
+        public async Task<byte[]> ConvertImagesToPdfAsync
+            (
+                string documentType, 
+                string employeeId,
+                List<byte[]> files,
+                List<string>? fileNames = null,
+                CancellationToken cancellationToken = default
+            )
         {
             return await Task.Run(async () =>
             {
@@ -27,99 +34,23 @@ namespace Shared.WPF.Services.Conversion
                 document.Info.Creator = "LifeLine HR Panel";
                 document.Info.CreationDate = DateTime.UtcNow;
 
-                foreach (var imageData in images)
+                for (int i = 0; i < files.Count; i++)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    try
+                    var fileData = files[i];
+                    var fileName = fileNames?.ElementAtOrDefault(i);
+
+                    // 👇 Определяем тип файла
+                    if (IsPdfFile(fileData, fileName))
                     {
-                        // Проверяем, является ли файл уже PDF
-                        if (IsPdfFile(imageData))
-                        {
-                            // Если это PDF, добавляем его страницы в наш документ
-                            using var ms = new MemoryStream(imageData);
-                            using var sourcePdf = PdfReader.Open(ms, PdfDocumentOpenMode.Import);
-
-                            for (int i = 0; i < sourcePdf.PageCount; i++)
-                            {
-                                var page = document.AddPage(sourcePdf.Pages[i]);
-                            }
-                        }
-                        else
-                        {
-                            // Обрабатываем как изображение
-                            byte[] processedBytes;
-                            try
-                            {
-                                // Пытаемся сжать изображение
-                                processedBytes = imageCompressionService
-                                    .CompressImageAsync(imageData, cancellationToken: cancellationToken)
-                                    .GetAwaiter().GetResult();
-                            }
-                            catch
-                            {
-                                // Если сжатие не удалось, используем оригинал
-                                processedBytes = imageData;
-                            }
-
-                            var page = document.AddPage();
-                            page.Size = PageSize.A4;
-
-                            using var gfx = XGraphics.FromPdfPage(page);
-
-                            // Пытаемся загрузить изображение
-                            using var ms = new MemoryStream(processedBytes);
-                            XImage img;
-
-                            try
-                            {
-                                img = XImage.FromStream(() => ms);
-                            }
-                            catch (Exception ex)
-                            {
-                                // Если не удалось загрузить как изображение, пропускаем с ошибкой
-                                throw new InvalidOperationException(
-                                    $"Не удалось загрузить изображение. Поддерживаемые форматы: JPEG, PNG, BMP, GIF, TGA. " +
-                                    $"Ошибка: {ex.Message}");
-                            }
-
-                            using (img)
-                            {
-                                // Защита от деления на ноль
-                                if (img.PixelWidth == 0 || img.PixelHeight == 0)
-                                    continue;
-
-                                // Расчет пропорций для вписывания в А4 с отступами
-                                double pageWidth = page.Width.Point - 40;
-                                double pageHeight = page.Height.Point - 40;
-                                double imgRatio = (double)img.PixelWidth / img.PixelHeight;
-                                double pageRatio = pageWidth / pageHeight;
-
-                                double drawWidth, drawHeight;
-                                if (imgRatio > pageRatio)
-                                {
-                                    drawWidth = pageWidth;
-                                    drawHeight = pageWidth / imgRatio;
-                                }
-                                else
-                                {
-                                    drawHeight = pageHeight;
-                                    drawWidth = pageHeight * imgRatio;
-                                }
-
-                                double x = (page.Width.Point - drawWidth) / 2;
-                                double y = (page.Height.Point - drawHeight) / 2;
-
-                                gfx.DrawImage(img, x, y, drawWidth, drawHeight);
-                            }
-                        }
+                        // 📄 Это PDF — извлекаем и добавляем все его страницы
+                        MergePdfIntoDocument(document, fileData);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        // Логируем ошибку для конкретного файла, но продолжаем обработку остальных
-                        System.Diagnostics.Debug.WriteLine($"Ошибка при обработке файла: {ex.Message}");
-                        // Можно добавить коллекцию ошибок и вернуть их вместе с результатом
-                        throw; // Или продолжить обработку следующего файла
+                        // 🖼️ Это изображение — сжимаем и добавляем как страницу
+                        AddImageAsPage(document, fileData, fileName);
                     }
                 }
 
@@ -129,15 +60,101 @@ namespace Shared.WPF.Services.Conversion
             }, cancellationToken);
         }
 
-        private static bool IsPdfFile(byte[] fileData)
+        #region Helpers: PDF
+
+        private static bool IsPdfFile(byte[] fileData, string? fileName)
         {
-            // PDF файлы начинаются с "%PDF-"
+            // Проверка по расширению
+            if (!string.IsNullOrWhiteSpace(fileName) &&
+                Path.GetExtension(fileName).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            // Проверка по магическим байтам ("%PDF-")
             if (fileData.Length >= 5)
             {
                 var signature = System.Text.Encoding.ASCII.GetString(fileData, 0, 5);
-                return signature == "%PDF-";
+                if (signature == "%PDF-")
+                {
+                    return true;
+                }
             }
+
             return false;
         }
+
+        private static void MergePdfIntoDocument(PdfDocument targetDocument, byte[] sourcePdfBytes)
+        {
+            using var sourceMs = new MemoryStream(sourcePdfBytes);
+            using var sourceDocument = PdfReader.Open(sourceMs, PdfDocumentOpenMode.Import);
+
+            for (int i = 0; i < sourceDocument.PageCount; i++)
+            {
+                var page = sourceDocument.Pages[i];
+                // 👇 ImportPage копирует страницу с полным содержимым
+                targetDocument.AddPage(page);
+            }
+        }
+
+        #endregion
+
+        #region Helpers: Images
+
+        private void AddImageAsPage(PdfDocument document, byte[] imageData, string? fileName)
+        {
+            try
+            {
+                // 👇 Сначала пробуем сжать изображение (если это не уже сжатый формат)
+                var processedData = imageCompressionService.CompressImageAsync(
+                    imageData,
+                    fileName,
+                    quality: 85,
+                    maxDimension: 2480).GetAwaiter().GetResult();
+
+                var page = document.AddPage();
+                page.Size = PageSize.A4;
+                page.Orientation = PageOrientation.Portrait;
+
+                using var gfx = XGraphics.FromPdfPage(page);
+                using var ms = new MemoryStream(processedData);
+                var xImage = XImage.FromStream(() => ms);
+
+                // 👇 Расчет пропорций для вписывания в А4 с отступами
+                double pageWidth = page.Width.Point - 40;  // отступы по 20pt
+                double pageHeight = page.Height.Point - 40;
+                double imgRatio = (double)xImage.PixelWidth / xImage.PixelHeight;
+                double pageRatio = pageWidth / pageHeight;
+
+                double drawWidth, drawHeight;
+                if (imgRatio > pageRatio)
+                {
+                    // Изображение шире страницы — масштабируем по ширине
+                    drawWidth = pageWidth;
+                    drawHeight = pageWidth / imgRatio;
+                }
+                else
+                {
+                    // Изображение выше страницы — масштабируем по высоте
+                    drawHeight = pageHeight;
+                    drawWidth = pageHeight * imgRatio;
+                }
+
+                // 👇 Центрируем на странице
+                double x = (page.Width.Point - drawWidth) / 2;
+                double y = (page.Height.Point - drawHeight) / 2;
+
+                gfx.DrawImage(xImage, x, y, drawWidth, drawHeight);
+            }
+            catch (Exception)
+            {
+                // 👇 Если не удалось обработать как изображение — пропускаем с логированием
+                // (возможно, повреждённый файл или неподдерживаемый формат)
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DocumentConversion] Failed to process image: {fileName ?? "unknown"}");
+            }
+        }
+
+        #endregion
     }
 }

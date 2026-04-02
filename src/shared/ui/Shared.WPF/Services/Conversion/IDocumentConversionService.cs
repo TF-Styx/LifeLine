@@ -5,5 +5,12 @@ public interface IDocumentConversionService
     /// <summary>
     /// Конвертирует список изображений в один PDF файл
     /// </summary>
-    Task<byte[]> ConvertImagesToPdfAsync(List<byte[]> images, string documentType, string employeeId, CancellationToken cancellationToken = default);
+    Task<byte[]> ConvertImagesToPdfAsync
+            (
+                string documentType, 
+                string employeeId,
+                List<byte[]> files,
+                List<string>? fileNames = null,
+                CancellationToken cancellationToken = default
+            );
 }
