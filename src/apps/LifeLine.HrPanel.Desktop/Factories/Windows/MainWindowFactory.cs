@@ -21,7 +21,7 @@ namespace LifeLine.HrPanel.Desktop.Factories.Windows
             window.Loaded += (sender, args) =>
             {
                 var frame = window.FindName("MainFrame") as Frame;
-                _navigationPage.SetFrame(FrameName.MainFrame, frame);
+                _navigationPage.SetFrame(FrameName.MainFrame, frame!);
             };
 
             return window;

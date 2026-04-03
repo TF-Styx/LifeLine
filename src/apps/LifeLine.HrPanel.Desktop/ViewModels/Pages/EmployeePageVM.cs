@@ -167,7 +167,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                 if (value is ValueTuple<SpecialtyDisplay, SpecialtyDisplay> specialtyUpdate)
                 {
-                    Specialties.Remove(Specialties.FirstOrDefault(x => x.SpecialtyId == specialtyUpdate.Item1.SpecialtyId));
+                    Specialties.Remove(Specialties.FirstOrDefault(x => x.SpecialtyId == specialtyUpdate.Item1.SpecialtyId)!);
                     Specialties.Add(specialtyUpdate.Item2);
                     SpecialtyDisplay = specialtyUpdate.Item2;
                 }

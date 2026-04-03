@@ -97,8 +97,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set => SetProperty(ref _specialtyDisplay, value);
         }
 
-        private SpecialtyDisplay _selectedSpecialty = null!;
-        public SpecialtyDisplay SelectedSpecialty
+        private SpecialtyDisplay? _selectedSpecialty;
+        public SpecialtyDisplay? SelectedSpecialty
         {
             get => _selectedSpecialty;
             set => SetProperty(ref _selectedSpecialty, value);
@@ -124,7 +124,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     new UpdateEmployeeSpecialtyRequest
                         (
                             SpecialtyDisplay.SpecialtyId,
-                            SelectedSpecialty.SpecialtyId
+                            SelectedSpecialty!.SpecialtyId
                         )
                 );
 
@@ -137,7 +137,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             {
                 var resultCreate = await _employeeSpecialtyApiServiceFactory.Create(CurrentEmployeeDetails.EmployeeId).CreateAsync
                     (
-                        new CreateEmployeeSpecialtyRequest(Guid.Parse(SelectedSpecialty.SpecialtyId))
+                        new CreateEmployeeSpecialtyRequest(Guid.Parse(SelectedSpecialty!.SpecialtyId))
                     );
 
                 if (resultCreate.IsSuccess)

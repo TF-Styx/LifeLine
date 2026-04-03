@@ -18,7 +18,6 @@
 	<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
     <PackageReference Include="SixLabors.ImageSharp" />
-    <PackageReference Include="System.Drawing.Common" />
     <PackageReference Include="PdfSharpCore" />
   </ItemGroup>
 

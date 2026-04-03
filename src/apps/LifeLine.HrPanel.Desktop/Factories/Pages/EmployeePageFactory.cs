@@ -32,7 +32,7 @@ namespace LifeLine.HrPanel.Desktop.Factories.Pages
 
                 var frame = page.FindName(FrameName.ModalFrame.ToString()) as Frame;
                 //_navigationPage().SetFrame(FrameName.EditContactInformationEmployeeFrame, frame);
-                navigationPage.SetFrame(FrameName.ModalFrame, frame);
+                navigationPage.SetFrame(FrameName.ModalFrame, frame!);
             };
 
             return page;

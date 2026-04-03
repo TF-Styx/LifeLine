@@ -258,7 +258,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     _assignmentContractDisplay.PropertyChanged -= OnAssignmentContractDisplayChanged;
 
                 // 2. Присваиваем новое значение
-                SetProperty(ref _assignmentContractDisplay, value);
+                SetProperty(ref _assignmentContractDisplay!, value);
 
                 UpdateAssignmentEmployeeCommand?.RaiseCanExecuteChanged();
 

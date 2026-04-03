@@ -45,8 +45,8 @@ namespace LifeLine.File.Service.Client
             if (streamContent == null)
                 return Result<UploadFileResponse?>.Failure(Error.New(AppErrors.Upload, "Файл не указан или не найден!"));
 
-            streamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-            formData.Add(streamContent, "File", fileName);
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType!);
+            formData.Add(streamContent, "File", fileName!);
 
             try
             {
@@ -97,8 +97,8 @@ namespace LifeLine.File.Service.Client
 
                 if (streamContent != null)
                 {
-                    streamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-                    formData.Add(streamContent, $"{prefix}.File", fileName);
+                    streamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType!);
+                    formData.Add(streamContent, $"{prefix}.File", fileName!);
                 }
             }
 

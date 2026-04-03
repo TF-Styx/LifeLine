@@ -288,7 +288,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                 new AssignmentResponse
                                     (
                                         string.Empty,
-                                        EmployeeId,
+                                        EmployeeId!,
                                         Position.Id,
                                         Department.Id,
                                         Manager?.Id,
@@ -298,7 +298,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                     ),
                                 new ContractResponse
                                     (
-                                        EmployeeId,
+                                        EmployeeId!,
                                         string.Empty,
                                         ContractNumber,
                                         EmployeeType.Id,

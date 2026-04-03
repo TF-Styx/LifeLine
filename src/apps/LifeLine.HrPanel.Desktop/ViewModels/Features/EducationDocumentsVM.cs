@@ -229,7 +229,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                 new EducationDocumentResponse
                                     (
                                         string.Empty,
-                                        EmployeeId,
+                                        EmployeeId!,
                                         EducationLevel.Id,
                                         DocumentType.Id,
                                         DocumentNumber,

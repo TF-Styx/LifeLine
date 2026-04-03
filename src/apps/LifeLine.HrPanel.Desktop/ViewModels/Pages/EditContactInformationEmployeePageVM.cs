@@ -115,7 +115,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                             CurrentEmployeeDetails.Surname,
                             CurrentEmployeeDetails.Name,
                             CurrentEmployeeDetails.Patronymic,
-                            SelectedGender.GenderId.ToString()
+                            SelectedGender!.GenderId.ToString()
                         )
                 );
 

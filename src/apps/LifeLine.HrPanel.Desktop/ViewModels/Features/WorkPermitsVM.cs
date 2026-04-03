@@ -240,7 +240,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                 new WorkPermitResponse
                                     (
                                         string.Empty,
-                                        EmployeeId,
+                                        EmployeeId!,
                                         WorkPermitName,
                                         DocumentSeries,
                                         WorkPermitNumber,

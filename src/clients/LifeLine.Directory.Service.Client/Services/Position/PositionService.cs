@@ -12,7 +12,7 @@ namespace LifeLine.Directory.Service.Client.Services.Position
             var response = await HttpClient.GetAsync($"{Url}/get-all");
             var result = await response.Content.ReadFromJsonAsync<List<PositionResponse>>(JsonSerializerOptions);
 
-            return result;
+            return result!;
         }
     }
 }

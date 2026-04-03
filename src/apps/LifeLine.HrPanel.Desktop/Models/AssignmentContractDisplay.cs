@@ -83,7 +83,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             get => _manager;
             set => SetProperty(ref _manager, value);
         }
-        public void SetManager(string? id) => Manager = _managers.FirstOrDefault(x => x.Id == id)!;
+        public void SetManager(string? id) => Manager = _managers.FirstOrDefault(x => x!.Id == id)!;
 
         private DateTime _hireDate;
         public DateTime HireDate
