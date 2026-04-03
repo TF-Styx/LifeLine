@@ -151,57 +151,57 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #region Features new ViewModel
 
-        private PersonalInfoVM _personalInfo;
-        public PersonalInfoVM PersonalInfo
+        private PersonalInfoVM? _personalInfo;
+        public PersonalInfoVM? PersonalInfo
         {
             get => _personalInfo;
             set => SetProperty(ref _personalInfo, value);
         }
 
-        private AvatarVM _avatar;
-        public AvatarVM Avatar
+        private AvatarVM? _avatar;
+        public AvatarVM? Avatar
         {
             get => _avatar;
             set => SetProperty(ref _avatar, value);
         }
 
-        private ContactInformationVM _сontactInformation;
-        public ContactInformationVM ContactInformation
+        private ContactInformationVM? _сontactInformation;
+        public ContactInformationVM? ContactInformation
         {
             get => _сontactInformation;
             set => SetProperty(ref _сontactInformation, value);
         }
 
-        private PersonalDocumentsVM _personalDocuments;
-        public PersonalDocumentsVM PersonalDocuments
+        private PersonalDocumentsVM? _personalDocuments;
+        public PersonalDocumentsVM? PersonalDocuments
         {
             get => _personalDocuments;
             set => SetProperty(ref _personalDocuments, value);
         }
 
-        private EducationDocumentsVM _educationDocuments;
-        public EducationDocumentsVM EducationDocuments
+        private EducationDocumentsVM? _educationDocuments;
+        public EducationDocumentsVM? EducationDocuments
         {
             get => _educationDocuments;
             set => SetProperty(ref _educationDocuments, value);
         }
 
-        private WorkPermitsVM _workPermits;
-        public WorkPermitsVM WorkPermits
+        private WorkPermitsVM? _workPermits;
+        public WorkPermitsVM? WorkPermits
         {
             get => _workPermits;
             set => SetProperty(ref _workPermits, value);
         }
 
-        private SpecialtiesVM _specialties;
-        public SpecialtiesVM Specialties
+        private SpecialtiesVM ?_specialties;
+        public SpecialtiesVM? Specialties
         {
             get => _specialties;
             set => SetProperty(ref _specialties, value);
         }
 
-        private AssigmentsContractsVM _assigmentsContracts;
-        public AssigmentsContractsVM AssigmentsContracts
+        private AssigmentsContractsVM? _assigmentsContracts;
+        public AssigmentsContractsVM? AssigmentsContracts
         {
             get => _assigmentsContracts;
             set => SetProperty(ref _assigmentsContracts, value);
@@ -225,7 +225,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 EmployeeCreationSteps.EducationDocuments => async () => await CreateEducationDocuments(),
                 EmployeeCreationSteps.WorkPermits => async () => await CreateWorkPermits(),
                 EmployeeCreationSteps.Specialties => async () => await CreateEmployeeSpecialties(),
-                EmployeeCreationSteps.AssigmentsContracts => async () => await CreateAssignmentContracts()
+                EmployeeCreationSteps.AssigmentsContracts => async () => await CreateAssignmentContracts(),
+
+                _ => () => Task.Run(() => Result.Success())
             };
             var result = await func();
 
@@ -246,10 +248,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 (
                     new CreateEmployeeRequest
                         (
-                            PersonalInfo.Surname,
-                            PersonalInfo.Name,
+                            PersonalInfo!.Surname!,
+                            PersonalInfo.Name!,
                             PersonalInfo.Patronymic,
-                            PersonalInfo.Gender.Id
+                            PersonalInfo.Gender!.Id
                         )
                 );
 
@@ -263,7 +265,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private async Task<Result> CreateAvatarAsync()
         {
-            var avatarBytes = Avatar.GetCompressedBytes();
+            var avatarBytes = Avatar!.GetCompressedBytes();
             var fileName = Avatar.GetFileName();
 
             if (avatarBytes == null || string.IsNullOrWhiteSpace(fileName))
@@ -277,7 +279,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                             nameof(Avatar),
                             FileConst.BuildEmployeeFolder
                                 (
-                                    Avatar.EmployeeId,
+                                    Avatar.EmployeeId!,
                                     EmployeeFolderType.Avatar
                                 ),
                             FilePath: null,
@@ -294,7 +296,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private async Task<Result> CreateContactInformation()
         {
-            var contactInformationService = _contactInformationApiServiceFactory.Create(ContactInformation.EmployeeId);
+            var contactInformationService = _contactInformationApiServiceFactory.Create(ContactInformation!.EmployeeId!);
 
             var result = await contactInformationService.CreateAsync
                 (
@@ -318,7 +320,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private async Task<Result> CreatePersonalDocuments()
         {
-            var personalDocumentService = _personalDocumentApiServiceFactory.Create(PersonalDocuments.EmployeeId);
+            var personalDocumentService = _personalDocumentApiServiceFactory.Create(PersonalDocuments!.EmployeeId!);
 
             // 1️⃣ Создаём записи в БД
             var dbResult = await personalDocumentService.CreateManyAsync
@@ -354,7 +356,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                             AdditionalName: x.DocumentType.Name,
                             SubFolder: FileConst.BuildEmployeeFolder
                                 (
-                                    PersonalDocuments.EmployeeId,
+                                    PersonalDocuments.EmployeeId!,
                                     EmployeeFolderType.PersonalDocument
                                 ),
                             FilePath: null,
@@ -371,7 +373,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                             AdditionalName: x.DocumentType.Name,
                             SubFolder: FileConst.BuildEmployeeFolder
                                 (
-                                    PersonalDocuments.EmployeeId,
+                                    PersonalDocuments.EmployeeId!,
                                     EmployeeFolderType.PersonalDocument
                                 ),
                             FilePath: x.FilePath,
@@ -388,7 +390,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             if (filesToUpload.Any())
             {
-                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest([.. filesToUpload]));
+                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest(filesToUpload.ToList()!));
 
                 if (uploadResult.IsFailure)
                     return Result.Failure(uploadResult.Errors);
@@ -399,7 +401,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private async Task<Result> CreateEducationDocuments()
         {
-            var educationDocumentService = _educationDocumentApiServiceFactory.Create(EducationDocuments.EmployeeId);
+            var educationDocumentService = _educationDocumentApiServiceFactory.Create(EducationDocuments!.EmployeeId!);
 
             var dbResult = await educationDocumentService.CreateManyAsync
                 (
@@ -439,7 +441,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 x.DocumentType.Name,
                                 FileConst.BuildEmployeeFolder
                                     (
-                                        EducationDocuments.EmployeeId,
+                                        EducationDocuments.EmployeeId!,
                                         EmployeeFolderType.EducationDocument
                                     ),
                                 FilePath: null,
@@ -457,7 +459,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 x.DocumentType.Name,
                                 FileConst.BuildEmployeeFolder
                                     (
-                                        EducationDocuments.EmployeeId,
+                                        EducationDocuments.EmployeeId!,
                                         EmployeeFolderType.EducationDocument
                                     ),
                                 FilePath: x.FilePath,
@@ -474,7 +476,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             if (filesToUpload.Any())
             {
-                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest([.. filesToUpload]));
+                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest(filesToUpload.ToList()!));
 
                 if (uploadResult.IsFailure)
                     return Result.Failure(uploadResult.Errors);
@@ -485,7 +487,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private async Task<Result> CreateWorkPermits()
         {
-            var workPermitService = _workPermitApiServiceFactory.Create(WorkPermits.EmployeeId);
+            var workPermitService = _workPermitApiServiceFactory.Create(WorkPermits!.EmployeeId!);
 
             var dbResult = await workPermitService.CreateManyAsync
                 (
@@ -525,7 +527,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 x.PermitType.Name,
                                 FileConst.BuildEmployeeFolder
                                     (
-                                        WorkPermits.EmployeeId,
+                                        WorkPermits.EmployeeId!,
                                         EmployeeFolderType.WorkPermit
                                     ),
                                 FilePath: null,
@@ -542,7 +544,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 x.PermitType.Name,
                                 FileConst.BuildEmployeeFolder
                                     (
-                                        WorkPermits.EmployeeId,
+                                        WorkPermits.EmployeeId!,
                                         EmployeeFolderType.WorkPermit
                                     ),
                                 FilePath: x.FilePath,
@@ -559,7 +561,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             if (filesToUpload.Any())
             {
-                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest([.. filesToUpload]));
+                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest(filesToUpload.ToList()!));
 
                 if (uploadResult.IsFailure)
                     return Result.Failure(uploadResult.Errors);
@@ -570,7 +572,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private async Task<Result> CreateEmployeeSpecialties()
         {
-            var employeeSpecialtiesService = _employeeSpecialtyApiServiceFactory.Create(Specialties.EmployeeId);
+            var employeeSpecialtiesService = _employeeSpecialtyApiServiceFactory.Create(Specialties!.EmployeeId!);
 
             var result = await employeeSpecialtiesService.CreateManyAsync
                 (
@@ -589,7 +591,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private async Task<Result> CreateAssignmentContracts()
         {
-            var assignmentService = _assignmentApiServiceFactory.Create(AssigmentsContracts.EmployeeId);
+            var assignmentService = _assignmentApiServiceFactory.Create(AssigmentsContracts!.EmployeeId!);
 
             var dbResult = await assignmentService.CreateManyAsync
                 (
@@ -623,7 +625,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             if (dbResult.IsFailure)
                 return Result.Failure(dbResult.Errors);
 
-            var filetsToUpload = AssigmentsContracts.LocalAssignmentsContracts.Where(x => x.HasFileForUpload)
+            var filesToUpload = AssigmentsContracts.LocalAssignmentsContracts.Where(x => x.HasFileForUpload)
                 .Select(x =>
                 {
                     if (x.FileBytes != null && !string.IsNullOrWhiteSpace(x.FileName))
@@ -634,7 +636,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 x.Position.Name,
                                 FileConst.BuildEmployeeFolder
                                     (
-                                        AssigmentsContracts.EmployeeId,
+                                        AssigmentsContracts.EmployeeId!,
                                         EmployeeFolderType.Assignment
                                     ),
                                 FilePath: null,
@@ -651,7 +653,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 x.Position.Name,
                                 FileConst.BuildEmployeeFolder
                                     (
-                                        AssigmentsContracts.EmployeeId,
+                                        AssigmentsContracts.EmployeeId!,
                                         EmployeeFolderType.Assignment
                                     ),
                                 FilePath: x.FilePath,
@@ -666,9 +668,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 .Where(x => x != null)
                 .ToArray();
 
-            if (filetsToUpload.Any())
+            if (filesToUpload.Any())
             {
-                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest([.. filetsToUpload]));
+                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest(filesToUpload.ToList()!));
 
                 if (uploadResult.IsFailure)
                     return Result.Failure(uploadResult.Errors);
@@ -679,14 +681,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private void SetEmployeeId(string id)
         {
-            PersonalInfo.EmployeeId = id;
-            Avatar.EmployeeId = id;
-            ContactInformation.EmployeeId = id;
-            PersonalDocuments.EmployeeId = id;
-            EducationDocuments.EmployeeId = id;
-            WorkPermits.EmployeeId = id;
-            Specialties.EmployeeId = id;
-            AssigmentsContracts.EmployeeId = id;
+            PersonalInfo!.EmployeeId = id;
+            Avatar!.EmployeeId = id;
+            ContactInformation!.EmployeeId = id;
+            PersonalDocuments!.EmployeeId = id;
+            EducationDocuments!.EmployeeId = id;
+            WorkPermits!.EmployeeId = id;
+            Specialties!.EmployeeId = id;
+            AssigmentsContracts!.EmployeeId = id;
         }
 
         #endregion
@@ -850,24 +852,24 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private void ClearLocalLists()
         {
-            PersonalInfo.ClearProperty();
-            Avatar.ClearProperty();
-            ContactInformation.ClearProperty();
+            PersonalInfo!.ClearProperty();
+            Avatar!.ClearProperty();
+            ContactInformation!.ClearProperty();
 
-            PersonalDocuments.ClearProperty();
-            PersonalDocuments.LocalPersonalDocuments.Clear();
+            PersonalDocuments!.ClearProperty();
+            PersonalDocuments!.LocalPersonalDocuments.Clear();
 
-            EducationDocuments.ClearProperty();
-            EducationDocuments.LocalEducationDocuments.Clear();
+            EducationDocuments!.ClearProperty();
+            EducationDocuments!.LocalEducationDocuments.Clear();
 
-            WorkPermits.ClearProperty();
-            WorkPermits.LocalWorkPermits.Clear();
+            WorkPermits!.ClearProperty();
+            WorkPermits!.LocalWorkPermits.Clear();
 
-            Specialties.ClearProperty();
-            Specialties.LocalEmployeeSpecialties.Clear();
+            Specialties!.ClearProperty();
+            Specialties!.LocalEmployeeSpecialties.Clear();
 
-            AssigmentsContracts.ClearProperty();
-            AssigmentsContracts.LocalAssignmentsContracts.Clear();
+            AssigmentsContracts!.ClearProperty();
+            AssigmentsContracts!.LocalAssignmentsContracts.Clear();
         }
 
         #endregion
