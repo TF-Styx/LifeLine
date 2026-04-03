@@ -19,19 +19,86 @@
                 <Setter Property="FontSize" Value="13"/>
                 <Setter Property="FontFamily" Value="Arial"/>
             </Style>
+
+            <Style x:Key="DataGrid.GroupItemStyle" TargetType="GroupItem">
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Padding" Value="0,0,0,5"/>
+                <Setter Property="Background" Value="{StaticResource App.MainColor}"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="GroupItem">
+                            <Grid Margin="{TemplateBinding Margin}" HorizontalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <ToggleButton x:Name="ExpanderButton" 
+                                              IsChecked="True"
+                                              Cursor="Hand"
+                                              Background="{TemplateBinding Background}"
+                                              Padding="{TemplateBinding Padding}"
+                                              BorderThickness="0"
+                                              HorizontalContentAlignment="Stretch">
+                                    <ToggleButton.Template>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="3"
+                                                    Margin="{TemplateBinding Padding}" 
+                                                    SnapsToDevicePixels="True">
+                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </ToggleButton.Template>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Стрелка по умолчанию (вниз) -->
+                                        <Path x:Name="ArrowPath" Fill="White" Margin="13,0,0,0" VerticalAlignment="Center"
+                                              Data="M 0 0 L 4 4 L 8 0 Z"/>
+
+                                        <WrapPanel Grid.Column="1" Margin="5,0,0,0">
+                                            <TextBlock Text="{Binding Name, Converter={StaticResource SaveStatusToStringConverter}}" FontWeight="Bold" FontSize="18" Foreground="#A0D0FF" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding ItemCount, StringFormat=' ({0})'}" FontSize="18" Foreground="#88FFFFFF" Margin="8,0,8,0" VerticalAlignment="Center"/>
+                                        </WrapPanel>
+                                    </Grid>
+                                </ToggleButton>
+
+                                <!-- DataGrid автоматически подставляет DataGridRowsPresenter внутрь ItemsPresenter -->
+                                <ItemsPresenter x:Name="ItemsPanel" Grid.Row="1" SnapsToDevicePixels="True"/>
+                            </Grid>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger SourceName="ExpanderButton" Property="IsChecked" Value="False">
+                                    <Setter TargetName="ItemsPanel" Property="Visibility" Value="Collapsed"/>
+                                    <Setter TargetName="ArrowPath" Property="Data" Value="M 0 4 L 4 0 L 8 4 Z"/>
+                                    <!-- Стрелка вверх -->
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
         <!-- Список документов -->
         <Border Grid.Column="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
             <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                <DataGrid ItemsSource="{Binding PersonalDocuments.LocalPersonalDocuments}" 
+                <DataGrid ItemsSource="{Binding PersonalDocuments.PersonalDocumentsView}" 
                           SelectedItem="{Binding PersonalDocuments.SelectedLocalPersonalDocument}"
                           AutoGenerateColumns="False" 
                           CanUserAddRows="False"
@@ -40,6 +107,15 @@
                           Margin="2"
                           Background="{StaticResource App.MainColor}"
                           d:ItemsSource="{d:SampleData ItemCount=10}">
+
+                    <DataGrid.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.ContainerStyle>
+                                <StaticResource ResourceKey="DataGrid.GroupItemStyle"/>
+                            </GroupStyle.ContainerStyle>
+                        </GroupStyle>
+                    </DataGrid.GroupStyle>
+
                     <DataGrid.Columns>
                         <!--Наименование-->
                         <DataGridTemplateColumn Header="Наименование" Width="*">

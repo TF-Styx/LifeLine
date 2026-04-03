@@ -1,4 +1,5 @@
 ﻿using Shared.Contracts.Response.EmployeeService;
+using Shared.WPF.Enums;
 using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models
@@ -9,7 +10,7 @@ namespace LifeLine.HrPanel.Desktop.Models
 
         private readonly IReadOnlyCollection<DocumentTypeDisplay> _documentTypes;
 
-        public PersonalDocumentDisplay(PersonalDocumentResponse model, IReadOnlyCollection<DocumentTypeDisplay> documentTypes, string? filePath)
+        public PersonalDocumentDisplay(PersonalDocumentResponse model, IReadOnlyCollection<DocumentTypeDisplay> documentTypes, string? filePath, SaveStatus saveStatus)
         {
             _model = model;
             _documentTypes = documentTypes;
@@ -17,9 +18,17 @@ namespace LifeLine.HrPanel.Desktop.Models
             _documentNumber = model.Number;
             _documentSeries = model.Series;
             FilePath = filePath;
+            SaveStatus = saveStatus;
 
             SetDocumentType(_model.DocumentTypeId.ToString());
         }
+
+        public SaveStatus SaveStatus
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
+        public void SetSaveStatus(SaveStatus saveStatus) => SaveStatus = saveStatus;
 
         public Guid PersonalDocumentId => _model.Id;
         public Guid DocumentTypeId => _model.DocumentTypeId;

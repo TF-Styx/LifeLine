@@ -2,12 +2,15 @@
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Constants;
+using Shared.WPF.Enums;
 using Shared.WPF.Helpers;
 using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Data;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
@@ -32,6 +35,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _documentTypes = documentTypes;
 
             _documentConversionService = documentConversionService;
+
+            PersonalDocumentsView = CollectionViewSource.GetDefaultView(LocalPersonalDocuments);
+
+            PersonalDocumentsView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(PersonalDocumentDisplay.SaveStatus)));
 
             SelectMultipleCommand = new RelayCommand(Execute_SelectMultipleCommand);
             RemovePendingFileCommand = new RelayCommand<PendingFileItem>(Execute_RemovePendingFileCommand);
@@ -68,7 +75,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set
             {
                 SetProperty(ref _documentType, value);
-
                 AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
             }
         }
@@ -110,7 +116,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                 UpdateIndexes();
         }
 
-        public ObservableCollection<PersonalDocumentDisplay> LocalPersonalDocuments { get; private init; } = [];
+        public ObservableCollection<PersonalDocumentDisplay> LocalPersonalDocuments { get; init; } = [];
+        public ICollectionView PersonalDocumentsView { get; private init; } = null!;
 
         public RelayCommandAsync? AddPersonalDocumentCommand { get; private set; }
         private async Task Execute_AddPersonalDocumentCommand()
@@ -169,7 +176,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                         Series
                                     ),
                                 _documentTypes,
-                                FilePath
+                                FilePath,
+                                SaveStatus.Local
                             )
                         {
                             FileBytes = pdfBytes,

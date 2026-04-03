@@ -319,7 +319,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                             x.PersonalDocumentTypeId,
                                             x.PersonalDocumentNumber,
                                             x.PersonalDocumentSeries
-                                        ), DocumentTypes, string.Empty
+                                        ), DocumentTypes, string.Empty, SaveStatus.DataBase
                                 )
                         ).ToList()
                 );

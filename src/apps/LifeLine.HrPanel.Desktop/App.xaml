@@ -7,6 +7,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <converters:FullNameValueConverter x:Key="FullNameValueConverter"/>
+            <converters:SaveStatusToStringConverter x:Key="SaveStatusToStringConverter"/>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
             <converters:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
