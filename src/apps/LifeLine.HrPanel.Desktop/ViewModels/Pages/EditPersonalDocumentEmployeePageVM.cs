@@ -89,7 +89,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     // === РЕЖИМ СОЗДАНИЯ ===
                     _isEditMode = false;
 
-                    PersonalDocumentDisplay = new PersonalDocumentDisplay(new PersonalDocumentResponse(Guid.Empty, Guid.Empty, string.Empty, string.Empty), DocumentTypes, string.Empty, SaveStatus.Local);
+                    CreateNewPersonalDocumentDisplay();
 
                     SelectedDocumentType = null;
                 }
