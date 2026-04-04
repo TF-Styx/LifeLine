@@ -159,7 +159,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         ),
                     PermitTypes,
                     AdmissionStatuses,
-                    string.Empty
+                    string.Empty,
+                    SaveStatus.Local
                 );
 
         public string? FilePath

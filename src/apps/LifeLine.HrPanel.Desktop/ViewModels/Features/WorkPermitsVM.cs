@@ -2,12 +2,15 @@
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Constants;
+using Shared.WPF.Enums;
 using Shared.WPF.Helpers;
 using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Data;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
@@ -32,6 +35,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
             _permitTypes = permitTypes;
             _admissionStatuses = admissionStatuses;
+
+            WorkPermitsView = CollectionViewSource.GetDefaultView(LocalWorkPermits);
+
+            WorkPermitsView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(WorkPermitDisplay.SaveStatus)));
 
             SelectMultipleCommand = new RelayCommand(Execute_SelectMultipleCommand);
             RemovePendingFileCommand = new RelayCommand<PendingFileItem>(Execute_RemovePendingFileCommand);
@@ -187,6 +194,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         }
 
         public ObservableCollection<WorkPermitDisplay> LocalWorkPermits { get; private init; } = [];
+        public ICollectionView WorkPermitsView { get; private init; } = null!;
 
         public RelayCommandAsync AddWorkPermitCommandAsync { get; private set; }
         private async Task Execute_AddWorkPermitCommandAsync()
@@ -254,7 +262,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                     ),
                                 _permitTypes, 
                                 _admissionStatuses, 
-                                FilePath
+                                FilePath,
+                                SaveStatus.Local
                             )
                         {
                             FileBytes = pdfBytes,

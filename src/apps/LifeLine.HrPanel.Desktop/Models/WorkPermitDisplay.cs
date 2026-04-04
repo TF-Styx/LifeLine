@@ -1,4 +1,5 @@
 ﻿using Shared.Contracts.Response.EmployeeService;
+using Shared.WPF.Enums;
 using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models
@@ -15,7 +16,8 @@ namespace LifeLine.HrPanel.Desktop.Models
                 WorkPermitResponse model, 
                 IReadOnlyCollection<PermitTypeDisplay> permitTypes, 
                 IReadOnlyCollection<AdmissionStatusDisplay> admissionStatuses,
-                string? filePath
+                string? filePath,
+                SaveStatus saveStatus
             )
         {
             _model = model;
@@ -31,10 +33,18 @@ namespace LifeLine.HrPanel.Desktop.Models
             _issueDate = model.IssueDate;
             _expiryDate = model.ExpiryDate;
             FilePath = filePath;
+            SaveStatus = saveStatus;
 
             SetPermiteType(_model.PermitTypeId);
             SetAdmissionStatus(_model.AdmissionStatusId);
         }
+
+        public SaveStatus SaveStatus
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
+        public void SetSaveStatus(SaveStatus saveStatus) => SaveStatus = saveStatus; 
 
         public string Id => _model.Id;
         public string EmployeeId => _model.EmployeeId;

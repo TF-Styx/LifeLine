@@ -386,7 +386,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                             x.PermitTypeId.ToString(),
                                             x.AdmissionStatusId.ToString()
                                         ),
-                                    PermitTypes, AdmissionStatuses, string.Empty
+                                    PermitTypes, AdmissionStatuses, string.Empty, SaveStatus.DataBase
                                 )
                         ).ToList()
                 );
