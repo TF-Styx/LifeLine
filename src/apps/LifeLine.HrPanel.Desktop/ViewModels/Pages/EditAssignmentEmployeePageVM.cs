@@ -317,7 +317,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     Managers,
                     Statuses,
                     EmployeeTypes,
-                    string.Empty
+                    string.Empty,
+                    SaveStatus.Local
                 );
         }
 

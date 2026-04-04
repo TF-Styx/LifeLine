@@ -3,13 +3,16 @@ using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Constants;
+using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
 using Shared.WPF.Helpers;
 using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Data;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
@@ -44,6 +47,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _managers = managers;
             _statuses = statuses;
             _employeeTypes = employeeTypes;
+
+            AssignmentsContractsView = CollectionViewSource.GetDefaultView(LocalAssignmentsContracts);
+
+            AssignmentsContractsView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(AssignmentContractDisplay.SaveStatus)));
 
             SelectMultipleCommand = new RelayCommand(Execute_SelectMultipleCommand);
             RemovePendingFileCommand = new RelayCommand<PendingFileItem>(Execute_RemovePendingFileCommand);
@@ -235,6 +242,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         }
 
         public ObservableCollection<AssignmentContractDisplay> LocalAssignmentsContracts { get; private init; } = [];
+        public ICollectionView AssignmentsContractsView { get; private init; } = null!;
 
         public RelayCommandAsync AddAssignmentContractCommandAsync { get; private set; }
         private async Task Execute_AddAssignmentContractCommandAsync()
@@ -312,7 +320,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                 _managers, 
                                 _statuses, 
                                 _employeeTypes, 
-                                FilePath
+                                FilePath,
+                                SaveStatus.Local
                             )
                         {
                             FileBytes = pdfBytes,

@@ -420,7 +420,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 contractsResponse?.ContractFileKey
                             ),
                         Departments, Positions, Managers, Statuses, EmployeeTypes,
-                        string.Empty
+                        string.Empty, SaveStatus.DataBase
                     );
 
                 AssignmentContracts.Add(display);

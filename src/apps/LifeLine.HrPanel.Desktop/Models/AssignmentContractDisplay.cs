@@ -1,4 +1,5 @@
 ﻿using Shared.Contracts.Response.EmployeeService;
+using Shared.WPF.Enums;
 using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models
@@ -24,7 +25,8 @@ namespace LifeLine.HrPanel.Desktop.Models
                 IReadOnlyCollection<ManagerDisplay?> managers,
                 IReadOnlyCollection<StatusDisplay> statuses,
                 IReadOnlyCollection<EmployeeTypeDisplay> employeeTypes,
-                string? filePath
+                string? filePath,
+                SaveStatus saveStatus
             )
         {
             _assignmentModel = assignmentModel;
@@ -48,9 +50,17 @@ namespace LifeLine.HrPanel.Desktop.Models
             _endDate = contractModel.ContractEndDate;
             _salary = contractModel.Salary;
             FilePath = filePath;
+            SaveStatus = saveStatus;
 
             SetEmployeeType(_contractModel.EmployeeTypeId);
         }
+
+        public SaveStatus SaveStatus
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
+        public void SetSaveStatus(SaveStatus saveStatus) => SaveStatus = saveStatus;
 
         public override string ToString()
         {
