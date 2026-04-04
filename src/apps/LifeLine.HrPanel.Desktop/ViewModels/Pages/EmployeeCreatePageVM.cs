@@ -117,8 +117,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _imageCompressionService = imageCompressionService;
 
             PersonalInfo = new();
-            ContactInformation = new();
             Avatar = new(_fileDialogService, _imageCompressionService);
+            ContactInformation = new();
             PersonalDocuments = new(_fileDialogService, _documentConversionService, DocumentTypes);
             EducationDocuments = new(_fileDialogService, _documentConversionService, DocumentTypes, EducationLevels);
             WorkPermits = new(_fileDialogService, _documentConversionService, PermitTypes, AdmissionStatuses);

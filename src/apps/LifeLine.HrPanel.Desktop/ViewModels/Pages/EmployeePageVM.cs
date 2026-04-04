@@ -344,7 +344,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                             x.EducationSpecialtyName,
                                             x.ProgramName,
                                             x.TotalHours.ToString()
-                                        ), EducationLevels, DocumentTypes, string.Empty
+                                        ), EducationLevels, DocumentTypes, string.Empty, SaveStatus.DataBase
                                 )
                         ).ToList()
                 );

@@ -1,4 +1,5 @@
 ﻿using Shared.Contracts.Response.EmployeeService;
+using Shared.WPF.Enums;
 using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models
@@ -15,7 +16,8 @@ namespace LifeLine.HrPanel.Desktop.Models
                 EducationDocumentResponse model, 
                 IReadOnlyCollection<EducationLevelDisplay> educationLevels,
                 IReadOnlyCollection<DocumentTypeDisplay> documentTypes,
-                string? filePath
+                string? filePath,
+                SaveStatus saveStatus
             )
         {
             _model = model;
@@ -31,10 +33,18 @@ namespace LifeLine.HrPanel.Desktop.Models
             _programName = model.ProgramName;
             _totalHours = TimeSpan.Parse(model.TotalHours!);
             FilePath = filePath;
+            SaveStatus = saveStatus;
 
             SetEducationLevel(_model.EducationLevelId);
             SetDocumentType(_model.DocumentTypeId);
         }
+
+        public SaveStatus SaveStatus
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
+        public void SetSaveStatus(SaveStatus saveStatus) => SaveStatus = saveStatus;
 
         public string EducationDocumentId => _model.Id;
         public string EmployeeId => _model.EmployeeId;

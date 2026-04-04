@@ -183,7 +183,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                            ),
                        EducationLevels,
                        DocumentTypes,
-                       string.Empty
+                       string.Empty,
+                       SaveStatus.Local
                    );
 
         public string? FilePath

@@ -2,12 +2,15 @@
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Constants;
+using Shared.WPF.Enums;
 using Shared.WPF.Helpers;
 using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Data;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {
@@ -32,6 +35,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
             _documentTypes = documentTypes;
             _educationLevels = educationLevels;
+
+            EducationDocumentsView = CollectionViewSource.GetDefaultView(LocalEducationDocuments);
+
+            EducationDocumentsView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(EducationDocumentDisplay.SaveStatus)));
 
             SelectMultipleCommand = new RelayCommand(Execute_SelectMultipleCommand);
             RemovePendingFileCommand = new RelayCommand<PendingFileItem>(Execute_RemovePendingFileCommand);
@@ -176,6 +183,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         }
 
         public ObservableCollection<EducationDocumentDisplay> LocalEducationDocuments { get; private init; } = [];
+        public ICollectionView EducationDocumentsView  { get; private init; } = null!;
 
         public RelayCommandAsync AddEducationDocumentCommandAsync { get; private set; }
         private async Task Execute_AddEducationDocumentCommandAsync()
@@ -242,7 +250,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                     ),
                                 _educationLevels, 
                                 _documentTypes, 
-                                FilePath
+                                FilePath,
+                                SaveStatus.Local
                             )
                         {
                             FileBytes = pdfBytes,
