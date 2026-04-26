@@ -12,21 +12,37 @@ using LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry;
 using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
 using LifeLine.Employee.Service.Client.Services.Employee.WorkPermit;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
+using LifeLine.File.Service.Client;
+using LifeLine.HrPanel.Desktop.Enums;
 using LifeLine.HrPanel.Desktop.Models;
+using LifeLine.HrPanel.Desktop.ViewModels.Features;
+using LifeLine.HrPanel.Desktop.Views.UserControls;
+using Shared.Contracts.Request.EmployeeService.PersonalDocument;
+using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Commands;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
+using Shared.WPF.Services.Conversion;
+using Shared.WPF.Services.FileDialog;
 using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
+using System.Xml.Linq;
+using Terminex.Common.Results;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 {
-    public sealed class EmployeePageVM : BasePageViewModel, IUpdatable, IAsyncInitializable
+    internal sealed class EmployeePageVM : BasePageViewModel, IUpdatable, IAsyncInitializable
     {
         private readonly INavigationPage _navigationPage;
+
+        private readonly IFileDialogService _fileDialogService;
+        private readonly IFileStorageService _fileStorageService;
+        private readonly IImageCompressionService _imageCompressionService;
+        private readonly IDocumentConversionService _documentConversionService;
 
         private readonly IEmployeeService _employeeService;
         private readonly IStatusReadOnlyService _statusReadOnlyService;
@@ -47,6 +63,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             (
                 INavigationPage navigationPage,
 
+                IFileDialogService fileDialogService,
+                IFileStorageService fileStorageService,
+                IImageCompressionService imageCompressionService,
+                IDocumentConversionService documentConversionService,
+
                 IEmployeeService employeeService, 
                 IStatusReadOnlyService statusReadOnlyService,
                 IPermitTypeReadOnlyService permitTypeReadOnlyService,
@@ -65,6 +86,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             _navigationPage = navigationPage;
 
+            _fileDialogService = fileDialogService;
+            _fileStorageService = fileStorageService;
+            _imageCompressionService = imageCompressionService;
+            _documentConversionService = documentConversionService;
+
             _employeeService = employeeService;
             _statusReadOnlyService = statusReadOnlyService;
             _permitTypeReadOnlyService = permitTypeReadOnlyService;
@@ -79,6 +105,18 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
             _educationDocumentApiServiceFactory = educationDocumentApiServiceFactory;
             _employeeSpecialtyApiServiceFactory = employeeSpecialtyApiServiceFactory;
+
+            PersonalInfo = new();
+            Avatar = new(_fileDialogService, _imageCompressionService);
+            ContactInformation = new();
+            PersonalDocuments = new(_fileDialogService, _documentConversionService, DocumentTypes);
+            EducationDocuments = new(_fileDialogService, _documentConversionService, DocumentTypes, EducationLevels);
+            WorkPermits = new(_fileDialogService, _documentConversionService, PermitTypes, AdmissionStatuses);
+            Specialties = new();
+            AssigmentsContracts = new(_fileDialogService, _documentConversionService, _positionReadOnlyApiServiceFactory, Departments, Managers, Statuses, EmployeeTypes);
+
+            CreatePersonalDocumentCommand = new RelayCommandAsync(Execute_CreatePersonalDocumentCommand, CanExecute_CreatePersonalDocumentCommand);
+            UpdatePersonalDocumentCommand = new RelayCommandAsync(Execute_UpdatePersonalDocumentCommand, CanExecute_UpdatePersonalDocumentCommand);
 
             OpenEditContactInformationEmployeeCommand = new RelayCommand(Execute_OpenEditContactInformationEmployeeCommand, CanExecute_OpenEditContactInformationEmployeeCommand);
             OpenEditPersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_OpenEditPersonalDocumentCommand, CanExecute_OpenEditPersonalDocumentCommand);
@@ -127,31 +165,31 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             {
                 if (value is PersonalDocumentDisplay createPersonalDocument)
                 {
-                    PersonalDocuments.Add(createPersonalDocument);
+                    PersonalDocumentsList.Add(createPersonalDocument);
                     ModalVisibility = Visibility.Collapsed;
                 }
 
                 if (value is EducationDocumentDisplay createEducationDocument)
                 {
-                    EducationDocuments.Add(createEducationDocument);
+                    EducationDocumentsList.Add(createEducationDocument);
                     ModalVisibility = Visibility.Collapsed;
                 }
 
                 if (value is SpecialtyDisplay createSpecialty)
                 {
-                    Specialties.Add(createSpecialty);
+                    SpecialtiesList.Add(createSpecialty);
                     ModalVisibility = Visibility.Collapsed;
                 }
 
                 if (value is WorkPermitDisplay createWorkPermit)
                 {
-                    WorkPermits.Add(createWorkPermit);
+                    WorkPermitsList.Add(createWorkPermit);
                     ModalVisibility = Visibility.Collapsed;
                 }
 
                 if (value is AssignmentContractDisplay createAssignmentContrac)
                 {
-                    AssignmentContracts.Add(createAssignmentContrac);
+                    AssignmentContractsList.Add(createAssignmentContrac);
                     ModalVisibility = Visibility.Collapsed;
                 }
             }
@@ -167,8 +205,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                 if (value is ValueTuple<SpecialtyDisplay, SpecialtyDisplay> specialtyUpdate)
                 {
-                    Specialties.Remove(Specialties.FirstOrDefault(x => x.SpecialtyId == specialtyUpdate.Item1.SpecialtyId)!);
-                    Specialties.Add(specialtyUpdate.Item2);
+                    SpecialtiesList.Remove(SpecialtiesList.FirstOrDefault(x => x.SpecialtyId == specialtyUpdate.Item1.SpecialtyId)!);
+                    SpecialtiesList.Add(specialtyUpdate.Item2);
                     SpecialtyDisplay = specialtyUpdate.Item2;
                 }
             }
@@ -251,6 +289,87 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
+        private bool _isAction = true;
+        public bool IsAction
+        {
+            get => _isAction;
+            set
+            {
+                if (value) 
+                    ActionProp = TypeAction.Create;
+                else
+                    ActionProp = TypeAction.Update;
+
+                SetProperty(ref _isAction, value);
+            }
+        }
+
+        public TypeAction ActionProp
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
+
+        #region Feature ViewModel
+
+        private PersonalInfoVM? _personalInfo;
+        public PersonalInfoVM? PersonalInfo
+        {
+            get => _personalInfo;
+            set => SetProperty(ref _personalInfo, value);
+        }
+
+        private AvatarVM? _avatar;
+        public AvatarVM? Avatar
+        {
+            get => _avatar;
+            set => SetProperty(ref _avatar, value);
+        }
+
+        private ContactInformationVM? _сontactInformation;
+        public ContactInformationVM? ContactInformation
+        {
+            get => _сontactInformation;
+            set => SetProperty(ref _сontactInformation, value);
+        }
+
+        private PersonalDocumentsVM? _personalDocuments;
+        public PersonalDocumentsVM? PersonalDocuments
+        {
+            get => _personalDocuments;
+            set => SetProperty(ref _personalDocuments, value);
+        }
+
+        private EducationDocumentsVM? _educationDocuments;
+        public EducationDocumentsVM? EducationDocuments
+        {
+            get => _educationDocuments;
+            set => SetProperty(ref _educationDocuments, value);
+        }
+
+        private WorkPermitsVM? _workPermits;
+        public WorkPermitsVM? WorkPermits
+        {
+            get => _workPermits;
+            set => SetProperty(ref _workPermits, value);
+        }
+
+        private SpecialtiesVM? _specialties;
+        public SpecialtiesVM? Specialties
+        {
+            get => _specialties;
+            set => SetProperty(ref _specialties, value);
+        }
+
+        private AssigmentsContractsVM? _assigmentsContracts;
+        public AssigmentsContractsVM? AssigmentsContracts
+        {
+            get => _assigmentsContracts;
+            set => SetProperty(ref _assigmentsContracts, value);
+        }
+
+        #endregion
+
         #region Установка значений
 
         private EmployeeHrDisplay _selectedEmployee = null!;
@@ -287,27 +406,44 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             CurrentEmployeeDetails = new(details);
 
-            GenderDisplay = new(new GenderResponse(details.Gender.GenderId.ToString(), details.Gender.GenderName));
+            //GenderDisplay = new(new GenderResponse(details.Gender.GenderId.ToString(), details.Gender.GenderName));
 
-            ContactInformationDisplay = new
-                (
-                    new ContactInformationResponse
-                        (
-                            details.ContactInformation!.ContactInformationId!, 
-                            details.ContactInformation.PersonalPhone!, 
-                            details.ContactInformation.CorporatePhone, 
-                            details.ContactInformation.PersonalEmail!, 
-                            details.ContactInformation.CorporateEmail!, 
-                            details.ContactInformation.PostalCode!, 
-                            details.ContactInformation.Region!, 
-                            details.ContactInformation.City!, 
-                            details.ContactInformation.Street!, 
-                            details.ContactInformation.Building!, 
-                            details.ContactInformation.Apartment
-                        )
-                );
+            PersonalInfo!.Surname = details.Surname;
+            PersonalInfo!.Name = details.Name;
+            PersonalInfo!.Patronymic = details.Patronymic;
+            PersonalInfo.Gender = new GenderResponse(details.Gender.GenderId.ToString(), details.Gender.GenderName);
 
-            PersonalDocuments.Load
+            ContactInformation.PersonalPhone = details.ContactInformation.PersonalPhone;
+            ContactInformation.CorporatePhone = details.ContactInformation.CorporatePhone;
+            ContactInformation.PersonalEmail = details.ContactInformation.PersonalEmail;
+            ContactInformation.CorporateEmail = details.ContactInformation.CorporateEmail;
+            ContactInformation.PostalCode = details.ContactInformation.PostalCode;
+            ContactInformation.Region = details.ContactInformation.Region;
+            ContactInformation.City = details.ContactInformation.City;
+            ContactInformation.Street = details.ContactInformation.Street;
+            ContactInformation.Building = details.ContactInformation.Building;
+            ContactInformation.Apartment = details.ContactInformation.Apartment;
+
+            //ContactInformationDisplay = new
+            //    (
+            //        new ContactInformationResponse
+            //            (
+            //                details.ContactInformation!.ContactInformationId!, 
+            //                details.ContactInformation.PersonalPhone!, 
+            //                details.ContactInformation.CorporatePhone, 
+            //                details.ContactInformation.PersonalEmail!, 
+            //                details.ContactInformation.CorporateEmail!, 
+            //                details.ContactInformation.PostalCode!, 
+            //                details.ContactInformation.Region!, 
+            //                details.ContactInformation.City!, 
+            //                details.ContactInformation.Street!, 
+            //                details.ContactInformation.Building!, 
+            //                details.ContactInformation.Apartment
+            //            )
+            //    );
+
+            PersonalDocuments.EmployeeId = details.EmployeeId.ToString();
+            PersonalDocuments!.LocalPersonalDocuments.Load
                 (
                     details.PersonalDocuments?.Select
                         (
@@ -324,8 +460,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         ).ToList()
                 );
 
-
-            EducationDocuments.Load
+            EducationDocuments!.LocalEducationDocuments.Load
                 (
                     details.EducationDocuments?.Select
                         (
@@ -349,7 +484,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         ).ToList()
                 );
 
-            Specialties.Load
+            Specialties!.LocalEmployeeSpecialties.Load
                 (
                     details.Specialties?.Select
                         (
@@ -365,7 +500,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         ).ToList()
                 );
 
-            WorkPermits.Load
+            WorkPermits!.LocalWorkPermits.Load
                 (
                     details.WorkPermits?.Select
                         (
@@ -423,7 +558,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         string.Empty, SaveStatus.DataBase
                     );
 
-                AssignmentContracts.Add(display);
+                AssigmentsContracts.LocalAssignmentsContracts.Add(display);
+                //AssignmentContractsList.Add(display);
             }
 
             #region Пока не надо
@@ -563,19 +699,19 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             AdmissionStatuses.Load([.. admissionStatuses.Select(admissionStatus => new AdmissionStatusDisplay(admissionStatus))]);
         }
 
-        public ObservableCollection<PersonalDocumentDisplay> PersonalDocuments { get; private init; } = [];
-        public ObservableCollection<EducationDocumentDisplay> EducationDocuments { get; private init; } = [];
-        public ObservableCollection<SpecialtyDisplay> Specialties { get; private init; } = [];
-        public ObservableCollection<WorkPermitDisplay> WorkPermits { get; private init; } = [];
-        public ObservableCollection<AssignmentContractDisplay> AssignmentContracts { get; private init; } = [];
+        public ObservableCollection<PersonalDocumentDisplay> PersonalDocumentsList { get; private init; } = [];
+        public ObservableCollection<EducationDocumentDisplay> EducationDocumentsList { get; private init; } = [];
+        public ObservableCollection<SpecialtyDisplay> SpecialtiesList { get; private init; } = [];
+        public ObservableCollection<WorkPermitDisplay> WorkPermitsList { get; private init; } = [];
+        public ObservableCollection<AssignmentContractDisplay> AssignmentContractsList { get; private init; } = [];
 
         private void ListClear()
         {
-            PersonalDocuments.Clear();
-            EducationDocuments.Clear();
-            Specialties.Clear();
-            WorkPermits.Clear();
-            AssignmentContracts.Clear();
+            PersonalDocumentsList.Clear();
+            EducationDocumentsList.Clear();
+            SpecialtiesList.Clear();
+            WorkPermitsList.Clear();
+            AssignmentContractsList.Clear();
         }
 
         #endregion
@@ -739,6 +875,105 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
+        #region EditPersonalDocument
+
+        // CREATE
+        public RelayCommandAsync CreatePersonalDocumentCommand { get; private set; }
+        private async Task Execute_CreatePersonalDocumentCommand()
+        {
+            var personalDocumentService = _personalDocumentApiServiceFactory.Create(PersonalDocuments!.EmployeeId!);
+
+            var dbResult = await personalDocumentService.CreateManyAsync
+                (
+                    new CreateManyPersonalDocumentsRequest
+                        (
+                            [.. PersonalDocuments.LocalPersonalDocuments.Select
+                                (x =>
+                                    new CreateDataPersonalDocumentRequest
+                                    (
+                                        x.DocumentTypeId.ToString(),
+                                        x.DocumentNumber,
+                                        x.DocumentSeries,
+                                        null
+                                    )
+                                )
+                            ]
+                        )
+                );
+
+            if (dbResult.IsFailure)
+            {
+                MessageBox.Show($"{dbResult.Errors}");
+                return;
+            }
+
+            var filesToUpload = PersonalDocuments.LocalPersonalDocuments.Where(x => x.HasFileForUpload)
+                .Select
+                    (
+                        x => new UploadFilesDataRequest
+                            (
+                                BucketName: FileConst.BUCKET_NAME,
+                                AdditionalName: x.DocumentType.Name,
+                                SubFolder: FileConst.BuildEmployeeFolder
+                                    (
+                                        PersonalDocuments.EmployeeId!,
+                                        EmployeeFolderType.PersonalDocument
+                                    ),
+                                FilePath: null,
+                                FileBytes: x.FileBytes,
+                                FileName: x.FileName,
+                                ContentType: x.ContentType ?? "application/pdf"
+                            )
+                    )
+                    .Where(x => x != null)
+                    .ToArray();
+
+            if (filesToUpload.Any())
+            {
+                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest(filesToUpload.ToList()!));
+
+                if (uploadResult.IsFailure)
+                {
+                    MessageBox.Show($"{uploadResult.Errors}");
+                    return;
+                }
+            }
+
+            PersonalDocuments.ClearProperty();
+        }
+        private bool CanExecute_CreatePersonalDocumentCommand() => true;
+            //=> PersonalDocuments!.DocumentType != null PersonalDocuments!.Number;
+
+        // UPDATE
+        public RelayCommandAsync UpdatePersonalDocumentCommand { get; private set; }
+        private async Task Execute_UpdatePersonalDocumentCommand()
+        {
+            var personalDocumentService = _personalDocumentApiServiceFactory.Create(PersonalDocuments!.EmployeeId!);
+
+            var dbResult = await personalDocumentService.UpdatePersonalDocumentAsync
+                (
+                    PersonalDocuments.SelectedLocalPersonalDocument.PersonalDocumentId,
+                    new UpdatePersonalDocumentRequest
+                        (
+                            PersonalDocuments.DocumentType.Id,
+                            PersonalDocuments.Number,
+                            PersonalDocuments.Series
+                        )
+                );
+
+            if (dbResult.IsFailure)
+            {
+                MessageBox.Show($"{dbResult.Errors}");
+                return;
+            }
+
+            PersonalDocuments.ClearProperty();
+        }
+        private bool CanExecute_UpdatePersonalDocumentCommand() => true;
+            //=> PersonalDocuments!.SelectedLocalPersonalDocument != null && PersonalDocuments!.DocumentType != null PersonalDocuments!.Number;
+
+        #endregion
+
         #region DeletePersonalDocumentCommand
 
         public RelayCommandAsync<PersonalDocumentDisplay> DeletePersonalDocumentCommand { get; private set; }
@@ -752,7 +987,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 return;
             }
 
-            PersonalDocuments.Remove(display);
+            PersonalDocumentsList.Remove(display);
         }
         private bool CanExecute_DeletePersonalDocumentCommand(PersonalDocumentDisplay display) => SelectedEmployee != null;
 
@@ -771,7 +1006,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 return;
             }
 
-            EducationDocuments.Remove(display);
+            EducationDocumentsList.Remove(display);
         }
         private bool CanExecute_DeleteEducationDocumentCommand(EducationDocumentDisplay display) => SelectedEmployee != null;
 
@@ -790,7 +1025,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 return;
             }
 
-            Specialties.Remove(display);
+            SpecialtiesList.Remove(display);
         }
         private bool CanExecute_DeleteEmployeeSpecialtyCommand(SpecialtyDisplay display) => SelectedEmployee != null;
 
@@ -809,7 +1044,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 return;
             }
 
-            WorkPermits.Remove(display);
+            WorkPermitsList.Remove(display);
         }
         private bool CanExecute_DeleteWorkPermitCommand(WorkPermitDisplay display) => SelectedEmployee != null;
 
@@ -828,7 +1063,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 return;
             }
 
-            AssignmentContracts.Remove(display);
+            AssignmentContractsList.Remove(display);
         }
         private bool CanExecute_DeleteAssignmentCommand(AssignmentContractDisplay display) => SelectedEmployee != null;
 

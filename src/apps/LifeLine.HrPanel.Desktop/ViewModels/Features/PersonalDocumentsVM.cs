@@ -89,7 +89,19 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         public PersonalDocumentDisplay SelectedLocalPersonalDocument
         {
             get => _selectedLocalPersonalDocument;
-            set => SetProperty(ref _selectedLocalPersonalDocument, value);
+            set
+            {
+                SetProp(value);
+
+                SetProperty(ref _selectedLocalPersonalDocument, value);
+            }
+        }
+
+        private void SetProp(PersonalDocumentDisplay value)
+        {
+            Number = value.DocumentNumber;
+            Series = value.DocumentSeries;
+            DocumentType = value.DocumentType;
         }
 
         public ObservableCollection<PendingFileItem> PendingFilePaths { get; private set; } = [];

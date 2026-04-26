@@ -12,6 +12,7 @@
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
             <converters:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
             <hrConverters:EmployeeCreationsToBoolConverter x:Key="EmployeeCreationsToBoolConverter"/>
+            <hrConverters:TypeActionConverter x:Key="TypeActionConverter"/>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Brushes/AppBrushes.xaml"/>
