@@ -6,7 +6,8 @@
       xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.Pages" 
       xmlns:pages="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Pages" 
       xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
-      xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF"
+      xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+      xmlns:hrus="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls" xmlns:enum="clr-namespace:LifeLine.HrPanel.Desktop.Enums"
       d:DataContext="{d:DesignInstance Type=pages:EmployeePageVM}"
       mc:Ignorable="d" 
       d:Height="auto" d:Width="1500"
@@ -164,7 +165,67 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <Border Grid.Column="1" Margin="5" Background="{StaticResource App.SecondColor}" CornerRadius="6">
+        <DockPanel Grid.Column="1">
+            <CheckBox Content="Действие: Создать - Вкл; Обновить - Выкл;" 
+                      DockPanel.Dock="Top"
+                      IsChecked="{Binding IsAction}" Margin="0 0 0 10"
+                      Foreground="White" FontSize="18" HorizontalAlignment="Center"/>
+            
+            <ScrollViewer Grid.Column="1">
+                <StackPanel Grid.Row="0" Visibility="Visible">
+                    <Expander Header="Базовая информация"  IsExpanded="True"
+                              Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                        <hrus:PersonalInfo/>
+                    </Expander>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Expander Grid.Column="0" Header="Аватар" IsExpanded="True"
+                                  Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                            <hrus:Avatar HorizontalAlignment="Center"/>
+                        </Expander>
+
+                        <Expander Grid.Column="1"  IsExpanded="True"
+                                  Header="Контактная информация" 
+                                  HorizontalAlignment="Stretch"
+                                  Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                            <hrus:ContactInformation/>
+                        </Expander>
+                    </Grid>
+
+                    <Expander Header="Персональные документы" IsExpanded="True"
+                              Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                        <hrus:PersonalDocuments Action="{Binding ActionProp}"/>
+                    </Expander>
+
+                    <Expander Header="Документы об образовании" IsExpanded="True"
+                              Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                        <hrus:EducationDocuments/>
+                    </Expander>
+
+                    <Expander Header="Аккредитация / Сертификаты" IsExpanded="True"
+                              Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                        <hrus:WorkPermits/>
+                    </Expander>
+
+                    <Expander Header="Специальности" IsExpanded="True"
+                              Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                        <hrus:Specialties/>
+                    </Expander>
+
+                    <Expander Header="Назначение / Контракт" IsExpanded="True"
+                              Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                        <hrus:AssigmentsContracts/>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+
+        <Border Grid.Column="1" Margin="5" Background="{StaticResource App.SecondColor}" CornerRadius="6" Visibility="Collapsed">
             <ScrollViewer>
                 <DockPanel Margin="5">
                     <!--Фамилия Имя Отчество-->
