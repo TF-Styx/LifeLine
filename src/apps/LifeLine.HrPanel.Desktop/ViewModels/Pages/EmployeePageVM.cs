@@ -7,6 +7,7 @@ using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.Employee.Assignment;
+using LifeLine.Employee.Service.Client.Services.Employee.ContactInformation;
 using LifeLine.Employee.Service.Client.Services.Employee.EducationDocument;
 using LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry;
 using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
@@ -18,6 +19,7 @@ using LifeLine.HrPanel.Desktop.Enums;
 using LifeLine.HrPanel.Desktop.Models;
 using LifeLine.HrPanel.Desktop.ViewModels.Features;
 using LifeLine.HrPanel.Desktop.Views.UserControls;
+using Shared.Contracts.Request.EmployeeService.ContactInformation;
 using Shared.Contracts.Request.EmployeeService.Employee;
 using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 using Shared.Contracts.Request.Files;
@@ -62,6 +64,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IPersonalDocumentApiServiceFactory _personalDocumentApiServiceFactory;
         private readonly IEducationDocumentApiServiceFactory _educationDocumentApiServiceFactory;
         private readonly IEmployeeSpecialtyApiServiceFactory _employeeSpecialtyApiServiceFactory;
+        private readonly IContactInformationApiServiceFactory _contactInformationApiServiceFactory;
 
         public EmployeePageVM
             (
@@ -86,7 +89,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IPositionReadOnlyApiServiceFactory positionReadOnlyApiServiceFactory,
                 IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory,
                 IEducationDocumentApiServiceFactory educationDocumentApiServiceFactory,
-                IEmployeeSpecialtyApiServiceFactory employeeSpecialtyApiServiceFactory
+                IEmployeeSpecialtyApiServiceFactory employeeSpecialtyApiServiceFactory,
+                IContactInformationApiServiceFactory contactInformationApiServiceFactory
             ) 
         {
             _navigationPage = navigationPage;
@@ -111,6 +115,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
             _educationDocumentApiServiceFactory = educationDocumentApiServiceFactory;
             _employeeSpecialtyApiServiceFactory = employeeSpecialtyApiServiceFactory;
+            _contactInformationApiServiceFactory = contactInformationApiServiceFactory;
 
             PersonalInfo = new();
             Avatar = new(_fileDialogService, _imageCompressionService);
@@ -125,6 +130,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             CreatePersonalDocumentCommand = new RelayCommandAsync(Execute_CreatePersonalDocumentCommand, CanExecute_CreatePersonalDocumentCommand);
             UpdatePersonalDocumentCommand = new RelayCommandAsync(Execute_UpdatePersonalDocumentCommand, CanExecute_UpdatePersonalDocumentCommand);
+
+            UpdateContactInformationCommand = new RelayCommandAsync(Execute_UpdateContactInformationCommand, CanExecute_UpdateContactInformationCommand);
 
             OpenEditContactInformationEmployeeCommand = new RelayCommand(Execute_OpenEditContactInformationEmployeeCommand, CanExecute_OpenEditContactInformationEmployeeCommand);
             OpenEditPersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_OpenEditPersonalDocumentCommand, CanExecute_OpenEditPersonalDocumentCommand);
@@ -423,6 +430,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             PersonalInfo!.Patronymic = details.Patronymic;
             PersonalInfo.Gender = new GenderResponse(details.Gender.GenderId.ToString(), details.Gender.GenderName);
 
+            ContactInformation.EmployeeId = details.EmployeeId.ToString();
             ContactInformation.PersonalPhone = details.ContactInformation.PersonalPhone;
             ContactInformation.CorporatePhone = details.ContactInformation.CorporatePhone;
             ContactInformation.PersonalEmail = details.ContactInformation.PersonalEmail;
@@ -434,23 +442,23 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             ContactInformation.Building = details.ContactInformation.Building;
             ContactInformation.Apartment = details.ContactInformation.Apartment;
 
-            //ContactInformationDisplay = new
-            //    (
-            //        new ContactInformationResponse
-            //            (
-            //                details.ContactInformation!.ContactInformationId!, 
-            //                details.ContactInformation.PersonalPhone!, 
-            //                details.ContactInformation.CorporatePhone, 
-            //                details.ContactInformation.PersonalEmail!, 
-            //                details.ContactInformation.CorporateEmail!, 
-            //                details.ContactInformation.PostalCode!, 
-            //                details.ContactInformation.Region!, 
-            //                details.ContactInformation.City!, 
-            //                details.ContactInformation.Street!, 
-            //                details.ContactInformation.Building!, 
-            //                details.ContactInformation.Apartment
-            //            )
-            //    );
+            ContactInformationDisplay = new
+                (
+                    new ContactInformationResponse
+                        (
+                            details.ContactInformation!.ContactInformationId!,
+                            details.ContactInformation.PersonalPhone!,
+                            details.ContactInformation.CorporatePhone,
+                            details.ContactInformation.PersonalEmail!,
+                            details.ContactInformation.CorporateEmail!,
+                            details.ContactInformation.PostalCode!,
+                            details.ContactInformation.Region!,
+                            details.ContactInformation.City!,
+                            details.ContactInformation.Street!,
+                            details.ContactInformation.Building!,
+                            details.ContactInformation.Apartment
+                        )
+                );
 
             PersonalDocuments.EmployeeId = details.EmployeeId.ToString();
             PersonalDocuments!.LocalPersonalDocuments.Load
@@ -1026,6 +1034,49 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         }
         private bool CanExecute_UpdatePersonalDocumentCommand()
             => PersonalDocuments!.SelectedLocalPersonalDocument != null && PersonalDocuments!.DocumentType != null && !string.IsNullOrWhiteSpace(PersonalDocuments!.Number);
+
+        #endregion
+
+        #region EditContactInformation
+
+        // UPDATE
+        public RelayCommandAsync UpdateContactInformationCommand { get; private set; }
+        private async Task Execute_UpdateContactInformationCommand()
+        {
+            if (ContactInformation == null)
+            {
+                MessageBox.Show("Данные не заполнены!");
+                return;
+            }
+
+
+            var dbResult = await _contactInformationApiServiceFactory.Create(ContactInformation.EmployeeId.ToString())
+                .UpdateContactInformationAsync
+                    (
+                        new UpdateContactInformationRequest
+                            (
+                                ContactInformationDisplay.ContactInformationId,
+                                ContactInformation.EmployeeId,
+                                ContactInformation.PersonalPhone,
+                                ContactInformation.CorporatePhone,
+                                ContactInformation.PersonalEmail,
+                                ContactInformation.CorporateEmail,
+                                ContactInformation.PostalCode,
+                                ContactInformation.Region,
+                                ContactInformation.City,
+                                ContactInformation.Street,
+                                ContactInformation.Building,
+                                ContactInformation.Apartment
+                            )
+                    );
+
+            if (dbResult.IsFailure)
+            {
+                MessageBox.Show($"{dbResult.Errors}");
+                return;
+            }
+        }
+        private bool CanExecute_UpdateContactInformationCommand() => true;
 
         #endregion
 

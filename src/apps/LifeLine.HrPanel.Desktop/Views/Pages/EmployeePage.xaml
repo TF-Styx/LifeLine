@@ -193,7 +193,7 @@
                                   Header="Контактная информация" 
                                   HorizontalAlignment="Stretch"
                                   Margin="5" Style="{StaticResource ModernExpanderStyle}">
-                            <hrus:ContactInformation/>
+                            <hrus:ContactInformation Action="Update"/>
                         </Expander>
                     </Grid>
 

@@ -126,7 +126,7 @@
                               IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.ContactInformation}}" 
                               HorizontalAlignment="Stretch" d:IsExpanded="True"
                               Margin="5" Style="{StaticResource ModernExpanderStyle}">
-                        <hrus:ContactInformation/>
+                        <hrus:ContactInformation Action="CreateStep"/>
                     </Expander>
                 </Grid>
 
