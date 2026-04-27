@@ -12,11 +12,13 @@ using LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry;
 using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
 using LifeLine.Employee.Service.Client.Services.Employee.WorkPermit;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
+using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Enums;
 using LifeLine.HrPanel.Desktop.Models;
 using LifeLine.HrPanel.Desktop.ViewModels.Features;
 using LifeLine.HrPanel.Desktop.Views.UserControls;
+using Shared.Contracts.Request.EmployeeService.Employee;
 using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
@@ -30,6 +32,7 @@ using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Data;
 using System.Xml.Linq;
 using Terminex.Common.Results;
 
@@ -45,6 +48,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IDocumentConversionService _documentConversionService;
 
         private readonly IEmployeeService _employeeService;
+        private readonly IGenderReadOnlyService _genderReadOnlyService;
         private readonly IStatusReadOnlyService _statusReadOnlyService;
         private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
         private readonly IDepartmentReadOnlyService _departmentReadOnlyService;
@@ -69,6 +73,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IDocumentConversionService documentConversionService,
 
                 IEmployeeService employeeService, 
+                IGenderReadOnlyService genderReadOnlyService,
                 IStatusReadOnlyService statusReadOnlyService,
                 IPermitTypeReadOnlyService permitTypeReadOnlyService,
                 IDepartmentReadOnlyService departmentReadOnlyService,
@@ -92,6 +97,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _documentConversionService = documentConversionService;
 
             _employeeService = employeeService;
+            _genderReadOnlyService = genderReadOnlyService;
             _statusReadOnlyService = statusReadOnlyService;
             _permitTypeReadOnlyService = permitTypeReadOnlyService;
             _departmentReadOnlyService = departmentReadOnlyService;
@@ -114,6 +120,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             WorkPermits = new(_fileDialogService, _documentConversionService, PermitTypes, AdmissionStatuses);
             Specialties = new();
             AssigmentsContracts = new(_fileDialogService, _documentConversionService, _positionReadOnlyApiServiceFactory, Departments, Managers, Statuses, EmployeeTypes);
+
+            UpdateEmployeePersonalInfoCommand = new RelayCommandAsync(Execute_UpdateEmployeePersonalInfoCommand, CanExecute_UpdateEmployeePersonalInfoCommand);
 
             CreatePersonalDocumentCommand = new RelayCommandAsync(Execute_CreatePersonalDocumentCommand, CanExecute_CreatePersonalDocumentCommand);
             UpdatePersonalDocumentCommand = new RelayCommandAsync(Execute_UpdatePersonalDocumentCommand, CanExecute_UpdatePersonalDocumentCommand);
@@ -151,6 +159,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             await GetAllEmployeeType();
             await GetAllStatusAsync();
             await GetAllPermiteType();
+            await GetAllGenderAsync();
             await GetAllManager();
             await GetAllForHr();
 
@@ -408,6 +417,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             //GenderDisplay = new(new GenderResponse(details.Gender.GenderId.ToString(), details.Gender.GenderName));
 
+            PersonalInfo.EmployeeId = details.EmployeeId.ToString();
             PersonalInfo!.Surname = details.Surname;
             PersonalInfo!.Name = details.Name;
             PersonalInfo!.Patronymic = details.Patronymic;
@@ -460,6 +470,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         ).ToList()
                 );
 
+            EducationDocuments.EmployeeId = details.EmployeeId.ToString();
             EducationDocuments!.LocalEducationDocuments.Load
                 (
                     details.EducationDocuments?.Select
@@ -484,6 +495,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         ).ToList()
                 );
 
+            Specialties.EmployeeId = details.EmployeeId.ToString();
             Specialties!.LocalEmployeeSpecialties.Load
                 (
                     details.Specialties?.Select
@@ -500,6 +512,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                         ).ToList()
                 );
 
+            WorkPermits.EmployeeId = details.EmployeeId.ToString();
             WorkPermits!.LocalWorkPermits.Load
                 (
                     details.WorkPermits?.Select
@@ -699,6 +712,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             AdmissionStatuses.Load([.. admissionStatuses.Select(admissionStatus => new AdmissionStatusDisplay(admissionStatus))]);
         }
 
+        public ObservableCollection<GenderResponse> Genders { get; private init; } = [];
+        private async Task GetAllGenderAsync() => Genders.Load(await _genderReadOnlyService.GetAllAsync());
+
         public ObservableCollection<PersonalDocumentDisplay> PersonalDocumentsList { get; private init; } = [];
         public ObservableCollection<EducationDocumentDisplay> EducationDocumentsList { get; private init; } = [];
         public ObservableCollection<SpecialtyDisplay> SpecialtiesList { get; private init; } = [];
@@ -875,6 +891,40 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
+        #region EditPersonalInfo
+
+        // UPDATE
+        public RelayCommandAsync UpdateEmployeePersonalInfoCommand { get; private set; }
+        private async Task Execute_UpdateEmployeePersonalInfoCommand()
+        {
+            if (PersonalInfo == null)
+            {
+                MessageBox.Show("Данные не заполнены!");
+                return;
+            }
+
+            var dbResult = await _employeeService.UpdateEmployeeAsync
+                (
+                    PersonalInfo.EmployeeId!,
+                    new UpdateEmployeeRequest
+                        (
+                            PersonalInfo.Surname!, 
+                            PersonalInfo.Name!, 
+                            PersonalInfo.Patronymic, 
+                            PersonalInfo.Gender!.Id
+                        )
+                );
+
+            if (dbResult.IsFailure)
+            {
+                MessageBox.Show($"{dbResult.Errors}");
+                return;
+            }
+        }
+        private bool CanExecute_UpdateEmployeePersonalInfoCommand() => true;
+
+        #endregion
+
         #region EditPersonalDocument
 
         // CREATE
@@ -947,7 +997,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             PersonalDocuments.ClearProperty();
         }
         private bool CanExecute_CreatePersonalDocumentCommand() => true;
-            //=> PersonalDocuments!.DocumentType != null PersonalDocuments!.Number;
+            //=> PersonalDocuments!.DocumentType != null && !string.IsNullOrWhiteSpace(PersonalDocuments!.Number);
 
         // UPDATE
         public RelayCommandAsync UpdatePersonalDocumentCommand { get; private set; }

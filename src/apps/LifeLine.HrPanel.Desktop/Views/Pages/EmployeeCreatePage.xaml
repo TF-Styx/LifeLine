@@ -103,7 +103,7 @@
                           IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.PersonalInfo}}" 
                           IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.PersonalInfo}}" 
                           d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
-                    <hrus:PersonalInfo/>
+                    <hrus:PersonalInfo Action="CreateStep"/>
                 </Expander>
 
                 <Grid>

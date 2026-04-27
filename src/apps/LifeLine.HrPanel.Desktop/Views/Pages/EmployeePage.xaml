@@ -175,7 +175,7 @@
                 <StackPanel Grid.Row="0" Visibility="Visible">
                     <Expander Header="Базовая информация"  IsExpanded="True"
                               Margin="5" Style="{StaticResource ModernExpanderStyle}">
-                        <hrus:PersonalInfo/>
+                        <hrus:PersonalInfo Action="Update"/>
                     </Expander>
 
                     <Grid>

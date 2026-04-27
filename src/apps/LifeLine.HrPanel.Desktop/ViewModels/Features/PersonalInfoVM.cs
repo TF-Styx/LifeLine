@@ -1,5 +1,4 @@
-﻿using LifeLine.HrPanel.Desktop.Models;
-using Shared.Contracts.Response.EmployeeService;
+﻿using Shared.Contracts.Response.EmployeeService;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 {

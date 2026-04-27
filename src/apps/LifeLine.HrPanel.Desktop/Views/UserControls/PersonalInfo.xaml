@@ -49,15 +49,23 @@
                                        Style="{StaticResource TextBox.PlaceHolder}"/>
 
                     <ComboBox ItemsSource="{Binding Genders}" 
-                          SelectedItem="{Binding PersonalInfo.Gender}"
-                          DisplayMemberPath="Name" 
-                          Margin="0 10 0 0"/>
+                              SelectedItem="{Binding PersonalInfo.Gender}"
+                              DisplayMemberPath="Name" 
+                              Margin="0 10 0 0"/>
                 </UniformGrid>
             </StackPanel>
 
-            <Button Grid.Row="1" Content="Создать пользователя" Height="40" Cursor="Hand"
+            <Button Grid.Row="1" Content="Создать пользователя" Height="40"
                     HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                    Command="{Binding ExecuteStepCommand}" CommandParameter="{x:Static enum:EmployeeCreationSteps.Avatar}"
+                    Command="{Binding ExecuteStepCommand}" 
+                    CommandParameter="{x:Static enum:EmployeeCreationSteps.Avatar}"
+                    Visibility="{Binding Action, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource TypeActionConverter}, ConverterParameter={x:Static enum:TypeAction.CreateStep}, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+
+            <Button Grid.Row="1" Content="Обновить" Height="40"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                    Command="{Binding UpdateEmployeePersonalInfoCommand}" 
+                    Visibility="{Binding Action, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource TypeActionConverter}, ConverterParameter={x:Static enum:TypeAction.Update}, UpdateSourceTrigger=PropertyChanged}"
                     Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
         </Grid>
     </Border>
