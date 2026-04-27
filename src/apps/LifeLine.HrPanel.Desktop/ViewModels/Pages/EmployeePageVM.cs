@@ -887,7 +887,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 (
                     new CreateManyPersonalDocumentsRequest
                         (
-                            [.. PersonalDocuments.LocalPersonalDocuments.Select
+                            [.. PersonalDocuments.LocalPersonalDocuments.Where(x => x.SaveStatus == SaveStatus.Local)
+                                .Select
                                 (x =>
                                     new CreateDataPersonalDocumentRequest
                                     (
@@ -939,6 +940,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 }
             }
 
+            foreach (var item in PersonalDocuments.LocalPersonalDocuments)
+                item.SetSaveStatus(SaveStatus.DataBase);
+
+            PersonalDocuments.PersonalDocumentsView.Refresh();
             PersonalDocuments.ClearProperty();
         }
         private bool CanExecute_CreatePersonalDocumentCommand() => true;
@@ -969,8 +974,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             PersonalDocuments.ClearProperty();
         }
-        private bool CanExecute_UpdatePersonalDocumentCommand() => true;
-            //=> PersonalDocuments!.SelectedLocalPersonalDocument != null && PersonalDocuments!.DocumentType != null PersonalDocuments!.Number;
+        private bool CanExecute_UpdatePersonalDocumentCommand()
+            => PersonalDocuments!.SelectedLocalPersonalDocument != null && PersonalDocuments!.DocumentType != null && !string.IsNullOrWhiteSpace(PersonalDocuments!.Number);
 
         #endregion
 
