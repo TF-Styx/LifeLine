@@ -204,7 +204,7 @@
 
                     <Expander Header="Документы об образовании" IsExpanded="True"
                               Margin="5" Style="{StaticResource ModernExpanderStyle}">
-                        <hrus:EducationDocuments/>
+                        <hrus:EducationDocuments Action="{Binding ActionProp}"/>
                     </Expander>
 
                     <Expander Header="Аккредитация / Сертификаты" IsExpanded="True"

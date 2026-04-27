@@ -20,6 +20,7 @@ using LifeLine.HrPanel.Desktop.Models;
 using LifeLine.HrPanel.Desktop.ViewModels.Features;
 using LifeLine.HrPanel.Desktop.Views.UserControls;
 using Shared.Contracts.Request.EmployeeService.ContactInformation;
+using Shared.Contracts.Request.EmployeeService.EducationDocument;
 using Shared.Contracts.Request.EmployeeService.Employee;
 using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 using Shared.Contracts.Request.Files;
@@ -132,6 +133,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             UpdatePersonalDocumentCommand = new RelayCommandAsync(Execute_UpdatePersonalDocumentCommand, CanExecute_UpdatePersonalDocumentCommand);
 
             UpdateContactInformationCommand = new RelayCommandAsync(Execute_UpdateContactInformationCommand, CanExecute_UpdateContactInformationCommand);
+
+            CreateEducationdocumentCommand = new RelayCommandAsync(Execute_CreateEducationdocumentCommand, CanExecute_CreateEducationdocumentCommand);
+            UpdateEducationdocumentCommand = new RelayCommandAsync(Execute_UpdateEducationdocumentCommand, CanExecute_UpdateEducationdocumentCommand);
 
             OpenEditContactInformationEmployeeCommand = new RelayCommand(Execute_OpenEditContactInformationEmployeeCommand, CanExecute_OpenEditContactInformationEmployeeCommand);
             OpenEditPersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_OpenEditPersonalDocumentCommand, CanExecute_OpenEditPersonalDocumentCommand);
@@ -933,6 +937,49 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
+        #region EditContactInformation
+
+        // UPDATE
+        public RelayCommandAsync UpdateContactInformationCommand { get; private set; }
+        private async Task Execute_UpdateContactInformationCommand()
+        {
+            if (ContactInformation == null)
+            {
+                MessageBox.Show("Данные не заполнены!");
+                return;
+            }
+
+
+            var dbResult = await _contactInformationApiServiceFactory.Create(ContactInformation.EmployeeId.ToString())
+                .UpdateContactInformationAsync
+                    (
+                        new UpdateContactInformationRequest
+                            (
+                                ContactInformationDisplay.ContactInformationId,
+                                ContactInformation.EmployeeId,
+                                ContactInformation.PersonalPhone,
+                                ContactInformation.CorporatePhone,
+                                ContactInformation.PersonalEmail,
+                                ContactInformation.CorporateEmail,
+                                ContactInformation.PostalCode,
+                                ContactInformation.Region,
+                                ContactInformation.City,
+                                ContactInformation.Street,
+                                ContactInformation.Building,
+                                ContactInformation.Apartment
+                            )
+                    );
+
+            if (dbResult.IsFailure)
+            {
+                MessageBox.Show($"{dbResult.Errors}");
+                return;
+            }
+        }
+        private bool CanExecute_UpdateContactInformationCommand() => true;
+
+        #endregion
+
         #region EditPersonalDocument
 
         // CREATE
@@ -1037,46 +1084,117 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         #endregion
 
-        #region EditContactInformation
+        #region EditEducationDocument
 
-        // UPDATE
-        public RelayCommandAsync UpdateContactInformationCommand { get; private set; }
-        private async Task Execute_UpdateContactInformationCommand()
+        // CREATE
+        public RelayCommandAsync CreateEducationdocumentCommand { get; private set; }
+        private async Task Execute_CreateEducationdocumentCommand()
         {
-            if (ContactInformation == null)
-            {
-                MessageBox.Show("Данные не заполнены!");
-                return;
-            }
+            var educationDocumentService = _educationDocumentApiServiceFactory.Create(PersonalDocuments!.EmployeeId!);
 
-
-            var dbResult = await _contactInformationApiServiceFactory.Create(ContactInformation.EmployeeId.ToString())
-                .UpdateContactInformationAsync
-                    (
-                        new UpdateContactInformationRequest
-                            (
-                                ContactInformationDisplay.ContactInformationId,
-                                ContactInformation.EmployeeId,
-                                ContactInformation.PersonalPhone,
-                                ContactInformation.CorporatePhone,
-                                ContactInformation.PersonalEmail,
-                                ContactInformation.CorporateEmail,
-                                ContactInformation.PostalCode,
-                                ContactInformation.Region,
-                                ContactInformation.City,
-                                ContactInformation.Street,
-                                ContactInformation.Building,
-                                ContactInformation.Apartment
-                            )
-                    );
+            var dbResult = await educationDocumentService.CreateManyAsync
+                (
+                    new CreateManyEducationDocumentsReqeust
+                        (
+                            [.. EducationDocuments.LocalEducationDocuments.Where(x => x.SaveStatus == SaveStatus.Local)
+                                .Select
+                                (
+                                    x => new CreateDataEducationDocumentReqeust
+                                        (
+                                            x.EducationLevel.Id,
+                                            x.DocumentType.Id,
+                                            x.DocumentNumber,
+                                            x.IssuedDate.ToString(),
+                                            x.OrganizationName,
+                                            x.QualificationAwardedName,
+                                            x.SpecialtyName,
+                                            x.ProgramName,
+                                            x.TotalHours
+                                        )
+                                )
+                            ]
+                        )
+                );
 
             if (dbResult.IsFailure)
             {
                 MessageBox.Show($"{dbResult.Errors}");
                 return;
             }
+
+            var filesToUpload = EducationDocuments.LocalEducationDocuments.Where(x => x.HasFileForUpload)
+                .Select
+                    (
+                        x => new UploadFilesDataRequest
+                            (
+                                BucketName: FileConst.BUCKET_NAME,
+                                AdditionalName: x.DocumentType.Name,
+                                SubFolder: FileConst.BuildEmployeeFolder
+                                    (
+                                        EducationDocuments.EmployeeId!,
+                                        EmployeeFolderType.EducationDocument
+                                    ),
+                                FilePath: null,
+                                FileBytes: x.FileBytes,
+                                FileName: x.FileName,
+                                ContentType: x.ContentType ?? "application/pdf"
+                            )
+                    )
+                    .Where(x => x != null)
+                    .ToArray();
+
+            if (filesToUpload.Any())
+            {
+                var uploadResult = await _fileStorageService.UploadFilesAsync(new UploadFilesRequest(filesToUpload.ToList()!));
+
+                if (uploadResult.IsFailure)
+                {
+                    MessageBox.Show($"{uploadResult.Errors}");
+                    return;
+                }
+            }
+
+            foreach (var item in EducationDocuments.LocalEducationDocuments)
+                item.SetSaveStatus(SaveStatus.DataBase);
+
+            EducationDocuments.EducationDocumentsView.Refresh();
+            EducationDocuments.ClearProperty();
         }
-        private bool CanExecute_UpdateContactInformationCommand() => true;
+        private bool CanExecute_CreateEducationdocumentCommand() => true;
+
+        // UPDATE
+        public RelayCommandAsync UpdateEducationdocumentCommand { get; private set; }
+        private async Task Execute_UpdateEducationdocumentCommand()
+        {
+            var educationDocumentService = _educationDocumentApiServiceFactory.Create(EducationDocuments!.EmployeeId!);
+
+            var dbResult = await educationDocumentService.UpdateEducationDocumentAsync
+                (
+                    Guid.Parse(EducationDocuments.SelectedEducationDocument.EducationDocumentId),
+                    new UpdateEducationDocumentRequest
+                        (
+                            EducationDocuments.EducationLevel!.Id,
+                            EducationDocuments.DocumentType!.Id,
+                            EducationDocuments.DocumentNumber,
+                            EducationDocuments.IssuedDate,
+                            EducationDocuments.OrganizationName,
+                            EducationDocuments.QualificationAwardedName,
+                            EducationDocuments.SpecialtyName,
+                            EducationDocuments.ProgramName,
+                            EducationDocuments.TotalHours
+                        )
+                );
+
+            if (dbResult.IsFailure)
+            {
+                MessageBox.Show($"{dbResult.Errors}");
+                return;
+            }
+
+            EducationDocuments.EducationDocumentsView.Refresh();
+            EducationDocuments.ClearProperty();
+        }
+        private bool CanExecute_UpdateEducationdocumentCommand() => true;
 
         #endregion
 

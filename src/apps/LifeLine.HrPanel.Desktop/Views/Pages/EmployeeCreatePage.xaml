@@ -141,7 +141,7 @@
                           IsEnabled="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.EducationDocuments}}" 
                           IsExpanded="{Binding Steps, Converter={StaticResource EmployeeCreationsToBoolConverter}, ConverterParameter={x:Static enum:EmployeeCreationSteps.EducationDocuments}}"   
                           d:IsExpanded="True" Margin="5" Style="{StaticResource ModernExpanderStyle}">
-                    <hrus:EducationDocuments/>
+                    <hrus:EducationDocuments Action="CreateStep"/>
                 </Expander>
 
                 <Expander Header="Аккредитация / Сертификаты" 

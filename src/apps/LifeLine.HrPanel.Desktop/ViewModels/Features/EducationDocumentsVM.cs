@@ -151,11 +151,29 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             set => SetProperty(ref field, value);
         }
 
-        private EducationDocumentDisplay _selectedEducationDocumentDisplay = null!;
-        public EducationDocumentDisplay SelectedEducationDocumentDisplay
+        private EducationDocumentDisplay _selectedEducationDocument = null!;
+        public EducationDocumentDisplay SelectedEducationDocument
         {
-            get => _selectedEducationDocumentDisplay;
-            set => SetProperty(ref _selectedEducationDocumentDisplay, value);
+            get => _selectedEducationDocument;
+            set
+            {
+                SetProp(value);
+
+                SetProperty(ref _selectedEducationDocument, value);
+            }
+        }
+
+        private void SetProp(EducationDocumentDisplay value)
+        {
+            DocumentNumber = value.DocumentNumber;
+            IssuedDate = value.IssuedDate;
+            OrganizationName = value.OrganizationName;
+            QualificationAwardedName = value.QualificationAwardedName;
+            SpecialtyName = value.SpecialtyName;
+            ProgramName = value.ProgramName;
+            TotalHours = value.TotalHours;
+            EducationLevel = value.EducationLevel;
+            DocumentType = value.DocumentType;
         }
 
         public ObservableCollection<PendingFileItem> PendingFilePaths { get; private set; } = [];
