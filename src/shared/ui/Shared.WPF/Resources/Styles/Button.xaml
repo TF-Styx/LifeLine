@@ -10,6 +10,7 @@
     <!-- ╚═════════════════════════════════════════════════════════════════════════════╝ -->
     
     <Style x:Key="App.Button" TargetType="Button">
+        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Height" Value="50"/>
         <Setter Property="Background" Value="{StaticResource Button.MainColor}"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
