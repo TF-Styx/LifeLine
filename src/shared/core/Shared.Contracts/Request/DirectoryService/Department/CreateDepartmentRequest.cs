@@ -4,7 +4,7 @@
         (
             string Name,
             string Description,
-            List<CreateDepartmentPositionRequestData> Positions,
+            List<CreateDepartmentPositionRequestData>? Positions,
             CreateDepartmentAddressRequestData Address
         );
 

@@ -15,13 +15,13 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Create
             IDirectoryContext context,
             IDepartmentRepository repository,
             ILogger<CreateDepartmentCommandHandler> logger
-        ) : IRequestHandler<CreateDepartmentCommand, Result<Guid>>
+        ) : IRequestHandler<CreateDepartmentCommand, Result>
     {
         private readonly IDirectoryContext _context = context;
         private readonly IDepartmentRepository _repository = repository;
         private readonly ILogger<CreateDepartmentCommandHandler> _logger = logger;
 
-        public async Task<Result<Guid>> Handle(CreateDepartmentCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(CreateDepartmentCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -40,29 +40,30 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Create
                         )
                     );
 
-                foreach (var item in request.Positions)
-                    department.AddPositions(item.Name, item.Description);
+                if (request.Positions != null)
+                    foreach (var item in request.Positions)
+                        department.AddPositions(item.Name, item.Description);
 
                 await _repository.AddAsync(department, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                return Result<Guid>.Success(department.Id);
+                return Result.Success();
             }
             catch (DomainException domainEX)
             {
                 if (domainEX is EmptyIdentifierException emptyEX)
                 {
                     _logger.LogCritical(emptyEX, $"В методе '{nameof(Department.Create)}', в '{nameof(CreateDepartmentCommandHandler)}' при создании отдела не был сгенерирован {nameof(StatusId)}, в виде Guid!");
-                    return Result<Guid>.Failure(new Error(ErrorCode.Create, "Ошибка на стороне сервера!"));
+                    return Result.Failure(new Error(ErrorCode.Create, "Ошибка на стороне сервера!"));
                 }
 
-                return Result<Guid>.Failure(new Error(ErrorCode.Create, domainEX.Message));
+                return Result.Failure(new Error(ErrorCode.Create, domainEX.Message));
             }
             catch (Exception ex)
             {
                 _logger.LogCritical(ex, "Ошибка при создании Department!");
 
-                return Result<Guid>.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
+                return Result.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
             }
         }
     }
