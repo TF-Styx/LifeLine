@@ -17,30 +17,6 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddTransient<EmployeeCreatePageVM>();
             services.AddSingleton<Func<EmployeeCreatePageVM>>(provider => () => provider.GetRequiredService<EmployeeCreatePageVM>());
 
-            services.AddTransient<IPageFactory, EditContactInformationEmployeePageFactory>();
-            services.AddTransient<EditContactInformationEmployeePageVM>();
-            services.AddSingleton<Func<EditContactInformationEmployeePageVM>>(provider => () => provider.GetRequiredService<EditContactInformationEmployeePageVM>());
-
-            services.AddTransient<IPageFactory, EditPersonalDocumentEmployeePageFactory>();
-            services.AddTransient<EditPersonalDocumentEmployeePageVM>();
-            services.AddSingleton<Func<EditPersonalDocumentEmployeePageVM>>(provider => () => provider.GetRequiredService<EditPersonalDocumentEmployeePageVM>());
-
-            services.AddTransient<IPageFactory, EditEducationDocumentEmployeePageFactory>();
-            services.AddTransient<EditEducationDocumentEmployeePageVM>();
-            services.AddSingleton<Func<EditEducationDocumentEmployeePageVM>>(provider => () => provider.GetRequiredService<EditEducationDocumentEmployeePageVM>());
-
-            services.AddTransient<IPageFactory, EditSpecialtyEmployeePageFactory>();
-            services.AddTransient<EditSpecialtyEmployeePageVM>();
-            services.AddSingleton<Func<EditSpecialtyEmployeePageVM>>(provider => () => provider.GetRequiredService<EditSpecialtyEmployeePageVM>());
-
-            services.AddTransient<IPageFactory, EditWorkPermitEmployeePageFactory>();
-            services.AddTransient<EditWorkPermitEmployeePageVM>();
-            services.AddSingleton<Func<EditWorkPermitEmployeePageVM>>(provider => () => provider.GetRequiredService<EditWorkPermitEmployeePageVM>());
-
-            services.AddTransient<IPageFactory, EditAssignmentEmployeePageFactory>();
-            services.AddTransient<EditAssignmentEmployeePageVM>();
-            services.AddSingleton<Func<EditAssignmentEmployeePageVM>>(provider => () => provider.GetRequiredService<EditAssignmentEmployeePageVM>());
-
             return services;
         }
     }
