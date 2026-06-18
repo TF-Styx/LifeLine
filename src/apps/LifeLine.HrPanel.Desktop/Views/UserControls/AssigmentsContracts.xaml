@@ -96,216 +96,127 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0 0 0 5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <Border Grid.Row="0" Margin="5" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
+            <DataGrid ItemsSource="{Binding AssigmentsContracts.AssignmentsContractsView}" 
+                      SelectedItem="{Binding AssigmentsContracts.SelectedLocalAssignmentContract}"
+                      AutoGenerateColumns="False" 
+                      CanUserAddRows="False"
+                      HorizontalContentAlignment="Stretch" 
+                      HeadersVisibility="Column"
+                      Margin="2"
+                      Background="{StaticResource App.MainColor}"
+                      d:ItemsSource="{d:SampleData ItemCount=10}">
 
-            <!-- Список назначений -->
-            <Border Grid.Column="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="0 0 5 0">
-                <StackPanel>
-                    <TextBlock Grid.Row="0" Text="Назначение" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <DataGrid.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.ContainerStyle>
+                            <StaticResource ResourceKey="DataGrid.GroupItemStyle"/>
+                        </GroupStyle.ContainerStyle>
+                    </GroupStyle>
+                </DataGrid.GroupStyle>
 
-                    <Border Margin="5" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                        <DataGrid ItemsSource="{Binding AssigmentsContracts.AssignmentsContractsView}" 
-                                  SelectedItem="{Binding AssigmentsContracts.SelectedLocalAssignmentContract}"
-                                  AutoGenerateColumns="False" 
-                                  CanUserAddRows="False"
-                                  HorizontalContentAlignment="Stretch" 
-                                  HeadersVisibility="Column"
-                                  Margin="2"
-                                  Background="{StaticResource App.MainColor}"
-                                  d:ItemsSource="{d:SampleData ItemCount=10}">
+                <DataGrid.Columns>
+                    <!-- Отдел -->
+                    <DataGridTemplateColumn Header="Отдел" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Department.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                            <DataGrid.GroupStyle>
-                                <GroupStyle>
-                                    <GroupStyle.ContainerStyle>
-                                        <StaticResource ResourceKey="DataGrid.GroupItemStyle"/>
-                                    </GroupStyle.ContainerStyle>
-                                </GroupStyle>
-                            </DataGrid.GroupStyle>
-                            
-                            <DataGrid.Columns>
-                                <!-- Отдел -->
-                                <DataGridTemplateColumn Header="Отдел" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Department.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                    <!-- Должность -->
+                    <DataGridTemplateColumn Header="Должность" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Position.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                                <!-- Должность -->
-                                <DataGridTemplateColumn Header="Должность" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Position.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                    <!-- Номер контракта -->
+                    <DataGridTemplateColumn Header="Номер контракта" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ContractNumber}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                                <!-- Номер контракта -->
-                                <DataGridTemplateColumn Header="Номер контракта" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding ContractNumber}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                    <!-- Номер контракта -->
+                    <DataGridTemplateColumn Header="Номер контракта" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ContractNumber}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                                <!-- Файл -->
-                                <DataGridTemplateColumn Header="Файл" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding FilePath}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                    <!-- Тип контракта -->
+                    <DataGridTemplateColumn Header="Тип контракта" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding EmployeeType.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                                <!--Информация-->
-                                <DataGridTemplateColumn Width="35">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
-                                                <Control Template="{StaticResource Magnifier}"/>
-                                                <Button.ToolTip>
-                                                    <StackPanel>
-                                                        <TextBlock Text="Назначение"/>
-                                                        <TextBlock Text="{Binding Department.Name, StringFormat=Отдел: {0}}"/>
-                                                        <TextBlock Text="{Binding Position.Name, StringFormat=Должность: {0}}"/>
-                                                        <TextBlock Text="{Binding Manager.Name, StringFormat=Мэнеджер: {0}}"/>
-                                                        <TextBlock Text="{Binding HireDate, StringFormat=Дата найма: {0}}"/>
-                                                        <TextBlock Text="{Binding TerminationDate, StringFormat=Дата расторжения договора: {0}}"/>
-                                                        <TextBlock Text="{Binding Status.Name, StringFormat=Статус: {0}}"/>
-                                                        <TextBlock Text="{Binding FilePath.Name, StringFormat=Файл: {0}}"/>
+                    <!-- Оклад -->
+                    <DataGridTemplateColumn Header="Оклад" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Salary}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                                                        <TextBlock Text="Контракт" Margin="0 10 0 0"/>
-                                                        <TextBlock Text="{Binding EmployeeType.Name, StringFormat=Тип трудоустройства: {0}}"/>
-                                                        <TextBlock Text="{Binding ContractNumber, StringFormat=Номер контракта: {0}}"/>
-                                                        <TextBlock Text="{Binding StartDate, StringFormat=Начало: {0}}"/>
-                                                        <TextBlock Text="{Binding EndDate, StringFormat=Конец: {0}}"/>
-                                                        <TextBlock Text="{Binding Salary, StringFormat=Зарплата: {0}}"/>
-                                                    </StackPanel>
-                                                </Button.ToolTip>
-                                            </Button>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                    <!--Информация-->
+                    <DataGridTemplateColumn Width="35">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
+                                    <Control Template="{StaticResource Magnifier}"/>
+                                    <Button.ToolTip>
+                                        <StackPanel>
+                                            <TextBlock Text="Назначение"/>
+                                            <TextBlock Text="{Binding Department.Name, StringFormat=Отдел: {0}}"/>
+                                            <TextBlock Text="{Binding Position.Name, StringFormat=Должность: {0}}"/>
+                                            <TextBlock Text="{Binding Manager.Name, StringFormat=Мэнеджер: {0}}"/>
+                                            <TextBlock Text="{Binding HireDate, StringFormat=Дата найма: {0}}"/>
+                                            <TextBlock Text="{Binding TerminationDate, StringFormat=Дата расторжения договора: {0}}"/>
+                                            <TextBlock Text="{Binding Status.Name, StringFormat=Статус: {0}}"/>
+                                            <TextBlock Text="{Binding FilePath.Name, StringFormat=Файл: {0}}"/>
 
-                                <!--Удалить-->
-                                <DataGridTemplateColumn Width="35">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Width="25" Foreground="#F06870" 
-                                                    Command="{Binding DataContext.DeleteAssignmentContractCommand, 
-                                                    RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                                    CommandParameter="{Binding }" 
-                                                    Style="{StaticResource Button.Icon}">
-                                                <Control Template="{StaticResource Trash}"/>
-                                            </Button>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Border>
-                </StackPanel>
-            </Border>
+                                            <TextBlock Text="Контракт" Margin="0 10 0 0"/>
+                                            <TextBlock Text="{Binding EmployeeType.Name, StringFormat=Тип трудоустройства: {0}}"/>
+                                            <TextBlock Text="{Binding ContractNumber, StringFormat=Номер контракта: {0}}"/>
+                                            <TextBlock Text="{Binding StartDate, StringFormat=Начало: {0}}"/>
+                                            <TextBlock Text="{Binding EndDate, StringFormat=Конец: {0}}"/>
+                                            <TextBlock Text="{Binding Salary, StringFormat=Зарплата: {0}}"/>
+                                        </StackPanel>
+                                    </Button.ToolTip>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-            <!-- Список контрактов -->
-            <Border Grid.Column="1" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5 0 0 0">
-                <StackPanel>
-                    <TextBlock Grid.Row="0" Text="Контракт" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-
-                    <Border Margin="5" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                        <DataGrid ItemsSource="{Binding AssigmentsContracts.AssignmentsContractsView}" 
-                                  SelectedItem="{Binding AssigmentsContracts.SelectedLocalAssignmentContract}"
-                                  AutoGenerateColumns="False" 
-                                  CanUserAddRows="False"
-                                  HorizontalContentAlignment="Stretch" 
-                                  HeadersVisibility="Column"
-                                  Margin="2"
-                                  Background="{StaticResource App.MainColor}"
-                                  d:ItemsSource="{d:SampleData ItemCount=10}">
-
-                            <DataGrid.GroupStyle>
-                                <GroupStyle>
-                                    <GroupStyle.ContainerStyle>
-                                        <StaticResource ResourceKey="DataGrid.GroupItemStyle"/>
-                                    </GroupStyle.ContainerStyle>
-                                </GroupStyle>
-                            </DataGrid.GroupStyle>
-                            
-                            <DataGrid.Columns>
-                                <!-- Номер контракта -->
-                                <DataGridTemplateColumn Header="Номер контракта" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding ContractNumber}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <!-- Тип контракта -->
-                                <DataGridTemplateColumn Header="Тип контракта" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding EmployeeType.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <!-- Оклад -->
-                                <DataGridTemplateColumn Header="Оклад" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Salary}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <!--Информация-->
-                                <DataGridTemplateColumn Width="35">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Width="25" Command="{Binding DeleteImageCommand}" Style="{StaticResource Button.Icon}">
-                                                <Control Template="{StaticResource Magnifier}"/>
-                                                <Button.ToolTip>
-                                                    <StackPanel>
-                                                        <TextBlock Text="Контракт"/>
-                                                        <TextBlock Text="{Binding EmployeeType.Name, StringFormat=Тип трудоустройства: {0}}"/>
-                                                        <TextBlock Text="{Binding ContractNumber, StringFormat=Номер контракта: {0}}"/>
-                                                        <TextBlock Text="{Binding StartDate, StringFormat=Начало: {0}}"/>
-                                                        <TextBlock Text="{Binding EndDate, StringFormat=Конец: {0}}"/>
-                                                        <TextBlock Text="{Binding Salary, StringFormat=Зарплата: {0}}"/>
-                                                    </StackPanel>
-                                                </Button.ToolTip>
-                                            </Button>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <!--Удалить-->
-                                <DataGridTemplateColumn Width="35">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Width="25" Foreground="#F06870" 
-                                                    Command="{Binding DataContext.DeleteAssignmentContractCommand, 
-                                                    RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                                    CommandParameter="{Binding }" 
-                                                    Style="{StaticResource Button.Icon}">
-                                                <Control Template="{StaticResource Trash}"/>
-                                            </Button>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Border>
-                </StackPanel>
-            </Border>
-        </Grid>
+                    <!--Удалить-->
+                    <DataGridTemplateColumn Width="35">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Width="25" Foreground="#F06870" 
+                                        Command="{Binding DataContext.DeleteAssignmentContractCommand, 
+                                        RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                        CommandParameter="{Binding }" 
+                                        Style="{StaticResource Button.Icon}">
+                                    <Control Template="{StaticResource Trash}"/>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
 
         <Border Grid.Row="1" Background="{StaticResource App.SecondColor}" CornerRadius="6">
             <Grid Margin="5">

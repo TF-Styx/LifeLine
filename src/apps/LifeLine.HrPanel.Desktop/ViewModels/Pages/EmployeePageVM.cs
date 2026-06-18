@@ -1320,6 +1320,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             }
         }
         private bool CanExecute_DeletePersonalDocumentCommand(PersonalDocumentDisplay display) => SelectedEmployee != null;
+
         #endregion
 
         #region EditEducationDocument

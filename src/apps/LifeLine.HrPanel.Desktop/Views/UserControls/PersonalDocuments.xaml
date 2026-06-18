@@ -189,13 +189,13 @@
                           SelectedItem="{Binding PersonalDocuments.DocumentType}" 
                           DisplayMemberPath="Name" Margin="0 10 0 0"/>
 
-                    <!-- Серия / Номер -->
                     <Grid Margin="0 10 0 0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
+                        <!-- Серия / Номер -->
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
