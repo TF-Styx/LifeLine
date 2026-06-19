@@ -189,15 +189,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             UpdateAssignmentContractCommand = new RelayCommandAsync(Execute_UpdateAssignmentContractCommand, CanExecute_UpdateAssignmentContractCommand);
             DeleteAssignmentContractCommand = new RelayCommandAsync<AssignmentContractDisplay>(Execute_DeleteAssignmentContractCommand, CanExecute_DeleteAssignmentContractCommand);
 
-            OpenEditContactInformationEmployeeCommand = new RelayCommand(Execute_OpenEditContactInformationEmployeeCommand, CanExecute_OpenEditContactInformationEmployeeCommand);
-            OpenEditPersonalDocumentCommand = new RelayCommand<PersonalDocumentDisplay>(Execute_OpenEditPersonalDocumentCommand, CanExecute_OpenEditPersonalDocumentCommand);
-            OpenEditEducationDocumentCommand = new RelayCommand<EducationDocumentDisplay>(Execute_OpenEditEducationDocumentCommand, CanExecute_OpenEditEducationDocumentCommand);
-            OpenEditSpecialtyCommand = new RelayCommand<SpecialtyDisplay>(Execute_OpenEditSpecialtyCommand, CanExecute_OpenEditSpecialtyCommand);
-            OpenEditWorkPermitCommand = new RelayCommand<WorkPermitDisplay>(Execute_OpenEditWorkPermitCommand, CanExecute_OpenEditWorkPermitCommand);
-            OpenEditAssignmentCommand = new RelayCommand<AssignmentContractDisplay>(Execute_OpenEditAssignmentCommand, CanExecute_OpenEditAssignmentCommand);
-
-            CloseModalCommand = new RelayCommand(Execute_CloseModalCommand);
-
             SoftDeleteEmployeeCommand = new RelayCommandAsync<EmployeeHrDisplay>(Execute_SoftDeleteEmployeeCommand);
         }
 
@@ -228,39 +219,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         void IUpdatable.Update<TData>(TData value, TransmittingParameter parameter)
         {
-            if (parameter is TransmittingParameter.Create)
-            {
-                if (value is PersonalDocumentDisplay createPersonalDocument)
-                {
-                    PersonalDocumentsList.Add(createPersonalDocument);
-                    ModalVisibility = Visibility.Collapsed;
-                }
-
-                if (value is EducationDocumentDisplay createEducationDocument)
-                {
-                    EducationDocumentsList.Add(createEducationDocument);
-                    ModalVisibility = Visibility.Collapsed;
-                }
-
-                if (value is SpecialtyDisplay createSpecialty)
-                {
-                    SpecialtiesCollection.Add(createSpecialty);
-                    ModalVisibility = Visibility.Collapsed;
-                }
-
-                if (value is WorkPermitDisplay createWorkPermit)
-                {
-                    WorkPermitsList.Add(createWorkPermit);
-                    ModalVisibility = Visibility.Collapsed;
-                }
-
-                if (value is AssignmentContractDisplay createAssignmentContrac)
-                {
-                    AssignmentContractsList.Add(createAssignmentContrac);
-                    ModalVisibility = Visibility.Collapsed;
-                }
-            }
-
             if (parameter is TransmittingParameter.Update)
             {
                 if (value is ValueTuple<EmployeeDetailsDisplay, GenderDisplay, ContactInformationDisplay> employeeUpdateData)
@@ -446,13 +404,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set
             {
                 SetProperty(ref _selectedEmployee, value);
-
-                OpenEditContactInformationEmployeeCommand?.RaiseCanExecuteChanged();
-                OpenEditPersonalDocumentCommand?.RaiseCanExecuteChanged();
-                OpenEditEducationDocumentCommand?.RaiseCanExecuteChanged();
-                OpenEditSpecialtyCommand?.RaiseCanExecuteChanged();
-                OpenEditWorkPermitCommand?.RaiseCanExecuteChanged();
-                OpenEditAssignmentCommand?.RaiseCanExecuteChanged();
 
                 ClearLocalLists();
 
@@ -816,165 +767,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             AssigmentsContracts!.ClearProperty();
             AssigmentsContracts!.LocalAssignmentsContracts.Clear();
-        }
-
-        #endregion
-
-        #region Модальное окно редактирования
-
-        // Видимость модального окна
-        private Visibility _modalVisibility = Visibility.Collapsed;
-        public Visibility ModalVisibility
-        {
-            get => _modalVisibility;
-            set => SetProperty(ref _modalVisibility, value);
-        }
-
-        // Открытие модального окна редактирования контактной информации
-        public RelayCommand OpenEditContactInformationEmployeeCommand { get; private set; }
-        private void Execute_OpenEditContactInformationEmployeeCommand()
-        {
-            if (ModalVisibility == Visibility.Collapsed)
-            {
-                ModalVisibility = Visibility.Visible;
-
-                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditContactInformationEmployeePage);
-                _navigationPage.TransmittingValue
-                    (
-                        (
-                            CurrentEmployeeDetails, 
-                            GenderDisplay, 
-                            ContactInformationDisplay
-                        ), 
-                        FrameName.ModalFrame, 
-                        PageName.EditContactInformationEmployeePage, 
-                        TransmittingParameter.None
-                    );
-            }
-        }
-        private bool CanExecute_OpenEditContactInformationEmployeeCommand() => SelectedEmployee != null;
-
-        // Открытие модального окна редактирования персонального документа
-        public RelayCommand<PersonalDocumentDisplay> OpenEditPersonalDocumentCommand { get; private set; }
-        private void Execute_OpenEditPersonalDocumentCommand(PersonalDocumentDisplay display)
-        {
-            if (ModalVisibility == Visibility.Collapsed)
-            {
-                ModalVisibility = Visibility.Visible;
-
-                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditPersonalDocumentEmployeePage);
-                _navigationPage.TransmittingValue
-                    (
-                        (
-                            CurrentEmployeeDetails,
-                            display
-                        ),
-                        FrameName.ModalFrame,
-                        PageName.EditPersonalDocumentEmployeePage,
-                        TransmittingParameter.None
-                    );
-            }
-        }
-        private bool CanExecute_OpenEditPersonalDocumentCommand(PersonalDocumentDisplay display) => SelectedEmployee != null;
-
-        // Открытие модального окна редактирования образовательного документа
-        public RelayCommand<EducationDocumentDisplay> OpenEditEducationDocumentCommand { get; private set; }
-        private void Execute_OpenEditEducationDocumentCommand(EducationDocumentDisplay display)
-        {
-            if (ModalVisibility == Visibility.Collapsed)
-            {
-                ModalVisibility = Visibility.Visible;
-
-                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditEducationDocumentEmployeePage);
-                _navigationPage.TransmittingValue
-                    (
-                        (
-                            CurrentEmployeeDetails,
-                            display
-                        ),
-                        FrameName.ModalFrame,
-                        PageName.EditEducationDocumentEmployeePage,
-                        TransmittingParameter.None
-                    );
-            }
-        }
-        private bool CanExecute_OpenEditEducationDocumentCommand(EducationDocumentDisplay display) => SelectedEmployee != null;
-
-        // Открытие модального окна редактирования специальности
-        public RelayCommand<SpecialtyDisplay> OpenEditSpecialtyCommand { get; private set; }
-        private void Execute_OpenEditSpecialtyCommand(SpecialtyDisplay display)
-        {
-            if (ModalVisibility == Visibility.Collapsed)
-            {
-                ModalVisibility = Visibility.Visible;
-
-                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditSpecialtyEmployeePage);
-                _navigationPage.TransmittingValue
-                    (
-                        (
-                            CurrentEmployeeDetails,
-                            display
-                        ),
-                        FrameName.ModalFrame,
-                        PageName.EditSpecialtyEmployeePage,
-                        TransmittingParameter.None
-                    );
-            }
-        }
-        private bool CanExecute_OpenEditSpecialtyCommand(SpecialtyDisplay display) => SelectedEmployee != null;
-
-        // Открытие модального окна редактирования рабочего разрешения
-        public RelayCommand<WorkPermitDisplay> OpenEditWorkPermitCommand { get; private set; }
-        private void Execute_OpenEditWorkPermitCommand(WorkPermitDisplay display)
-        {
-            if (ModalVisibility == Visibility.Collapsed)
-            {
-                ModalVisibility = Visibility.Visible;
-
-                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditWorkPermitEmployeePage);
-                _navigationPage.TransmittingValue
-                    (
-                        (
-                            CurrentEmployeeDetails,
-                            display
-                        ),
-                        FrameName.ModalFrame,
-                        PageName.EditWorkPermitEmployeePage,
-                        TransmittingParameter.None
-                    );
-            }
-        }
-        private bool CanExecute_OpenEditWorkPermitCommand(WorkPermitDisplay display) => SelectedEmployee != null;
-
-        // Открытие модального окна редактирования разначения
-        public RelayCommand<AssignmentContractDisplay> OpenEditAssignmentCommand { get; private set; }
-        private void Execute_OpenEditAssignmentCommand(AssignmentContractDisplay display)
-        {
-            if (ModalVisibility == Visibility.Collapsed)
-            {
-                ModalVisibility = Visibility.Visible;
-
-                _navigationPage.NavigateTo(FrameName.ModalFrame, PageName.EditAssignmentEmployeePage);
-                _navigationPage.TransmittingValue
-                    (
-                        (
-                            CurrentEmployeeDetails,
-                            display
-                        ),
-                        FrameName.ModalFrame,
-                        PageName.EditAssignmentEmployeePage,
-                        TransmittingParameter.None
-                    );
-            }
-        }
-        private bool CanExecute_OpenEditAssignmentCommand(AssignmentContractDisplay display) => SelectedEmployee != null;
-
-        // Закрытие модального окна
-        public RelayCommand CloseModalCommand { get; private set; }
-        private void Execute_CloseModalCommand()
-        {
-            if (ModalVisibility == Visibility.Visible)
-                ModalVisibility = Visibility.Collapsed;
         }
 
         #endregion
