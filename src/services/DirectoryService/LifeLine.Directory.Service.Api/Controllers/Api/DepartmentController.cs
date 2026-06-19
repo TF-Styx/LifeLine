@@ -48,7 +48,20 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDepartmentRequest request, CancellationToken cancellationToken = default)
         {
-            var command = new UpdateDepartmentCommand(id, request.Name, request.Description);
+            var command = new UpdateDepartmentCommand
+            (
+                id, 
+                request.Name, 
+                request.Description,
+                new UpdateDepartmentDataAddressCommand
+                (
+                    request.Address.PostalCode,
+                    request.Address.Region,
+                    request.Address.City,
+                    request.Address.Street,
+                    request.Address.Building
+                )
+            );
 
             var result = await _mediator.Send(command, cancellationToken);
 
