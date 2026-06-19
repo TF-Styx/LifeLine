@@ -4,11 +4,8 @@
         (
             string Name,
             string Description,
-            List<CreateDepartmentPositionRequestData>? Positions,
             CreateDepartmentAddressRequestData Address
         );
 
-    public sealed record CreateDepartmentAddressRequestData(string PostalCode, string Region, string City, string Street, string Building, string? Apartment);
-
-    public sealed record CreateDepartmentPositionRequestData(string Name, string Description);
+    public sealed record CreateDepartmentAddressRequestData(string PostalCode, string Region, string City, string Street, string Building);
 }

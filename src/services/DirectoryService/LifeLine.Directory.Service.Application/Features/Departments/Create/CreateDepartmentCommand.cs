@@ -7,11 +7,8 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Create
         (
             string Name, 
             string Description, 
-            List<CreateDepartmentPositionCommandData>? Positions, 
             CreateDepartmentAddressCommandData Address
-        ) : IRequest<Result>;
+        ) : IRequest<Result<string>>;
 
-    public sealed record CreateDepartmentPositionCommandData(string Name, string Description);
-
-    public sealed record CreateDepartmentAddressCommandData(string PostalCode, string Region, string City, string Street, string Building, string? Apartment);
+    public sealed record CreateDepartmentAddressCommandData(string PostalCode, string Region, string City, string Street, string Building);
 }

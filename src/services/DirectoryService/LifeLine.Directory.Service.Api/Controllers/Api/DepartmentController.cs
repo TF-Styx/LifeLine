@@ -22,15 +22,13 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
                 (
                     request.Name,
                     request.Description,
-                    request.Positions == null ? null : [.. request.Positions.Select(position => new CreateDepartmentPositionCommandData(position.Name, position.Description))],
                     new CreateDepartmentAddressCommandData
                     (
                         request.Address.PostalCode, 
                         request.Address.Region, 
                         request.Address.City, 
                         request.Address.Street, 
-                        request.Address.Building, 
-                        request.Address.Apartment
+                        request.Address.Building
                     )
                 );
 
@@ -38,7 +36,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное создание!"),
+                    onSuccess: () => Ok(result.Value),
                     onFailure: errors => BadRequest(errors)
                 );
         }

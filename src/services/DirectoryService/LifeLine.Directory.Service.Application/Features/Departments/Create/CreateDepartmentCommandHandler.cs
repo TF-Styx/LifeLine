@@ -1,12 +1,12 @@
-﻿using LifeLine.Directory.Service.Application.Common;
-using LifeLine.Directory.Service.Application.Common.Repository;
-using LifeLine.Directory.Service.Domain.Models;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using Shared.Domain.Exceptions;
-using Shared.Domain.ValueObjects;
-using Shared.Kernel.Exceptions;
+﻿using MediatR;
 using Terminex.Common.Results;
+using Shared.Domain.Exceptions;
+using Shared.Kernel.Exceptions;
+using Shared.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
+using LifeLine.Directory.Service.Domain.Models;
+using LifeLine.Directory.Service.Application.Common;
+using LifeLine.Directory.Service.Application.Common.Repository;
 
 namespace LifeLine.Directory.Service.Application.Features.Departments.Create
 {
@@ -15,13 +15,13 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Create
             IDirectoryContext context,
             IDepartmentRepository repository,
             ILogger<CreateDepartmentCommandHandler> logger
-        ) : IRequestHandler<CreateDepartmentCommand, Result>
+        ) : IRequestHandler<CreateDepartmentCommand, Result<string>>
     {
         private readonly IDirectoryContext _context = context;
         private readonly IDepartmentRepository _repository = repository;
         private readonly ILogger<CreateDepartmentCommandHandler> _logger = logger;
 
-        public async Task<Result> Handle(CreateDepartmentCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(CreateDepartmentCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -35,35 +35,30 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Create
                             request.Address.Region,
                             request.Address.City,
                             request.Address.Street,
-                            request.Address.Building,
-                            request.Address.Apartment
+                            request.Address.Building
                         )
                     );
-
-                if (request.Positions != null)
-                    foreach (var item in request.Positions)
-                        department.AddPositions(item.Name, item.Description);
 
                 await _repository.AddAsync(department, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                return Result.Success();
+                return Result<string>.Success(department.Id.ToString());
             }
             catch (DomainException domainEX)
             {
                 if (domainEX is EmptyIdentifierException emptyEX)
                 {
                     _logger.LogCritical(emptyEX, $"В методе '{nameof(Department.Create)}', в '{nameof(CreateDepartmentCommandHandler)}' при создании отдела не был сгенерирован {nameof(StatusId)}, в виде Guid!");
-                    return Result.Failure(new Error(ErrorCode.Create, "Ошибка на стороне сервера!"));
+                    return Result<string>.Failure(new Error(ErrorCode.Create, "Ошибка на стороне сервера!"));
                 }
 
-                return Result.Failure(new Error(ErrorCode.Create, domainEX.Message));
+                return Result<string>.Failure(new Error(ErrorCode.Create, domainEX.Message));
             }
             catch (Exception ex)
             {
                 _logger.LogCritical(ex, "Ошибка при создании Department!");
 
-                return Result.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
+                return Result<string>.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
             }
         }
     }
