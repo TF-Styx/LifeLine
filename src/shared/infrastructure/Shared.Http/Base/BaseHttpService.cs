@@ -73,6 +73,25 @@ namespace Shared.Http.Base
                 response = await HttpClient.PostAsJsonAsync(Url, request, JsonSerializerOptions);
                 response.EnsureSuccessStatusCode();
 
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (string.IsNullOrWhiteSpace(content))
+                    return default!;
+
+                if (typeof(TCurrentResponse) == typeof(string))
+                {
+                    if (content.StartsWith("\"") && content.EndsWith("\""))
+                    {
+                        using var doc = JsonDocument.Parse(content);
+                        var value = doc.RootElement.GetString();
+                        return Result<TCurrentResponse>.Success((TCurrentResponse)(object)value!);
+                    }
+                    else
+                    {
+                        return Result<TCurrentResponse>.Success((TCurrentResponse)(object)content);
+                    }
+                }
+
                 return Result<TCurrentResponse>.Success(await response.Content.ReadFromJsonAsync<TCurrentResponse>(JsonSerializerOptions));
             }
             catch (HttpRequestException ex)
