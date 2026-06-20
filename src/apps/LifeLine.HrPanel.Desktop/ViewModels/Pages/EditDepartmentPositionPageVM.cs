@@ -2,6 +2,7 @@
 using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.HrPanel.Desktop.Models;
 using Shared.Contracts.Request.DirectoryService.Department;
+using Shared.Contracts.Request.DirectoryService.Position;
 using Shared.Contracts.Response.DirectoryService;
 using Shared.WPF.Commands;
 using Shared.WPF.Enums;
@@ -31,6 +32,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             DeleteDepartmentCommandAsync = new RelayCommandAsync<DepartmentDisplay>(Execute_DeleteDepartmentCommandAsync);
 
             _getAllPositionByIdDepartmentCommandAsync = new RelayCommandAsync<DepartmentDisplay>(GetAllPositionByIdDepartmentCommandAsync);
+            CreatePositionCommandAsync = new RelayCommandAsync(Execute_CreatePositionCommandAsync, CanExecute_CreatePositionCommandAsync);
+            UpdatePositionCommandAsync = new RelayCommandAsync(Execute_UpdatePositionCommandAsync, CanExecute_UpdatePositionCommandAsync);
+            DeletePositionCommandAsync = new RelayCommandAsync<PositionDisplay>(Execute_DeletePositionCommandAsync);
         }
         async Task IAsyncInitializable.InitializeAsync()
         {
@@ -42,6 +46,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             await GetDepartmentsAsync();
 
             NewDepartmentDisplay();
+            NewPostionDisplay();
 
             IsInitialize = true;
         }
@@ -302,7 +307,21 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set
             {
                 SetProperty(ref _positionDis, value);
+
+                CreatePositionCommandAsync?.RaiseCanExecuteChanged();
+                UpdatePositionCommandAsync?.RaiseCanExecuteChanged();
             }
+        }
+
+        private void NewPostionDisplay()
+        {
+            PositionDis = new PositionDisplay(new PositionResponse(Guid.Empty, string.Empty, string.Empty));
+
+            PositionDis.PropertyChanged += (s, e) =>
+            {
+                CreatePositionCommandAsync?.RaiseCanExecuteChanged();
+                UpdatePositionCommandAsync?.RaiseCanExecuteChanged();
+            };
         }
 
         // List<PositionDisplay>
@@ -331,7 +350,107 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             set
             {
                 SetProperty(ref _position, value);
+
+                CreatePositionCommandAsync?.RaiseCanExecuteChanged();
+                UpdatePositionCommandAsync?.RaiseCanExecuteChanged();
+
+                SetPropPosition(value);
             }
+        }
+
+        private void SetPropPosition(PositionDisplay? value)
+        {
+            if (value == null)
+            {
+                NewPostionDisplay();
+                return;
+            }
+
+            PositionDis!.Name = value.Name;
+            PositionDis!.Description = value.Description;
+        }
+
+        // CREATE
+        public RelayCommandAsync CreatePositionCommandAsync { get; private set; }
+        private async Task Execute_CreatePositionCommandAsync()
+        {
+            if (Department == null && PositionDis == null)
+            {
+                MessageBox.Show("Данные пусты!");
+                return;
+            }
+
+            var request = new CreatePositionRequest(PositionDis!.Name, PositionDis!.Description);
+
+            var result = await _positionApiServiceFactory.Create(Department!.Id).AddAsync<CreatePositionRequest, string>(request);
+
+            if (result.IsFailure)
+            {
+                MessageBox.Show(result.StringMessage);
+                return;
+            }
+
+            Positions.Add(new PositionDisplay(new PositionResponse(Guid.Parse(result.Value), PositionDis.Name, PositionDis.Description)));
+
+            NewPostionDisplay();
+        }
+        private bool CanExecute_CreatePositionCommandAsync()
+            => !string.IsNullOrWhiteSpace(PositionDis?.Name) &&
+               !string.IsNullOrWhiteSpace(PositionDis?.Description);
+
+        // UPDATE
+        public RelayCommandAsync UpdatePositionCommandAsync { get; private set; }
+        private async Task Execute_UpdatePositionCommandAsync()
+        {
+            if (Department == null && Position == null)
+            {
+                MessageBox.Show("Не был выбран или отдел или должность!");
+                return;
+            }
+
+            var request = new UpdatePositionRequest(PositionDis!.Name, PositionDis!.Description);
+
+            var result = await _positionApiServiceFactory.Create(Department!.Id).UpdateAsync(Position!.Id, request);
+
+            if (result.IsFailure)
+            {
+                MessageBox.Show(result.StringMessage);
+                return;
+            }
+
+            var updatePosition = Positions.FirstOrDefault(x => x.Id == Position.Id);
+
+            if (updatePosition == null)
+            {
+                MessageBox.Show("Не удалось обновить данные!");
+                return;
+            }
+
+            updatePosition.Name = PositionDis!.Name;
+            updatePosition.Description = PositionDis!.Description;
+
+            NewPostionDisplay();
+        }
+        private bool CanExecute_UpdatePositionCommandAsync()
+            => Department != null && Position != null &&
+               !string.IsNullOrWhiteSpace(PositionDis?.Name) &&
+               !string.IsNullOrWhiteSpace(PositionDis?.Description);
+
+        // DELETE
+        public RelayCommandAsync<PositionDisplay> DeletePositionCommandAsync { get; private set; }
+        private async Task Execute_DeletePositionCommandAsync(PositionDisplay display)
+        {
+            var result = await _positionApiServiceFactory.Create(Department!.Id).DeleteAsync(display.Id);
+
+            if (result.IsFailure)
+            {
+                MessageBox.Show(result.StringMessage);
+                return;
+            }
+
+            Positions.Remove(display);
+
+            NewPostionDisplay();
         }
 
         #endregion

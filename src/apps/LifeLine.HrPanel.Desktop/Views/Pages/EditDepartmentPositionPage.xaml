@@ -136,31 +136,31 @@
                     
                     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                    <!-- Наименование / Описание -->
+                            <!-- Наименование / Описание -->
                             <StackPanel Margin="5">
                                 <TextBlock Text="Наимевание" FontSize="18" Margin="0 0 0 5" HorizontalAlignment="Center"/>
 
                                 <cc:PlaceHolderTextBox PlaceHolder="Наименование" Margin="0 0 0 5"
-                                               Text="{Binding DepartmentDis.Name, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                       Text="{Binding DepartmentDis.Name, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
                                 <cc:PlaceHolderTextBox PlaceHolder="Описание" Margin="0 0 0 0" TextWrapping="Wrap" MaxHeight="500"
-                                               Text="{Binding DepartmentDis.Description, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                    </StackPanel>
+                                                       Text="{Binding DepartmentDis.Description, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                            </StackPanel>
 
-                    <!-- Адрес -->
+                            <!-- Адрес -->
                             <StackPanel Margin="5">
                                 <TextBlock Text="Адрес" FontSize="18" Margin="0 0 0 5" HorizontalAlignment="Center"/>
 
                                 <cc:PlaceHolderTextBox PlaceHolder="Код" Margin="0 0 0 5" 
-                                               Text="{Binding DepartmentDis.PostalCode, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                       Text="{Binding DepartmentDis.PostalCode, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
                                 <cc:PlaceHolderTextBox PlaceHolder="Регион" Margin="0 0 0 5"
-                                               Text="{Binding DepartmentDis.Region, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                       Text="{Binding DepartmentDis.Region, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
                                 <cc:PlaceHolderTextBox PlaceHolder="Город" Margin="0 0 0 5"
-                                               Text="{Binding DepartmentDis.City, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                       Text="{Binding DepartmentDis.City, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
                                 <cc:PlaceHolderTextBox PlaceHolder="Улица" Margin="0 0 0 5"
-                                               Text="{Binding DepartmentDis.Street, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                                                       Text="{Binding DepartmentDis.Street, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
                                 <cc:PlaceHolderTextBox PlaceHolder="Строение/корпус" Margin="0 0 0 5"
-                                               Text="{Binding DepartmentDis.Building, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                    </StackPanel>
+                                                       Text="{Binding DepartmentDis.Building, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                            </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
 
@@ -188,10 +188,11 @@
 
             <!-- СПИСОК -->
             <Border Grid.Row="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
-                <StackPanel>
+                <DockPanel>
                     <TextBlock Grid.Row="0" Text="Должность" 
                                FontSize="20" Margin="0 5 0 0"
-                               HorizontalAlignment="Center"/>
+                               HorizontalAlignment="Center"
+                               DockPanel.Dock="Top"/>
                     
                     <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
                         <DataGrid ItemsSource="{Binding Positions}" 
@@ -245,7 +246,8 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Width="25" Foreground="#F06870" 
-                                                    Command="{Binding DataContext.DeletePersonalDocumentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                    Command="{Binding DataContext.DeletePositionCommandAsync, 
+                                                                      RelativeSource={RelativeSource AncestorType=DataGrid}}" 
                                                     CommandParameter="{Binding }" 
                                                     Style="{StaticResource Button.Icon}">
                                                 <Control Template="{StaticResource Trash}"/>
@@ -256,31 +258,41 @@
                             </DataGrid.Columns>
                         </DataGrid>
                     </Border>
-                </StackPanel>
+                </DockPanel>
             </Border>
 
             <!-- ПОЛЯ -->
             <Border Grid.Row="1" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
-                <DockPanel Grid.Row="0">
-                    <!-- Наименование / Описание -->
-                    <StackPanel Margin="5" DockPanel.Dock="Top">
-                        <TextBlock Grid.Row="0" Text="Наимевание" 
-                                   FontSize="18" Margin="0 0 0 5"
-                                   HorizontalAlignment="Center"/>
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
 
-                        <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование" Margin="0 0 0 5"
-                                               Text="{Binding PositionName}" Style="{StaticResource TextBox.PlaceHolder}"/>
-                        <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Описание" Margin="0 0 0 0" TextWrapping="Wrap" MaxHeight="500"
-                                               Text="{Binding PositionDescription}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                        <!-- Наименование / Описание -->
+                        <StackPanel Margin="5">
+                            <TextBlock Text="Наимевание" FontSize="18" Margin="0 0 0 5" HorizontalAlignment="Center"/>
+
+                            <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Наименование" Margin="0 0 0 5"
+                                                   Text="{Binding PositionDis.Name, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                            <cc:PlaceHolderTextBox Grid.Column="0" PlaceHolder="Описание" Margin="0 0 0 0" TextWrapping="Wrap" MaxHeight="500"
+                                                   Text="{Binding PositionDis.Description, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBox.PlaceHolder}"/>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
+                        <Button Content="Сохранить" Margin="5"
+                                HorizontalAlignment="Stretch"
+                                Command="{Binding CreatePositionCommandAsync}"
+                                Style="{StaticResource App.Button}"/>
+
+                        <Button Content="Обновить"  Margin="5"
+                                HorizontalAlignment="Stretch"
+                                Command="{Binding UpdatePositionCommandAsync}"
+                                Style="{StaticResource App.Button}"/>
                     </StackPanel>
-
-                    <Button Grid.Row="1" Content="Сохранить"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Bottom"
-                            Margin="5"
-                            Command="{Binding OpenPageCommand}"
-                            Style="{StaticResource App.Button}"/>
-                </DockPanel>
+                </Grid>
             </Border>
         </Grid>
     </Grid>
