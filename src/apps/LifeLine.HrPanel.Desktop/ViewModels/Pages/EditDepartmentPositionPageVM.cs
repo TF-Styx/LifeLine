@@ -8,7 +8,6 @@ using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
@@ -90,7 +89,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             DepartmentDis.PropertyChanged += (s, e) =>
             {
-                Debug.WriteLine("\n[NewDepartmentDisplay] Обновление свойств!\n");
                 CreateDepartmentCommandAsync?.RaiseCanExecuteChanged();
                 UpdateDepartmentCommandAsync?.RaiseCanExecuteChanged();
             };
@@ -128,12 +126,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 CreateDepartmentCommandAsync?.RaiseCanExecuteChanged();
                 UpdateDepartmentCommandAsync?.RaiseCanExecuteChanged();
 
-                SetProp(value);
+                SetPropDepartment(value);
             }
         }
 
         // Установка значений
-        private void SetProp(DepartmentDisplay? value)
+        private void SetPropDepartment(DepartmentDisplay? value)
         {
             if (value == null)
             {
