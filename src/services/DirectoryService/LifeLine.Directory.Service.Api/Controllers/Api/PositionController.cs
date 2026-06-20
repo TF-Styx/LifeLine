@@ -24,7 +24,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное создание!"),
+                    onSuccess: () => Ok(result.Value),
                     onFailure: errors => BadRequest(errors)
                 );
         }

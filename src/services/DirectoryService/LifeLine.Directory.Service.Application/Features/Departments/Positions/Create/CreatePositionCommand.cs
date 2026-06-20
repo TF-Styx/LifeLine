@@ -3,5 +3,5 @@ using Terminex.Common.Results;
 
 namespace LifeLine.Directory.Service.Application.Features.Departments.Positions.Create
 {
-    public sealed record CreatePositionCommand(Guid Id, string Name, string Description) : IRequest<Result>;
+    public sealed record CreatePositionCommand(Guid Id, string Name, string Description) : IRequest<Result<string>>;
 }

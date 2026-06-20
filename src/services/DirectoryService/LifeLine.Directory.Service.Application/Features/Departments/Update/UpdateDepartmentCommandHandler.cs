@@ -1,11 +1,11 @@
-﻿using LifeLine.Directory.Service.Application.Common;
-using LifeLine.Directory.Service.Application.Common.Repository;
-using LifeLine.Directory.Service.Domain.ValueObjects;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using Shared.Domain.ValueObjects;
-using Shared.Kernel.Exceptions;
+﻿using MediatR;
 using Terminex.Common.Results;
+using Shared.Kernel.Exceptions;
+using Shared.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
+using LifeLine.Directory.Service.Application.Common;
+using LifeLine.Directory.Service.Domain.ValueObjects;
+using LifeLine.Directory.Service.Application.Common.Repository;
 
 namespace LifeLine.Directory.Service.Application.Features.Departments.Update
 {
@@ -31,6 +31,18 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Update
 
                 department.UpdateName(DirectoryName.Create(request.Name));
                 department.UpdateDescription(Description.Create(request.Description));
+
+                department.UpdateAddress
+                (
+                    Address.Create
+                    (
+                        request.Address.PostalCode,
+                        request.Address.Region,
+                        request.Address.City,
+                        request.Address.Street,
+                        request.Address.Building
+                    )
+                );
 
                 await _context.SaveChangesAsync(cancellationToken);
 

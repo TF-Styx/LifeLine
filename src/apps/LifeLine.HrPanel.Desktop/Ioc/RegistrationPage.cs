@@ -17,6 +17,10 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddTransient<EmployeeCreatePageVM>();
             services.AddSingleton<Func<EmployeeCreatePageVM>>(provider => () => provider.GetRequiredService<EmployeeCreatePageVM>());
 
+            services.AddTransient<IPageFactory, EditDepartmentPositionPageFactory>();
+            services.AddTransient<EditDepartmentPositionPageVM>();
+            services.AddSingleton<Func<EditDepartmentPositionPageVM>>(provider => () => provider.GetRequiredService<EditDepartmentPositionPageVM>());
+
             return services;
         }
     }

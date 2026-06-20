@@ -69,6 +69,12 @@ namespace LifeLine.Directory.Service.Domain.Models
                 Description = description;
         }
 
+        public void UpdateAddress(Address address)
+        {
+            if (address != DepartmentAddress)
+                DepartmentAddress = address;
+        }
+
         /// <summary>
         /// Обновление имени должности
         /// </summary>

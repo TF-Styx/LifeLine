@@ -4,12 +4,6 @@
     {
         EmployeePage, 
         EmployeeCreatePage,
-        EditContactInformationEmployeePage,
-        EditPersonalDocumentEmployeePage,
-        EditEducationDocumentEmployeePage,
-        EditSpecialtyEmployeePage,
-        EditWorkPermitEmployeePage,
-        EditAssignmentEmployeePage,
-        EditDepartmentPage
+        EditDepartmentPositionPage
     }
 }
