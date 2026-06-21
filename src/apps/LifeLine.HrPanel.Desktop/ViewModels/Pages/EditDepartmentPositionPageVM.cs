@@ -282,7 +282,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public RelayCommandAsync<DepartmentDisplay> DeleteDepartmentCommandAsync { get; private set; }
         private async Task Execute_DeleteDepartmentCommandAsync(DepartmentDisplay display)
         {
-            var result = await _departmentService.DeleteAsync(display.Id);
+            var result = await _departmentService.ForceDeleteAsync(display.Id);
 
             if (result.IsFailure)
             {
