@@ -1,0 +1,7 @@
+﻿using MediatR;
+using Shared.Contracts.Response.DirectoryService;
+
+namespace LifeLine.Directory.Service.Application.Features.Branches.Get.GetAllByHospitalId
+{
+    public sealed record GetAllByHospitalIdQuery(Guid HospitalId) : IRequest<List<BranchResponse>>;
+}

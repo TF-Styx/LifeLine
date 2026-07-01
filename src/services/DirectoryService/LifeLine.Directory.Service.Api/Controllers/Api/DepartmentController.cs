@@ -1,7 +1,7 @@
 ﻿using LifeLine.Directory.Service.Application.Features.Departments.Create;
 using LifeLine.Directory.Service.Application.Features.Departments.Delete;
-using LifeLine.Directory.Service.Application.Features.Departments.ForceDelete;
 using LifeLine.Directory.Service.Application.Features.Departments.Get.GetAll;
+using LifeLine.Directory.Service.Application.Features.Departments.Get.GetAllByBranchId;
 using LifeLine.Directory.Service.Application.Features.Departments.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -18,19 +18,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateDepartmentRequest request, CancellationToken cancellationToken = default)
         {
-            var command = new CreateDepartmentCommand
-                (
-                    request.Name,
-                    request.Description,
-                    new CreateDepartmentAddressCommandData
-                    (
-                        request.Address.PostalCode, 
-                        request.Address.Region, 
-                        request.Address.City, 
-                        request.Address.Street, 
-                        request.Address.Building
-                    )
-                );
+            var command = new CreateDepartmentCommand(request.Name, request.Description, request.Building, Guid.Parse(request.BranchId));
 
             var result = await _mediator.Send(command, cancellationToken);
 
@@ -45,23 +33,14 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default) 
             => Ok(await _mediator.Send(new GetAllDepartmentQuery(), cancellationToken));
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDepartmentRequest request, CancellationToken cancellationToken = default)
+        [HttpGet("by-branch-id/{branchId}")]
+        public async Task<IActionResult> GetAllByBranchId([FromRoute] Guid branchId, CancellationToken cancellationToken = default)
+            => Ok(await _mediator.Send(new GetAllByBranchIdQuery(branchId), cancellationToken));
+
+        [HttpPatch("{departmentId}")]
+        public async Task<IActionResult> Update([FromRoute] Guid departmentId, [FromBody] UpdateDepartmentRequest request, CancellationToken cancellationToken = default)
         {
-            var command = new UpdateDepartmentCommand
-            (
-                id, 
-                request.Name, 
-                request.Description,
-                new UpdateDepartmentDataAddressCommand
-                (
-                    request.Address.PostalCode,
-                    request.Address.Region,
-                    request.Address.City,
-                    request.Address.Street,
-                    request.Address.Building
-                )
-            );
+            var command = new UpdateDepartmentCommand(departmentId, request.Name, request.Description, request.Building, Guid.Parse(request.BranchId));
 
             var result = await _mediator.Send(command, cancellationToken);
 
@@ -72,30 +51,16 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
                 );
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+        [HttpDelete("{departmentId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid departmentId, CancellationToken cancellationToken = default)
         {
-            var command = new DeleteDepartmentCommand(id);
+            var command = new DeleteDepartmentCommand(departmentId);
 
             var result = await _mediator.Send(command, cancellationToken);
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное удаление!"),
-                    onFailure: errors => BadRequest(errors)
-                );
-        }
-
-        [HttpDelete("{id}/force-delete")]
-        public async Task<IActionResult> ForceDelete([FromRoute] Guid id, CancellationToken cancellationToken = default)
-        {
-            var command = new ForceDeleteDepartmentCommand(id);
-
-            var result = await _mediator.Send(command, cancellationToken);
-
-            return result.Match<IActionResult>
-                (
-                    onSuccess: () => Ok("Успешное удаление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => BadRequest(errors)
                 );
         }

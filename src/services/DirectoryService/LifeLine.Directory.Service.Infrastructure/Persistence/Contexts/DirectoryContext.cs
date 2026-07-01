@@ -7,6 +7,8 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Contexts
 {
     internal sealed class DirectoryContext(DbContextOptions options) : DbContext(options), IDirectoryContext
     {
+        public DbSet<Hospital> Hospitals { get; set; } = null!;
+        public DbSet<Branch> Branches { get; set; } = null!;
         public DbSet<Department> Departments { get; set; } = null!;
         public DbSet<Position> Positions { get; set; } = null!;
         public DbSet<Status> Statuses { get; set; } = null!;
@@ -20,6 +22,8 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Contexts
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.ApplyConfiguration(new HospitalConfiguration());
+            modelBuilder.ApplyConfiguration(new BranchConfiguration());
             modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
             modelBuilder.ApplyConfiguration(new PositionConfiguration());
             modelBuilder.ApplyConfiguration(new StatusConfiguration());

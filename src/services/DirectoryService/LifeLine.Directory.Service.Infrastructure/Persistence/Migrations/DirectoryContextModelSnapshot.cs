@@ -17,7 +17,7 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -28,7 +28,7 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("Id");
 
-                    b.Property<string>("AdmissionName")
+                    b.Property<string>("AdmissionStatusName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -40,14 +40,64 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
                     b.ToTable("AdmissionStatuses", (string)null);
                 });
 
-            modelBuilder.Entity("LifeLine.Directory.Service.Domain.Models.Department", b =>
+            modelBuilder.Entity("LifeLine.Directory.Service.Domain.Models.Branch", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("Id");
 
                     b.Property<string>("Description")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)")
+                        .HasColumnName("Description")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("Email")
                         .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Email");
+
+                    b.Property<Guid>("HospitalId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("HospitalId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("Name")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Phone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HospitalId");
+
+                    b.ToTable("Branches", (string)null);
+                });
+
+            modelBuilder.Entity("LifeLine.Directory.Service.Domain.Models.Department", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BranchId");
+
+                    b.Property<string>("Building")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("Building")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("Description")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)")
                         .HasColumnName("Description")
@@ -62,6 +112,8 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BranchId");
+
                     b.ToTable("Departments", (string)null);
                 });
 
@@ -71,7 +123,7 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("Id");
 
-                    b.Property<string>("DocumentName")
+                    b.Property<string>("DocumentTypeName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -89,7 +141,7 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("Id");
 
-                    b.Property<string>("EducationName")
+                    b.Property<string>("EducationLevelName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -101,13 +153,47 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
                     b.ToTable("EducationLevels", (string)null);
                 });
 
+            modelBuilder.Entity("LifeLine.Directory.Service.Domain.Models.Hospital", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)")
+                        .HasColumnName("Description")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Email");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("Name")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Phone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hospitals", (string)null);
+                });
+
             modelBuilder.Entity("LifeLine.Directory.Service.Domain.Models.PermitType", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("Id");
 
-                    b.Property<string>("PermitName")
+                    b.Property<string>("PermitTypeName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -130,7 +216,6 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
                         .HasColumnName("DepartmentId");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)")
                         .HasColumnName("Description")
@@ -175,23 +260,18 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
                     b.ToTable("Statuses", (string)null);
                 });
 
-            modelBuilder.Entity("LifeLine.Directory.Service.Domain.Models.Department", b =>
+            modelBuilder.Entity("LifeLine.Directory.Service.Domain.Models.Branch", b =>
                 {
-                    b.OwnsOne("Shared.Domain.ValueObjects.Address", "DepartmentAddress", b1 =>
+                    b.HasOne("LifeLine.Directory.Service.Domain.Models.Hospital", null)
+                        .WithMany()
+                        .HasForeignKey("HospitalId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.OwnsOne("Shared.Domain.ValueObjects.Address", "Address", b1 =>
                         {
-                            b1.Property<Guid>("DepartmentId")
+                            b1.Property<Guid>("BranchId")
                                 .HasColumnType("uuid");
-
-                            b1.Property<string>("Apartment")
-                                .HasMaxLength(50)
-                                .HasColumnType("character varying(50)")
-                                .HasColumnName("Apartment");
-
-                            b1.Property<string>("Building")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("character varying(50)")
-                                .HasColumnName("Building");
 
                             b1.Property<string>("City")
                                 .IsRequired()
@@ -217,15 +297,67 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
                                 .HasColumnType("character varying(200)")
                                 .HasColumnName("Street");
 
-                            b1.HasKey("DepartmentId");
+                            b1.HasKey("BranchId");
 
-                            b1.ToTable("Departments");
+                            b1.ToTable("Branches");
 
                             b1.WithOwner()
-                                .HasForeignKey("DepartmentId");
+                                .HasForeignKey("BranchId");
                         });
 
-                    b.Navigation("DepartmentAddress")
+                    b.Navigation("Address")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LifeLine.Directory.Service.Domain.Models.Department", b =>
+                {
+                    b.HasOne("LifeLine.Directory.Service.Domain.Models.Branch", null)
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LifeLine.Directory.Service.Domain.Models.Hospital", b =>
+                {
+                    b.OwnsOne("Shared.Domain.ValueObjects.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("HospitalId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("City");
+
+                            b1.Property<string>("PostalCode")
+                                .IsRequired()
+                                .HasMaxLength(6)
+                                .HasColumnType("character varying(6)")
+                                .HasColumnName("PostalCode");
+
+                            b1.Property<string>("Region")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("Region");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("Street");
+
+                            b1.HasKey("HospitalId");
+
+                            b1.ToTable("Hospitals");
+
+                            b1.WithOwner()
+                                .HasForeignKey("HospitalId");
+                        });
+
+                    b.Navigation("Address")
                         .IsRequired();
                 });
 
@@ -234,7 +366,7 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Migrations
                     b.HasOne("LifeLine.Directory.Service.Domain.Models.Department", "Department")
                         .WithMany("Positions")
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Department");

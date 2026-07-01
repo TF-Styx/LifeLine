@@ -11,7 +11,7 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Positions.
 
         public async Task<List<PositionResponse>> Handle(GetAllPositionQuery request, CancellationToken cancellationToken)
             => await _context.Positions
-                .Select(x => new PositionResponse(x.Id, x.Name, x.Description))
+                .Select(x => new PositionResponse(x.Id.ToString(), x.Name, x.Description!))
                     .ToListAsync(cancellationToken);
     }
 }

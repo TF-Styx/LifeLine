@@ -17,15 +17,9 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Get.GetAll
                     (
                         x.Id.ToString(), 
                         x.Name, 
-                        x.Description,
-                        new DepartmentDataAddressResponse
-                        (
-                            x.DepartmentAddress.PostalCode,
-                            x.DepartmentAddress.Region,
-                            x.DepartmentAddress.City,
-                            x.DepartmentAddress.Street,
-                            x.DepartmentAddress.Building
-                        )
+                        x.Description!,
+                        x.Building,
+                        x.BranchId.ToString()
                     )
                 ).ToListAsync(cancellationToken);
     }

@@ -6,6 +6,8 @@ namespace LifeLine.Directory.Service.Application.Common
 {
     public interface IDirectoryContext : IBaseWriteDbContext
     {
+        DbSet<Hospital> Hospitals { get; set; }
+        DbSet<Branch> Branches { get; set; }
         DbSet<Department> Departments { get; set; }
         DbSet<Position> Positions { get; set; }
         DbSet<Status> Statuses { get; set; }

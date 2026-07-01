@@ -17,6 +17,8 @@ namespace LifeLine.Directory.Service.Infrastructure.Ioc
             services.AddDbContext<DirectoryContext>(option => option.UseNpgsql(connectionString));
             services.AddScoped<IDirectoryContext>(provider => provider.GetRequiredService<DirectoryContext>());
 
+            services.AddScoped<IHospitalRepository, HospitalRepository>();
+            services.AddScoped<IBranchRepository, BranchRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IStatusRepository, StatusRepository>();
             services.AddScoped<IEducationLevelRepository, EducationLevelRepository>();

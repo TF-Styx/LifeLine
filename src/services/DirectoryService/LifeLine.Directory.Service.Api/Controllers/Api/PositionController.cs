@@ -1,6 +1,6 @@
 ﻿using LifeLine.Directory.Service.Application.Features.Departments.Positions.Create;
 using LifeLine.Directory.Service.Application.Features.Departments.Positions.Delete;
-using LifeLine.Directory.Service.Application.Features.Departments.Positions.Get.GetAll;
+using LifeLine.Directory.Service.Application.Features.Departments.Positions.Get.GetAllByDepartmentId;
 using LifeLine.Directory.Service.Application.Features.Departments.Positions.Get.GetAllPosition;
 using LifeLine.Directory.Service.Application.Features.Departments.Positions.Update;
 using MediatR;
@@ -31,7 +31,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromRoute] Guid departmentId, CancellationToken cancellationToken = default)
-            => Ok(await _mediator.Send(new GetAllPositionByDepartmentQuery(departmentId), cancellationToken));
+            => Ok(await _mediator.Send(new GetAllByDepartmentIdQuery(departmentId), cancellationToken));
 
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAllPosition(CancellationToken cancellationToken = default)

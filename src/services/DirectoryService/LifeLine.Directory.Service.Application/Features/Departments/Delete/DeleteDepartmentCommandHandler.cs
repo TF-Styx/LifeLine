@@ -1,5 +1,6 @@
 ﻿using LifeLine.Directory.Service.Application.Common;
 using LifeLine.Directory.Service.Application.Common.Repository;
+using LifeLine.Employee.Service.Client.Services.Employee.Assignment;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Kernel.Errors;
@@ -11,23 +12,27 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Delete
         (
             IDirectoryContext context,
             IDepartmentRepository repository,
+            IAssignmentCheckService service,
             ILogger<DeleteDepartmentCommandHandler> logger
         ) : IRequestHandler<DeleteDepartmentCommand, Result>
     {
         private readonly IDirectoryContext _context = context;
         private readonly IDepartmentRepository _repository = repository;
+        private readonly IAssignmentCheckService _service = service;
         private readonly ILogger<DeleteDepartmentCommandHandler> _logger = logger;
 
         public async Task<Result> Handle(DeleteDepartmentCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var department = await _repository.GetByIdAsync(request.Id);
+                var department = await _repository.GetByIdAsync(request.DepartmentId);
 
                 if (department == null)
                     return Result.Failure(new Error(ErrorCode.NotFound, "Запись департамента не найдена!"));
 
-                if (department.Positions.Any())
+                var hasActiveAssignmentResult = await _service.HasActiveAssignmentsToDepartmentAsync(department.Id, cancellationToken);
+
+                if (hasActiveAssignmentResult.IsFailure)
                     return Result.Failure(new Error(AppErrors.ExistDependentData, "У департамента существуют зависимые данные!"));
 
                 _repository.Remove(department);
@@ -40,7 +45,7 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Delete
             {
                 _logger.LogCritical(ex, "Ошибка при удалении Department!");
 
-                return Result.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
+                return Result.Failure(new Error(ErrorCode.Server, $"Ошибка сервера при сохранении! {ex}"));
             }
         }
     }

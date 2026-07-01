@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using LifeLine.Directory.Service.Application.Common;
 using LifeLine.Directory.Service.Domain.ValueObjects;
 using LifeLine.Directory.Service.Application.Common.Repository;
+using LifeLine.Directory.Service.Domain.ValueObjects.AddressVO;
 
 namespace LifeLine.Directory.Service.Application.Features.Departments.Update
 {
@@ -24,25 +25,15 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Update
         {
             try
             {
-                var department = await _repository.GetByIdAsync(request.Id);
+                var department = await _repository.GetByIdAsync(request.DepartmentId);
 
                 if (department == null)
                     return Result.Failure(new Error(ErrorCode.NotFound, "Запись департамента не найдена!"));
 
                 department.UpdateName(DirectoryName.Create(request.Name));
-                department.UpdateDescription(Description.Create(request.Description));
-
-                department.UpdateAddress
-                (
-                    Address.Create
-                    (
-                        request.Address.PostalCode,
-                        request.Address.Region,
-                        request.Address.City,
-                        request.Address.Street,
-                        request.Address.Building
-                    )
-                );
+                department.UpdateDescription(!string.IsNullOrWhiteSpace(request.Description) ? Description.Create(request.Description) : null);
+                department.UpdateBuilding(Building.Create(request.Building));
+                department.UpdateBranchId(BranchId.Create(request.BranchId));
 
                 await _context.SaveChangesAsync(cancellationToken);
 
