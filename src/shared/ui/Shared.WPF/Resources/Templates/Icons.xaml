@@ -253,6 +253,34 @@
         </Viewbox>
     </ControlTemplate>
 
+    <!-- Иконка "Редактирования" -->
+    <ControlTemplate x:Key="Pencil">
+        <Border x:Name="border" 
+                Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="4"
+                Padding="{TemplateBinding Padding}">
+            <Viewbox Width="{TemplateBinding Width}" 
+                     Height="{TemplateBinding Height}">
+                <Canvas Width="24" Height="24">
+                    <Path Data="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeLineJoin="Round"
+                          Fill="Transparent"/>
+                    <Path Data="M15 5 L19 9"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeLineJoin="Round"
+                          Fill="Transparent"/>
+                </Canvas>
+            </Viewbox>
+        </Border>
+    </ControlTemplate>
+
     <!-- Иконка "Мусорка" -->
     <ControlTemplate x:Key="Trash">
         <Viewbox Stretch="Uniform">
@@ -320,6 +348,57 @@
                       z" />
             </Canvas>
         </Viewbox>
+    </ControlTemplate>
+    
+    <!-- Иконка "Фильр" -->
+    <ControlTemplate x:Key="Filter">
+        <Border x:Name="border" 
+                Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="4"
+                Padding="{TemplateBinding Padding}">
+            <Viewbox Width="{TemplateBinding Width}" 
+                     Height="{TemplateBinding Height}">
+                <Canvas Width="24" Height="24">
+                    <Path Data="M10 20 a1 1 0 0 0 .553.895 l2 1 A1 1 0 0 0 14 21 v-7 a2 2 0 0 1 .517-1.341 L21.74 4.67 A1 1 0 0 0 21 3 H3 a1 1 0 0 0-.742 1.67 l7.225 7.989 A2 2 0 0 1 10 14 z"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeLineJoin="Round"
+                          Fill="Transparent"/>
+                </Canvas>
+            </Viewbox>
+        </Border>
+    </ControlTemplate>
+
+    <!-- Иконка "Закрыть" -->
+    <ControlTemplate x:Key="Close1">
+        <Border x:Name="border" 
+                Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="4"
+                Padding="0">
+            <Viewbox Stretch="Uniform">
+                <Canvas Width="24" Height="24">
+                    <Path Data="M18 6 L6 18"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          StrokeLineJoin="Round"
+                          Fill="Transparent"/>
+                    <Path Data="M6 6 L18 18"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          StrokeLineJoin="Round"
+                          Fill="Transparent"/>
+                </Canvas>
+            </Viewbox>
+        </Border>
     </ControlTemplate>
 
     <!-- Иконка "Архив" -->

@@ -4,6 +4,6 @@
     {
         EmployeePage, 
         EmployeeCreatePage,
-        EditDepartmentPositionPage
+        ManagementHospitalPage
     }
 }
