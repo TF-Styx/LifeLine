@@ -1,4 +1,5 @@
 ﻿using LifeLine.Directory.Service.Client.Services.AdmissionStatus;
+using LifeLine.Directory.Service.Client.Services.Branch;
 using LifeLine.Directory.Service.Client.Services.Department;
 using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
@@ -70,6 +71,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IEmployeeService _employeeService;
         private readonly IGenderReadOnlyService _genderReadOnlyService;
         private readonly IStatusReadOnlyService _statusReadOnlyService;
+        private readonly IBranchReadOnlyService _branchReadOnlyService;
         private readonly ISpecialtyReadOnlyService _specialtyReadOnlyService;
         private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
         private readonly IDepartmentReadOnlyService _departmentReadOnlyService;
@@ -104,7 +106,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IDocumentDeletionService documentDeletionService,
 
                 IEmployeeService employeeService, 
-                IGenderReadOnlyService genderReadOnlyService,
+                IGenderReadOnlyService genderReadOnlyService, 
+                IBranchReadOnlyService branchReadOnlyService,
                 IStatusReadOnlyService statusReadOnlyService,
                 ISpecialtyReadOnlyService specialtyReadOnlyService,
                 IPermitTypeReadOnlyService permitTypeReadOnlyService,
@@ -138,6 +141,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             _employeeService = employeeService;
             _genderReadOnlyService = genderReadOnlyService;
+            _branchReadOnlyService = branchReadOnlyService;
             _statusReadOnlyService = statusReadOnlyService;
             _specialtyReadOnlyService = specialtyReadOnlyService;
             _permitTypeReadOnlyService = permitTypeReadOnlyService;
@@ -161,7 +165,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             EducationDocuments = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, DocumentTypes, EducationLevels);
             WorkPermits = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, PermitTypes, AdmissionStatuses);
             Specialties = new();
-            AssigmentsContracts = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, _positionReadOnlyApiServiceFactory, Departments, Managers, Statuses, EmployeeTypes);
+            AssigmentsContracts = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, _positionReadOnlyApiServiceFactory, Branches, Departments, Managers, Statuses, EmployeeTypes);
 
             UpdateEmployeePersonalInfoCommand = new RelayCommandAsync(Execute_UpdateEmployeePersonalInfoCommand, CanExecute_UpdateEmployeePersonalInfoCommand);
 
@@ -202,6 +206,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             await GetAllAdmissionStatus();
             await GetAllDepartmentAsync();
             await GetAllEducationLevel();
+            await GetAllBranchesAsync();
             await GetAllPositionAsync();
             await GetAllDocumentType();
             await GetAllEmployeeType();
@@ -569,6 +574,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 details.EmployeeId.ToString(),
                                 item.PositionId.ToString(),
                                 item.DepartmentId.ToString(),
+                                item.BranchId.ToString(),
                                 item.ManagerId.ToString(),
                                 item.HireDate,
                                 item.TerminationDate,
@@ -585,7 +591,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                                 contractsResponse.Salary,
                                 contractsResponse?.ContractFileKey
                             ),
-                        Departments, Positions, Managers, Statuses, EmployeeTypes, SaveStatus.DataBase
+                        Branches, Departments, Positions, Managers, Statuses, EmployeeTypes, SaveStatus.DataBase
                     );
 
                 AssigmentsContracts.LocalAssignmentsContracts.Add(display);
@@ -657,6 +663,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                 EmployeeHrs.Add(display);
             }
+        }
+
+        public ObservableCollection<BranchDisplay> Branches { get; private init; } = [];
+        private async Task GetAllBranchesAsync()
+        {
+            var branches = await _branchReadOnlyService.GetAllAsync();
+
+            Branches.Load([.. branches.Select(branch => new BranchDisplay(branch))]);
         }
 
         public ObservableCollection<DepartmentDisplay> Departments { get; private init; } = [];
@@ -1561,8 +1575,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                     dbRequest: (doc, s3FileName) => new CreateManyDataAssignmentsReqeust
                     (
-                        doc.Position.Id,
-                        doc.Department.Id,
+                        doc.Position.PositionId,
+                        doc.Department.DepartmentId,
+                        doc.Branch.BranchId,
                         doc.Manager?.Id,
                         doc.HireDate,
                         doc.TerminationDate,
@@ -1652,8 +1667,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                     dbRequest: s3FileName => new UpdateAssignmentRequest
                     (
-                        Guid.Parse(AssigmentsContracts.Position.Id),
-                        Guid.Parse(AssigmentsContracts.Department.Id),
+                        Guid.Parse(AssigmentsContracts.Position.PositionId),
+                        Guid.Parse(AssigmentsContracts.Department.DepartmentId),
+                        Guid.Parse(AssigmentsContracts.Branch.BranchId),
                         AssigmentsContracts.Manager != null ? Guid.Parse(AssigmentsContracts.Manager.Id) : null,
                         AssigmentsContracts.HireDate,
                         AssigmentsContracts.TerminationDate,

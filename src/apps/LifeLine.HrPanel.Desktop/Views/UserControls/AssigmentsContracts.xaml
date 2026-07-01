@@ -116,6 +116,17 @@
                 </DataGrid.GroupStyle>
 
                 <DataGrid.Columns>
+                    
+                    
+                    <!-- Филиал -->
+                    <DataGridTemplateColumn Header="Филиал" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Branch.Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
                     <!-- Отдел -->
                     <DataGridTemplateColumn Header="Отдел" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
@@ -241,6 +252,12 @@
                         <!-- Назначение -->
                         <StackPanel Grid.Column="0" Margin="0 0 5 0">
                             <TextBlock Grid.Row="0" Text="Назначение" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                            <ComboBox Grid.Column="0" 
+                                      ItemsSource="{Binding Branches}" 
+                                      SelectedItem="{Binding AssigmentsContracts.Branch}"
+                                      DisplayMemberPath="Name" 
+                                      Margin="0 10 0 0"/>
 
                             <!-- Отдел / Должность -->
                             <Grid Margin="0 10 0 0">
