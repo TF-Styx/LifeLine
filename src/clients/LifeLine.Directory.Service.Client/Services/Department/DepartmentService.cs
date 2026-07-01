@@ -1,47 +1,27 @@
-﻿using Shared.Contracts.Request.DirectoryService.Department;
-using Shared.Contracts.Response.DirectoryService;
-using Shared.Http.Base;
+﻿using Shared.Http.Base;
 using System.Net.Http.Json;
-using System.Text.Json;
 using Terminex.Common.Results;
+using Shared.Contracts.Response.DirectoryService;
 
 namespace LifeLine.Directory.Service.Client.Services.Department
 {
     public sealed class DepartmentService(HttpClient httpClient) : BaseHttpService<DepartmentResponse, string>(httpClient, "api/departments"), IDepartmentService
     {
-        public async Task<Result> UpdateAsync(string departmentId, UpdateDepartmentRequest request)
-        {
-            var response = await HttpClient.PutAsJsonAsync($"{Url}/{departmentId}", request, JsonSerializerOptions);
-            response.EnsureSuccessStatusCode();
-
-            return Result.Success();
-        }
-
-        public async Task<Result> ForceDeleteAsync(string id)
-        {
-            HttpResponseMessage response = null!;
-
-            try
+        public async Task<Result<List<DepartmentResponse>>> GetAllByBranchIdAsync(string branchId)
+		{
+			try
             {
-                response = await HttpClient.DeleteAsync($"{Url}/{id}/force-delete");
+                var response = await HttpClient.GetAsync($"{Url}/by-branch-id/{branchId}");
                 response.EnsureSuccessStatusCode();
 
-                return Result.Success();
-            }
-            catch (HttpRequestException ex)
-            {
-                if (response == null)
-                    return Result.Failure(new Error(ErrorCode.Delete, $"Сетевая ошибка удаления элемента в {Url} : {ex.Message}"));
+                var departments = await response.Content.ReadFromJsonAsync<List<DepartmentResponse>>(JsonSerializerOptions);
 
-                return Result.Failure(new Error(ErrorCode.Delete, $"Ошибка удаления элемента в {Url} : {response.StatusCode} - {await response.Content.ReadAsStringAsync()}"));
+                return Result<List<DepartmentResponse>>.Success(departments ?? []);
             }
-            catch (JsonException jsonEx)
+			catch (Exception ex)
             {
-                return Result.Failure(new Error(ErrorCode.Delete, $"Ошибка десериализации ответа от {Url}: {jsonEx.Message}"));
-            }
-            catch (Exception ex)
-            {
-                return Result.Failure(new Error(ErrorCode.Delete, $"Непредвиденная ошибка удаления элемента в {Url} : {ex.Message}"));
+                return Result<List<DepartmentResponse>>.Failure(Error.BadRequest($"Не валидный запрос!\n" +
+                                                                                 $"Исключение: {ex}\n"));
             }
         }
     }

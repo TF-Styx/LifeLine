@@ -1,6 +1,7 @@
 ﻿using Shared.Contracts.Request.DirectoryService.Position;
 using Shared.Contracts.Response.DirectoryService;
 using Shared.Http.Base;
+using Shared.Kernel.Errors;
 using System.Net.Http.Json;
 using Terminex.Common.Results;
 
@@ -11,10 +12,17 @@ namespace LifeLine.Directory.Service.Client.Services.Position
     {
         public async Task<Result> UpdateAsync(string positionId, UpdatePositionRequest request)
         {
-            var response = await HttpClient.PutAsJsonAsync($"{Url}/{positionId}", request, JsonSerializerOptions);
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                var response = await HttpClient.PutAsJsonAsync($"{Url}/{positionId}", request, JsonSerializerOptions);
+                response.EnsureSuccessStatusCode();
 
-            return Result.Success();
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(AppErrors.CreateHttp, $"Произошла ошибка при сохранении должности!\n{ex}"));
+            }
         }
 
         public async Task<List<PositionResponse>> GetAllPosition()
