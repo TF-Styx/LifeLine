@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\clients\LifeLine.Employee.Service.Client\LifeLine.Employee.Service.Client.csproj" />
     <ProjectReference Include="..\..\..\shared\api\Shared.Api.Infrastructure\Shared.Api.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\shared\core\Shared.Contracts\Shared.Contracts.csproj" />
     <ProjectReference Include="..\..\..\shared\core\Shared.Domain\Shared.Domain.csproj" />

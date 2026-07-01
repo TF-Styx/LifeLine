@@ -25,19 +25,7 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Create
         {
             try
             {
-                var department = Department.Create
-                    (
-                        request.Name, 
-                        request.Description,
-                        Address.Create
-                        (
-                            request.Address.PostalCode,
-                            request.Address.Region,
-                            request.Address.City,
-                            request.Address.Street,
-                            request.Address.Building
-                        )
-                    );
+                var department = Department.Create(request.Name, request.Description, request.Building, request.BranchId);
 
                 await _repository.AddAsync(department, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);

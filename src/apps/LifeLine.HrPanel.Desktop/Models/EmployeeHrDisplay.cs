@@ -1,5 +1,4 @@
-﻿using Shared.Contracts.Response.DirectoryService;
-using Shared.Contracts.Response.EmployeeService;
+﻿using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.ViewModels.Abstract;
 using System.Windows.Media;
 
@@ -84,7 +83,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             get => _department;
             set => SetProperty(ref _department, value);
         }
-        public void SetDepartment(string id) => Department = _departments.FirstOrDefault(x => x.Id == id)!.Name;
+        public void SetDepartment(string id) => Department = _departments.FirstOrDefault(x => x.DepartmentId == id)!.Name;
 
         private string? _position;
         public string? Position
@@ -92,7 +91,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             get => _position;
             set => SetProperty(ref _position, value);
         }
-        public void SetPosition(string id) => Position = _positions.FirstOrDefault(x => x.Id == id)!.Name;
+        public void SetPosition(string id) => Position = _positions.FirstOrDefault(x => x.PositionId == id)!.Name;
 
         private string? _status;
         public string? Status

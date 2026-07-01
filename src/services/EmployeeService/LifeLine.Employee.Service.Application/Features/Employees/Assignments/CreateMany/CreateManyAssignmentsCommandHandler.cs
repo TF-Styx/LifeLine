@@ -46,6 +46,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
                         (
                             assignmentData.PositionId,
                             assignmentData.DepartmentId,
+                            assignmentData.BranchId,
                             assignmentData.ManagerId,
                             assignmentData.HireDate,
                             assignmentData.TerminationDate,

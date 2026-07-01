@@ -3,9 +3,8 @@
     public sealed record CreateDepartmentRequest
         (
             string Name,
-            string Description,
-            CreateDepartmentAddressRequestData Address
+            string? Description,
+            string Building,
+            string BranchId
         );
-
-    public sealed record CreateDepartmentAddressRequestData(string PostalCode, string Region, string City, string Street, string Building);
 }

@@ -9,6 +9,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         private readonly AssignmentResponse _assignmentModel;
         private readonly ContractResponse _contractModel;
 
+        private readonly IReadOnlyCollection<BranchDisplay> _branches;
         private readonly IReadOnlyCollection<DepartmentDisplay> _departments;
         private readonly IReadOnlyCollection<PositionDisplay> _positions;
         private readonly IReadOnlyCollection<ManagerDisplay?> _managers;
@@ -20,6 +21,7 @@ namespace LifeLine.HrPanel.Desktop.Models
                 AssignmentResponse assignmentModel,
                 ContractResponse contractModel,
 
+                IReadOnlyCollection<BranchDisplay> branches,
                 IReadOnlyCollection<DepartmentDisplay> departments,
                 IReadOnlyCollection<PositionDisplay> positions,
                 IReadOnlyCollection<ManagerDisplay?> managers,
@@ -31,12 +33,14 @@ namespace LifeLine.HrPanel.Desktop.Models
             _assignmentModel = assignmentModel;
             _contractModel = contractModel;
 
+            _branches = branches;
             _departments = departments;
             _positions = positions;
             _managers = managers;
             _statuses = statuses;
             _employeeTypes = employeeTypes;
 
+            SetBranch(_assignmentModel.BranchId.ToString());
             SetDepartment(_assignmentModel.DepartmentId.ToString());
             SetPosition(_assignmentModel.PositionId.ToString());
             SetManager(_assignmentModel.ManagerId?.ToString());
@@ -63,29 +67,41 @@ namespace LifeLine.HrPanel.Desktop.Models
 
         public override string ToString()
         {
-            return $"{Department.Id} - {Position.Id} - {Manager?.Id} - {HireDate} - {TerminationDate} - {Status.Id} - {EmployeeType.Id} - {ContractNumber} - {StartDate} - {EndDate} - {Salary} - {FileKey}";
+            return $"{Branch.BranchId} - {Department.DepartmentId} - {Position.PositionId} - {Manager?.Id} - {HireDate} - {TerminationDate} - {Status.Id} - {EmployeeType.Id} - {ContractNumber} - {StartDate} - {EndDate} - {Salary} - {FileKey}";
         }
 
         #region Assignment
 
-        public string AssignmentId => _assignmentModel.AssignmentId.ToString();
+        public string AssignmentId => _assignmentModel.AssignmentId;
 
+        public string BranchId => _assignmentModel.BranchId;
+        private BranchDisplay _branch = null!;
+        public BranchDisplay Branch
+        {
+            get => _branch;
+            set => SetProperty(ref _branch, value);
+        }
+        public void SetBranch(string id) => Branch = _branches.FirstOrDefault(x => x.BranchId == id)!;
+
+        public string DepartmentId => _assignmentModel.DepartmentId;
         private DepartmentDisplay _department = null!;
         public DepartmentDisplay Department
         {
             get => _department;
             set => SetProperty(ref _department, value);
         }
-        public void SetDepartment(string id) => Department = _departments.FirstOrDefault(x => x.Id == id)!;
+        public void SetDepartment(string id) => Department = _departments.FirstOrDefault(x => x.DepartmentId == id)!;
 
+        public string PositionId => _assignmentModel.PositionId;
         private PositionDisplay _position = null!;
         public PositionDisplay Position
         {
             get => _position;
             set => SetProperty(ref _position, value);
         }
-        public void SetPosition(string id) => Position = _positions.FirstOrDefault(x => x.Id == id)!;
+        public void SetPosition(string id) => Position = _positions.FirstOrDefault(x => x.PositionId == id)!;
 
+        public string? ManagerId => _assignmentModel.ManagerId;
         private ManagerDisplay? _manager;
         public ManagerDisplay? Manager
         {
@@ -108,6 +124,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             set => SetProperty(ref _terminationDate, value);
         }
 
+        public string StatusId => _assignmentModel.StatusId;
         private StatusDisplay _status = null!;
         public StatusDisplay Status
         {

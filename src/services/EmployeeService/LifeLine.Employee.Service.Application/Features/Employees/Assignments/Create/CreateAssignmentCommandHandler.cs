@@ -44,6 +44,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
                     (
                         request.PositionId,
                         request.DepartmentId,
+                        Guid.NewGuid(),
                         request.ManagerId,
                         request.HireDate,
                         request.TerminationDate,

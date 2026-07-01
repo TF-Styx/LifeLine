@@ -124,9 +124,9 @@
                                     Command="{Binding OpenPageCommand}" 
                                     CommandParameter="{x:Static enum:PageName.EmployeeCreatePage}" 
                                     Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
-                            <Button Content="Отделы и должности" 
+                            <Button Content="Управление больницей" 
                                     Command="{Binding OpenPageCommand}" 
-                                    CommandParameter="{x:Static enum:PageName.EditDepartmentPositionPage}" 
+                                    CommandParameter="{x:Static enum:PageName.ManagementHospitalPage}" 
                                     Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
                             <Button Content="Документы" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>
                             <Button Content="Отзывы" Style="{StaticResource App.Hr.MainWindow.Header.Button}"/>

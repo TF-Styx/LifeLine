@@ -750,6 +750,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             (
                 Guid positionId,
                 Guid departmentId,
+                Guid branchId,
                 Guid? managerId,
                 DateTime hireDate,
                 DateTime? terminationDate,
@@ -762,6 +763,7 @@ namespace LifeLine.Employee.Service.Domain.Models
                     this.Id,
                     positionId,
                     departmentId,
+                    branchId,
                     managerId,
                     hireDate,
                     terminationDate,
@@ -792,6 +794,17 @@ namespace LifeLine.Employee.Service.Domain.Models
             GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
 
             assignment!.UpdateDepartment(DepartmentId.Create(departmentId));
+        }
+
+        public void UpdateAssignmentBranchId(Guid id, Guid branchId)
+        {
+            GuardException.Against.That(Assignments.Count == 0, () => new EmptyAssignmentException($"Филиал: Назначение у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
+
+            var assignment = this.Assignments.FirstOrDefault(d => d.Id == id);
+
+            GuardException.Against.That(assignment == null, () => new NotFoundAssignmentException($"Назначение не найдено!"));
+
+            assignment!.UpdateBranch(BranchId.Create(branchId));
         }
 
         public void UpdateAssignmentManagerId(Guid id, Guid? managerId)

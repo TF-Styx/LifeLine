@@ -28,6 +28,10 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("Id");
 
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BranchId");
+
                     b.Property<Guid>("ContractId")
                         .HasColumnType("uuid")
                         .HasColumnName("ContractId");

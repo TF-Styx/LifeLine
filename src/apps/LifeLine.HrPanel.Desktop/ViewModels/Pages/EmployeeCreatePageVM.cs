@@ -1,4 +1,5 @@
 ﻿using LifeLine.Directory.Service.Client.Services.AdmissionStatus;
+using LifeLine.Directory.Service.Client.Services.Branch;
 using LifeLine.Directory.Service.Client.Services.Department;
 using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
@@ -52,6 +53,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IFilePreviewService _filePreviewService;
         private readonly IGenderReadOnlyService _genderReadOnlyService;
         private readonly IStatusReadOnlyService _statusReadOnlyService;
+        private readonly IBranchReadOnlyService _branchReadOnlyService;
         private readonly ISpecialtyReadOnlyService _specialtyReadOnlyService;
         private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
         private readonly IDepartmentReadOnlyService _departmentReadOnlyService;
@@ -82,6 +84,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 IFilePreviewService filePreviewService,
                 IGeneratePdfService generatePdfService,
                 IGenderReadOnlyService genderReadOnlyService,
+                IBranchReadOnlyService branchReadOnlyService,
                 IStatusReadOnlyService statusReadOnlyService,
                 ISpecialtyReadOnlyService specialtyReadOnlyService,
                 IPermitTypeReadOnlyService permitTypeReadOnlyService,
@@ -110,6 +113,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             _fileStorageService = fileStorageService;
             _filePreviewService = filePreviewService;
             _genderReadOnlyService = genderReadOnlyService;
+            _branchReadOnlyService = branchReadOnlyService;
             _statusReadOnlyService = statusReadOnlyService;
             _specialtyReadOnlyService = specialtyReadOnlyService;
             _permitTypeReadOnlyService = permitTypeReadOnlyService;
@@ -139,7 +143,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             EducationDocuments = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, DocumentTypes, EducationLevels);
             WorkPermits = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, PermitTypes, AdmissionStatuses);
             Specialties = new();
-            AssigmentsContracts = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, _positionReadOnlyApiServiceFactory, Departments, Managers, Statuses, EmployeeTypes);
+            AssigmentsContracts = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, _positionReadOnlyApiServiceFactory, Branches, Departments, Managers, Statuses, EmployeeTypes);
 
             ExecuteStepCommand = new RelayCommandAsync<EmployeeCreationSteps>(Execute_StepCommand, CanExecute_StepCommand);
         }
@@ -155,6 +159,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             await GetAllGenderAsync();
             await GetAllStatusAsync();
             await GetAllManagerAsync();
+            await GetAllBranchesAsync();
             await GetAllPermitTypeAsync();
             await GetAllDepartmentAsync();
             await GetAllDocumentTypeAsync();
@@ -561,8 +566,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                 dbRequest: (doc, s3FileName) => new CreateManyDataAssignmentsReqeust
                 (
-                    doc.Position.Id,
-                    doc.Department.Id,
+                    doc.Position.PositionId,
+                    doc.Department.DepartmentId,
+                    doc.Branch.BranchId,
                     doc.Manager?.Id,
                     doc.HireDate,
                     doc.TerminationDate,
@@ -668,6 +674,15 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             var departments = await _departmentReadOnlyService.GetAllAsync();
 
             Departments.Load([.. departments.Select(department => new DepartmentDisplay(department))]);
+        }
+
+        // BRANCH
+        public ObservableCollection<BranchDisplay> Branches { get; private init; } = [];
+        private async Task GetAllBranchesAsync()
+        {
+            var branches = await _branchReadOnlyService.GetAllAsync();
+
+            Branches.Load([.. branches.Select(branch => new BranchDisplay(branch))]);
         }
 
         // STATUS

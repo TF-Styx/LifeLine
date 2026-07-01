@@ -6,6 +6,7 @@
             string EmployeeId,
             string PositionId,
             string DepartmentId,
+            string BranchId,
             string? ManagerId,
             DateTime HireDate,
             DateTime? TerminationDate,

@@ -29,4 +29,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Factories\Pages\" />
+    <Folder Include="ViewModels\Pages\" />
+    <Folder Include="Views\Pages\" />
+  </ItemGroup>
+
 </Project>

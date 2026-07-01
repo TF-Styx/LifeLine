@@ -11,7 +11,7 @@ namespace Shared.Domain.ValueObjects
 
         public Phone(string value) => Value = value;
 
-        private static readonly Regex PhoneRegex = new(@"^+?[0-9\s-]{7,20}$");
+        private static readonly Regex PhoneRegex = new(@"^\+?[0-9\s\(\)-]{2,20}$");
 
         /// <exception cref="PhoneNumberException"></exception>
         public static Phone Create(string phoneNumber)

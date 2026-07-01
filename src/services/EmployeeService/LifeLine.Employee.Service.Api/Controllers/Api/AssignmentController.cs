@@ -58,6 +58,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                                 (
                                     Guid.Parse(x.PositionId),
                                     Guid.Parse(x.DepartmentId),
+                                    Guid.Parse(x.BranchId),
                                     !string.IsNullOrWhiteSpace(x.ManagerId) ? Guid.Parse(x.ManagerId) : null,
                                     x.HireDate,
                                     x.TerminationDate,
@@ -95,6 +96,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     employeeId,
                     request.PositionId,
                     request.DepartmentId,
+                    request.BranchId,
                     request.ManagerId,
                     request.HireDate,
                     request.TerminationDate,

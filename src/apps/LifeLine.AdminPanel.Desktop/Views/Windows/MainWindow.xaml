@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LifeLine.AdminPanel.Desktop.Views.Windows"
         xmlns:uc="clr-namespace:Shared.WPF.Views.UserControls;assembly=Shared.WPF" 
         xmlns:windows="clr-namespace:LifeLine.AdminPanel.Desktop.ViewModels.Windows" 
-        xmlns:enum="clr-namespace:Shared.WPF.Enums;assembly=Shared.WPF"
+        xmlns:enum="clr-namespace:Shared.WPF.Enums;assembly=Shared.WPF" 
         d:DataContext="{d:DesignInstance Type=windows:MainWindowVM}"
         mc:Ignorable="d"
         Title="MainWindow" 
@@ -43,10 +43,10 @@
                             HorizontalAlignment="Left" 
                             VerticalAlignment="Center"
                             Margin="10 5 10 0">
-                    <Button Content="Отдел" Width="100" Height="30"
+                    <!--<Button Content="Отдел" Width="100" Height="30"
                             Command="{Binding OpenPageCommand}"
-                            CommandParameter="{x:Static enum:PageName.EditDepartmentPage}"
-                            Style="{StaticResource App.Button}"/>
+                            CommandParameter="{x:Static enum:PageName.EditDepartmentPositionPage}"
+                            Style="{StaticResource App.Button}"/>-->
                 </StackPanel>
                 
                 <Grid>

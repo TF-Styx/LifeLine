@@ -27,6 +27,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         private readonly IDocumentProcessingService _documentProcessingService;
         private readonly IPositionReadOnlyApiServiceFactory _positionReadOnlyApiServiceFactory;
 
+        private readonly IReadOnlyCollection<BranchDisplay> _branches;
         private readonly IReadOnlyCollection<DepartmentDisplay> _departments;
         private readonly IReadOnlyCollection<ManagerDisplay> _managers;
         private readonly IReadOnlyCollection<StatusDisplay> _statuses;
@@ -40,6 +41,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                 IDocumentProcessingService documentProcessingService,
                 IPositionReadOnlyApiServiceFactory positionReadOnlyApiServiceFactory,
 
+                IReadOnlyCollection<BranchDisplay> branches,
                 IReadOnlyCollection<DepartmentDisplay> departments,
                 IReadOnlyCollection<ManagerDisplay> managers,
                 IReadOnlyCollection<StatusDisplay> statuses,
@@ -52,6 +54,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _documentProcessingService = documentProcessingService;
             _positionReadOnlyApiServiceFactory = positionReadOnlyApiServiceFactory;
 
+            _branches = branches;
             _departments = departments;
             _managers = managers;
             _statuses = statuses;
@@ -70,6 +73,17 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         }
 
         #region Assignment
+
+        private BranchDisplay _branch = null!;
+        public BranchDisplay Branch
+        {
+            get => _branch;
+            set
+            {
+                SetProperty(ref _branch, value);
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
+            }
+        }
 
         private DepartmentDisplay _department = null!;
         public DepartmentDisplay Department
@@ -230,6 +244,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
         private void SetProp(AssignmentContractDisplay value)
         {
+            Branch = value.Branch;
             Department = value.Department;
             Position = value.Position;
             Manager = value.Manager;
@@ -333,13 +348,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         private RelayCommandAsync<DepartmentDisplay> _getAllPositionByIdDepartmentCommandAsync;
         private async Task Execute_GetAllPositionByIdDepartmentCommandAsyn(DepartmentDisplay display)
         {
-            if (display == null || display.Id == string.Empty)
+            if (display == null || display.DepartmentId == string.Empty)
             {
                 Positions.Clear();
                 return;
             }
 
-            var positions = await _positionReadOnlyApiServiceFactory.Create(display.Id.ToString()).GetAllAsync();
+            var positions = await _positionReadOnlyApiServiceFactory.Create(display.DepartmentId.ToString()).GetAllAsync();
 
             Positions.Load([.. positions.Select(position => new PositionDisplay(position))], cleaning: true);
         }
@@ -381,8 +396,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                             (
                                 string.Empty,
                                 EmployeeId!,
-                                Position.Id,
-                                Department.Id,
+                                Position.PositionId,
+                                Department.DepartmentId,
+                                Branch.BranchId,
                                 Manager?.Id,
                                 HireDate,
                                 TerminationDate,
@@ -399,6 +415,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                 Salary,
                                 null
                             ),
+                        _branches,
                         _departments,
                         Positions,
                         _managers,
@@ -416,7 +433,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             ClearProperty();
         }
         private bool CanExecute_AddAssignmentContractCommand()
-            => Department != null && Position != null &&
+            => Branch != null && Department != null && Position != null &&
                EmployeeType != null && Status != null &&
                !string.IsNullOrWhiteSpace(HireDate.ToString()) &&
                !string.IsNullOrWhiteSpace(ContractNumber) &&
@@ -426,6 +443,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
         public void ClearProperty()
         {
+            Branch = null!;
             Department = null!;
             Position = null!;
             Manager = null;

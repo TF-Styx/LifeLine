@@ -29,13 +29,12 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Configurations
                    .HasColumnName("Description")
                    .UseCollation(PostgresConstants.COLLATION_NAME)
                    .HasMaxLength(Description.MAX_LENGTH)
-                   .HasConversion(inDB => inDB.Value, outDB => Description.Create(outDB));
+                   .IsRequired(false)
+                   .HasConversion(inDB => inDB != null ? inDB.Value : null, outDB => outDB != null ? Description.Create(outDB) : null);
 
             builder.Property(x => x.DepartmentId)
                    .HasColumnName("DepartmentId")
                    .HasConversion(inDB => inDB.Value, outDB => DepartmentId.Create(outDB));
-
-            builder.HasOne(x => x.Department).WithMany(x => x.Positions).HasForeignKey(x => x.DepartmentId).IsRequired().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

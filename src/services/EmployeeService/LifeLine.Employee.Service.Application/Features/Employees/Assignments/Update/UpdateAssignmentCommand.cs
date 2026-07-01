@@ -10,6 +10,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.U
             Guid EmployeeId,
             Guid PositionId,
             Guid DepartmentId,
+            Guid BranchId,
             Guid? ManagerId,
             DateTime HireDate,
             DateTime? TerminationDate,

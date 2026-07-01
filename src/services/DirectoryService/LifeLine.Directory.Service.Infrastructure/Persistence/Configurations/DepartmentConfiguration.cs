@@ -1,5 +1,6 @@
 ﻿using LifeLine.Directory.Service.Domain.Models;
 using LifeLine.Directory.Service.Domain.ValueObjects;
+using LifeLine.Directory.Service.Domain.ValueObjects.AddressVO;
 using LifeLine.Directory.Service.Infrastructure.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -29,19 +30,24 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Configurations
                    .HasColumnName("Description")
                    .UseCollation(PostgresConstants.COLLATION_NAME)
                    .HasMaxLength(Description.MAX_LENGTH)
-                   .HasConversion(inDB => inDB.Value, outDB => Description.Create(outDB));
+                   .IsRequired(false)
+                   .HasConversion(inDB => inDB != null ? inDB.Value : null, outDB => outDB != null ? Description.Create(outDB) : null);
+
+            builder.Property(x => x.Building)
+                   .HasColumnName("Building")
+                   .UseCollation(PostgresConstants.COLLATION_NAME)
+                   .HasMaxLength(Building.MAX_LENGTH)
+                   .HasConversion(inDB => inDB.Value, outDB => Building.Create(outDB));
+
+            builder.Property(x => x.BranchId)
+                   .HasColumnName("BranchId")
+                   .HasConversion(inDB => inDB.Value, outDB => BranchId.Create(outDB));
+
+            builder.HasOne<Branch>().WithMany().HasForeignKey(x => x.BranchId).OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(x => x.Positions).WithOne(x => x.Department).HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.Cascade);
 
             builder.Navigation(x => x.Positions).HasField("_positions").UsePropertyAccessMode(PropertyAccessMode.Field);
-
-            builder.OwnsOne(x => x.DepartmentAddress, addressBuilder =>
-            {
-                addressBuilder.Property(x => x.PostalCode).HasColumnName("PostalCode").IsRequired().HasMaxLength(Address.MAX_POSTAL_CODE_LENGTH);
-                addressBuilder.Property(x => x.Region).HasColumnName("Region").IsRequired().HasMaxLength(Address.MAX_REGION_LENGTH);
-                addressBuilder.Property(x => x.City).HasColumnName("City").IsRequired().HasMaxLength(Address.MAX_CITY_LENGTH);
-                addressBuilder.Property(x => x.Street).HasColumnName("Street").IsRequired().HasMaxLength(Address.MAX_STREET_LENGTH);
-                addressBuilder.Property(x => x.Building).HasColumnName("Building").IsRequired().HasMaxLength(Address.MAX_BUILDING_LENGTH);
-                addressBuilder.Property(x => x.Apartment).HasColumnName("Apartment").IsRequired(false).HasMaxLength(Address.MAX_APARTMENT_LENGTH);
-            });
         }
     }
 }

@@ -29,6 +29,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.U
 
                 employee.UpdateAssignmentPositionId(request.Id, request.PositionId);
                 employee.UpdateAssignmentDepartmentId(request.Id, request.DepartmentId);
+                employee.UpdateAssignmentBranchId(request.Id, request.BranchId);
                 employee.UpdateAssignmentManagerId(request.Id, request.ManagerId);
                 employee.UpdateAssignmentHireDate(request.Id, request.HireDate);
                 employee.UpdateAssignmentTerminationDate(request.Id, request.TerminationDate);

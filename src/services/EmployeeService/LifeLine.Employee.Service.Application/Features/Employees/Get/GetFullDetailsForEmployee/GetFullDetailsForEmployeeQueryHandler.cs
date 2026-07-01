@@ -47,6 +47,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Get.GetFullDe
                                     x.AssignmentId,
                                     x.PositionId,
                                     x.DepartmentId,
+                                    x.BranchId,
                                     x.ManagerId,
                                     x.HireDate,
                                     x.TerminationDate,

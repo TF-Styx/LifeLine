@@ -7,7 +7,7 @@ namespace LifeLine.HrPanel.Desktop.Models
     {
         private readonly PositionResponse _model = model;
 
-        public string Id => _model.Id.ToString();
+        public string PositionId => _model.Id;
 
         private string _name = model.Name;
         public string Name
@@ -22,5 +22,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             get => _description;
             set => SetProperty(ref _description, value);
         }
+
+        public PositionResponse GetUnderlineModel() => _model;
     }
 }
