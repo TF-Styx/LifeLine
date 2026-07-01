@@ -23,11 +23,21 @@ namespace Shared.Domain.ValueObjects
         public string Region { get; }
         public string City { get; }
         public string Street { get; }
-        public string Building { get; }
+        public string? Building { get; }
         public string? Apartment { get; }
 
+        private Address(string postalCode, string region, string city, string street)
+        {
+            PostalCode = postalCode;
+            Region = region;
+            City = city;
+            Street = street;
+            Building = null;
+            Apartment = null;
+        }
+
         // Конструктор делаем приватным, чтобы создание шло только через фабричный метод Create
-        private Address(string postalCode, string region, string city, string street, string building, string? apartment)
+        private Address(string postalCode, string region, string city, string street, string? building, string? apartment)
         {
             PostalCode = postalCode;
             Region = region;
@@ -44,7 +54,7 @@ namespace Shared.Domain.ValueObjects
                 string region,
                 string city,
                 string street,
-                string building,
+                string? building = null,
                 string? apartment = null
             )
         {
@@ -53,10 +63,8 @@ namespace Shared.Domain.ValueObjects
             GuardException.Against.That(string.IsNullOrWhiteSpace(region), () => new AddressException("Регион не может быть пустым!"));
             GuardException.Against.That(string.IsNullOrWhiteSpace(city), () => new AddressException("Город/населенный пункт не может быть пустым!"));
             GuardException.Against.That(string.IsNullOrWhiteSpace(street), () => new AddressException("Улица не может быть пустой!"));
-            GuardException.Against.That(string.IsNullOrWhiteSpace(building), () => new AddressException("Номер дома не может быть пустым!"));
-            GuardException.Against.That(apartment != null && string.IsNullOrWhiteSpace(apartment), () => new AddressException("Номер квартиры/офиса не может состоять только из пробелов!"));
 
-            return new Address(postalCode.Trim(), region.Trim(), city.Trim(), street.Trim(), building.Trim(), apartment?.Trim());
+            return new Address(postalCode.Trim(), region.Trim(), city.Trim(), street.Trim(), building?.Trim(), apartment?.Trim());
         }
 
         /// <summary>
@@ -65,12 +73,13 @@ namespace Shared.Domain.ValueObjects
         public override string ToString()
         {
             var addressBuilder = new StringBuilder();
-            addressBuilder.Append($"Почтовый индекс: {PostalCode}, {Region}, г. {City}, ул. {Street}, д. {Building}");
+            addressBuilder.Append($"Почтовый индекс: {PostalCode}, {Region}, г. {City}, ул. {Street}");
+
+            if (!string.IsNullOrWhiteSpace(Building))
+                addressBuilder.Append($", д. {Building}");
 
             if (!string.IsNullOrWhiteSpace(Apartment))
-            {
                 addressBuilder.Append($", кв. {Apartment}");
-            }
 
             return addressBuilder.ToString();
         }
