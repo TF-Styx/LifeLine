@@ -1,0 +1,118 @@
+﻿<UserControl x:Class="LifeLine.HrPanel.Desktop.Views.UserControls.ManagementHospital.Branch.BranchEdit"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementHospital.Branch" 
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF" 
+             xmlns:branch="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch" 
+             d:DataContext="{d:DesignInstance Type=branch:BranchEditVM}"
+             mc:Ignorable="d" 
+             d:Height="500" 
+             d:Width="200">
+
+    <b:Interaction.Behaviors>
+        <behaviors:AsyncInitializeBehavior/>
+    </b:Interaction.Behaviors>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
+        <DockPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Основная информация -->
+                    <StackPanel Grid.Row="0" Margin="5">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" 
+                                    VerticalAlignment="Top" 
+                                    Foreground="#F06870" 
+                                    Width="25" Height="25" 
+                                    Command="{Binding CloseEditPanelCommand}"
+                                    Style="{StaticResource Button.Icon}">
+                                <Control Template="{StaticResource Close1}"/>
+                            </Button>
+                            <TextBlock Text="Основная информация" FontSize="20" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 0 0 5"/>
+                        </DockPanel>
+
+                        <cc:PlaceHolderTextBox PlaceHolder="Наименование" Margin="0 0 0 5" 
+                                               TextWrapping="Wrap" MaxHeight="500"
+                                               Text="{Binding BranchProp.Name, 
+                                                              UpdateSourceTrigger=PropertyChanged}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                        <cc:PlaceHolderTextBox PlaceHolder="Описание" Margin="0 0 0 5" 
+                                               TextWrapping="Wrap" MaxHeight="500"
+                                               Text="{Binding BranchProp.Description, 
+                                                              UpdateSourceTrigger=PropertyChanged}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                        <cc:PlaceHolderTextBox PlaceHolder="Телефон" 
+                                               Margin="0 0 0 5" 
+                                               Text="{Binding BranchProp.Phone, 
+                                                              UpdateSourceTrigger=PropertyChanged}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                        <cc:PlaceHolderTextBox PlaceHolder="Почта" Margin="0 0 0 0" 
+                                               Text="{Binding BranchProp.Email, 
+                                                              UpdateSourceTrigger=PropertyChanged}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
+                    </StackPanel>
+
+                    <!-- Место проживания -->
+                    <StackPanel Grid.Row="1" Margin="5">
+                        <TextBlock Text="Адрес" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 0 0 5"/>
+
+                        <!-- Код -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Код" Margin="0 0 0 5"
+                                               Text="{Binding BranchProp.PostalCode, 
+                                                              UpdateSourceTrigger=PropertyChanged}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <!-- Регион -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Регион" Margin="0 0 0 5"
+                                               Text="{Binding BranchProp.Region, 
+                                                              UpdateSourceTrigger=PropertyChanged}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <!-- Город -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Город" Margin="0 0 0 5"
+                                               Text="{Binding BranchProp.City, 
+                                                              UpdateSourceTrigger=PropertyChanged}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <!-- Улица -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Улица" Margin="0 0 0 0"
+                                               Text="{Binding BranchProp.Street, 
+                                                              UpdateSourceTrigger=PropertyChanged}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+
+            <StackPanel Margin="5" VerticalAlignment="Bottom">
+                <Button Content="Сохранить" Height="40"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                        Command="{Binding CreateBranchCommandAsync}"
+                        Style="{StaticResource App.Button}" Margin="0 0 0 0"/>
+
+                <Button Content="Обновить" Height="40"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                        Command="{Binding UpdateBranchCommandAsync}"
+                        Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</UserControl>

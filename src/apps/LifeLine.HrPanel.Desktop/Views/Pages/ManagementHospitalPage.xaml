@@ -1,0 +1,81 @@
+﻿<Page x:Class="LifeLine.HrPanel.Desktop.Views.Pages.ManagementHospitalPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.Pages"
+      
+      xmlns:hospital="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementHospital.Hospital"
+      xmlns:branch="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementHospital.Branch"
+      xmlns:department="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementHospital.Department"
+      xmlns:position="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementHospital.Position" 
+      
+      xmlns:vmHospital="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospital"
+      xmlns:vmBranch="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch"
+      xmlns:vmDepartment="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Department"
+      xmlns:vmPosition="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Position"
+      
+      xmlns:pages="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Pages" 
+      d:DataContext="{d:DesignInstance Type=pages:ManagementHospitalPageVM}"
+      mc:Ignorable="d" 
+      d:Height="auto" 
+      d:Width="auto"
+      Title="ManagementHospitalPage">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+
+            <!-- Сопоставление ViewModel с View -->
+            <DataTemplate DataType="{x:Type vmHospital:HospitalManagementVM}">
+                <hospital:HospitalManagementView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vmBranch:BranchManagementVM}">
+                <branch:BranchManagementView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vmDepartment:DepartmentManagementVM}">
+                <department:DepartmentManagementView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vmPosition:PositionManagementVM}">
+                <position:PositionManagementView/>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- Боковое меню -->
+            <ColumnDefinition Width="200"/>
+            <!-- Основная область -->
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Меню навигации -->
+        <Border Grid.Column="0" Background="{StaticResource App.SecondColor}">
+            <StackPanel Margin="10">
+                <Button Content="Больницы" Margin="0 0 0 5"
+                        Command="{Binding ShowHospitalCommand}"
+                        Style="{StaticResource Button.Menu}"/>
+                <Button Content="Филиалы"  Margin="0 0 0 5"
+                        Command="{Binding ShowBranchCommand}"
+                        Style="{StaticResource Button.Menu}"/>
+                <Button Content="Отделы"  Margin="0 0 0 5"
+                        Command="{Binding ShowDepartmentCommand}"
+                        Style="{StaticResource Button.Menu}"/>
+                <Button Content="Должности"  Margin="0 0 0 0"
+                        Command="{Binding ShowPositionCommand}"
+                        Style="{StaticResource Button.Menu}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Рабочая область с контентом -->
+        <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}"/>
+    </Grid>
+</Page>

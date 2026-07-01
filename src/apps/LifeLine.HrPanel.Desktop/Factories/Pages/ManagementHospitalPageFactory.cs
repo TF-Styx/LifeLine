@@ -5,8 +5,8 @@ using System.Windows.Controls;
 
 namespace LifeLine.HrPanel.Desktop.Factories.Pages
 {
-    internal sealed class EditDepartmentPositionPageFactory(Func<EditDepartmentPositionPageVM> viewModelFactory) : IPageFactory
+    public sealed class ManagementHospitalPageFactory(Func<ManagementHospitalPageVM> videModelFactory) : IPageFactory
     {
-        public Page Create() => new EditDepartmentPositionPage() { DataContext = viewModelFactory() };
+        public Page Create() => new ManagementHospitalPage() { DataContext = videModelFactory() };
     }
 }

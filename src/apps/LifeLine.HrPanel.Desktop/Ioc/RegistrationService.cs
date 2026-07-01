@@ -1,7 +1,9 @@
 ﻿using LifeLine.Directory.Service.Client.Services.AdmissionStatus;
+using LifeLine.Directory.Service.Client.Services.Branch;
 using LifeLine.Directory.Service.Client.Services.Department;
 using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
+using LifeLine.Directory.Service.Client.Services.Hospital;
 using LifeLine.Directory.Service.Client.Services.PermitType;
 using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
@@ -90,6 +92,10 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             string directoryHttp = "DirectoryServiceHttp";
             services.AddHttpClient(directoryHttp, client => client.BaseAddress = new Uri(directoryService!));
 
+            services.AddHttpClient<IBranchReadOnlyService, BranchService>(directoryHttp);
+            services.AddHttpClient<IBranchService, BranchService>(directoryHttp);
+            services.AddHttpClient<IHospitalReadOnlyService, HospitalService>(directoryHttp);
+            services.AddHttpClient<IHospitalService, HospitalService>(directoryHttp);
             services.AddHttpClient<IDocumentTypeReadOnlyService, DocumentTypeService>(directoryHttp);
             services.AddHttpClient<IEducationLevelReadOnlyService, EducationLevelService>(directoryHttp);
             services.AddHttpClient<IAdmissionStatusReadOnlyService, AdmissionStatusService>(directoryHttp);

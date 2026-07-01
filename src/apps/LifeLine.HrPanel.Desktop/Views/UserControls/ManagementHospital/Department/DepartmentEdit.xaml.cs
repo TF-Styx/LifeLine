@@ -11,14 +11,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LifeLine.HrPanel.Desktop.Views.Pages
+namespace LifeLine.HrPanel.Desktop.Views.UserControls.ManagementHospital.Department
 {
     /// <summary>
-    /// Логика взаимодействия для EditDepartmentPositionPage.xaml
+    /// Логика взаимодействия для DepartmentEdit.xaml
     /// </summary>
-    public partial class EditDepartmentPositionPage : Page
+    public partial class DepartmentEdit : UserControl
     {
-        public EditDepartmentPositionPage()
+        public DepartmentEdit()
         {
             InitializeComponent();
         }
