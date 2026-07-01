@@ -14,6 +14,7 @@ namespace LifeLine.Employee.Service.Domain.Models
         public EmployeeId EmployeeId { get; private set; }
         public PositionId PositionId { get; private set; }
         public DepartmentId DepartmentId { get; private set; }
+        public BranchId BranchId { get; private set; }
         public EmployeeId? ManagerId { get; private set; }
         public DateTime HireDate { get; private set; }
         public DateTime? TerminationDate { get; private set; }
@@ -29,6 +30,7 @@ namespace LifeLine.Employee.Service.Domain.Models
                 EmployeeId employeeId, 
                 PositionId positionId, 
                 DepartmentId departmentId, 
+                BranchId branchId,
                 EmployeeId? managerId, 
                 DateTime hireDate, 
                 DateTime? terminationDate, 
@@ -39,6 +41,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             EmployeeId = employeeId;
             PositionId = positionId;
             DepartmentId = departmentId;
+            BranchId = branchId;
             ManagerId = managerId;
             HireDate = hireDate.ToUniversalTime();
             TerminationDate = terminationDate != null ? terminationDate.Value.ToUniversalTime() : null;
@@ -69,6 +72,7 @@ namespace LifeLine.Employee.Service.Domain.Models
                 Guid employeeId, 
                 Guid positionId, 
                 Guid departmentId, 
+                Guid branchId,
                 Guid? managerId, 
                 DateTime hireDate, 
                 DateTime? terminationDate, 
@@ -80,6 +84,7 @@ namespace LifeLine.Employee.Service.Domain.Models
                     EmployeeId.Create(employeeId), 
                     PositionId.Create(positionId), 
                     DepartmentId.Create(departmentId), 
+                    BranchId.Create(branchId),
                     managerId != null ? EmployeeId.Create(managerId.Value) : EmployeeId.Null, 
                     hireDate, 
                     terminationDate, 
@@ -97,6 +102,12 @@ namespace LifeLine.Employee.Service.Domain.Models
         {
             if (departmentId != DepartmentId)
                 DepartmentId = departmentId;
+        }
+
+        internal void UpdateBranch(BranchId branchId)
+        {
+            if (branchId != BranchId)
+                BranchId = branchId;
         }
 
         internal void UpdateHireDate(DateTime hireDate)

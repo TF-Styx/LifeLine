@@ -46,6 +46,7 @@
             Guid AssignmentId,
             Guid PositionId,
             Guid DepartmentId,
+            Guid BranchId,
             Guid? ManagerId,
             DateTime HireDate,
             DateTime? TerminationDate,

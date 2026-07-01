@@ -32,6 +32,10 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Wr
                    .HasColumnName("DepartmentId")
                    .HasConversion(inDB => inDB.Value, outDB => DepartmentId.Create(outDB));
 
+            builder.Property(x => x.BranchId)
+                   .HasColumnName("BranchId")
+                   .HasConversion(inDB => inDB.Value, outDB => BranchId.Create(outDB));
+
             builder.Property(x => x.ManagerId)
                    .HasColumnName("ManagerId")
                    .IsRequired(false)

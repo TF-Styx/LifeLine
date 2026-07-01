@@ -3,6 +3,7 @@ using System;
 using LifeLine.Employee.Service.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeLine.Employee.Service.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(EmployeeWriteContext))]
-    partial class EmployeeWriteContextModelSnapshot : ModelSnapshot
+    [Migration("20260625092319_Update_Assignemnt_Add_BranchId_And_V_Employee_Full_Details")]
+    partial class Update_Assignemnt_Add_BranchId_And_V_Employee_Full_Details
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

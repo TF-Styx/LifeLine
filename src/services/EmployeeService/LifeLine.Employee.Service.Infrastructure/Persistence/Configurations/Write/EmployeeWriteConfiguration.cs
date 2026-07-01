@@ -4,7 +4,6 @@ using LifeLine.Employee.Service.Domain.ValueObjects.Genders;
 using LifeLine.Employee.Service.Infrastructure.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shared.Domain.ValueObjects;
 
 namespace LifeLine.Employee.Service.Infrastructure.Persistence.Configurations.Write
 {

@@ -2,6 +2,8 @@
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Shared.Api.Infrastructure;
+using Shared.Domain.ValueObjects;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Infrastructure.Persistence.Repository
 {
@@ -18,5 +20,19 @@ namespace LifeLine.Employee.Service.Infrastructure.Persistence.Repository
                 .Include(x => x.Contracts)
                     .AsSplitQuery()
                         .FirstOrDefaultAsync(x => x.Id == id);
+
+        public async Task<Result> HasActiveAssignmentsToDepartmentAsync(DepartmentId departmentId, CancellationToken cancellationToken = default)
+        {
+            var exist = await _context.Employees.AnyAsync(x => x.Assignments.Any(x => x.DepartmentId == departmentId && !x.TerminationDate.HasValue), cancellationToken);
+
+            return exist ? Result.Failure(Error.Exist("У данного отдела имеются назначения!")) : Result.Success();
+        }
+
+        public async Task<Result> HasActiveAssignmentsToPositionAsync(PositionId positionId, CancellationToken cancellationToken = default)
+        {
+            var exist = await _context.Employees.AnyAsync(x => x.Assignments.Any(x => x.PositionId == positionId && !x.TerminationDate.HasValue), cancellationToken);
+
+            return exist ? Result.Failure(Error.Exist("У данной должности имеются назначения!")) : Result.Success();
+        }
     }
 }

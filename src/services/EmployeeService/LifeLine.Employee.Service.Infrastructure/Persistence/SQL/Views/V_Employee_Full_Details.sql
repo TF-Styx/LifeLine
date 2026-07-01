@@ -34,6 +34,7 @@ SELECT
                 'AssignmentId', a."Id",
                 'PositionId', a."PositionId",
                 'DepartmentId', a."DepartmentId",
+                'BranchId', a."BranchId",
                 'ManagerId', a."ManagerId",
                 'HireDate', a."HireDate",
                 'TerminationDate', a."TerminationDate",
