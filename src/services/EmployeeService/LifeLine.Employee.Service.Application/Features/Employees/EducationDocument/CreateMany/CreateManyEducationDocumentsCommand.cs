@@ -16,7 +16,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.EducationDocu
         Guid DocumentTypeId, 
         string DocumentNumber, 
         DateTime IssuedDate, 
-        tring OrganizationName, 
+        string OrganizationName, 
         string? QualificationAwardedName, 
         string? SpecialtyName, 
         string? ProgramName, 
