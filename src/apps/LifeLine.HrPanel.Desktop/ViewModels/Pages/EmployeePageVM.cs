@@ -811,7 +811,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             if (dbResult.IsFailure)
             {
-                MessageBox.Show($"{dbResult.Errors}");
+                MessageBox.Show($"{dbResult.StringMessage}");
                 return;
             }
         }
