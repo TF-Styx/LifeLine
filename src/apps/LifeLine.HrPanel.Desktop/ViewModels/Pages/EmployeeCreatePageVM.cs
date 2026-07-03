@@ -269,14 +269,23 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
         private async Task<Result> CreateEmployeeAsync()
         {
+            if (PersonalInfo == null)
+                return Result.Failure(Error.Empty("Поля были пустые!"));
+
+            if (!string.IsNullOrWhiteSpace(PersonalInfo.Surname) && !string.IsNullOrWhiteSpace(PersonalInfo.Name))
+                return Result.Failure(Error.Empty("Поля были пустые!"));
+
+            if (PersonalInfo.Gender == null)
+                return Result.Failure(Error.Empty("Поля были пустые!"));
+
             var result = await _employeeService.AddAsync<CreateEmployeeRequest, EmployeeIdResponse>
                 (
                     new CreateEmployeeRequest
                         (
-                            PersonalInfo!.Surname!,
+                            PersonalInfo.Surname!,
                             PersonalInfo.Name!,
                             PersonalInfo.Patronymic,
-                            PersonalInfo.Gender!.Id
+                            PersonalInfo.Gender.Id
                         )
                 );
 

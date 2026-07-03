@@ -1,7 +1,8 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
+﻿using LifeLine.Employee.Service.Application.Features.Employees.Assignments.HasActive.HasActiveDepartment;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.HasActive.HasActivePosition;
-using LifeLine.Employee.Service.Application.Features.Employees.Assignments.HasActive.HasActiveDepartment;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Shared.Api.Extensions;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
@@ -19,7 +20,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -33,7 +34,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
     }

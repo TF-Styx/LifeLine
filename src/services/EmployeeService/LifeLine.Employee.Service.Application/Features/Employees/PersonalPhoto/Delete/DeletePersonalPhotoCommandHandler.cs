@@ -3,42 +3,29 @@ using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Terminex.Common.Primitives;
 using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.PersonalPhoto.Delete
 {
     public sealed class DeletePersonalPhotoCommandHandler
         (
-            IWriteContext writeContext,
-            IEmployeeRepository employeeRepository,
-            ILogger<DeletePersonalPhotoCommandHandler> logger
-        ) : IRequestHandler<DeletePersonalPhotoCommand, Result>
+            IWriteContext context,
+            IEmployeeRepository repository
+        ) : IRequestHandler<DeletePersonalPhotoCommand, Result<Nothing>>
     {
-        private readonly IWriteContext _writeContext = writeContext;
-        private readonly IEmployeeRepository _employeeRepository = employeeRepository;
-        private readonly ILogger<DeletePersonalPhotoCommandHandler> _logger = logger;
-
-        public async Task<Result> Handle(DeletePersonalPhotoCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Nothing>> Handle(DeletePersonalPhotoCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId);
+            var employee = await repository.GetByIdAsync(request.EmployeeId);
 
-                if (employee == null)
-                    return Result.Failure(new Error(ErrorCode.NotFound, "Пользователь не найден!"));
+            if (employee == null)
+                return Error.NotFound("Пользователь не найден!");
 
-                employee.DeletePersonalPhoto();
+            employee.DeletePersonalPhoto();
 
-                await _writeContext.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
-                return Result.Success();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(ex, "Ошибка при удалении персональной фотографии!");
-
-                return Result.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
-            }
+            return Nothing.Value;
         }
     }
 }

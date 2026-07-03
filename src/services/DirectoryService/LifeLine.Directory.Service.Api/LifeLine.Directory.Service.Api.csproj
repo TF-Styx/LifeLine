@@ -20,6 +20,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\clients\LifeLine.Employee.Service.Client\LifeLine.Employee.Service.Client.csproj" />
+    <ProjectReference Include="..\..\..\shared\api\Shared.Api\Shared.Api.csproj" />
+    <ProjectReference Include="..\..\..\shared\core\network\Shared.Serialization\Shared.Serialization.csproj" />
+    <ProjectReference Include="..\..\..\shared\core\Shared.Application\Shared.Application.csproj" />
     <ProjectReference Include="..\LifeLine.Directory.Service.Application\LifeLine.Directory.Service.Application.csproj" />
     <ProjectReference Include="..\LifeLine.Directory.Service.Infrastructure\LifeLine.Directory.Service.Infrastructure.csproj" />
   </ItemGroup>

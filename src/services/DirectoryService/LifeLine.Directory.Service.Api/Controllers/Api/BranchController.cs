@@ -5,6 +5,7 @@ using LifeLine.Directory.Service.Application.Features.Branches.Get.GetAllByHospi
 using LifeLine.Directory.Service.Application.Features.Branches.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api.Extensions;
 using Shared.Contracts.Request.DirectoryService.Branch;
 
 namespace LifeLine.Directory.Service.Api.Controllers.Api
@@ -37,7 +38,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(result.Value),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -74,7 +75,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -88,7 +89,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
     }

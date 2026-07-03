@@ -2,6 +2,7 @@
 using LifeLine.Directory.Service.Application.Features.AdmissionStatuses.Get.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api.Extensions;
 
 namespace LifeLine.Directory.Service.Api.Controllers.Api
 {
@@ -20,8 +21,8 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное создание!"),
-                    onFailure: errors => BadRequest(errors)
+                    onSuccess: () => Ok(),
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 

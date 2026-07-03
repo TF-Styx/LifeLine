@@ -92,11 +92,15 @@ namespace LifeLine.Directory.Service.Domain.Models
         /// <param name="name"></param>
         /// <param name="description"></param>
         /// <exception cref="DuplicateException"></exception>
-        public void AddPositions(string name, string? description)
+        public string AddPositions(string name, string? description)
         {
             GuardException.Against.That(_positions.Any(x => x.Name == name), () => new DuplicateException("Должность с таким именем уже существует!"));
 
-            _positions.Add(Position.Create(name, !string.IsNullOrWhiteSpace(description) ? Description.Create(description) : null, this.Id));
+            var position = Position.Create(name, !string.IsNullOrWhiteSpace(description) ? Description.Create(description) : null, this.Id);
+
+            _positions.Add(position);
+
+            return position.Id.ToString();
         }
 
         /// <summary>

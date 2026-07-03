@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
+using Terminex.Common.Primitives;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Update
 {
@@ -19,5 +20,5 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Up
             string? FileName,
             Guid PermitTypeId, 
             Guid AdmissionStatusId
-        ) : IRequest<Result>;
+        ) : IRequest<Result<Nothing>>;
 }

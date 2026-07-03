@@ -1,6 +1,9 @@
-﻿namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
+﻿using Microsoft.Extensions.Options;
+using System.Text.Json;
+
+namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
 {
-    public sealed class AssignmentApiServiceFactory(IHttpClientFactory httpClientFactory) : IAssignmentApiServiceFactory
+    public sealed class AssignmentApiServiceFactory(IHttpClientFactory httpClientFactory, IOptions<JsonSerializerOptions> options) : IAssignmentApiServiceFactory
     {
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
         private readonly string _clientName = "EmployeeServiceHttp";
@@ -9,7 +12,7 @@
         {
             var httpClient = _httpClientFactory.CreateClient(_clientName);
 
-            return new AssignmentService(httpClient, employeeId);
+            return new AssignmentService(httpClient, employeeId, options);
         }
     }
 }

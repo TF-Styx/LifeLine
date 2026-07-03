@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Diagnostics;
+using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace Shared.Http.Base
@@ -9,11 +10,11 @@ namespace Shared.Http.Base
         public readonly string Url;
         protected readonly JsonSerializerOptions JsonSerializerOptions;
 
-        protected BaseReadHttpService(HttpClient httpClient, string url)
+        protected BaseReadHttpService(HttpClient httpClient, string url, JsonSerializerOptions options)
         {
             HttpClient = httpClient;
             Url = url;
-            JsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions = options;
         }
 
         public virtual async Task<List<TResponse>> GetAllAsync()

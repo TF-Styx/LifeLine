@@ -4,6 +4,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Delet
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.Assignment;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
@@ -41,8 +42,8 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное создание!"),
-                    onFailure: errors => BadRequest(errors)
+                    onSuccess: () => Ok(),
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -83,7 +84,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -120,7 +121,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное обновление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -134,7 +135,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное удаление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
     }

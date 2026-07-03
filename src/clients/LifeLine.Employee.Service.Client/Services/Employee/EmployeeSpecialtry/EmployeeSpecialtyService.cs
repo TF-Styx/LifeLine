@@ -1,13 +1,15 @@
-﻿using Shared.Contracts.Request.EmployeeService.EmployeeSpecialty;
+﻿using Microsoft.Extensions.Options;
+using Shared.Contracts.Request.EmployeeService.EmployeeSpecialty;
 using Shared.Http.Base;
-using System.Net.Http.Json;
-using Terminex.Common.Results;
 using Shared.Kernel.Errors;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
 {
-    internal sealed class EmployeeSpecialtyService(HttpClient httpClient, string employeeId) 
-        : BaseHttpService<HttpClient, string>(httpClient, $"api/employees/{employeeId}/employee-specialties"), IEmployeeSpecialtyService
+    internal sealed class EmployeeSpecialtyService(HttpClient httpClient, string employeeId, IOptions<JsonSerializerOptions> options) 
+        : BaseHttpService<HttpClient, string>(httpClient, $"api/employees/{employeeId}/employee-specialties", options.Value), IEmployeeSpecialtyService
     {
         public async Task<Result> CreateManyAsync(CreateManyEmployeeSpecialtiesRequest request)
         {

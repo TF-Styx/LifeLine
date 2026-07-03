@@ -9,10 +9,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
     <PackageReference Include="Newtonsoft.Json" />
+	<PackageReference Include="Terminex.Common" />
+	<FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\core\Shared.Contracts\Shared.Contracts.csproj" />
+    <ProjectReference Include="..\..\core\Shared.Kernel\Shared.Kernel.csproj" />
   </ItemGroup>
 
 </Project>

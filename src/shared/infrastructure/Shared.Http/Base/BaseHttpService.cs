@@ -4,8 +4,8 @@ using Terminex.Common.Results;
 
 namespace Shared.Http.Base
 {
-    public abstract class BaseHttpService<TResponse, TKey>(HttpClient httpClient, string url) 
-        : BaseReadHttpService<TResponse, TKey>(httpClient, url), IBaseHttpService<TResponse, TKey>
+    public abstract class BaseHttpService<TResponse, TKey>(HttpClient httpClient, string url, JsonSerializerOptions options) 
+        : BaseReadHttpService<TResponse, TKey>(httpClient, url, options), IBaseHttpService<TResponse, TKey>
             where TResponse : class
     {
         public virtual async Task<Result> CreateAsync<TRequest>(TRequest request)
@@ -15,7 +15,12 @@ namespace Shared.Http.Base
             try
             {
                 response = await HttpClient.PostAsJsonAsync(Url, request, JsonSerializerOptions);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errors = await DeserializeErrorsAsync(response);
+                    return Result.Failure(errors);
+                }
 
                 return Result.Success();
             }
@@ -43,7 +48,12 @@ namespace Shared.Http.Base
             try
             {
                 response = await HttpClient.PostAsJsonAsync(Url, request, JsonSerializerOptions);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errors = await DeserializeErrorsAsync(response);
+                    return Result<TResponse>.Failure(errors);
+                }
 
                 return Result<TResponse>.Success(await response.Content.ReadFromJsonAsync<TResponse>(JsonSerializerOptions));
             }
@@ -71,7 +81,12 @@ namespace Shared.Http.Base
             try
             {
                 response = await HttpClient.PostAsJsonAsync(Url, request, JsonSerializerOptions);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errors = await DeserializeErrorsAsync(response);
+                    return Result<TCurrentResponse>.Failure(errors);
+                }
 
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -118,7 +133,12 @@ namespace Shared.Http.Base
             try
             {
                 response = await HttpClient.PatchAsJsonAsync($"{Url}/{id}", request, JsonSerializerOptions);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errors = await DeserializeErrorsAsync(response);
+                    return Result<TResponse>.Failure(errors);
+                }
 
                 if (!response.IsSuccessStatusCode)
                     return Result.Failure(new Error(ErrorCode.Update, await response.Content.ReadAsStringAsync()));
@@ -149,7 +169,12 @@ namespace Shared.Http.Base
             try
             {
                 response = await HttpClient.DeleteAsync($"{Url}/{id}");
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errors = await DeserializeErrorsAsync(response);
+                    return Result<TResponse>.Failure(errors);
+                }
 
                 return Result.Success();
             }
@@ -167,6 +192,31 @@ namespace Shared.Http.Base
             catch (Exception ex)
             {
                 return Result.Failure(new Error(ErrorCode.Delete, $"Непредвиденная ошибка удаления элемента в {Url} : {ex.Message}"));
+            }
+        }
+
+        /// <summary>
+        /// Десериализует список ошибок из HTTP ответа
+        /// </summary>
+        private async Task<IReadOnlyList<Error>> DeserializeErrorsAsync(HttpResponseMessage response)
+        {
+            try
+            {
+                var errors = await response.Content.ReadFromJsonAsync<List<Error>>(JsonSerializerOptions);
+                return errors?.AsReadOnly() ?? new List<Error>().AsReadOnly();
+            }
+            catch
+            {
+                // Если не удалось десериализовать, создаём общую ошибку
+                var content = await response.Content.ReadAsStringAsync();
+                return new List<Error> 
+                { 
+                    new Error
+                    (
+                        ErrorCode.InvalidResponse, 
+                        $"Ошибка {response.StatusCode}: {content}"
+                    ) 
+                }.AsReadOnly();
             }
         }
     }

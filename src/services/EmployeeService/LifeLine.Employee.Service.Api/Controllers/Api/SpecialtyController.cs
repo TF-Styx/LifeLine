@@ -2,6 +2,7 @@
 using LifeLine.Employee.Service.Application.Features.Specialties.Get.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.Specialty;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
@@ -22,7 +23,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное создание!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 

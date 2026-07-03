@@ -1,7 +1,11 @@
 using LifeLine.Directory.Service.Application.Common;
 using LifeLine.Directory.Service.Infrastructure.Ioc;
 using LifeLine.Employee.Service.Client.Services.Employee.Assignment;
+using MediatR;
+using Shared.Application.Behaviours;
 using Shared.Logging;
+using Shared.Serialization.Extensions;
+using System.Text.Json;
 
 namespace LifeLine.Directory.Service.Api
 {
@@ -16,6 +20,11 @@ namespace LifeLine.Directory.Service.Api
             builder.Services.UseInfrastructure(builder.Configuration);
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IDirectoryContext).Assembly));
+
+            builder.Services.Configure<JsonSerializerOptions>(opt => opt.AddTerminexDefault());
+            builder.Services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.AddTerminexDefault());
+
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionBehaviour<,>));
             builder.Services.AddHttpClient<IAssignmentCheckService, AssignmentCheckService>(client => client.BaseAddress = new Uri(builder.Configuration["EmployeeService"]!));
             builder.Host.UseSerialogLogger();
 

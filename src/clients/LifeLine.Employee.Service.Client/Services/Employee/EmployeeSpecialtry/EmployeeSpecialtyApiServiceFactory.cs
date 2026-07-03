@@ -1,6 +1,9 @@
-﻿namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
+﻿using Microsoft.Extensions.Options;
+using System.Text.Json;
+
+namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
 {
-    public sealed class EmployeeSpecialtyApiServiceFactory(IHttpClientFactory httpClientFactory) : IEmployeeSpecialtyApiServiceFactory
+    public sealed class EmployeeSpecialtyApiServiceFactory(IHttpClientFactory httpClientFactory, IOptions<JsonSerializerOptions> options) : IEmployeeSpecialtyApiServiceFactory
     {
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
         private readonly string _clientName = "EmployeeServiceHttp";
@@ -9,7 +12,7 @@
         {
             var httpClient = _httpClientFactory.CreateClient(_clientName);
 
-            return new EmployeeSpecialtyService(httpClient, employeeId);
+            return new EmployeeSpecialtyService(httpClient, employeeId, options);
         }
     }
 }

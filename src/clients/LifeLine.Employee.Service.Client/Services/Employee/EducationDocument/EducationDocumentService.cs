@@ -1,14 +1,16 @@
-﻿using Shared.Contracts.Request.EmployeeService.EducationDocument;
+﻿using Microsoft.Extensions.Options;
+using Shared.Contracts.Request.EmployeeService.EducationDocument;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
-using System.Net.Http.Json;
-using Terminex.Common.Results;
 using Shared.Kernel.Errors;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee.EducationDocument
 {
-    internal sealed class EducationDocumentService(HttpClient httpClient, string employeeId) 
-        : BaseHttpService<EducationDocumentResponse, string>(httpClient, $"api/employees/{employeeId}/education-documents"), IEducationDocumentService
+    internal sealed class EducationDocumentService(HttpClient httpClient, string employeeId, IOptions<JsonSerializerOptions> options) 
+        : BaseHttpService<EducationDocumentResponse, string>(httpClient, $"api/employees/{employeeId}/education-documents", options.Value), IEducationDocumentService
     {
         public async Task<Result> CreateManyAsync(CreateManyEducationDocumentsReqeust reqeust)
         {

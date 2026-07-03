@@ -1,14 +1,16 @@
-﻿using Shared.Contracts.Request.EmployeeService.ContactInformation;
+﻿using Microsoft.Extensions.Options;
+using Shared.Contracts.Request.EmployeeService.ContactInformation;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
-using System.Net.Http.Json;
-using Terminex.Common.Results;
 using Shared.Kernel.Errors;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee.ContactInformation
 {
-    internal sealed class ContactInformationService(HttpClient httpClient, string employeeId)
-        : BaseHttpService<ContactInformationResponse, string>(httpClient, $"api/employees/{employeeId}/contact-informations"), IContactInformationService
+    internal sealed class ContactInformationService(HttpClient httpClient, string employeeId, IOptions<JsonSerializerOptions> options)
+        : BaseHttpService<ContactInformationResponse, string>(httpClient, $"api/employees/{employeeId}/contact-informations", options.Value), IContactInformationService
     {
         public async Task<Result> UpdateContactInformationAsync(UpdateContactInformationRequest request)
         {

@@ -1,43 +1,29 @@
-﻿using LifeLine.Directory.Service.Application.Common;
-using LifeLine.Directory.Service.Application.Common.Repository;
-using MediatR;
-using Microsoft.Extensions.Logging;
+﻿using MediatR;
 using Terminex.Common.Results;
+using Terminex.Common.Primitives;
+using LifeLine.Directory.Service.Application.Common;
+using LifeLine.Directory.Service.Application.Common.Repository;
 
 namespace LifeLine.Directory.Service.Application.Features.Statuses.Delete
 {
     public sealed class DeleteStatusCommandHandler
         (
             IDirectoryContext context,
-            IStatusRepository repository,
-            ILogger<DeleteStatusCommandHandler> logger
-        ) : IRequestHandler<DeleteStatusCommand, Result>
+            IStatusRepository repository
+        ) : IRequestHandler<DeleteStatusCommand, Result<Nothing>>
     {
-        private readonly IDirectoryContext _context = context;
-        private readonly IStatusRepository _repository = repository;
-        private readonly ILogger<DeleteStatusCommandHandler> _logger = logger;
-
-        public async Task<Result> Handle(DeleteStatusCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Nothing>> Handle(DeleteStatusCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var status = await _repository.GetByIdAsync(request.Id);
+            var status = await repository.GetByIdAsync(request.Id);
 
-                if (status == null)
-                    return Result.Failure(new Error(ErrorCode.NotFound, "Запись статуса не найдена!"));
+            if (status == null)
+                return Error.NotFound("Запись статуса не найдена!");
 
-                _repository.Remove(status);
+            repository.Remove(status);
 
-                await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
-                return Result.Success();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(ex, "Ошибка при удалении Status!");
-
-                return Result.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
-            }
+            return Nothing.Value;
         }
     }
 }

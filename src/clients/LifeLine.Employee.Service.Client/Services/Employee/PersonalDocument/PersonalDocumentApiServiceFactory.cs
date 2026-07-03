@@ -1,6 +1,9 @@
-﻿namespace LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument
+﻿using Microsoft.Extensions.Options;
+using System.Text.Json;
+
+namespace LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument
 {
-    public sealed class PersonalDocumentApiServiceFactory(IHttpClientFactory httpClientFactory) : IPersonalDocumentApiServiceFactory
+    public sealed class PersonalDocumentApiServiceFactory(IHttpClientFactory httpClientFactory, IOptions<JsonSerializerOptions> options) : IPersonalDocumentApiServiceFactory
     {
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
         private readonly string _clientName = "EmployeeServiceHttp";
@@ -9,7 +12,7 @@
         {
             var httpClient = _httpClientFactory.CreateClient(_clientName);
 
-            return new PersonalDocumentService(httpClient, employeeId);
+            return new PersonalDocumentService(httpClient, employeeId, options);
         }
     }
 }

@@ -1,11 +1,14 @@
-﻿using Shared.Http.Base;
-using System.Net.Http.Json;
-using Terminex.Common.Results;
+﻿using Microsoft.Extensions.Options;
 using Shared.Contracts.Response.DirectoryService;
+using Shared.Http.Base;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Terminex.Common.Results;
 
 namespace LifeLine.Directory.Service.Client.Services.Department
 {
-    public sealed class DepartmentService(HttpClient httpClient) : BaseHttpService<DepartmentResponse, string>(httpClient, "api/departments"), IDepartmentService
+    public sealed class DepartmentService(HttpClient httpClient, IOptions<JsonSerializerOptions> options) 
+        : BaseHttpService<DepartmentResponse, string>(httpClient, "api/departments", options.Value), IDepartmentService
     {
         public async Task<Result<List<DepartmentResponse>>> GetAllByBranchIdAsync(string branchId)
 		{

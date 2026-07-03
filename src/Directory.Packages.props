@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="SixLabors.ImageSharp" Version="2.1.3" />
-    <PackageVersion Include="Terminex.Common" Version="1.0.1" />
+    <PackageVersion Include="Terminex.Common" Version="1.1.0" />
     <!-- WPF.Admin & HttpClient -->
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />

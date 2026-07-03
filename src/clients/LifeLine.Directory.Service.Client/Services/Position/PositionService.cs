@@ -1,14 +1,16 @@
-﻿using Shared.Contracts.Request.DirectoryService.Position;
+﻿using Microsoft.Extensions.Options;
+using Shared.Contracts.Request.DirectoryService.Position;
 using Shared.Contracts.Response.DirectoryService;
 using Shared.Http.Base;
 using Shared.Kernel.Errors;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Terminex.Common.Results;
 
 namespace LifeLine.Directory.Service.Client.Services.Position
 {
-    internal sealed class PositionService(HttpClient httpClient, string departmentId) 
-        : BaseHttpService<PositionResponse, string>(httpClient, $"api/departments/{departmentId}/positions"), IPositionService
+    internal sealed class PositionService(HttpClient httpClient, string departmentId, IOptions<JsonSerializerOptions> options) 
+        : BaseHttpService<PositionResponse, string>(httpClient, $"api/departments/{departmentId}/positions", options.Value), IPositionService
     {
         public async Task<Result> UpdateAsync(string positionId, UpdatePositionRequest request)
         {
