@@ -4,11 +4,13 @@ using Shared.Http.Base;
 using System.Net.Http.Json;
 using Terminex.Common.Results;
 using Shared.Kernel.Errors;
+using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee.WorkPermit
 {
-    public sealed class WorkPermitService(HttpClient httpClient, string employeeId) :
-        BaseHttpService<WorkPermitResponse, string>(httpClient, $"api/employees/{employeeId}/work-permits"), IWorkPermitService
+    public sealed class WorkPermitService(HttpClient httpClient, string employeeId, IOptions<JsonSerializerOptions> options) :
+        BaseHttpService<WorkPermitResponse, string>(httpClient, $"api/employees/{employeeId}/work-permits", options.Value), IWorkPermitService
     {
         public async Task<Result> CreateManyAsync(CreateManyWorkPermitsRequest request)
         {

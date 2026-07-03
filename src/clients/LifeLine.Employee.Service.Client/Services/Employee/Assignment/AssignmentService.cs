@@ -1,15 +1,16 @@
-﻿using Shared.Contracts.Request.EmployeeService.Assignment;
+﻿using Microsoft.Extensions.Options;
+using Shared.Contracts.Request.EmployeeService.Assignment;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
 using Shared.Kernel.Errors;
-using System.Diagnostics;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
 {
-    public sealed class AssignmentService(HttpClient httpClient, string employeeId) :
-        BaseHttpService<AssignmentResponse, string>(httpClient, $"api/employees/{employeeId}/assignments"), IAssignmentService
+    public sealed class AssignmentService(HttpClient httpClient, string employeeId, IOptions<JsonSerializerOptions> options) :
+        BaseHttpService<AssignmentResponse, string>(httpClient, $"api/employees/{employeeId}/assignments", options.Value), IAssignmentService
     {
         public async Task<Result> CreateManyAsync(CreateManyAssignmentsReqeust reqeust)
         {

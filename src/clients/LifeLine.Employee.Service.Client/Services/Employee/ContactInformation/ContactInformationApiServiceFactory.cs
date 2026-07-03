@@ -1,6 +1,9 @@
-﻿namespace LifeLine.Employee.Service.Client.Services.Employee.ContactInformation
+﻿using Microsoft.Extensions.Options;
+using System.Text.Json;
+
+namespace LifeLine.Employee.Service.Client.Services.Employee.ContactInformation
 {
-    public sealed class ContactInformationApiServiceFactory(IHttpClientFactory httpClientFactory) : IContactInformationApiServiceFactory
+    public sealed class ContactInformationApiServiceFactory(IHttpClientFactory httpClientFactory, IOptions<JsonSerializerOptions> options) : IContactInformationApiServiceFactory
     {
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
         private readonly string _clientName = "EmployeeServiceHttp";
@@ -9,7 +12,7 @@
         {
             var httpClient = _httpClientFactory.CreateClient(_clientName);
 
-            return new ContactInformationService(httpClient, employeeId);
+            return new ContactInformationService(httpClient, employeeId, options);
         }
     }
 }

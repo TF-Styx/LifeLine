@@ -4,10 +4,13 @@ using Shared.Http.Base;
 using System.Net.Http.Json;
 using Terminex.Common.Results;
 using Shared.Kernel.Errors;
+using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee
 {
-    public sealed class EmployeeService(HttpClient httpClient) : BaseHttpService<EmployeeResponse, string>(httpClient, "api/employees"), IEmployeeService
+    public sealed class EmployeeService(HttpClient httpClient, IOptions<JsonSerializerOptions> options) 
+		: BaseHttpService<EmployeeResponse, string>(httpClient, "api/employees", options.Value), IEmployeeService
     {
 		public async Task<Result> AddPersonalPhoto(string employeeId, AddPersonalPhotoRequest request)
 		{

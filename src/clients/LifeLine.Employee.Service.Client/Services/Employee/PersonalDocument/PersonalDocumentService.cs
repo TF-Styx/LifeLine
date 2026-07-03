@@ -1,14 +1,16 @@
-﻿using Shared.Contracts.Request.EmployeeService.PersonalDocument;
+﻿using Microsoft.Extensions.Options;
+using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
-using System.Net.Http.Json;
-using Terminex.Common.Results;
 using Shared.Kernel.Errors;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument
 {
-    internal sealed class PersonalDocumentService(HttpClient httpClient, string employeeId)
-        : BaseHttpService<PersonalDocumentResponse, string>(httpClient, $"api/employees/{employeeId}/personal-documents"), IPersonalDocumentService
+    internal sealed class PersonalDocumentService(HttpClient httpClient, string employeeId, IOptions<JsonSerializerOptions> options)
+        : BaseHttpService<PersonalDocumentResponse, string>(httpClient, $"api/employees/{employeeId}/personal-documents", options.Value), IPersonalDocumentService
     {
         public async Task<Result> CreateManyAsync(CreateManyPersonalDocumentsRequest request)
         {
