@@ -5,6 +5,7 @@ using LifeLine.Directory.Service.Application.Features.Departments.Get.GetAllByBr
 using LifeLine.Directory.Service.Application.Features.Departments.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api.Extensions;
 using Shared.Contracts.Request.DirectoryService.Department;
 
 namespace LifeLine.Directory.Service.Api.Controllers.Api
@@ -25,7 +26,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(result.Value),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -47,7 +48,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное удаление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -61,7 +62,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
     }

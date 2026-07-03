@@ -5,6 +5,7 @@ using LifeLine.Directory.Service.Application.Features.Departments.Positions.Get.
 using LifeLine.Directory.Service.Application.Features.Departments.Positions.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api.Extensions;
 using Shared.Contracts.Request.DirectoryService.Position;
 
 namespace LifeLine.Directory.Service.Api.Controllers.Api
@@ -25,7 +26,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(result.Value),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -46,8 +47,8 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onSuccess: () => Ok(),
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -60,8 +61,8 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное удаление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onSuccess: () => Ok(),
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
     }

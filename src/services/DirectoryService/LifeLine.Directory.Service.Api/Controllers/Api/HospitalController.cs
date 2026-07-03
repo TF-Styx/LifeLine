@@ -4,6 +4,7 @@ using LifeLine.Directory.Service.Application.Features.Hospitals.Get.GetAll;
 using LifeLine.Directory.Service.Application.Features.Hospitals.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api.Extensions;
 using Shared.Contracts.Request.DirectoryService.Hospital;
 
 namespace LifeLine.Directory.Service.Api.Controllers.Api
@@ -35,7 +36,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(result.Value),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -67,7 +68,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -81,7 +82,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
     }

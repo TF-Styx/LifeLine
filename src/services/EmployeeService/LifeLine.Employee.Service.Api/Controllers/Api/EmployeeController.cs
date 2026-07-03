@@ -13,8 +13,8 @@ using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmpl
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployeeSurname;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.Employee;
-using Shared.Contracts.Request.Files;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
@@ -34,7 +34,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(result.Value),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -60,7 +60,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное Обновление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -74,7 +74,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -88,7 +88,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -102,7 +102,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное обновление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -116,7 +116,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное обновление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -130,7 +130,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное обновление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -144,7 +144,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное обновление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -158,7 +158,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное удаление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -172,7 +172,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешная деактивация!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
     }

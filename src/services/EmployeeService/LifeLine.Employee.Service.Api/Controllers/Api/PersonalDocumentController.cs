@@ -4,6 +4,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
@@ -24,7 +25,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -53,7 +54,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok(),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -78,7 +79,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное обновление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -92,7 +93,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return result.Match<IActionResult>
                 (
                     onSuccess: () => Ok("Успешное удаление!"),
-                    onFailure: errors => BadRequest(errors)
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
     }
