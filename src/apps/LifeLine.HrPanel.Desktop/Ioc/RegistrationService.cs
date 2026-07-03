@@ -30,10 +30,12 @@ using LifeLine.User.Service.Client.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Client.Security.Abstraction;
+using Shared.Serialization.Extensions;
 using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
 using Shared.WPF.Services.NavigationService.Pages;
 using Shared.WPF.Services.NavigationService.Windows;
+using System.Text.Json;
 
 namespace LifeLine.HrPanel.Desktop.Ioc
 {
@@ -42,6 +44,8 @@ namespace LifeLine.HrPanel.Desktop.Ioc
         public static IServiceCollection UseHrPanelServices(this ServiceCollection services, IConfiguration configuration)
         {
             services.UseFileService(configuration);
+
+            services.Configure<JsonSerializerOptions>(opt => opt.AddTerminexDefault());
 
             services.AddSingleton<INavigationPage, NavigationPage>();
             services.AddSingleton<INavigationWindow, NavigationWindow>();

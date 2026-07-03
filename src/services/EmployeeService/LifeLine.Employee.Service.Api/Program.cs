@@ -3,6 +3,8 @@ using LifeLine.Employee.Service.Infrastructure.Ioc;
 using MediatR;
 using Shared.Application.Behaviours;
 using Shared.Logging;
+using Shared.Serialization.Extensions;
+using System.Text.Json;
 
 namespace LifeLine.Employee.Service.Api
 {
@@ -18,6 +20,10 @@ namespace LifeLine.Employee.Service.Api
             builder.Services.UseApplication();
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DiApplication).Assembly));
+            
+            builder.Services.Configure<JsonSerializerOptions>(opt => opt.AddTerminexDefault());
+            builder.Services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.AddTerminexDefault());
+
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionBehaviour<,>));
             builder.Services.AddAutoMapper(cfg => cfg.LicenseKey = builder.Configuration["AutoMapper:AutoMapperKey"], typeof(DiApplication).Assembly);
             builder.Host.UseSerialogLogger();
