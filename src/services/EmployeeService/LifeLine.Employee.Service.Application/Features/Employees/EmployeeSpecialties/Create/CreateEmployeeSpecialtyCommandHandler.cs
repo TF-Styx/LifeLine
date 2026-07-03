@@ -1,48 +1,29 @@
-﻿using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
-using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using Shared.Kernel.Exceptions;
+﻿using MediatR;
 using Terminex.Common.Results;
+using Terminex.Common.Primitives;
+using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
+using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Create
 {
     public sealed class CreateEmployeeSpecialtyCommandHandler
         (
             IWriteContext context,
-            IEmployeeRepository employeeRepository,
-            ILogger<CreateEmployeeSpecialtyCommandHandler> logger
-        ) : IRequestHandler<CreateEmployeeSpecialtyCommand, Result>
+            IEmployeeRepository repository
+        ) : IRequestHandler<CreateEmployeeSpecialtyCommand, Result<Nothing>>
     {
-        private readonly IWriteContext _context = context;
-        private readonly IEmployeeRepository _employeeRepository = employeeRepository;
-        private readonly ILogger<CreateEmployeeSpecialtyCommandHandler> _logger = logger;
-
-        public async Task<Result> Handle(CreateEmployeeSpecialtyCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Nothing>> Handle(CreateEmployeeSpecialtyCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId);
+            var employee = await repository.GetByIdAsync(request.EmployeeId);
 
-                if (employee == null)
-                    return Result.Failure(new Error(ErrorCode.NotFound, "Пользователь не найден!"));
+            if (employee == null)
+                return Error.NotFound("Пользователь не найден!");
 
-                employee.AddSpecialty(request.SpecialtyId);
+            employee.AddSpecialty(request.SpecialtyId);
 
-                await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
-                return Result.Success();
-            }
-            catch (DomainException domainEX)
-            {
-                return Result.Failure(new Error(ErrorCode.Create, domainEX.Message));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(ex, "Ошибка при добавлении специальностей сотрудника!");
-
-                return Result.Failure(new Error(ErrorCode.Server, "Ошибка сервера при сохранении!"));
-            }
+            return Nothing.Value;
         }
     }
 }

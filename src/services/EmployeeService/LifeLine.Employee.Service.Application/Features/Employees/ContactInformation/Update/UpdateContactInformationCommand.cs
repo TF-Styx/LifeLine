@@ -1,21 +1,22 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
+using Terminex.Common.Primitives;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.ContactInformation.Update
 {
     public sealed record UpdateContactInformationCommand
-        (
-            string Id,
-            string EmployeeId,
-            string PersonalPhone,
-            string? CorporatePhone,
-            string PersonalEmail,
-            string? CorporateEmail,
-            string PostalCode,
-            string Region,
-            string City,
-            string Street,
-            string Building,
-            string? Apartment
-        ) : IRequest<Result>;
+    (
+        string Id,
+        string EmployeeId,
+        string PersonalPhone,
+        string? CorporatePhone,
+        string PersonalEmail,
+        string? CorporateEmail,
+        string PostalCode,
+        string Region,
+        string City,
+        string Street,
+        string Building,
+        string? Apartment
+    ) : IRequest<Result<Nothing>>;
 }

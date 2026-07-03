@@ -1,5 +1,7 @@
 using LifeLine.Employee.Service.Application.Ico;
 using LifeLine.Employee.Service.Infrastructure.Ioc;
+using MediatR;
+using Shared.Application.Behaviours;
 using Shared.Logging;
 
 namespace LifeLine.Employee.Service.Api
@@ -16,6 +18,7 @@ namespace LifeLine.Employee.Service.Api
             builder.Services.UseApplication();
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DiApplication).Assembly));
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionBehaviour<,>));
             builder.Services.AddAutoMapper(cfg => cfg.LicenseKey = builder.Configuration["AutoMapper:AutoMapperKey"], typeof(DiApplication).Assembly);
             builder.Host.UseSerialogLogger();
 
