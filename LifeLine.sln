@@ -104,6 +104,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Client.Security.Wind
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Application", "src\shared\core\Shared.Application\Shared.Application.csproj", "{DF72A9CE-560F-4783-94D6-388F15C01076}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "network", "network", "{AE1520B7-C845-4719-84CD-5A5691F8C9F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Serialization", "src\shared\core\network\Shared.Serialization\Shared.Serialization.csproj", "{D055EA56-BC1C-4802-AC31-B4465267F21A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -234,6 +238,10 @@ Global
 		{DF72A9CE-560F-4783-94D6-388F15C01076}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF72A9CE-560F-4783-94D6-388F15C01076}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF72A9CE-560F-4783-94D6-388F15C01076}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D055EA56-BC1C-4802-AC31-B4465267F21A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D055EA56-BC1C-4802-AC31-B4465267F21A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D055EA56-BC1C-4802-AC31-B4465267F21A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D055EA56-BC1C-4802-AC31-B4465267F21A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -284,6 +292,8 @@ Global
 		{3A9FCD07-7F4A-4C11-916C-8F683F06CA9F} = {53C3C7EC-D069-4719-A790-70BFAF5D892E}
 		{7EF82B80-F172-47FC-B804-B9FEC341E20A} = {53C3C7EC-D069-4719-A790-70BFAF5D892E}
 		{DF72A9CE-560F-4783-94D6-388F15C01076} = {6F977A9E-1025-4384-8AD6-8C33338B8D0C}
+		{AE1520B7-C845-4719-84CD-5A5691F8C9F9} = {6F977A9E-1025-4384-8AD6-8C33338B8D0C}
+		{D055EA56-BC1C-4802-AC31-B4465267F21A} = {AE1520B7-C845-4719-84CD-5A5691F8C9F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B55E38C3-87A3-4F4A-8270-F0D69B972C41}
