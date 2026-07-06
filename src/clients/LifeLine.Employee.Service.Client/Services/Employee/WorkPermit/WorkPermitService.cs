@@ -29,6 +29,24 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.WorkPermit
             }
         }
 
+        public async Task<Result<List<WorkPermitResponse>>> GetAllByEmployeeId(string employeeId)
+        {
+            try
+            {
+                var response = await HttpClient.GetAsync($"{Url}/{employeeId}");
+                response.EnsureSuccessStatusCode();
+
+                var assignmentsContracts = await response.Content.ReadFromJsonAsync<List<WorkPermitResponse>>(JsonSerializerOptions);
+
+                return Result<List<WorkPermitResponse>>.Success(assignmentsContracts);
+            }
+            catch (Exception ex)
+            {
+                return Result<List<WorkPermitResponse>>.Failure(Error.BadRequest($"Не валидный запрос!\n" +
+                                                                                 $"Исключение: {ex}\n"));
+            }
+        }
+
         public async Task<Result> UpdateWorkPermitAsync(Guid workPermitId, UpdateWorkPermitRequest request)
         {
             try

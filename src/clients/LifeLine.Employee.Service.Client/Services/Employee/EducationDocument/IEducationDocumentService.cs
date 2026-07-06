@@ -8,6 +8,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EducationDocument
     public interface IEducationDocumentService : IBaseHttpService<EducationDocumentResponse, string>
     {
         Task<Result> CreateManyAsync(CreateManyEducationDocumentsReqeust reqeust);
+        Task<Result<List<EducationDocumentResponse>>> GetAllByEmployeeId(string employeeId);
         Task<Result> UpdateEducationDocumentAsync(Guid educationDocumentId, UpdateEducationDocumentRequest request);
         Task<Result> DeleteEducationDocumentAsync(Guid educationDocumentId);
     }

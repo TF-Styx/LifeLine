@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Shared.Contracts.Request.EmployeeService.Assignment;
+using Shared.Contracts.Response.DirectoryService;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
 using Shared.Kernel.Errors;
@@ -24,6 +25,24 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
             catch (Exception ex)
             {
                 return Result.Failure(new Error(AppErrors.CreateHttp, $"Произошла ошибка при сохранении данных в назначении!\n{ex}"));
+            }
+        }
+
+        public async Task<Result<List<AssignmentContractResponse>>> GetAllByEmployeeId(string employeeId)
+        {
+            try
+            {
+                var response = await HttpClient.GetAsync($"{Url}/{employeeId}");
+                response.EnsureSuccessStatusCode();
+
+                var assignmentsContracts = await response.Content.ReadFromJsonAsync<List<AssignmentContractResponse>>(JsonSerializerOptions);
+
+                return Result<List<AssignmentContractResponse>>.Success(assignmentsContracts);
+            }
+            catch (Exception ex)
+            {
+                return Result<List<AssignmentContractResponse>>.Failure(Error.BadRequest($"Не валидный запрос!\n" +
+                                                                                         $"Исключение: {ex}\n"));
             }
         }
 

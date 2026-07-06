@@ -27,6 +27,24 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument
             }
         }
 
+        public async Task<Result<List<PersonalDocumentResponse>>> GetAllByEmployeeId(string employeeId)
+        {
+            try
+            {
+                var response = await HttpClient.GetAsync($"{Url}/{employeeId}");
+                response.EnsureSuccessStatusCode();
+
+                var assignmentsContracts = await response.Content.ReadFromJsonAsync<List<PersonalDocumentResponse>>(JsonSerializerOptions);
+
+                return Result<List<PersonalDocumentResponse>>.Success(assignmentsContracts);
+            }
+            catch (Exception ex)
+            {
+                return Result<List<PersonalDocumentResponse>>.Failure(Error.BadRequest($"Не валидный запрос!\n" +
+                                                                                       $"Исключение: {ex}\n"));
+            }
+        }
+
         public async Task<Result> UpdatePersonalDocumentAsync(Guid personalDocumentId, UpdatePersonalDocumentRequest request)
         {
             try
