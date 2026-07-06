@@ -16,7 +16,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EducationDocument
         {
             try
             {
-                var response = await HttpClient.PostAsJsonAsync($"{Url}/many", reqeust, JsonSerializerOptions);
+                var response = await HttpClient.PostAsJsonAsync($"{Url}/batch", reqeust, JsonSerializerOptions);
 
                 if (!response.IsSuccessStatusCode)
                     return Result.Failure(new Error(AppErrors.CreateHttp, await response.Content.ReadAsStringAsync()));

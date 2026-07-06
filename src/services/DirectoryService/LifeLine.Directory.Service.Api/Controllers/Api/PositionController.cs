@@ -34,7 +34,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
         public async Task<IActionResult> GetAll([FromRoute] Guid departmentId, CancellationToken cancellationToken = default)
             => Ok(await _mediator.Send(new GetAllByDepartmentIdQuery(departmentId), cancellationToken));
 
-        [HttpGet("get-all")]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAllPosition(CancellationToken cancellationToken = default)
             => Ok(await _mediator.Send(new GetAllPositionQuery(), cancellationToken));
 

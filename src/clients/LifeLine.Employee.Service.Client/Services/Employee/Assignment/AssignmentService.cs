@@ -16,7 +16,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
         {
             try
             {
-                var response = await HttpClient.PostAsJsonAsync($"{Url}/many", reqeust, JsonSerializerOptions);
+                var response = await HttpClient.PostAsJsonAsync($"{Url}/batch", reqeust, JsonSerializerOptions);
                 response.EnsureSuccessStatusCode();
 
                 return Result.Success();

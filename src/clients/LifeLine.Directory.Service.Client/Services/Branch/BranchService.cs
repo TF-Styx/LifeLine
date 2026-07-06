@@ -14,7 +14,7 @@ namespace LifeLine.Directory.Service.Client.Services.Branch
         {
 			try
 			{
-                var response = await HttpClient.GetAsync($"{Url}/by-hospital-id/{hospitalId}");
+                var response = await HttpClient.GetAsync($"{Url}/hospital/{hospitalId}");
                 response.EnsureSuccessStatusCode();
 
                 var branches = await response.Content.ReadFromJsonAsync<List<BranchResponse>>(JsonSerializerOptions);

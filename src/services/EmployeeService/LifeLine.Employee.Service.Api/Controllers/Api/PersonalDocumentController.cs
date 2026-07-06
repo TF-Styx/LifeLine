@@ -61,7 +61,6 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         [HttpPatch("{personalDocumentId}")]
         public async Task<IActionResult> Update([FromRoute] Guid employeeId, [FromRoute] Guid personalDocumentId, [FromBody] UpdatePersonalDocumentRequest request, CancellationToken cancellationToken = default)
         {
-            Console.WriteLine("Пришло");
             var command = new UpdatePersonalDocumentCommand
                 (
                     personalDocumentId.ToString(), 
@@ -78,7 +77,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -92,7 +91,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное удаление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }

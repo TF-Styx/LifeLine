@@ -25,7 +25,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное создание!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -38,7 +38,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default) 
             => Ok(await _mediator.Send(new GetByIdEmployeeTypeQuery(id), cancellationToken));
 
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateEmployeeTypeRequest request, CancellationToken cancellationToken = default)
         {
             var command = new UpdateEmployeeTypeCommand(id, request.Name, request.Description);
@@ -47,7 +47,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -61,7 +61,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное удаление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }

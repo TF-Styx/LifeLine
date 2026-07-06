@@ -47,7 +47,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                 );
         }
 
-        [HttpPost("many")]
+        [HttpPost("batch")]
         public async Task<IActionResult> CreateMany([FromRoute] Guid employeeId, [FromBody] CreateManyAssignmentsReqeust reqeust, CancellationToken cancellationToken = default)
         {
             var command = new CreateManyAssignmentsCommand
@@ -120,7 +120,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -134,7 +134,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное удаление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
