@@ -15,7 +15,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
         {
             try
             {
-                var response = await HttpClient.PostAsJsonAsync($"{Url}/many", request, JsonSerializerOptions);
+                var response = await HttpClient.PostAsJsonAsync($"{Url}/batch", request, JsonSerializerOptions);
 
                 if (!response.IsSuccessStatusCode)
                     return Result.Failure(new Error(AppErrors.CreateHttp, await response.Content.ReadAsStringAsync()));

@@ -42,15 +42,15 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
             => Ok(await _mediator.Send(new GetAllEmployeeQuery(), cancellationToken));
 
-        [HttpGet("get-all-for-hr")]
+        [HttpGet("hr")]
         public async Task<IActionResult> GetAllForHr(CancellationToken cancellationToken = default)
             => Ok(await _mediator.Send(new GetAllEmployeeForHrQuery(), cancellationToken));
 
-        [HttpGet("{id}/get-full-details-for-employee")]
+        [HttpGet("details/{id}")]
         public async Task<IActionResult> GetFullDetailsForEmployee([FromRoute] Guid id, CancellationToken cancellationToken = default)
             => Ok(await _mediator.Send(new GetFullDetailsForEmployeeQuery(id), cancellationToken));
 
-        [HttpPatch("{id}/update-employee")]
+        [HttpPatch("employee/{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateEmployeeRequest request, CancellationToken cancellationToken = default)
         {
             var command = new UpdateEmployeeCommand(id, request.Surname, request.Name, request.Patronymic, Guid.Parse(request.GenderId));
@@ -59,12 +59,12 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное Обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
-        [HttpPatch("{id}/add-personal-photo")]
+        [HttpPatch("photo/{id}")]
         public async Task<IActionResult> AddPersonalPhoto([FromRoute] Guid id, [FromBody] AddPersonalPhotoRequest request, CancellationToken cancellationToken = default)
         {
             var command = new AddPersonalPhotoCommand(id, request.BucketName, request.FileName);
@@ -78,7 +78,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                 );
         }
 
-        [HttpDelete("{id}/delete-personal-photo")]
+        [HttpDelete("photo/{id}")]
         public async Task<IActionResult> DeletePersonalPhoto([FromRoute] Guid id, CancellationToken cancellationToken = default)
         {
             var command = new DeletePersonalPhotoCommand(id);
@@ -92,7 +92,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                 );
         }
 
-        [HttpPatch("{id}/update-surname")]
+        [HttpPatch("surname/{id}")]
         public async Task<IActionResult> UpdateSurname([FromRoute] Guid id, [FromBody] string surname, CancellationToken cancellationToken = default)
         {
             var command = new UpdateEmployeeSurnameCommand(id, surname);
@@ -101,12 +101,12 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
-        [HttpPatch("{id}/update-name")]
+        [HttpPatch("name/{id}")]
         public async Task<IActionResult> UpdateName([FromRoute] Guid id, [FromBody] string name, CancellationToken cancellationToken = default)
         {
             var command = new UpdateEmployeeNameCommand(id, name);
@@ -115,12 +115,12 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
-        [HttpPatch("{id}/update-patronymic")]
+        [HttpPatch("patronymic/{id}")]
         public async Task<IActionResult> UpdatePatronymic([FromRoute] Guid id, [FromBody] string patronymic, CancellationToken cancellationToken = default)
         {
             var command = new UpdateEmployeePatronymicCommand(id, patronymic);
@@ -129,12 +129,12 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
-        [HttpPatch("{id}/update-gender-id")]
+        [HttpPatch("gender/{id}")]
         public async Task<IActionResult> UpdateGenderId([FromRoute] Guid id, [FromBody] Guid genderId, CancellationToken cancellationToken = default)
         {
             var command = new UpdateEmployeeGenderIdCommand(id, genderId);
@@ -143,7 +143,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -157,12 +157,12 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное удаление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
-        [HttpPatch("{id}/soft-delete")]
+        [HttpPatch("soft-delete/{id}")]
         public async Task<IActionResult> SoftDelete([FromRoute] Guid id, CancellationToken cancellationToken = default)
         {
             var command = new SoftDeleteEmployeeCommand(id);
@@ -171,7 +171,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешная деактивация!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }

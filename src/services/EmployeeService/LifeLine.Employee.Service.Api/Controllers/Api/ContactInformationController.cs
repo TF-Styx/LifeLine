@@ -9,8 +9,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.ContactInformation;
-using Shared.Kernel.Errors;
-using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
@@ -29,19 +27,8 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное создание!"),
-                    onFailure: errors => 
-                    {
-                        var error = errors.FirstOrDefault();
-
-                        return error?.ErrorCode switch
-                        {
-                            var code when code == AppErrors.ExistContactInformation => 
-                                StatusCode(StatusCodes.Status409Conflict, error.Message),
-
-                            _ => this.MapActionResult(errors)
-                        };
-                    } 
+                    onSuccess: () => Ok(result.Value),
+                    onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
@@ -54,7 +41,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -68,7 +55,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -82,7 +69,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -96,7 +83,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -110,7 +97,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -124,7 +111,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }

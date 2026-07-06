@@ -16,7 +16,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EducationDocument
         {
             try
             {
-                var response = await HttpClient.PostAsJsonAsync($"{Url}/many", reqeust, JsonSerializerOptions);
+                var response = await HttpClient.PostAsJsonAsync($"{Url}/batch", reqeust, JsonSerializerOptions);
 
                 if (!response.IsSuccessStatusCode)
                     return Result.Failure(new Error(AppErrors.CreateHttp, await response.Content.ReadAsStringAsync()));
@@ -26,6 +26,24 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EducationDocument
             catch (Exception ex)
             {
                 return Result.Failure(new Error(AppErrors.CreateHttp, $"Произошла ошибка при сохранении данных в документы об образовании!\n{ex}"));
+            }
+        }
+
+        public async Task<Result<List<EducationDocumentResponse>>> GetAllByEmployeeId(string employeeId)
+        {
+            try
+            {
+                var response = await HttpClient.GetAsync($"{Url}/{employeeId}");
+                response.EnsureSuccessStatusCode();
+
+                var assignmentsContracts = await response.Content.ReadFromJsonAsync<List<EducationDocumentResponse>>(JsonSerializerOptions);
+
+                return Result<List<EducationDocumentResponse>>.Success(assignmentsContracts);
+            }
+            catch (Exception ex)
+            {
+                return Result<List<EducationDocumentResponse>>.Failure(Error.BadRequest($"Не валидный запрос!\n" +
+                                                                                        $"Исключение: {ex}\n"));
             }
         }
 

@@ -25,20 +25,16 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное создание!"),
+                    onSuccess: () => Ok(result.Value),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
-        {
-            var result = await _mediator.Send(new GetAllGendersQuery(), cancellationToken);
+            => Ok(await _mediator.Send(new GetAllGendersQuery(), cancellationToken));
 
-            return Ok(result);
-        }
-
-        [HttpGet("{id}/get-by-id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
         {
             var result = await _mediator.Send(new GetByIdGenderQuery(id), cancellationToken);
@@ -46,7 +42,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
             return Ok(result.Value);
         }
 
-        [HttpPatch("{id}/update-name")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateName([FromRoute] Guid id, [FromBody] UpdateGenderNameRequest request, CancellationToken cancellationToken = default)
         {
             var command = new UpdateGenderNameCommand(id, request.Name);
@@ -55,7 +51,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -69,7 +65,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное удаление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }

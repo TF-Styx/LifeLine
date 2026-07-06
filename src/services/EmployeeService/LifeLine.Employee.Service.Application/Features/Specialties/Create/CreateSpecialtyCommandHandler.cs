@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
-using Terminex.Common.Primitives;
 using LifeLine.Employee.Service.Domain.Models;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
@@ -11,16 +10,16 @@ namespace LifeLine.Employee.Service.Application.Features.Specialties.Create
         (
             IWriteContext context,
             ISpecialtyRepository repository
-        ) : IRequestHandler<CreateSpecialtyCommand, Result<Nothing>>
+        ) : IRequestHandler<CreateSpecialtyCommand, Result<string>>
     {
-        public async Task<Result<Nothing>> Handle(CreateSpecialtyCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(CreateSpecialtyCommand request, CancellationToken cancellationToken)
         {
             var specialty = Specialty.Create(request.SpecialtyName, request.Description);
 
             await repository.AddAsync(specialty, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
 
-            return Nothing.Value;
+            return specialty.Id.ToString();
         }
     }
 }

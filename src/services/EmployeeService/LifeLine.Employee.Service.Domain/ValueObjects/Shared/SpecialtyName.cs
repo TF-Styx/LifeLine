@@ -27,6 +27,7 @@ namespace LifeLine.Employee.Service.Domain.ValueObjects.Shared
 
         public override string ToString() => Value.ToString();
 
-        public static implicit operator string(SpecialtyName name) => name.Value;
+        //public static implicit operator string(SpecialtyName name) => name.Value;
+        public static implicit operator string?(SpecialtyName? name) => name?.Value;
     }
 }

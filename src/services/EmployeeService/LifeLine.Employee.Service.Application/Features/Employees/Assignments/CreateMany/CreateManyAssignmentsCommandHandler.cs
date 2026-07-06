@@ -45,7 +45,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
                     );
             }
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return Nothing.Value;
         }

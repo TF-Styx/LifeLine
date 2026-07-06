@@ -1,6 +1,7 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Delete;
+using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Get.GetAllByEmployeeId;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,8 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                         request.Contract.StartDate, 
                         request.Contract.EndDate, 
                         request.Contract.Salary, 
-                        null
+                        request.Contract.BucketName,
+                        request.Contract.FileName
                     )
                 );
 
@@ -42,12 +44,12 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok(),
+                    onSuccess: () => Ok(result.Value),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
 
-        [HttpPost("many")]
+        [HttpPost("batch")]
         public async Task<IActionResult> CreateMany([FromRoute] Guid employeeId, [FromBody] CreateManyAssignmentsReqeust reqeust, CancellationToken cancellationToken = default)
         {
             var command = new CreateManyAssignmentsCommand
@@ -88,6 +90,10 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                 );
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllByEmployeeId([FromRoute] Guid employeeId, CancellationToken cancellationToken)
+            => Ok(await _mediator.Send(new GetAllAssignmentsContractsByEmployeeIdQuery(employeeId), cancellationToken));
+
         [HttpPatch("{assignmentId}/{contractId}")]
         public async Task<IActionResult> Update([FromRoute] Guid employeeId, [FromRoute] Guid assignmentId, [FromRoute] Guid contractId, UpdateAssignmentRequest request, CancellationToken cancellationToken = default)
         {
@@ -120,7 +126,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное обновление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -134,7 +140,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok("Успешное удаление!"),
+                    onSuccess: () => Ok(),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }

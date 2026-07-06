@@ -46,7 +46,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
             => Ok(await mediator.Send(new GetAllBranchQuery(), cancellationToken));
 
-        [HttpGet("by-hospital-id/{hospitalId}")]
+        [HttpGet("hospital/{hospitalId}")]
         public async Task<IActionResult> GetAllByHospitalId([FromRoute] Guid hospitalId, CancellationToken cancellationToken = default)
             => Ok(await mediator.Send(new GetAllByHospitalIdQuery(hospitalId), cancellationToken));
 

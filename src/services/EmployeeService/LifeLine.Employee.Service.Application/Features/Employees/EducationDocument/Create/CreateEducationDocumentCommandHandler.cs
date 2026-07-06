@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
-using Terminex.Common.Primitives;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 
@@ -10,16 +9,16 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.EducationDocu
         (
             IWriteContext context,
             IEmployeeRepository repository
-        ) : IRequestHandler<CreateEducationDocumentCommand, Result<Nothing>>
+        ) : IRequestHandler<CreateEducationDocumentCommand, Result<string>>
     {
-        public async Task<Result<Nothing>> Handle(CreateEducationDocumentCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(CreateEducationDocumentCommand request, CancellationToken cancellationToken)
         {
             var employee = await repository.GetByIdAsync(request.EmployeeId);
 
             if (employee == null)
                 return Error.NotFound("Пользователь не найден!");
 
-            employee.AddEducationDocument
+            var educationDocumentId = employee.AddEducationDocument
             (
                 request.EducationLevelId,
                 request.DocumentTypeId,
@@ -30,13 +29,13 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.EducationDocu
                 request.SpecialtyName,
                 request.ProgramName,
                 request.TotalHours,
-                null, 
-                null
+                request.BucketName,
+                request.FileName
             );
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return Nothing.Value;
+            return educationDocumentId;
         }
     }
 }

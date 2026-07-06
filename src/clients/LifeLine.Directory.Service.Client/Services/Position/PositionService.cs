@@ -29,7 +29,7 @@ namespace LifeLine.Directory.Service.Client.Services.Position
 
         public async Task<List<PositionResponse>> GetAllPosition()
         {
-            var response = await HttpClient.GetAsync($"{Url}/get-all");
+            var response = await HttpClient.GetAsync($"{Url}/all");
             var result = await response.Content.ReadFromJsonAsync<List<PositionResponse>>(JsonSerializerOptions);
 
             return result!;

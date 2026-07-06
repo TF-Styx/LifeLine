@@ -27,6 +27,7 @@ namespace LifeLine.Employee.Service.Domain.ValueObjects.WorkPermits
 
         public override string ToString() => Value.ToString();
 
-        public static implicit operator string(ProtocolNumber value) => value.Value;
+        //public static implicit operator string(ProtocolNumber value) => value.Value;
+        public static implicit operator string?(ProtocolNumber?value) => value?.Value;
     }
 }

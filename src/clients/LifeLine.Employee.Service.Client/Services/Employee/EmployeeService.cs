@@ -16,7 +16,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
 		{
 			try
 			{
-				var response = await HttpClient.PatchAsJsonAsync($"{Url}/{employeeId}/add-personal-photo", request, JsonSerializerOptions);
+				var response = await HttpClient.PatchAsJsonAsync($"{Url}/photo/{employeeId}", request, JsonSerializerOptions);
 
                 if (!response.IsSuccessStatusCode)
                     return Result.Failure(new Error(AppErrors.CreateHttp, await response.Content.ReadAsStringAsync()));
@@ -33,7 +33,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
 		{
 			try
 			{
-				var response = await HttpClient.DeleteAsync($"{Url}/{employeeId}/delete-personal-photo");
+				var response = await HttpClient.DeleteAsync($"{Url}/photo/{employeeId}");
 				response.EnsureSuccessStatusCode();
 
                 return Result.Success();
@@ -48,7 +48,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
         {
 			try
 			{
-				var response = await HttpClient.GetAsync($"{Url}/get-all-for-hr");
+				var response = await HttpClient.GetAsync($"{Url}/hr");
 				response.EnsureSuccessStatusCode();
 
 				return await response.Content.ReadFromJsonAsync<List<EmployeeHrItemResponse>>(JsonSerializerOptions) ?? [];
@@ -63,7 +63,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
 		{
 			try
 			{
-				var response = await HttpClient.GetAsync($"{Url}/{id}/get-full-details-for-employee");
+				var response = await HttpClient.GetAsync($"{Url}/details/{id}");
 				response.EnsureSuccessStatusCode();
 
 				return await response.Content.ReadFromJsonAsync<EmployeeFullDetailsResponse>();
@@ -78,7 +78,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
 		{
 			try
 			{
-				var response = await HttpClient.PatchAsJsonAsync($"{Url}/{employeeId}/update-employee", request, JsonSerializerOptions);
+				var response = await HttpClient.PatchAsJsonAsync($"{Url}/employee/{employeeId}", request, JsonSerializerOptions);
                 //response.EnsureSuccessStatusCode();
 
                 if (!response.IsSuccessStatusCode)
@@ -96,7 +96,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
 		{
 			try
 			{
-				var response = await HttpClient.PatchAsync($"{Url}/{employeeId}/soft-delete", null);
+				var response = await HttpClient.PatchAsync($"{Url}/soft-delete/{employeeId}", null);
 
 				if (!response.IsSuccessStatusCode)
 					return Result.Failure(new Error(AppErrors.DeleteHttp, await response.Content.ReadAsStringAsync()));
