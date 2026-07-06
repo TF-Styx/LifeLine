@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
 using Shared.Domain.ValueObjects;
-using Terminex.Common.Primitives;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 
@@ -11,16 +10,16 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.ContactInform
         (
             IWriteContext context, 
             IEmployeeRepository repository
-        ) : IRequestHandler<CreateContactInformationCommand, Result<Nothing>>
+        ) : IRequestHandler<CreateContactInformationCommand, Result<string>>
     {
-        public async Task<Result<Nothing>> Handle(CreateContactInformationCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(CreateContactInformationCommand request, CancellationToken cancellationToken)
         {
             var employee = await repository.GetByIdAsync(request.EmployeeId);
 
             if (employee == null)
                 return Error.NotFound("Пользователь не найдена!");
 
-            employee.AddContactInformation
+            var contactId = employee.AddContactInformation
                 (
                     request.PersonalPhone, 
                     request.CorporatePhone,
@@ -39,7 +38,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.ContactInform
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return Nothing.Value;
+            return contactId;
         }
     }
 }

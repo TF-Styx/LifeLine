@@ -1,6 +1,7 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Delete;
+using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Get.GetAllByEmployeeId;
 using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -29,14 +30,16 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     request.QualificationAwardedName,
                     request.SpecialtyName,
                     request.ProgramName,
-                    request.TotalHours != null ? TimeSpan.FromHours(request.TotalHours.Value) : TimeSpan.Zero
+                    request.TotalHours != null ? TimeSpan.FromHours(request.TotalHours.Value) : TimeSpan.Zero,
+                    request.BucketName,
+                    request.FileName
                 );
 
             var result = await _mediator.Send(command, cancellationToken);
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok(),
+                    onSuccess: () => Ok(result.Value),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -75,6 +78,10 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllByEmployeeId([FromRoute] Guid employeeId, CancellationToken cancellationToken = default)
+            => Ok(await _mediator.Send(new GetAllEducationDocumentByEmployeeIdQuery(employeeId), cancellationToken));
 
         [HttpPatch("{educationDocumentId}")]
         public async Task<IActionResult> Update([FromRoute] Guid employeeId, [FromRoute] Guid educationDocumentId, [FromBody] UpdateEducationDocumentRequest request, CancellationToken cancellationToken = default)

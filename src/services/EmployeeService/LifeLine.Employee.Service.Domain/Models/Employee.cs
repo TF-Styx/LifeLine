@@ -148,13 +148,15 @@ namespace LifeLine.Employee.Service.Domain.Models
         /// <exception cref="EmptyIdentifierException"></exception>
         /// <exception cref="PhoneNumberException"></exception>
         /// <exception cref="EmailAddressException"></exception>
-        public void AddContactInformation(string personalPhone, string? corporatePhone, string personalEmail, string? corporateEmail, Address address)
+        public string AddContactInformation(string personalPhone, string? corporatePhone, string personalEmail, string? corporateEmail, Address address)
         {
             GuardException.Against.That(this.ContactInformation != null, () => new ExistContactInformationException("Контактная информация уже указана! Вы можете её изменить!"));
 
             var info = ContactInformation.Create(this.Id, personalPhone, corporatePhone, personalEmail, corporateEmail, address);
 
             this.ContactInformation = info;
+
+            return info.Id.ToString();
         }
 
         /// <exception cref="EmptyContactInformationException"></exception>
@@ -199,7 +201,7 @@ namespace LifeLine.Employee.Service.Domain.Models
 
         #region WorkPermit
 
-        public void AddWorkPermit
+        public string AddWorkPermit
             (
                 string workPermitName,
                 string? documentSeries,
@@ -233,6 +235,8 @@ namespace LifeLine.Employee.Service.Domain.Models
                 );
 
             _workPermits.Add(workPermit);
+
+            return workPermit.Id.ToString();
         }
 
         public void UpdateNameWP(Guid id, string workPermitName)
@@ -371,7 +375,7 @@ namespace LifeLine.Employee.Service.Domain.Models
 
         #region EducationDocument
 
-        public void AddEducationDocument
+        public string AddEducationDocument
             (
                 Guid educationLevelId,
                 Guid documentTypeId,
@@ -403,6 +407,8 @@ namespace LifeLine.Employee.Service.Domain.Models
                 );
 
             _educationDocuments.Add(educationDocument);
+
+            return educationDocument.Id.ToString();
         }
 
         public void UpdateEducationLevel(Guid id, Guid educationLevelId)
@@ -541,7 +547,7 @@ namespace LifeLine.Employee.Service.Domain.Models
 
         #region PersonalDocument
 
-        public void AddPersonalDocument
+        public string AddPersonalDocument
             (
                 Guid documentTypeId,
                 string documentNumber,
@@ -561,6 +567,8 @@ namespace LifeLine.Employee.Service.Domain.Models
                 );
 
             _personalDocuments.Add(personalDocument);
+
+            return personalDocument.Id.ToString();
         }
 
         public void UpdateDocumentTypePD(Guid id, Guid documentTypeId)
@@ -746,7 +754,7 @@ namespace LifeLine.Employee.Service.Domain.Models
 
         #region Assignemnt
 
-        public void AddAssignment
+        public string AddAssignment
             (
                 Guid positionId,
                 Guid departmentId,
@@ -772,6 +780,8 @@ namespace LifeLine.Employee.Service.Domain.Models
                 );
 
             _assignments.Add(assignment);
+
+            return assignment.Id.ToString();
         }
 
         public void UpdateAssignmentPositionId(Guid id, Guid positionId)

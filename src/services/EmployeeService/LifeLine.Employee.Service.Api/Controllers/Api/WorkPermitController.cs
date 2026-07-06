@@ -1,6 +1,7 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Delete;
+using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Get.GetAllWorkPermitByEmployeeId;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,8 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     request.IssuingAuthority,
                     request.IssueDate,
                     request.ExpiryDate,
+                    request.BucketName,
+                    request.FileName,
                     request.PermitTypeId,
                     request.AdmissionStatusId
                 );
@@ -37,7 +40,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok(),
+                    onSuccess: () => Ok(result.Value),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -77,6 +80,10 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllByEmployee([FromRoute] Guid employeeId, CancellationToken cancellationToken = default)
+            => Ok(await _mediator.Send(new GetAllWorkPermitByEmployeeIdQuery(employeeId), cancellationToken));
 
         [HttpPatch("{workPermitId}")]
         public async Task<IActionResult> UpdateWorkPermit([FromRoute] Guid employeeId, [FromRoute] Guid workPermitId, UpdateWorkPermitRequest request, CancellationToken cancellationToken = default)

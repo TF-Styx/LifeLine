@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
-using Terminex.Common.Primitives;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
 
@@ -10,9 +9,9 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
         (
             IWriteContext context,
             IEmployeeRepository repository
-        ) : IRequestHandler<CreateAssignmentCommand, Result<Nothing>>
+        ) : IRequestHandler<CreateAssignmentCommand, Result<string>>
     {
-        public async Task<Result<Nothing>> Handle(CreateAssignmentCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(CreateAssignmentCommand request, CancellationToken cancellationToken)
         {
             var employee = await repository.GetByIdAsync(request.EmployeeId);
 
@@ -26,11 +25,11 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
                     request.Contract.StartDate,
                     request.Contract.EndDate,
                     request.Contract.Salary,
-                    null,
-                    null
+                    request.Contract.BucketName,
+                    request.Contract.FileName
                 );
 
-            employee.AddAssignment
+            var assignmentId = employee.AddAssignment
                 (
                     request.PositionId,
                     request.DepartmentId,
@@ -44,7 +43,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
                 
             await context.SaveChangesAsync(cancellationToken);
 
-            return Nothing.Value;
+            return assignmentId;
         }
     }
 }

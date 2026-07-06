@@ -1,6 +1,7 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Delete;
+using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Get.GetAllByEmployeeId;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +19,13 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> Create([FromRoute] Guid employeeId, [FromBody] CreatePersonalDocumentRequest request, CancellationToken cancellationToken = default)
         {
-            var command = new CreatePersonalDocumentCommand(employeeId, request.DocumentTypeId, request.DocumentNumber, request.DocumentSeries, null);
+            var command = new CreatePersonalDocumentCommand(employeeId, request.DocumentTypeId, request.DocumentNumber, request.DocumentSeries, request.BucketName, request.FileName);
 
             var result = await _mediator.Send(command, cancellationToken);
 
             return result.Match<IActionResult>
                 (
-                    onSuccess: () => Ok(),
+                    onSuccess: () => Ok(result.Value),
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
@@ -57,6 +58,10 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     onFailure: errors => this.MapActionResult(errors)
                 );
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllByEmployeeId([FromRoute] Guid employeeId, CancellationToken cancellationToken = default)
+            => Ok(await _mediator.Send(new GetAllPersonalDocumentByEmployeeIdQuery(employeeId), cancellationToken));
 
         [HttpPatch("{personalDocumentId}")]
         public async Task<IActionResult> Update([FromRoute] Guid employeeId, [FromRoute] Guid personalDocumentId, [FromBody] UpdatePersonalDocumentRequest request, CancellationToken cancellationToken = default)

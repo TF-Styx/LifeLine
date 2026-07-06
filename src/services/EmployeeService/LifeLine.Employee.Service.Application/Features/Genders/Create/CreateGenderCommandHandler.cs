@@ -1,9 +1,8 @@
-﻿using MediatR;
-using Terminex.Common.Results;
-using Terminex.Common.Primitives;
-using LifeLine.Employee.Service.Domain.Models;
+﻿using LifeLine.Employee.Service.Domain.Models;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
+using MediatR;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.Genders.Create
 {
@@ -11,17 +10,17 @@ namespace LifeLine.Employee.Service.Application.Features.Genders.Create
         (
             IWriteContext context, 
             IGenderRepository repository
-        ) : IRequestHandler<CreateGenderCommand, Result<Nothing>>
+        ) : IRequestHandler<CreateGenderCommand, Result<string>>
     {
-        public async Task<Result<Nothing>> Handle(CreateGenderCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(CreateGenderCommand request, CancellationToken cancellationToken)
         {
-            var entity = Gender.Create(request.Name);
+            var gender = Gender.Create(request.Name);
 
-            await repository.AddAsync(entity, cancellationToken);
+            await repository.AddAsync(gender, cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return Nothing.Value;
+            return gender.Id.ToString();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
-using Terminex.Common.Primitives;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Create
 {
@@ -15,6 +14,8 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.EducationDocu
         string? QualificationAwardedName, 
         string? SpecialtyName, 
         string? ProgramName, 
-        TimeSpan? TotalHours
-    ) : IRequest<Result<Nothing>>;
+        TimeSpan? TotalHours,
+        string? BucketName,
+        string? FileName
+    ) : IRequest<Result<string>>;
 }

@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
-using Terminex.Common.Primitives;
-using Shared.Contracts.Request.Shared;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.Create
 {
@@ -15,7 +13,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
         DateTime? TerminationDate, 
         Guid StatusId, 
         CreateAssignmentContractCommand Contract
-    ) : IRequest<Result<Nothing>>;
+    ) : IRequest<Result<string>>;
 
     public sealed record CreateAssignmentContractCommand
     (
@@ -23,7 +21,8 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
         string ContractNumber, 
         DateTime StartDate, 
         DateTime EndDate, 
-        decimal Salary, 
-        FileInput? FileKey
+        decimal Salary,
+        string? BucketName,
+        string? FileName
     );
 }

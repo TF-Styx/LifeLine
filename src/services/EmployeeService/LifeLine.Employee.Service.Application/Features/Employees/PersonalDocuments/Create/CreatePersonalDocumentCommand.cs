@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
-using Terminex.Common.Primitives;
-using Shared.Contracts.Request.Shared;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Create
 {
@@ -10,7 +8,8 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.PersonalDocum
             Guid EmployeeId, 
             Guid DocumentTypeId, 
             string DocumentNumber, 
-            string? DocumentSeries, 
-            FileInput? FileInput
-        ) : IRequest<Result<Nothing>>;
+            string? DocumentSeries,
+            string BucketName,
+            string FileName
+        ) : IRequest<Result<string>>;
 }

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
-using Terminex.Common.Primitives;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Create
 {
@@ -14,9 +13,10 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Cr
             string SpecialtyName, 
             string IssuingAuthority, 
             DateTime IssueDate, 
-            DateTime ExpiryDate, 
-            /*ImageKey? FileKey, */
+            DateTime ExpiryDate,
+            string? BucketName,
+            string? FileName,
             Guid PermitTypeId, 
             Guid AdmissionStatusId
-        ) : IRequest<Result<Nothing>>;
+        ) : IRequest<Result<string>>;
 }

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Terminex.Common.Results;
-using Terminex.Common.Primitives;
 
 namespace LifeLine.Employee.Service.Application.Features.Employees.ContactInformation.Create
 {
@@ -12,7 +11,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.ContactInform
         string PersonalEmail, 
         string? CorporateEmail, 
         CreateAddressCommandData Address
-    ) : IRequest<Result<Nothing>>;
+    ) : IRequest<Result<string>>;
 
     public sealed record CreateAddressCommandData
     (

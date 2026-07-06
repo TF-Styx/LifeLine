@@ -10,16 +10,16 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Cr
         (
             IWriteContext context,
             IEmployeeRepository repository
-        ) : IRequestHandler<CreateWorkPermitCommand, Result<Nothing>>
+        ) : IRequestHandler<CreateWorkPermitCommand, Result<string>>
     {
-        public async Task<Result<Nothing>> Handle(CreateWorkPermitCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(CreateWorkPermitCommand request, CancellationToken cancellationToken)
         {
             var employee = await repository.GetByIdAsync(request.EmployeeId);
 
             if (employee == null)
                 return Error.NotFound("Пользователь не найден!");
 
-            employee.AddWorkPermit
+            var workPermitId = employee.AddWorkPermit
             (
                 request.WorkPermitName,
                 request.DocumentSeries,
@@ -37,7 +37,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Cr
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return Nothing.Value;
+            return workPermitId;
         }
     }
 }

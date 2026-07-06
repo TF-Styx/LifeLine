@@ -1,9 +1,8 @@
-﻿using MediatR;
-using Terminex.Common.Results;
-using Terminex.Common.Primitives;
-using LifeLine.Employee.Service.Domain.Models;
+﻿using LifeLine.Employee.Service.Domain.Models;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 using LifeLine.EmployeeService.Application.Abstraction.Common.Repositories;
+using MediatR;
+using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Application.Features.EmployeeTypes.Create
 {
@@ -11,9 +10,9 @@ namespace LifeLine.Employee.Service.Application.Features.EmployeeTypes.Create
         (
             IWriteContext context,
             IEmployeeTypeRepository repository
-        ) : IRequestHandler<CreateEmployeeTypeCommand, Result<Nothing>>
+        ) : IRequestHandler<CreateEmployeeTypeCommand, Result<string>>
     {
-        public async Task<Result<Nothing>> Handle(CreateEmployeeTypeCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(CreateEmployeeTypeCommand request, CancellationToken cancellationToken)
         {
             var employeeType = EmployeeType.Create(request.Name, request.Description);
 
@@ -21,7 +20,7 @@ namespace LifeLine.Employee.Service.Application.Features.EmployeeTypes.Create
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return Nothing.Value;
+            return employeeType.Id.ToString();
         }
     }
 }
