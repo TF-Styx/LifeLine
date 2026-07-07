@@ -4,6 +4,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Get.GetAllByEmployeeId;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalDocuments.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.PersonalDocument;
@@ -12,6 +13,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/employees/{employeeId}/personal-documents")]
+    [Authorize]
     public class PersonalDocumentController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

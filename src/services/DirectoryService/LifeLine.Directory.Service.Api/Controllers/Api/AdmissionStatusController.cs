@@ -1,6 +1,7 @@
 ﻿using LifeLine.Directory.Service.Application.Features.AdmissionStatuses.Create;
 using LifeLine.Directory.Service.Application.Features.AdmissionStatuses.Get.GetAll;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 
@@ -8,6 +9,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/admission-statuses")]
+    [Authorize]
     public class AdmissionStatusController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

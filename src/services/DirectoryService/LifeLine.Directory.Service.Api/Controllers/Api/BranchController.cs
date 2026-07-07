@@ -4,6 +4,7 @@ using LifeLine.Directory.Service.Application.Features.Branches.Get.GetAll;
 using LifeLine.Directory.Service.Application.Features.Branches.Get.GetAllByHospitalId;
 using LifeLine.Directory.Service.Application.Features.Branches.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.DirectoryService.Branch;
@@ -12,6 +13,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/branches")]
+    [Authorize]
     public class BranchController(IMediator mediator) : Controller
     {
         [HttpPost]

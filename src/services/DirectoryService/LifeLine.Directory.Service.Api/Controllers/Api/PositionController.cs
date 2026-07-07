@@ -4,6 +4,7 @@ using LifeLine.Directory.Service.Application.Features.Departments.Positions.Get.
 using LifeLine.Directory.Service.Application.Features.Departments.Positions.Get.GetAllPosition;
 using LifeLine.Directory.Service.Application.Features.Departments.Positions.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.DirectoryService.Position;
@@ -12,6 +13,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/departments/{departmentId}/positions")]
+    [Authorize]
     public class PositionController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

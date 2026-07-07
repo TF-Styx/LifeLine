@@ -18,6 +18,7 @@ using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.Employee.Service.Client.Services.Specialty;
 using LifeLine.File.Service.Client;
+using LifeLine.HrPanel.Desktop.Handlers;
 using LifeLine.HrPanel.Desktop.Services.App;
 using LifeLine.HrPanel.Desktop.Services.Document.DocumentDeletion;
 using LifeLine.HrPanel.Desktop.Services.Document.DocumentProcessing;
@@ -26,6 +27,7 @@ using LifeLine.HrPanel.Desktop.Services.Document.DocumentUpdate;
 using LifeLine.HrPanel.Desktop.Services.FilePreview;
 using LifeLine.HrPanel.Desktop.Services.GenerateImage;
 using LifeLine.HrPanel.Desktop.Services.GeneratePdf;
+using LifeLine.HrPanel.Desktop.Services.Secure;
 using LifeLine.User.Service.Client.ApiClients;
 using LifeLine.User.Service.Client.Services;
 using Microsoft.Extensions.Configuration;
@@ -49,8 +51,10 @@ namespace LifeLine.HrPanel.Desktop.Ioc
 
             services.Configure<JsonSerializerOptions>(opt => opt.AddTerminexDefault());
 
+            services.AddTransient<AttachTokenHandler>();
             services.AddSingleton<IKeyManager, KeyManager>();
             services.AddSingleton<IInitializationService, InitializationService>();
+            services.AddSingleton<IAuthenticationStateService, AuthenticationStateService>();
 
             services.AddSingleton<INavigationPage, NavigationPage>();
             services.AddSingleton<INavigationWindow, NavigationWindow>();
@@ -83,7 +87,8 @@ namespace LifeLine.HrPanel.Desktop.Ioc
 
             var employeeService = configuration.GetValue<string>("EmployeeService");
             string employeeHttp = "EmployeeServiceHttp";
-            services.AddHttpClient(employeeHttp, client => client.BaseAddress = new Uri(employeeService!));
+            services.AddHttpClient(employeeHttp, client => client.BaseAddress = new Uri(employeeService!))
+                    .AddHttpMessageHandler<AttachTokenHandler>();
 
             services.AddHttpClient<IEmployeeService, EmployeeService>(employeeHttp);
             services.AddHttpClient<IGenderReadOnlyService, GenderService>(employeeHttp);
@@ -99,7 +104,8 @@ namespace LifeLine.HrPanel.Desktop.Ioc
 
             var directoryService = configuration.GetValue<string>("DirectoryService");
             string directoryHttp = "DirectoryServiceHttp";
-            services.AddHttpClient(directoryHttp, client => client.BaseAddress = new Uri(directoryService!));
+            services.AddHttpClient(directoryHttp, client => client.BaseAddress = new Uri(directoryService!))
+                    .AddHttpMessageHandler<AttachTokenHandler>();
 
             services.AddHttpClient<IBranchReadOnlyService, BranchService>(directoryHttp);
             services.AddHttpClient<IBranchService, BranchService>(directoryHttp);

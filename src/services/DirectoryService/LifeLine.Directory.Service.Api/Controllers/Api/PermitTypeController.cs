@@ -1,6 +1,7 @@
 ﻿using LifeLine.Directory.Service.Application.Features.PermitTypes.Create;
 using LifeLine.Directory.Service.Application.Features.PermitTypes.Get.GetAll;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 
@@ -8,6 +9,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/permit-types")]
+    [Authorize]
     public class PermitTypeController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

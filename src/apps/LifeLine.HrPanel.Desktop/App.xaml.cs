@@ -1,6 +1,8 @@
 ﻿using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Ioc;
 using LifeLine.HrPanel.Desktop.Services.App;
+using LifeLine.HrPanel.Desktop.Services.Secure;
+using LifeLine.HrPanel.Desktop.ViewModels.Windows;
 using LifeLine.User.Service.Client.Ioc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +39,8 @@ namespace LifeLine.HrPanel.Desktop
 
             ServiceProvider = servicesCollection.BuildServiceProvider();
 
+            SetUpAuthenticationHandler();
+
             // ServiceProvider.GetService<INavigationWindow>()!.OpenWindow(WindowName.MainWindow);
 
             var init = ServiceProvider.GetService<IInitializationService>();
@@ -52,6 +56,26 @@ namespace LifeLine.HrPanel.Desktop
             }
 
             base.OnStartup(e);
+        }
+
+        private void SetUpAuthenticationHandler()
+        {
+            var authenticationStateService = ServiceProvider.GetRequiredService<IAuthenticationStateService>();
+            var navigationWindow = ServiceProvider.GetRequiredService<INavigationWindow>();
+
+            authenticationStateService.AuthenticationRequired += () =>
+            {
+                var mainWindow = navigationWindow.GetWindow(WindowName.MainWindow);
+
+                if (mainWindow == null)
+                    return;
+
+                if (mainWindow.DataContext is not MainWindowVM mainWindowVM)
+                    return;
+
+                mainWindowVM.AuthController.AuthVisibility = mainWindow.Visibility;
+                mainWindowVM.AuthController.ExecuteResizeWindowAfterLogout();
+            };
         }
     }
 }

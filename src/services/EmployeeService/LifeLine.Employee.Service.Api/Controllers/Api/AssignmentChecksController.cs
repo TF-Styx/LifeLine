@@ -1,6 +1,7 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.Assignments.HasActive.HasActiveDepartment;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.HasActive.HasActivePosition;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 
@@ -8,6 +9,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/assignments/checks")]
+    [Authorize]
     public class AssignmentChecksController(IMediator mediator) : Controller
     {
         [HttpGet("department/{departmentId}")]

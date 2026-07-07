@@ -3,6 +3,7 @@ using LifeLine.Directory.Service.Application.Features.Statuses.Delete;
 using LifeLine.Directory.Service.Application.Features.Statuses.Get.GetAll;
 using LifeLine.Directory.Service.Application.Features.Statuses.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.DirectoryService.Status;
@@ -11,6 +12,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/statuses")]
+    [Authorize]
     public class StatusController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

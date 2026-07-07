@@ -6,6 +6,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.ContactInformatio
 using LifeLine.Employee.Service.Application.Features.Employees.ContactInformation.Update.UpdatePersonalEmail;
 using LifeLine.Employee.Service.Application.Features.Employees.ContactInformation.Update.UpdatePersonalPhone;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.ContactInformation;
@@ -14,6 +15,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/employees/{employeeId}/contact-informations")]
+    [Authorize]
     public class ContactInformationController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

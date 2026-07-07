@@ -4,6 +4,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument
 using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Get.GetAllByEmployeeId;
 using LifeLine.Employee.Service.Application.Features.Employees.EducationDocument.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.EducationDocument;
@@ -12,6 +13,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/employees/{employeeId}/education-documents")]
+    [Authorize]
     public class EducationDocumentController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

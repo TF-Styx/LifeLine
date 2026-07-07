@@ -4,6 +4,7 @@ using LifeLine.Employee.Service.Application.Features.Genders.Get.GetAll;
 using LifeLine.Employee.Service.Application.Features.Genders.Get.GetById;
 using LifeLine.Employee.Service.Application.Features.Genders.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.Gender;
@@ -12,6 +13,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/genders")]
+    [Authorize]
     public class GenderController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

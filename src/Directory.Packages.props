@@ -14,6 +14,7 @@
     <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.5" />
     <!-- Http.Clients -->
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
+	<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
     <!-- Services & Directory & Api -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
       <PrivateAssets>all</PrivateAssets>
