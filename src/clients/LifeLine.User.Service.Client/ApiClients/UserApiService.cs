@@ -4,6 +4,8 @@ using Terminex.Common.Results;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Shared.Contracts.Request.UserService;
+using Shared.Kernel.Errors;
 
 namespace LifeLine.User.Service.Client.ApiClients
 {
@@ -38,6 +40,28 @@ namespace LifeLine.User.Service.Client.ApiClients
             var result = JsonSerializer.Deserialize<AuthResponse>(content, _jsonSerializerOptions);
 
             return Result<AuthResponse>.Success(result!);
+        }
+
+        public async Task<Result<AuthResponse>> RefreshToken(LoginByTokenRequest request)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/auth/refresh-token", request, _jsonSerializerOptions);
+                response.EnsureSuccessStatusCode();
+                
+                var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>(_jsonSerializerOptions);
+
+                return authResponse;
+            }
+            catch (HttpRequestException ex)
+            {
+                return Error.New(ErrorCode.BadRequest, $"Ошибка! - {ex}");
+            }
+			catch (Exception ex)
+			{
+                return Result<AuthResponse>.Failure(Error.BadRequest($"Не валидный запрос!\n" +
+                                                                     $"Исключение: {ex}\n"));
+			}
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Ioc;
+using LifeLine.HrPanel.Desktop.Services.App;
 using LifeLine.User.Service.Client.Ioc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +37,19 @@ namespace LifeLine.HrPanel.Desktop
 
             ServiceProvider = servicesCollection.BuildServiceProvider();
 
-            ServiceProvider.GetService<INavigationWindow>()!.OpenWindow(WindowName.MainWindow);
+            // ServiceProvider.GetService<INavigationWindow>()!.OpenWindow(WindowName.MainWindow);
+
+            var init = ServiceProvider.GetService<IInitializationService>();
+
+            try
+            {
+                init!.Initialization();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка!\n{ex}");
+                Shutdown();
+            }
 
             base.OnStartup(e);
         }

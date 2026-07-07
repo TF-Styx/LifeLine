@@ -18,6 +18,7 @@ using LifeLine.Employee.Service.Client.Services.EmployeeType;
 using LifeLine.Employee.Service.Client.Services.Gender;
 using LifeLine.Employee.Service.Client.Services.Specialty;
 using LifeLine.File.Service.Client;
+using LifeLine.HrPanel.Desktop.Services.App;
 using LifeLine.HrPanel.Desktop.Services.Document.DocumentDeletion;
 using LifeLine.HrPanel.Desktop.Services.Document.DocumentProcessing;
 using LifeLine.HrPanel.Desktop.Services.Document.DocumentSave;
@@ -30,6 +31,7 @@ using LifeLine.User.Service.Client.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Client.Security.Abstraction;
+using Shared.Client.Security.Windows;
 using Shared.Serialization.Extensions;
 using Shared.WPF.Services.Conversion;
 using Shared.WPF.Services.FileDialog;
@@ -46,6 +48,9 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.UseFileService(configuration);
 
             services.Configure<JsonSerializerOptions>(opt => opt.AddTerminexDefault());
+
+            services.AddSingleton<IKeyManager, KeyManager>();
+            services.AddSingleton<IInitializationService, InitializationService>();
 
             services.AddSingleton<INavigationPage, NavigationPage>();
             services.AddSingleton<INavigationWindow, NavigationWindow>();

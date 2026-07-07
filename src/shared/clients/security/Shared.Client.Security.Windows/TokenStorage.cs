@@ -13,7 +13,7 @@ namespace Shared.Client.Security.Windows
         private static readonly string _tokenFilePath = Path.Combine(_filePath, "token.data");
         private static readonly string _entropyFilePath = Path.Combine(_filePath, "entropy.bin");
 
-        private byte[]? _entropy;
+        //private byte[]? _entropy;
 
         public async Task<string?> GetAccessTokenAsync()
         {
@@ -34,8 +34,8 @@ namespace Shared.Client.Security.Windows
             var tokens = new Tokens(accessToken, refrashToken);
             var jsonString = JsonSerializer.Serialize(tokens);
             var jsonBytes = Encoding.UTF8.GetBytes(jsonString);
-            _entropy = GetOrCreateEntropy();
-            var encryptedBytes = ProtectedData.Protect(jsonBytes, _entropy, DataProtectionScope.CurrentUser);
+            //_entropy = GetOrCreateEntropy();
+            var encryptedBytes = ProtectedData.Protect(jsonBytes, DataProtectionScope.CurrentUser);
 
             await File.WriteAllBytesAsync(_tokenFilePath, encryptedBytes);
         }
@@ -56,36 +56,36 @@ namespace Shared.Client.Security.Windows
             try
             {
                 var encryptedBytes = await File.ReadAllBytesAsync(_tokenFilePath);
-                var decryptedBytes = ProtectedData.Unprotect(encryptedBytes, _entropy, DataProtectionScope.CurrentUser);
+                var decryptedBytes = ProtectedData.Unprotect(encryptedBytes, DataProtectionScope.CurrentUser);
 
                 var jsonString = Encoding.UTF8.GetString(decryptedBytes);
                 var tokens = JsonSerializer.Deserialize<Tokens>(jsonString);
 
                 return tokens!;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null!;
+                throw new Exception(ex.Message, ex.InnerException);
             }
         }
 
-        private byte[] GetOrCreateEntropy()
-        {
-            if (_entropy != null)
-                return _entropy;
+        //private byte[] GetOrCreateEntropy()
+        //{
+        //    if (_entropy != null)
+        //        return _entropy;
 
-            if (File.Exists(_entropyFilePath))
-                return File.ReadAllBytes(_entropyFilePath);
+        //    if (File.Exists(_entropyFilePath))
+        //        return File.ReadAllBytes(_entropyFilePath);
 
-            _entropy = RandomNumberGenerator.GetBytes(16);
+        //    _entropy = RandomNumberGenerator.GetBytes(16);
 
-            Directory.CreateDirectory(_filePath);
+        //    Directory.CreateDirectory(_filePath);
 
-            File.WriteAllBytes(_entropyFilePath, _entropy);
+        //    File.WriteAllBytes(_entropyFilePath, _entropy);
 
-            File.SetAttributes(_entropyFilePath, FileAttributes.Hidden);
+        //    File.SetAttributes(_entropyFilePath, FileAttributes.Hidden);
 
-            return _entropy;
-        }
+        //    return _entropy;
+        //}
     }
 }

@@ -1,4 +1,5 @@
-﻿using Shared.Contracts.Request.UserService.SRP;
+﻿using Shared.Contracts.Request.UserService;
+using Shared.Contracts.Request.UserService.SRP;
 using Shared.Contracts.Response.UserService;
 using Terminex.Common.Results;
 
@@ -8,5 +9,6 @@ namespace LifeLine.User.Service.Client.ApiClients
     {
         Task<Result<SRPChallengeResponse>> SRPChallengeAsync(SRPChallengeRequest request);
         Task<Result<AuthResponse>> VerifySRPAsync(SRPVerifyRequest request);
+        Task<Result<AuthResponse>> RefreshToken(LoginByTokenRequest request);
     }
 }
