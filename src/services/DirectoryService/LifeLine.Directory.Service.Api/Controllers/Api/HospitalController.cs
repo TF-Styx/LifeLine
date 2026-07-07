@@ -3,6 +3,7 @@ using LifeLine.Directory.Service.Application.Features.Hospitals.Delete;
 using LifeLine.Directory.Service.Application.Features.Hospitals.Get.GetAll;
 using LifeLine.Directory.Service.Application.Features.Hospitals.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.DirectoryService.Hospital;
@@ -11,6 +12,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/hospitals")]
+    [Authorize]
     public class HospitalController(IMediator mediator) : Controller
     {
         [HttpPost]

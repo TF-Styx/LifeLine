@@ -5,6 +5,7 @@ using Shared.Contracts.Request.UserService.SRP;
 using System.IdentityModel.Tokens.Jwt;
 using Terminex.Common.Results;
 using Shared.Kernel.Errors;
+using Shared.Contracts.Response.UserService;
 
 namespace LifeLine.User.Service.Client.Services
 {

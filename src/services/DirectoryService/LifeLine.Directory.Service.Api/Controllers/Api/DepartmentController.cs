@@ -4,6 +4,7 @@ using LifeLine.Directory.Service.Application.Features.Departments.Get.GetAll;
 using LifeLine.Directory.Service.Application.Features.Departments.Get.GetAllByBranchId;
 using LifeLine.Directory.Service.Application.Features.Departments.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.DirectoryService.Department;
@@ -12,6 +13,7 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/departments")]
+    [Authorize]
     public class DepartmentController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

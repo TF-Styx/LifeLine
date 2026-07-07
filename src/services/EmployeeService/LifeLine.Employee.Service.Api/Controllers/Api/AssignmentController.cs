@@ -4,6 +4,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Delet
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Get.GetAllByEmployeeId;
 using LifeLine.Employee.Service.Application.Features.Employees.Assignments.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.Assignment;
@@ -12,6 +13,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/employees/{employeeId}/assignments")]
+    [Authorize]
     public class AssignmentController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

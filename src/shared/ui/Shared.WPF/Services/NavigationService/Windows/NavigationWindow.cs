@@ -22,6 +22,31 @@ namespace Shared.WPF.Services.NavigationService.Windows
             }
         }
 
+        public Window? CreateMainWindowWithoutOpen()
+        {
+            if (_windowFactories.TryGetValue(WindowName.MainWindow.ToString(), out IWindowFactory? windowFactory))
+            {
+                var window = windowFactory.Create();
+
+                _windows.TryAdd(WindowName.MainWindow, window);
+
+                window.Closed += (sender, e) => _windows.Remove(WindowName.MainWindow);
+                window.StateChanged += Window_StateChanged;
+
+                return window;
+            }
+
+            return null;
+        }
+
+        public Window? GetWindow(WindowName windowName)
+        {
+            if (_windows.TryGetValue(windowName, out Window? window))
+                return window;
+
+            return null;
+        }
+
         public void TransmittingValue<TValue>(TValue value, WindowName windowName, TransmittingParameter transmittingParameter)
         {
             if (_windows.TryGetValue(windowName, out Window? window))

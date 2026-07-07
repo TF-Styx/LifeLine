@@ -66,6 +66,7 @@ namespace Shared.WPF.ViewModels.Components
             => !string.IsNullOrWhiteSpace(Login) &&
                !string.IsNullOrWhiteSpace(Password);
 
+        public void ExecuteResizeWindowAfterLogin() => ResizeWindowAfterLogin?.Invoke();
         public void ExecuteResizeWindowAfterLogout() => ResizeWindowAfterLogout?.Invoke();
     }
 }

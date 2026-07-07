@@ -4,6 +4,7 @@ using LifeLine.Employee.Service.Application.Features.EmployeeTypes.Get.GetAll;
 using LifeLine.Employee.Service.Application.Features.EmployeeTypes.Get.GetById;
 using LifeLine.Employee.Service.Application.Features.EmployeeTypes.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.EmployeeType;
@@ -12,6 +13,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/employee-types")]
+    [Authorize]
     public class EmployeeTypeController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

@@ -1,9 +1,12 @@
 using LifeLine.Employee.Service.Application.Ico;
 using LifeLine.Employee.Service.Infrastructure.Ioc;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Shared.Application.Behaviours;
 using Shared.Logging;
 using Shared.Serialization.Extensions;
+using System.Text;
 using System.Text.Json;
 
 namespace LifeLine.Employee.Service.Api
@@ -27,6 +30,29 @@ namespace LifeLine.Employee.Service.Api
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionBehaviour<,>));
             builder.Services.AddAutoMapper(cfg => cfg.LicenseKey = builder.Configuration["AutoMapper:AutoMapperKey"], typeof(DiApplication).Assembly);
             builder.Host.UseSerialogLogger();
+
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer
+            (
+                options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidateAudience = true,
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                    };
+                }
+            );
 
             var app = builder.Build();
 

@@ -4,6 +4,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Delete
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Get.GetAllWorkPermitByEmployeeId;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.WorkPermit;
@@ -12,6 +13,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/employees/{employeeId}/work-permits")]
+    [Authorize]
     public class WorkPermitController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

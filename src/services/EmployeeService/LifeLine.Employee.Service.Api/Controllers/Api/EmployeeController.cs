@@ -12,6 +12,7 @@ using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmpl
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployeePatronymic;
 using LifeLine.Employee.Service.Application.Features.Employees.Update.UpdateEmployeeSurname;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.Employee;
@@ -20,6 +21,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/employees")]
+    [Authorize]
     public class EmployeeController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

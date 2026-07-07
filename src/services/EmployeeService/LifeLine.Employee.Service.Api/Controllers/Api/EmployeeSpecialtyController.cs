@@ -3,15 +3,16 @@ using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialti
 using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.EmployeeSpecialties.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.EmployeeSpecialty;
-using Terminex.Common.Results;
 
 namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/employees/{employeeId}/employee-specialties")]
+    [Authorize]
     public class EmployeeSpecialtyController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;

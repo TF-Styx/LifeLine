@@ -1,6 +1,7 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Specialties.Create;
 using LifeLine.Employee.Service.Application.Features.Specialties.Get.GetAll;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api.Extensions;
 using Shared.Contracts.Request.EmployeeService.Specialty;
@@ -9,6 +10,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
 {
     [ApiController]
     [Route("api/specialties")]
+    [Authorize]
     public class SpecialtyController(IMediator mediator) : Controller
     {
         private readonly IMediator _mediator = mediator;
