@@ -3,6 +3,7 @@ using LifeLine.Directory.Service.Client.Services.Branch;
 using LifeLine.Directory.Service.Client.Services.Department;
 using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
+using LifeLine.Directory.Service.Client.Services.Hospital;
 using LifeLine.Directory.Service.Client.Services.PermitType;
 using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
@@ -72,6 +73,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         private readonly IGenderReadOnlyService _genderReadOnlyService;
         private readonly IStatusReadOnlyService _statusReadOnlyService;
         private readonly IBranchReadOnlyService _branchReadOnlyService;
+        private readonly IHospitalReadOnlyService _hospitalReadOnlyService;
         private readonly ISpecialtyReadOnlyService _specialtyReadOnlyService;
         private readonly IPermitTypeReadOnlyService _permitTypeReadOnlyService;
         private readonly IDepartmentReadOnlyService _departmentReadOnlyService;
@@ -107,8 +109,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                 IEmployeeService employeeService, 
                 IGenderReadOnlyService genderReadOnlyService, 
-                IBranchReadOnlyService branchReadOnlyService,
                 IStatusReadOnlyService statusReadOnlyService,
+                IBranchReadOnlyService branchReadOnlyService,
+                IHospitalReadOnlyService hospitalReadOnlyService,
                 ISpecialtyReadOnlyService specialtyReadOnlyService,
                 IPermitTypeReadOnlyService permitTypeReadOnlyService,
                 IDepartmentReadOnlyService departmentReadOnlyService,
@@ -141,8 +144,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
             _employeeService = employeeService;
             _genderReadOnlyService = genderReadOnlyService;
-            _branchReadOnlyService = branchReadOnlyService;
             _statusReadOnlyService = statusReadOnlyService;
+            _branchReadOnlyService = branchReadOnlyService;
+            _hospitalReadOnlyService = hospitalReadOnlyService;
             _specialtyReadOnlyService = specialtyReadOnlyService;
             _permitTypeReadOnlyService = permitTypeReadOnlyService;
             _departmentReadOnlyService = departmentReadOnlyService;
@@ -165,7 +169,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             EducationDocuments = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, DocumentTypes, EducationLevels);
             WorkPermits = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, PermitTypes, AdmissionStatuses);
             Specialties = new();
-            AssigmentsContracts = new(_fileDialogService, _fileStorageService, _filePreviewService, _documentProcessingService, _positionReadOnlyApiServiceFactory, Branches, Departments, Managers, Statuses, EmployeeTypes);
+            AssigmentsContracts = new(_fileDialogService, _fileStorageService, _filePreviewService, _branchReadOnlyService, _departmentReadOnlyService, _documentProcessingService, _positionReadOnlyApiServiceFactory, Hospitals, Branches, Departments, Managers, Statuses, EmployeeTypes);
 
             UpdateEmployeePersonalInfoCommand = new RelayCommandAsync(Execute_UpdateEmployeePersonalInfoCommand, CanExecute_UpdateEmployeePersonalInfoCommand);
 
@@ -206,6 +210,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             await GetAllAdmissionStatus();
             await GetAllDepartmentAsync();
             await GetAllEducationLevel();
+            await GetAllHospitalAsync();
             await GetAllBranchesAsync();
             await GetAllPositionAsync();
             await GetAllDocumentType();
@@ -663,6 +668,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                 EmployeeHrs.Add(display);
             }
+        }
+
+        public ObservableCollection<HospitalDisplay> Hospitals { get; private init; } = [];
+        private async Task GetAllHospitalAsync()
+        {
+            var hpspitals = await _hospitalReadOnlyService.GetAllAsync();
+
+            Hospitals.Load([.. hpspitals.Select(hospital => new HospitalDisplay(hospital))]);
         }
 
         public ObservableCollection<BranchDisplay> Branches { get; private init; } = [];

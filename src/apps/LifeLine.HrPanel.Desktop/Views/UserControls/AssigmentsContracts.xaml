@@ -253,11 +253,25 @@
                         <StackPanel Grid.Column="0" Margin="0 0 5 0">
                             <TextBlock Grid.Row="0" Text="Назначение" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-                            <ComboBox Grid.Column="0" 
-                                      ItemsSource="{Binding Branches}" 
-                                      SelectedItem="{Binding AssigmentsContracts.Branch}"
-                                      DisplayMemberPath="Name" 
-                                      Margin="0 10 0 0"/>
+                            <!-- Больница / Филиал -->
+                            <Grid Margin="0 10 0 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <ComboBox Grid.Column="0" 
+                                          ItemsSource="{Binding Hospitals}" 
+                                          SelectedItem="{Binding AssigmentsContracts.Hospital}"
+                                          DisplayMemberPath="Name" 
+                                          Margin="0 0 5 0"/>
+
+                                <ComboBox Grid.Column="1" 
+                                          ItemsSource="{Binding AssigmentsContracts.Branches}" 
+                                          SelectedItem="{Binding AssigmentsContracts.Branch}"
+                                          DisplayMemberPath="Name" 
+                                          Margin="5 0 0 0"/>
+                            </Grid>
 
                             <!-- Отдел / Должность -->
                             <Grid Margin="0 10 0 0">
@@ -267,7 +281,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <ComboBox Grid.Column="0" 
-                                          ItemsSource="{Binding Departments}" 
+                                          ItemsSource="{Binding AssigmentsContracts.Departments}" 
                                           SelectedItem="{Binding AssigmentsContracts.Department}"
                                           DisplayMemberPath="Name" 
                                           Margin="0 0 5 0"/>
@@ -329,7 +343,7 @@
                                           DisplayMemberPath="Name" 
                                           Margin="0 0 5 0"/>
 
-                                <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Номер контракта*" Margin="0 0 5 0"
+                                <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Номер контракта*" Margin="5 0 0 0" 
                                                        Text="{Binding AssigmentsContracts.ContractNumber, UpdateSourceTrigger=PropertyChanged}" 
                                                        Style="{StaticResource TextBox.PlaceHolder}"/>
                             </Grid>

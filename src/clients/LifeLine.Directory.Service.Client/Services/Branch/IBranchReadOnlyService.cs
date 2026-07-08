@@ -6,6 +6,6 @@ namespace LifeLine.Directory.Service.Client.Services.Branch
 {
     public interface IBranchReadOnlyService : IBaseReadHttpService<BranchResponse, string>
     {
-        Task<Result<List<BranchResponse>>> GetAllByIdHospitalAsync(string hospitalId);
+        Task<Result<List<BranchResponse>>> GetAllByHospitalIdAsync(string hospitalId);
     }
 }

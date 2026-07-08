@@ -48,6 +48,8 @@ namespace LifeLine.HrPanel.Desktop.Models
             set => SetProperty(ref field, value);
         }
 
+        public string HospitalId => _model.HospitalId;
+
         public string PostalCode
         {
             get => field;

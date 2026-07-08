@@ -10,7 +10,7 @@ namespace LifeLine.Directory.Service.Client.Services.Branch
     public sealed class BranchService(HttpClient httpClient, IOptions<JsonSerializerOptions> options) 
         : BaseHttpService<BranchResponse, string>(httpClient, "api/branches", options.Value), IBranchService
     {
-        public async Task<Result<List<BranchResponse>>> GetAllByIdHospitalAsync(string hospitalId)
+        public async Task<Result<List<BranchResponse>>> GetAllByHospitalIdAsync(string hospitalId)
         {
 			try
 			{
