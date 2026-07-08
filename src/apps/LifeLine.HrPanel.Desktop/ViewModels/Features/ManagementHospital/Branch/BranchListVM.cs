@@ -42,7 +42,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
         public ObservableCollection<BranchDisplay> Branches { get; private init; } = [];
         private async Task GetBranchesByHospital(string hospitalId)
         {
-            var branchesResult = await _service.GetAllByIdHospitalAsync(hospitalId);
+            var branchesResult = await _service.GetAllByHospitalIdAsync(hospitalId);
 
             if (branchesResult.IsFailure)
             {

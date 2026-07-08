@@ -1,4 +1,6 @@
-﻿using LifeLine.Directory.Service.Client.Services.Position.Factories;
+﻿using LifeLine.Directory.Service.Client.Services.Branch;
+using LifeLine.Directory.Service.Client.Services.Department;
+using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Models;
 using LifeLine.HrPanel.Desktop.Services.Document.DocumentProcessing;
@@ -24,9 +26,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         private readonly IFileDialogService _fileDialogService;
         private readonly IFileStorageService _fileStorageService;
         private readonly IFilePreviewService _filePreviewService;
+        private readonly IBranchReadOnlyService _branchReadOnlyService;
+        private readonly IDepartmentReadOnlyService _departmentReadOnlyService;
         private readonly IDocumentProcessingService _documentProcessingService;
         private readonly IPositionReadOnlyApiServiceFactory _positionReadOnlyApiServiceFactory;
 
+        private readonly IReadOnlyCollection<HospitalDisplay> _hospitals;
         private readonly IReadOnlyCollection<BranchDisplay> _branches;
         private readonly IReadOnlyCollection<DepartmentDisplay> _departments;
         private readonly IReadOnlyCollection<ManagerDisplay> _managers;
@@ -38,9 +43,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                 IFileDialogService fileDialogService,
                 IFileStorageService fileStorageService,
                 IFilePreviewService filePreviewService,
+                IBranchReadOnlyService branchReadOnlyService,
+                IDepartmentReadOnlyService departmentReadOnlyService,
                 IDocumentProcessingService documentProcessingService,
                 IPositionReadOnlyApiServiceFactory positionReadOnlyApiServiceFactory,
 
+                IReadOnlyCollection<HospitalDisplay> hospitals,
                 IReadOnlyCollection<BranchDisplay> branches,
                 IReadOnlyCollection<DepartmentDisplay> departments,
                 IReadOnlyCollection<ManagerDisplay> managers,
@@ -51,9 +59,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _fileDialogService = fileDialogService;
             _fileStorageService = fileStorageService;
             _filePreviewService = filePreviewService;
+            _branchReadOnlyService = branchReadOnlyService;
+            _departmentReadOnlyService = departmentReadOnlyService;
             _documentProcessingService = documentProcessingService;
             _positionReadOnlyApiServiceFactory = positionReadOnlyApiServiceFactory;
 
+            _hospitals = hospitals;
             _branches = branches;
             _departments = departments;
             _managers = managers;
@@ -69,10 +80,32 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             RemovePendingFileCommand = new RelayCommand<PendingFileItem>(Execute_RemovePendingFileCommand);
             AddAssignmentContractCommandAsync = new RelayCommandAsync(Execute_AddAssignmentContractCommandAsync, CanExecute_AddAssignmentContractCommand);
 
-            _getAllPositionByIdDepartmentCommandAsync = new RelayCommandAsync<DepartmentDisplay>(Execute_GetAllPositionByIdDepartmentCommandAsyn);
+            _getAllBranchesByHospiotalIdCommandAsync = new RelayCommandAsync<HospitalDisplay>(Execute_GetAllBranchesByHospiotalIdCommandAsync);
+            _getAllDepartmentsByBranchIdCommandAsync = new RelayCommandAsync<BranchDisplay>(Execute_GetAllDepartmentsByBranchIdCommandAsync);
+            _getAllPositionByDepartmentIdCommandAsync = new RelayCommandAsync<DepartmentDisplay>(Execute_GetAllPositionByDepartmentIdCommandAsync);
         }
 
         #region Assignment
+
+        private bool _isSettingProgrammatically = false;
+
+        private HospitalDisplay _hospital = null!;
+        public HospitalDisplay Hospital
+        {
+            get => _hospital;
+            set
+            {
+                if (SetProperty(ref _hospital, value))
+                {
+                    if (!_isSettingProgrammatically)
+                    {
+                        if (value != null) _getAllBranchesByHospiotalIdCommandAsync.Execute(value);
+                        else Branches.Clear();
+                    }
+                }
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
+            }
+        }
 
         private BranchDisplay _branch = null!;
         public BranchDisplay Branch
@@ -80,7 +113,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             get => _branch;
             set
             {
-                SetProperty(ref _branch, value);
+                if (SetProperty(ref _branch, value))
+                {
+                    if (!_isSettingProgrammatically)
+                    {
+                        if (value != null) _getAllDepartmentsByBranchIdCommandAsync.Execute(value);
+                        else Departments.Clear();
+                    }
+                }
                 AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
@@ -93,12 +133,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             {
                 if (SetProperty(ref _department, value))
                 {
-                    if (value != null)
-                        _getAllPositionByIdDepartmentCommandAsync.Execute(value);
-                    else
-                        Positions.Clear();
+                    if (!_isSettingProgrammatically)
+                    {
+                        if (value != null) _getAllPositionByDepartmentIdCommandAsync.Execute(value);
+                        else Positions.Clear();
+                    }
                 }
-
                 AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
             }
         }
@@ -233,20 +273,36 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             {
                 if (value != null)
                 {
-                    SetProp(value);
-
                     SetProperty(ref _selectedLocalAssignmentContract, value);
 
+                    _ = SetPropAsync(value);
                     _ = LoadDocumentToQueueAsync(value);
                 }
             }
         }
 
-        private void SetProp(AssignmentContractDisplay value)
+        private async Task SetPropAsync(AssignmentContractDisplay value)
         {
-            Branch = value.Branch;
-            Department = value.Department;
-            Position = value.Position;
+            _isSettingProgrammatically = true;
+
+            try
+            {
+                Hospital = _hospitals.FirstOrDefault(x => x.HospitalId == value.Branch.HospitalId)!;
+                await LoadBranchesAsync(Hospital);
+
+                Branch = Branches.FirstOrDefault(x => x.BranchId == value.Branch.BranchId)!;
+                await LoadDepartmentsAsync(Branch);
+
+                Department = Departments.FirstOrDefault(x => x.DepartmentId == value.Department.DepartmentId)!;
+                await LoadPositionsAsync(Department);
+
+                Position = Positions.FirstOrDefault(x => x.PositionId == value.Position.PositionId)!;
+            }
+            finally
+            {
+                _isSettingProgrammatically = false;
+            }
+
             Manager = value.Manager;
             HireDate = value.HireDate;
             TerminationDate = value.TerminationDate;
@@ -344,9 +400,46 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                 UpdateIndexes();
         }
 
+        public ObservableCollection<BranchDisplay> Branches { get; private set; } = [];
+        private async Task LoadBranchesAsync(HospitalDisplay display)
+        {
+            if (display == null || string.IsNullOrWhiteSpace(display.HospitalId))
+            {
+                Branches.Clear();
+                return;
+            }
+
+            var branchesResult = await _branchReadOnlyService.GetAllByHospitalIdAsync(display.HospitalId);
+
+            if (branchesResult.IsFailure) 
+                return;
+
+            Branches.Load([.. branchesResult.Value.Select(branch => new BranchDisplay(branch))], cleaning: true);
+        }
+        private RelayCommandAsync<HospitalDisplay> _getAllBranchesByHospiotalIdCommandAsync;
+        private async Task Execute_GetAllBranchesByHospiotalIdCommandAsync(HospitalDisplay display) => await LoadBranchesAsync(display);
+
+        public ObservableCollection<DepartmentDisplay> Departments { get; private set; } = [];
+        private async Task LoadDepartmentsAsync(BranchDisplay display)
+        {
+            if (display == null || string.IsNullOrWhiteSpace(display.BranchId))
+            {
+                Departments.Clear();
+                return;
+            }
+
+            var departmentsResult = await _departmentReadOnlyService.GetAllByBranchIdAsync(display.BranchId);
+
+            if (departmentsResult.IsFailure) 
+                return;
+
+            Departments.Load([.. departmentsResult.Value.Select(department => new DepartmentDisplay(department))], cleaning: true);
+        }
+        private RelayCommandAsync<BranchDisplay> _getAllDepartmentsByBranchIdCommandAsync;
+        private async Task Execute_GetAllDepartmentsByBranchIdCommandAsync(BranchDisplay display) => await LoadDepartmentsAsync(display);
+
         public ObservableCollection<PositionDisplay> Positions { get; private init; } = [];
-        private RelayCommandAsync<DepartmentDisplay> _getAllPositionByIdDepartmentCommandAsync;
-        private async Task Execute_GetAllPositionByIdDepartmentCommandAsyn(DepartmentDisplay display)
+        private async Task LoadPositionsAsync(DepartmentDisplay display)
         {
             if (display == null || display.DepartmentId == string.Empty)
             {
@@ -358,6 +451,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
             Positions.Load([.. positions.Select(position => new PositionDisplay(position))], cleaning: true);
         }
+        private RelayCommandAsync<DepartmentDisplay> _getAllPositionByDepartmentIdCommandAsync;
+        private async Task Execute_GetAllPositionByDepartmentIdCommandAsync(DepartmentDisplay display) => await LoadPositionsAsync(display);
 
         public ObservableCollection<AssignmentContractDisplay> LocalAssignmentsContracts { get; private init; } = [];
         public ICollectionView AssignmentsContractsView { get; private init; } = null!;
@@ -433,7 +528,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             ClearProperty();
         }
         private bool CanExecute_AddAssignmentContractCommand()
-            => Branch != null && Department != null && Position != null &&
+            => Hospital != null && Branch != null && 
+               Department != null && Position != null &&
                EmployeeType != null && Status != null &&
                !string.IsNullOrWhiteSpace(HireDate.ToString()) &&
                !string.IsNullOrWhiteSpace(ContractNumber) &&
@@ -443,6 +539,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
         public void ClearProperty()
         {
+            Hospital = null!;
             Branch = null!;
             Department = null!;
             Position = null!;
