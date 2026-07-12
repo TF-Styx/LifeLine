@@ -230,6 +230,33 @@
         </Viewbox>
     </ControlTemplate>
 
+    <!-- Иконка "Поиск" -->
+    <ControlTemplate x:Key="Search">
+        <Border x:Name="border" 
+                Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="4"
+                Padding="0">
+            <Viewbox Stretch="Uniform">
+                <Canvas Width="24" Height="24">
+                    <!-- Линия ручки лупы -->
+                    <Path Data="M21 21 L16.66 16.66"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Fill="Transparent"/>
+                    <!-- Круг лупы -->
+                    <Ellipse Canvas.Left="3" Canvas.Top="3" 
+                             Width="16" Height="16"
+                             Stroke="{TemplateBinding Foreground}"
+                             StrokeThickness="2"
+                             Fill="Transparent"/>
+                </Canvas>
+            </Viewbox>
+        </Border>
+    </ControlTemplate>
     <!-- Иконка "Добавить" -->
     <ControlTemplate x:Key="AddIcon" TargetType="Control">
         <Viewbox Stretch="Uniform">
