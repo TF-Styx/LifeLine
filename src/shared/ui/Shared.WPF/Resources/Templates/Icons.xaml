@@ -257,6 +257,39 @@
             </Viewbox>
         </Border>
     </ControlTemplate>
+
+    <!-- Иконка "Информация" -->
+    <ControlTemplate x:Key="Info">
+        <Border x:Name="border" 
+                Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="4"
+                Padding="0" Cursor="">
+            <Viewbox Stretch="Uniform">
+                <Canvas Width="24" Height="24">
+                    <!-- Внешний круг -->
+                    <Ellipse Canvas.Left="2" Canvas.Top="2" 
+                             Width="20" Height="20"
+                             Stroke="{TemplateBinding Foreground}"
+                             StrokeThickness="2"
+                             Fill="Transparent"/>
+                    <!-- Вертикальная линия (точка "i") -->
+                    <Path Data="M12 16 L12 12"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Fill="Transparent"/>
+                    <!-- Верхняя точка "i" -->
+                    <Ellipse Canvas.Left="11.5" Canvas.Top="7.5" 
+                         Width="1" Height="1"
+                         Fill="{TemplateBinding Foreground}"/>
+                </Canvas>
+            </Viewbox>
+        </Border>
+    </ControlTemplate>
+
     <!-- Иконка "Добавить" -->
     <ControlTemplate x:Key="AddIcon" TargetType="Control">
         <Viewbox Stretch="Uniform">
