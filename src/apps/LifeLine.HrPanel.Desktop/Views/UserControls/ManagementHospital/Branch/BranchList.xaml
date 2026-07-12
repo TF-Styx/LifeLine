@@ -6,11 +6,13 @@
              xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementHospital.Branch" 
              xmlns:branch="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch" 
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
-             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF"
+             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF"
+             xmlns:helpers="clr-namespace:Shared.WPF.Resources.Attachables;assembly=Shared.WPF"
              d:DataContext="{d:DesignInstance Type=branch:BranchListVM}"
              mc:Ignorable="d" 
-             d:Height="450" 
-             d:Width="800">
+             d:Height="auto" 
+             d:Width="670">
 
     <b:Interaction.Behaviors>
         <behaviors:AsyncInitializeBehavior/>
@@ -28,181 +30,150 @@
     
     <Border Grid.Column="0" Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
         <DockPanel>
-            <DockPanel DockPanel.Dock="Top">
-                <Button DockPanel.Dock="Right" 
-                        Height="50" Margin="10 0"
-                        Command="{Binding EditBranchCommand}" 
-                        Style="{StaticResource Button.Icon}">
-                    <Control Template="{StaticResource AddIcon}"/>
-                </Button>
-                <DockPanel HorizontalAlignment="Center" Margin="0 5 0 0">
-                    <TextBlock Text="Список филиалов" DockPanel.Dock="Top" HorizontalAlignment="Center" FontSize="30" Margin="0 0 0 5"/>
-                    <TextBlock Text="{Binding CurrentHospitalName, 
-                                              StringFormat=Филиалы для: {0}}" 
-                               d:Text="Филиалы для: Онкологической больницы"
-                               FontSize="30" HorizontalAlignment="Center" Margin="0 0 0 0"/>
+            <DockPanel DockPanel.Dock="Top" Margin="10 0">
+                <TextBlock Text="{Binding CurrentHospitalName, 
+                                          StringFormat=Филиалы для: {0}}" 
+                           ToolTip="{Binding CurrentHospitalName}" DockPanel.Dock="Top"
+                           d:Text="Филиалы для: Онкологической больницы" TextWrapping="NoWrap"
+                           FontSize="30" HorizontalAlignment="Center" Margin="0 0 0 0"/>
+                <DockPanel DockPanel.Dock="Bottom" Margin="0 5 0 0">
+                    <DockPanel DockPanel.Dock="Right">
+                        <!-- Фильтр -->
+                        <Button Height="30" Foreground="White"
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource Filter}"/>
+                        </Button>
+                        <!-- Обновить -->
+                        <Button Height="30" Margin="5 0 0 0" Foreground="White"
+                                Command="{Binding RefreshCommandAsync}" 
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource Refresh}"/>
+                        </Button>
+                        <!-- Добавить -->
+                        <Button Height="30" Margin="5 0 0 0"
+                                Command="{Binding EditBranchCommand}" 
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource AddIcon}"/>
+                        </Button>
+                    </DockPanel>
+                    <DockPanel HorizontalAlignment="Stretch" Margin="0 0 5 0">
+                        <!-- Сортировка -->
+                        <ComboBox DockPanel.Dock="Right"
+                                  DisplayMemberPath="Name" 
+                                  MinWidth="200"/>
+                        <!-- Поиск -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Поиск филиала" Margin="0 0 10 0" 
+                                               Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" 
+                                               helpers:TextBoxHelper.Icon="{StaticResource Search}" 
+                                               Style="{StaticResource TextBox.PlaceHolder.WithIcon}"
+                                               Background="{StaticResource App.MainColor}"/>
+                    </DockPanel>
                 </DockPanel>
             </DockPanel>
-            
+
             <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                <DataGrid ItemsSource="{Binding Branches}" 
+                <ListView ItemsSource="{Binding Branches}" 
                           SelectedItem="{Binding Branch}"
-                          AutoGenerateColumns="False" 
-                          CanUserAddRows="False"
-                          HorizontalContentAlignment="Stretch" 
-                          HeadersVisibility="Column"
-                          Margin="2"
-                          Background="{StaticResource App.MainColor}"
-                          d:ItemsSource="{d:SampleData ItemCount=10}">
+                          Style="{StaticResource Custom.ListView}"
+                          ItemContainerStyle="{StaticResource Custom.ListViewItem}"
+                          d:ItemsSource="{d:SampleData ItemCount=4}">
 
-                    <!--<DataGrid.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.ContainerStyle>
-                                <StaticResource ResourceKey="DataGrid.GroupItemStyle"/>
-                            </GroupStyle.ContainerStyle>
-                        </GroupStyle>
-                    </DataGrid.GroupStyle>-->
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" IsItemsHost="True" Margin="0"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
 
-                    <DataGrid.Columns>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="5" Background="{StaticResource App.SecondColor}" CornerRadius="6" BorderBrush="#FF5739B1" BorderThickness="1" Width="300">
+                                <StackPanel Margin="10">
+                                    <!--Кнопки управления-->
+                                    <WrapPanel Margin="0 0 0 5" HorizontalAlignment="Right">
+                                        <!-- Информация -->
+                                        <Button Width="20" Margin="0 0 5 0" 
+                                                Foreground="#FF5B8FEF" 
+                                                Style="{StaticResource Button.Icon}">
+                                            <Control Template="{StaticResource Info}"/>
+                                            <Button.ToolTip>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Name, StringFormat=Наименование: {0}}"/>
+                                                    <TextBlock Text="{Binding Description, StringFormat=Описание: {0}}"/>
+                                                    <TextBlock Text="{Binding Phone, StringFormat=Номер: {0}}"/>
+                                                    <TextBlock Text="{Binding Email, StringFormat=Почта: {0}}"/>
+                                                    <TextBlock Text="{Binding PostalCode, StringFormat=Код: {0}}"/>
+                                                    <TextBlock Text="{Binding Region, StringFormat=Регион: {0}}"/>
+                                                    <TextBlock Text="{Binding City, StringFormat=Город: {0}}"/>
+                                                    <TextBlock Text="{Binding Street, StringFormat=Улица: {0}}"/>
+                                                </StackPanel>
+                                            </Button.ToolTip>
+                                        </Button>
 
-                        <!-- Наименование -->
-                        <DataGridTemplateColumn Header="Наименование" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                                        <!-- Редактирование -->
+                                        <Button Width="20" Margin="0 0 5 0" 
+                                                Foreground="#c7d22d" ToolTip="Редактирование"
+                                                Command="{Binding DataContext.EditBranchCommand, 
+                                                                  RelativeSource={RelativeSource AncestorType=ListView}}" 
+                                                CommandParameter="{Binding }"
+                                                Style="{StaticResource Button.Icon}">
+                                            <Control Template="{StaticResource Pencil}"/>
+                                        </Button>
 
-                        <!-- Описание -->
-                        <DataGridTemplateColumn Header="Описание" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Description}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                                        <!-- Удалить -->
+                                        <Button Width="20" Margin="0 0 0 0" 
+                                                Foreground="#F06870" ToolTip="Удалить"
+                                                Command="{Binding DataContext.DeleteBranchCommandAsync, 
+                                                                  RelativeSource={RelativeSource AncestorType=ListView}}" 
+                                                CommandParameter="{Binding }" 
+                                                Style="{StaticResource Button.Icon}">
+                                            <Control Template="{StaticResource Trash}"/>
+                                        </Button>
+                                    </WrapPanel>
 
-                        <!-- Телефон -->
-                        <DataGridTemplateColumn Header="Телефон" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Phone}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                                    <TextBlock Text="{Binding Name}" 
+                                               ToolTip="{Binding Name}"
+                                               TextWrapping="NoWrap" 
+                                               TextAlignment="Center"
+                                               Margin="0 0 0 5" FontSize="18" 
+                                               d:Text="Наименование филиала"/>
 
-                        <!-- Почта -->
-                        <DataGridTemplateColumn Header="Почта" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Email}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                                    <Border Margin="0 5 0 5" CornerRadius="6" BorderThickness="0" HorizontalAlignment="Stretch" Height="150">
+                                        <Image Source="{Binding Thumbnail}" Stretch="Uniform" Margin="5"
+                                               d:Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png"
+                                               Visibility="{Binding Thumbnail, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                    </Border>
 
-                        <!-- Код -->
-                        <DataGridTemplateColumn Header="Код" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding PostalCode}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <!-- Регион -->
-                        <DataGridTemplateColumn Header="Регион" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Region}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <!-- Город -->
-                        <DataGridTemplateColumn Header="Город" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding City}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <!-- Улица -->
-                        <DataGridTemplateColumn Header="Улица" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Street}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <!-- Информация -->
-                        <DataGridTemplateColumn Width="35">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Width="25" Style="{StaticResource Button.Icon}">
-                                        <Control Template="{StaticResource Magnifier}"/>
-                                        <Button.ToolTip>
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding Name, StringFormat=Наименование: {0}}"/>
-                                                <TextBlock Text="{Binding Description, StringFormat=Описание: {0}}"/>
-                                                <TextBlock Text="{Binding Phone, StringFormat=Номер: {0}}"/>
-                                                <TextBlock Text="{Binding Email, StringFormat=Почта: {0}}"/>
-                                                <TextBlock Text="{Binding PostalCode, StringFormat=Код: {0}}"/>
-                                                <TextBlock Text="{Binding Region, StringFormat=Регион: {0}}"/>
-                                                <TextBlock Text="{Binding City, StringFormat=Город: {0}}"/>
-                                                <TextBlock Text="{Binding Street, StringFormat=Улица: {0}}"/>
-                                            </StackPanel>
-                                        </Button.ToolTip>
-                                    </Button>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <!-- Фильтр -->
-                        <DataGridTemplateColumn Width="35">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Width="25" Foreground="#ffffff"
-                                            Style="{StaticResource Button.Icon}">
-                                        <Control Template="{StaticResource Filter}"/>
-                                    </Button>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <!-- Редактировать -->
-                        <DataGridTemplateColumn Width="35">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Width="25" Foreground="#c7d22d"
-                                            Command="{Binding DataContext.EditBranchCommand, 
-                                                              RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding }" 
-                                            Style="{StaticResource Button.Icon}">
-                                        <Control Template="{StaticResource Pencil}"/>
-                                    </Button>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <!-- Удалить -->
-                        <DataGridTemplateColumn Width="35">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Width="25" Foreground="#F06870" 
-                                            Command="{Binding DataContext.DeleteBranchCommandAsync, 
-                                                              RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                            CommandParameter="{Binding }" 
-                                            Style="{StaticResource Button.Icon}">
-                                        <Control Template="{StaticResource Trash}"/>
-                                    </Button>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                                    <StackPanel Margin="0 5 0 0">
+                                        <DockPanel Margin="0 0 0 5">
+                                            <TextBlock Text="{Binding Phone}" DockPanel.Dock="Right"/>
+                                            <TextBlock Text="Телефон"/>
+                                        </DockPanel>
+                                        <DockPanel Margin="0 0 0 5">
+                                            <TextBlock Text="{Binding Email}" DockPanel.Dock="Right"/>
+                                            <TextBlock Text="Почта"/>
+                                        </DockPanel>
+                                        <DockPanel Margin="0 5 0 5">
+                                            <TextBlock Text="{Binding PostalCode}" DockPanel.Dock="Right"/>
+                                            <TextBlock Text="Код"/>
+                                        </DockPanel>
+                                        <DockPanel Margin="0 0 0 5">
+                                            <TextBlock Text="{Binding Region}" DockPanel.Dock="Right"/>
+                                            <TextBlock Text="Регион"/>
+                                        </DockPanel>
+                                        <DockPanel Margin="0 0 0 5">
+                                            <TextBlock Text="{Binding City}" DockPanel.Dock="Right"/>
+                                            <TextBlock Text="Город"/>
+                                        </DockPanel>
+                                        <DockPanel Margin="0 0 0 0">
+                                            <TextBlock Text="{Binding Street}" DockPanel.Dock="Right"/>
+                                            <TextBlock Text="Улица"/>
+                                        </DockPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Border>
         </DockPanel>
     </Border>
