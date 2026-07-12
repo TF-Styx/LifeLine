@@ -28,6 +28,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
                     await GetBranchesByHospital(hospitalId);
             };
 
+            RefreshCommandAsync = new RelayCommandAsync(Execute_RefreshCommandAsync);
             EditBranchCommand = new RelayCommand<BranchDisplay?>(Execute_EditBranchCommand);
             DeleteBranchCommandAsync = new RelayCommandAsync<BranchDisplay>(Execute_DeleteBranchCommandAsync);
         }
@@ -52,8 +53,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
 
             var branches = branchesResult.Value;
 
-            Branches.Load([.. branches.Select(branch => new BranchDisplay(branch))]);
+            Branches.Load([.. branches.Select(branch => new BranchDisplay(branch))], cleaning: true);
         }
+
+        public RelayCommandAsync RefreshCommandAsync { get; private set; }
+        private async Task Execute_RefreshCommandAsync()
+            => await (_stateService.Hospital?.Id is { } id ? GetBranchesByHospital(id) : Task.CompletedTask);
 
         // Selected
         private BranchDisplay? _branch;

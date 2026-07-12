@@ -28,6 +28,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
                     await GetDepartmentsByBranchId(branchId);
             };
 
+            RefreshCommandAsync = new RelayCommandAsync(Execute_RefreshCommandAsync);
             EditDepartmentCommand = new RelayCommand<DepartmentDisplay?>(Execute_EditDepartmentCommand);
             DeleteDepartmentCommandAsync = new RelayCommandAsync<DepartmentDisplay>(Execute_DeleteDepartmentCommandAsync);
         }
@@ -52,8 +53,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
 
             var departments = departmentsResult.Value;
 
-            Departments.Load([.. departments.Select(department => new DepartmentDisplay(department))]);
+            Departments.Load([.. departments.Select(department => new DepartmentDisplay(department))], cleaning: true);
         }
+
+        public RelayCommandAsync RefreshCommandAsync { get; private set; }
+        private async Task Execute_RefreshCommandAsync() 
+            => await (_stateService.Branch?.Id is { } id ? GetDepartmentsByBranchId(id) : Task.CompletedTask);
 
         // Selected
         private DepartmentDisplay? _department;

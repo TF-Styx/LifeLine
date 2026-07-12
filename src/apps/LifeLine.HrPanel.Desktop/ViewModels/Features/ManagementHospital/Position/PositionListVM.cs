@@ -28,6 +28,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Positi
                     await GetAllPositionsByDepartmentId(departmentId);
             };
 
+            RefreshCommandAsync = new RelayCommandAsync(Execute_RefreshCommandAsync);
             EditPositionCommand = new RelayCommand<PositionDisplay?>(Execute_EditPositionCommand);
             DeletePositionCommandAsync = new RelayCommandAsync<PositionDisplay>(Execute_DeletePositionCommandAsync);
         }
@@ -46,6 +47,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Positi
 
             Positions.Load([.. positions.Select(position => new PositionDisplay(position))]);
         }
+
+        public RelayCommandAsync RefreshCommandAsync { get; private set; }
+        private async Task Execute_RefreshCommandAsync()
+            => await (_stateService.Department?.Id is { } id ? GetAllPositionsByDepartmentId(id) : Task.CompletedTask);
 
         // Selected
         private PositionDisplay? _position;
