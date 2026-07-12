@@ -20,6 +20,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
 
             _stateService.HospitalContextChanged += async (hospitalId) => CurrentHospitalName = _stateService.Hospital?.Name;
 
+            RefreshCommandAsync = new RelayCommandAsync(Execute_RefreshCommandAsync);
             EditHospitalCommand = new RelayCommand<HospitalDisplay?>(Execute_EditHospitalCommand);
             DeleteHospitalCommandAsync = new RelayCommandAsync<HospitalDisplay>(Execute_DeleteHospitalCommandAsync);
         }
@@ -31,7 +32,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
 
             IsInitialize = false;
 
-            await GetHospitalAsync();
+            await GetAllHospitalsAsync();
 
             IsInitialize = true;
         }
@@ -44,12 +45,15 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
         }
 
         public ObservableCollection<HospitalDisplay> Hospitals { get; private init; } = [];
-        private async Task GetHospitalAsync()
+        private async Task GetAllHospitalsAsync()
         {
             var hospitals = await _service.GetAllAsync();
 
-            Hospitals.Load([.. hospitals.Select(hospital => new HospitalDisplay(hospital))]);
+            Hospitals.Load([.. hospitals.Select(hospital => new HospitalDisplay(hospital))], cleaning: true);
         }
+
+        public RelayCommandAsync RefreshCommandAsync { get; private set; }
+        private async Task Execute_RefreshCommandAsync() => await GetAllHospitalsAsync();
 
         // Selected
         private HospitalDisplay? _hospital;

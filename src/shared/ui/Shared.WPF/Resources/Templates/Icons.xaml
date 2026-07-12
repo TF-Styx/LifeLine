@@ -229,6 +229,66 @@
             </Grid>
         </Viewbox>
     </ControlTemplate>
+    
+    <!-- Иконка "Поиск" -->
+    <ControlTemplate x:Key="Search">
+        <Border x:Name="border" 
+                Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="4"
+                Padding="0">
+            <Viewbox Stretch="Uniform">
+                <Canvas Width="24" Height="24">
+                    <!-- Линия ручки лупы -->
+                    <Path Data="M21 21 L16.66 16.66"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Fill="Transparent"/>
+                    <!-- Круг лупы -->
+                    <Ellipse Canvas.Left="3" Canvas.Top="3" 
+                             Width="16" Height="16"
+                             Stroke="{TemplateBinding Foreground}"
+                             StrokeThickness="2"
+                             Fill="Transparent"/>
+                </Canvas>
+            </Viewbox>
+        </Border>
+    </ControlTemplate>
+
+    <!-- Иконка "Информация" -->
+    <ControlTemplate x:Key="Info">
+        <Border x:Name="border" 
+                Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="4"
+                Padding="0" Cursor="">
+            <Viewbox Stretch="Uniform">
+                <Canvas Width="24" Height="24">
+                    <!-- Внешний круг -->
+                    <Ellipse Canvas.Left="2" Canvas.Top="2" 
+                             Width="20" Height="20"
+                             Stroke="{TemplateBinding Foreground}"
+                             StrokeThickness="2"
+                             Fill="Transparent"/>
+                    <!-- Вертикальная линия (точка "i") -->
+                    <Path Data="M12 16 L12 12"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Fill="Transparent"/>
+                    <!-- Верхняя точка "i" -->
+                    <Ellipse Canvas.Left="11.5" Canvas.Top="7.5" 
+                         Width="1" Height="1"
+                         Fill="{TemplateBinding Foreground}"/>
+                </Canvas>
+            </Viewbox>
+        </Border>
+    </ControlTemplate>
 
     <!-- Иконка "Добавить" -->
     <ControlTemplate x:Key="AddIcon" TargetType="Control">
@@ -251,6 +311,53 @@
                       Data="M 9,12 H 15 M 12,9 V 15" />
             </Grid>
         </Viewbox>
+    </ControlTemplate>
+    
+    <!-- Иконка "Обновить" -->
+    <ControlTemplate x:Key="Refresh">
+        <Border x:Name="border" 
+            Background="{TemplateBinding Background}" 
+            BorderBrush="{TemplateBinding BorderBrush}" 
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="4"
+            Padding="0">
+            <Viewbox Stretch="Uniform">
+                <Canvas Width="24" Height="24">
+                    <!-- Верхняя дуга с линией -->
+                    <Path Data="M3 12 A9 9 0 0 1 12 3 A9.75 9.75 0 0 1 18.74 5.74 L21 8"
+                      Stroke="{TemplateBinding Foreground}"
+                      StrokeThickness="2"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      StrokeLineJoin="Round"
+                      Fill="Transparent"/>
+                    <!-- Стрелка вверху справа -->
+                    <Path Data="M21 3 L21 8 L16 8"
+                      Stroke="{TemplateBinding Foreground}"
+                      StrokeThickness="2"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      StrokeLineJoin="Round"
+                      Fill="Transparent"/>
+                    <!-- Нижняя дуга с линией -->
+                    <Path Data="M21 12 A9 9 0 0 1 12 21 A9.75 9.75 0 0 1 5.26 18.26 L3 16"
+                      Stroke="{TemplateBinding Foreground}"
+                      StrokeThickness="2"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      StrokeLineJoin="Round"
+                      Fill="Transparent"/>
+                    <!-- Стрелка внизу слева -->
+                    <Path Data="M8 16 L3 16 L3 21"
+                      Stroke="{TemplateBinding Foreground}"
+                      StrokeThickness="2"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      StrokeLineJoin="Round"
+                      Fill="Transparent"/>
+                </Canvas>
+            </Viewbox>
+        </Border>
     </ControlTemplate>
 
     <!-- Иконка "Редактирования" -->

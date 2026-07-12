@@ -20,9 +20,11 @@
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/DataGrid.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/DatePicker.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/Expander.xaml"/>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/ListView.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/ScrollViewer.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/TextBox.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/TextBlock.xaml"/>
+                <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/ToolTip.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/ComboBox.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Templates/Icons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
