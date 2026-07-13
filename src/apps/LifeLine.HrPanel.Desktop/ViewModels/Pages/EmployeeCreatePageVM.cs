@@ -354,16 +354,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 (
                     new CreateContactInformationRequest
                         (
-                            ContactInformation.PersonalPhone,
-                            string.IsNullOrWhiteSpace(ContactInformation.CorporatePhone) ? null : ContactInformation.CorporatePhone,
-                            ContactInformation.PersonalEmail,
-                            string.IsNullOrWhiteSpace(ContactInformation.CorporateEmail) ? null : ContactInformation.CorporateEmail,
-                            ContactInformation.PostalCode,
-                            ContactInformation.Region,
-                            ContactInformation.City,
-                            ContactInformation.Street,
-                            ContactInformation.Building,
-                            string.IsNullOrWhiteSpace(ContactInformation.Apartment) ? null : ContactInformation.Apartment
+                            ContactInformation.Display.PersonalPhone,
+                            string.IsNullOrWhiteSpace(ContactInformation.Display.CorporatePhone) ? null : ContactInformation.Display.CorporatePhone,
+                            ContactInformation.Display.PersonalEmail,
+                            string.IsNullOrWhiteSpace(ContactInformation.Display.CorporateEmail) ? null : ContactInformation.Display.CorporateEmail,
+                            ContactInformation.Display.PostalCode,
+                            ContactInformation.Display.Region,
+                            ContactInformation.Display.City,
+                            ContactInformation.Display.Street,
+                            ContactInformation.Display.Building,
+                            string.IsNullOrWhiteSpace(ContactInformation.Display.Apartment) ? null : ContactInformation.Display.Apartment
                         )
                 );
 
@@ -451,7 +451,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 dbRequest: (doc, s3FileName) => new CreateDataEducationDocumentReqeust
                 (
                     doc.EducationLevel.Id,
-                    doc.EducationLevel.Id,
+                    doc.DocumentType.Id,
                     doc.DocumentNumber,
                     doc.IssuedDate.ToString(),
                     doc.OrganizationName,

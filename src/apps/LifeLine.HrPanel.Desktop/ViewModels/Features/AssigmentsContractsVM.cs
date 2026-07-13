@@ -71,6 +71,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _statuses = statuses;
             _employeeTypes = employeeTypes;
 
+            NewAssignmentContractDisplay();
+
             AssignmentsContractsView = CollectionViewSource.GetDefaultView(LocalAssignmentsContracts);
 
             AssignmentsContractsView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(AssignmentContractDisplay.SaveStatus)));
@@ -85,185 +87,83 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _getAllPositionByDepartmentIdCommandAsync = new RelayCommandAsync<DepartmentDisplay>(Execute_GetAllPositionByDepartmentIdCommandAsync);
         }
 
-        #region Assignment
+        private bool _isLoadingProgrammatically = false;
 
-        private bool _isSettingProgrammatically = false;
-
-        private HospitalDisplay _hospital = null!;
-        public HospitalDisplay Hospital
+        private AssignmentContractDisplay? _display;
+        public AssignmentContractDisplay? Display
         {
-            get => _hospital;
+            get => _display;
             set
             {
-                if (SetProperty(ref _hospital, value))
+                SetProperty(ref _display, value);
+
+                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
+            }
+        }
+
+        private void NewAssignmentContractDisplay()
+        {
+            Display = new AssignmentContractDisplay
+            (
+                new AssignmentResponse
+                (
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    DateTime.Now,
+                    DateTime.Now,
+                    string.Empty
+                ),
+                new ContractResponse
+                (
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    DateTime.Now,
+                    DateTime.Now,
+                    decimal.Zero,
+                    string.Empty
+                ),
+                _branches,
+                _departments,
+                Positions,
+                _managers,
+                _statuses,
+                _employeeTypes,
+                SaveStatus.Local
+            );
+
+            Display.PropertyChanged += (s, e) =>
+            {
+                if (_isLoadingProgrammatically)
+                    return;
+
+                if (e.PropertyName == nameof(AssignmentContractDisplay.Hospital))
                 {
-                    if (!_isSettingProgrammatically)
-                    {
-                        if (value != null) _getAllBranchesByHospiotalIdCommandAsync.Execute(value);
-                        else Branches.Clear();
-                    }
+                    _ = LoadBranchesAsync(Display.Hospital);
+                    Display.Branch = null!;
+                    Display.Department = null!;
+                    Display.Position = null!;
                 }
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private BranchDisplay _branch = null!;
-        public BranchDisplay Branch
-        {
-            get => _branch;
-            set
-            {
-                if (SetProperty(ref _branch, value))
+                else if (e.PropertyName == nameof(AssignmentContractDisplay.Branch))
                 {
-                    if (!_isSettingProgrammatically)
-                    {
-                        if (value != null) _getAllDepartmentsByBranchIdCommandAsync.Execute(value);
-                        else Departments.Clear();
-                    }
+                    _ = LoadDepartmentsAsync(Display.Branch);
+                    Display.Department = null!;
+                    Display.Position = null!;
                 }
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private DepartmentDisplay _department = null!;
-        public DepartmentDisplay Department
-        {
-            get => _department;
-            set
-            {
-                if (SetProperty(ref _department, value))
+                else if (e.PropertyName == nameof(AssignmentContractDisplay.Department))
                 {
-                    if (!_isSettingProgrammatically)
-                    {
-                        if (value != null) _getAllPositionByDepartmentIdCommandAsync.Execute(value);
-                        else Positions.Clear();
-                    }
+                    _ = LoadPositionsAsync(Display.Department);
+                    Display.Position = null!;
                 }
+
                 AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
+            };
         }
-
-        private PositionDisplay _position = null!;
-        public PositionDisplay Position
-        {
-            get => _position;
-            set
-            {
-                SetProperty(ref _position, value);
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private ManagerDisplay? _manager;
-        public ManagerDisplay? Manager
-        {
-            get => _manager;
-            set
-            {
-                SetProperty(ref _manager, value);
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private DateTime _hireDate = DateTime.Now;
-        public DateTime HireDate
-        {
-            get => _hireDate;
-            set
-            {
-                SetProperty(ref _hireDate, value);
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private DateTime? _terminationDate = DateTime.Now;
-        public DateTime? TerminationDate
-        {
-            get => _terminationDate;
-            set
-            {
-                SetProperty(ref _terminationDate, value);
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private StatusDisplay _status = null!;
-        public StatusDisplay Status
-        {
-            get => _status;
-            set
-            {
-                SetProperty(ref _status, value);
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        public string? FilePath
-        {
-            get => field;
-            set => SetProperty(ref field, value);
-        }
-
-        #endregion
-
-        #region Contract
-
-        private EmployeeTypeDisplay _employeeType = null!;
-        public EmployeeTypeDisplay EmployeeType
-        {
-            get => _employeeType;
-            set
-            {
-                SetProperty(ref _employeeType, value);
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private string _contractNumber = null!;
-        public string ContractNumber
-        {
-            get => _contractNumber;
-            set
-            {
-                SetProperty(ref _contractNumber, value);
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private DateTime _startDate = DateTime.Now;
-        public DateTime StartDate
-        {
-            get => _startDate;
-            set
-            {
-                SetProperty(ref _startDate, value);
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private DateTime _endDate = DateTime.Now;
-        public DateTime EndDate
-        {
-            get => _endDate;
-            set
-            {
-                SetProperty(ref _endDate, value);
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private decimal _salary;
-        public decimal Salary
-        {
-            get => _salary;
-            set
-            {
-                SetProperty(ref _salary, value);
-                AddAssignmentContractCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        #endregion
 
         private AssignmentContractDisplay? _selectedLocalAssignmentContract;
         public AssignmentContractDisplay? SelectedLocalAssignmentContract
@@ -283,36 +183,36 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
         private async Task SetPropAsync(AssignmentContractDisplay value)
         {
-            _isSettingProgrammatically = true;
+            _isLoadingProgrammatically = true;
 
             try
             {
-                Hospital = _hospitals.FirstOrDefault(x => x.HospitalId == value.Branch.HospitalId)!;
-                await LoadBranchesAsync(Hospital);
+                Display?.Hospital = _hospitals.FirstOrDefault(x => x.HospitalId == value.Branch.HospitalId)!;
+                await LoadBranchesAsync(Display!.Hospital);
 
-                Branch = Branches.FirstOrDefault(x => x.BranchId == value.Branch.BranchId)!;
-                await LoadDepartmentsAsync(Branch);
+                Display?.Branch = Branches.FirstOrDefault(x => x.BranchId == value.Branch.BranchId)!;
+                await LoadDepartmentsAsync(Display!.Branch);
 
-                Department = Departments.FirstOrDefault(x => x.DepartmentId == value.Department.DepartmentId)!;
-                await LoadPositionsAsync(Department);
+                Display?.Department = Departments.FirstOrDefault(x => x.DepartmentId == value.Department.DepartmentId)!;
+                await LoadPositionsAsync(Display!.Department);
 
-                Position = Positions.FirstOrDefault(x => x.PositionId == value.Position.PositionId)!;
+                Display?.Position = Positions.FirstOrDefault(x => x.PositionId == value.Position.PositionId)!;
+
+                Display?.Manager = value.Manager;
+                Display?.HireDate = value.HireDate;
+                Display?.TerminationDate = value.TerminationDate;
+                Display?.Status = value.Status;
+
+                Display?.EmployeeType = value.EmployeeType;
+                Display?.ContractNumber = value.ContractNumber;
+                Display?.StartDate = value.StartDate;
+                Display?.EndDate = value.EndDate;
+                Display?.Salary = value.Salary;
             }
             finally
             {
-                _isSettingProgrammatically = false;
+                _isLoadingProgrammatically = false;
             }
-
-            Manager = value.Manager;
-            HireDate = value.HireDate;
-            TerminationDate = value.TerminationDate;
-            Status = value.Status;
-
-            EmployeeType = value.EmployeeType;
-            ContractNumber = value.ContractNumber;
-            StartDate = value.StartDate;
-            EndDate = value.EndDate;
-            Salary = value.Salary;
         }
 
         private async Task LoadDocumentToQueueAsync(AssignmentContractDisplay document)
@@ -460,6 +360,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         public RelayCommandAsync AddAssignmentContractCommandAsync { get; private set; }
         private async Task Execute_AddAssignmentContractCommandAsync()
         {
+            if (Display == null)
+            {
+                MessageBox.Show("Поля не заполнены!");
+                return;
+            }
+
             if (!PendingFilePaths.Any())
             {
                 MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
@@ -470,9 +376,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             var processResult = await _documentProcessingService.ProcessFilesToPdfAsync
                 (
                     PendingFilePaths,
-                    Position.Name,
+                    Display.Position.Name,
                     EmployeeId!,
-                    ContractNumber
+                    Display.ContractNumber
                 );
 
             if (processResult.IsFailure)
@@ -491,23 +397,23 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                             (
                                 string.Empty,
                                 EmployeeId!,
-                                Position.PositionId,
-                                Department.DepartmentId,
-                                Branch.BranchId,
-                                Manager?.Id,
-                                HireDate,
-                                TerminationDate,
-                                Status.Id
+                                Display.Position.PositionId,
+                                Display.Department.DepartmentId,
+                                Display.Branch.BranchId,
+                                Display.Manager?.Id,
+                                Display.HireDate,
+                                Display.TerminationDate,
+                                Display.Status.Id
                             ),
                         new ContractResponse
                             (
                                 EmployeeId!,
                                 string.Empty,
-                                ContractNumber,
-                                EmployeeType.Id,
-                                StartDate,
-                                EndDate,
-                                Salary,
+                                Display.ContractNumber,
+                                Display.EmployeeType.Id,
+                                Display.StartDate,
+                                Display.EndDate,
+                                Display.Salary,
                                 null
                             ),
                         _branches,
@@ -528,32 +434,31 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             ClearProperty();
         }
         private bool CanExecute_AddAssignmentContractCommand()
-            => Hospital != null && Branch != null && 
-               Department != null && Position != null &&
-               EmployeeType != null && Status != null &&
-               !string.IsNullOrWhiteSpace(HireDate.ToString()) &&
-               !string.IsNullOrWhiteSpace(ContractNumber) &&
-               !string.IsNullOrWhiteSpace(StartDate.ToString()) &&
-               !string.IsNullOrWhiteSpace(EndDate.ToString()) &&
-               !string.IsNullOrWhiteSpace(Salary.ToString());
+            => Display?.Hospital != null && Display?.Branch != null && 
+               Display?.Department != null && Display?.Position != null &&
+               Display?.EmployeeType != null && Display?.Status != null &&
+               !string.IsNullOrWhiteSpace(Display?.HireDate.ToString()) &&
+               !string.IsNullOrWhiteSpace(Display?.ContractNumber) &&
+               !string.IsNullOrWhiteSpace(Display?.StartDate.ToString()) &&
+               !string.IsNullOrWhiteSpace(Display?.EndDate.ToString()) &&
+               !string.IsNullOrWhiteSpace(Display?.Salary.ToString());
 
         public void ClearProperty()
         {
-            Hospital = null!;
-            Branch = null!;
-            Department = null!;
-            Position = null!;
-            Manager = null;
-            HireDate = DateTime.Now;
-            TerminationDate = DateTime.Now;
-            Status = null!;
-            FilePath = string.Empty;
+            Display.Hospital = null!;
+            Display.Branch = null!;
+            Display.Department = null!;
+            Display.Position = null!;
+            Display.Manager = null;
+            Display.HireDate = DateTime.Now;
+            Display.TerminationDate = DateTime.Now;
+            Display.Status = null!;
 
-            EmployeeType = null!;
-            ContractNumber = string.Empty;
-            StartDate = DateTime.Now;
-            EndDate = DateTime.Now;
-            Salary = decimal.Zero;
+            Display.EmployeeType = null!;
+            Display.ContractNumber = string.Empty;
+            Display.StartDate = DateTime.Now;
+            Display.EndDate = DateTime.Now;
+            Display.Salary = decimal.Zero;
 
             PendingFilePaths.Clear();
             SelectedLocalAssignmentContract = null!;

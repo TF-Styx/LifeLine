@@ -44,6 +44,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
             _documentTypes = documentTypes;
 
+            NewPersonalDocumentDisplay();
+
             PersonalDocumentsView = CollectionViewSource.GetDefaultView(LocalPersonalDocuments);
 
             PersonalDocumentsView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(PersonalDocumentDisplay.SaveStatus)));
@@ -54,37 +56,34 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             AddPersonalDocumentCommand = new RelayCommandAsync(Execute_AddPersonalDocumentCommand, CanExecute_AddPersonalDocumentCommand);
         }
 
-        private string _number = null!;
-        public string Number
+        private PersonalDocumentDisplay? _display = null!;
+        public PersonalDocumentDisplay? Display
         {
-            get => _number;
+            get => _display;
             set
             {
-                SetProperty(ref _number, value);
+                SetProperty(ref _display, value);
+
                 AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
             }
         }
 
-        private string? _series;
-        public string? Series
+        private void NewPersonalDocumentDisplay()
         {
-            get => _series;
-            set
-            {
-                SetProperty(ref _series, value);
-                AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
-            }
-        }
+            Display = new PersonalDocumentDisplay
+                (
+                    new PersonalDocumentResponse
+                    (
+                        Guid.Empty,
+                        Guid.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty
+                    ),
+                    _documentTypes, SaveStatus.Local
+                );
 
-        private DocumentTypeDisplay _documentType = null!;
-        public DocumentTypeDisplay DocumentType
-        {
-            get => _documentType;
-            set
-            {
-                SetProperty(ref _documentType, value);
-                AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
-            }
+            Display.PropertyChanged += (s, e) => AddPersonalDocumentCommand?.RaiseCanExecuteChanged();
         }
 
         private PersonalDocumentDisplay? _selectedLocalPersonalDocument = null!;
@@ -106,9 +105,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
         private void SetProp(PersonalDocumentDisplay value)
         {
-            Number = value.DocumentNumber;
-            Series = value.DocumentSeries;
-            DocumentType = value.DocumentType;
+            Display?.DocumentNumber = value.DocumentNumber;
+            Display?.DocumentSeries = value.DocumentSeries;
+            Display?.DocumentType = value.DocumentType;
         }
 
         private async Task LoadDocumentToQueueAsync(PersonalDocumentDisplay document)
@@ -202,6 +201,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         public RelayCommandAsync? AddPersonalDocumentCommand { get; private set; }
         private async Task Execute_AddPersonalDocumentCommand()
         {
+            if (Display == null)
+            {
+                MessageBox.Show("Поля не заполнены!");
+                return;
+            }
+
             if (!PendingFilePaths.Any())
             {
                 MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
@@ -212,9 +217,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             var processResult = await _documentProcessingService.ProcessFilesToPdfAsync
                 (
                     PendingFilePaths,
-                    DocumentType.Name,
+                    Display.DocumentType.Name,
                     EmployeeId!,
-                    Number
+                    Display.DocumentNumber
                 );
 
             if (processResult.IsFailure)
@@ -232,9 +237,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                             new PersonalDocumentResponse
                                 (
                                     Guid.Empty,
-                                    Guid.Parse(DocumentType.Id),
-                                    Number,
-                                    Series,
+                                    Guid.Parse(Display.DocumentType.Id),
+                                    Display.DocumentNumber,
+                                    Display.DocumentSeries,
                                     null
                                 ),
                             _documentTypes,
@@ -250,13 +255,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             ClearProperty();
         }
         private bool CanExecute_AddPersonalDocumentCommand()
-            => DocumentType != null && !string.IsNullOrWhiteSpace(Number);
+            => Display?.DocumentType != null && !string.IsNullOrWhiteSpace(Display.DocumentNumber);
 
         public void ClearProperty()
         {
-            Number = string.Empty;
-            Series = string.Empty;
-            DocumentType = null!;
+            Display?.DocumentNumber = string.Empty;
+            Display?.DocumentSeries = string.Empty;
+            Display?.DocumentType = null!;
 
             PendingFilePaths.Clear();
             SelectedLocalPersonalDocument = null;

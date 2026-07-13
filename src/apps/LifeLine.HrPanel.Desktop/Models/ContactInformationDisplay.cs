@@ -79,7 +79,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             set => SetProperty(ref _apartment, value);
         }
 
-        public void ReversChanches()
+        public void RevertChanges()
         {
             PersonalPhone = _model.PersonalPhone;
             CorporatePhone = _model.CorporatePhone;

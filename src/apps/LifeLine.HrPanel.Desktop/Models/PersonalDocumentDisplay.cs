@@ -6,7 +6,7 @@ namespace LifeLine.HrPanel.Desktop.Models
 {
     public sealed class PersonalDocumentDisplay: BaseViewModel
     {
-        private readonly PersonalDocumentResponse _model;
+        private PersonalDocumentResponse _model;
 
         private readonly IReadOnlyCollection<DocumentTypeDisplay> _documentTypes;
 
@@ -71,5 +71,24 @@ namespace LifeLine.HrPanel.Desktop.Models
         //public bool HasFileForUpload => FileBytes != null || (!string.IsNullOrWhiteSpace(FileKey) && System.IO.File.Exists(FileKey));
 
         public PersonalDocumentResponse GetUnderLineModel() => _model;
+
+        public void RevertChanges()
+        {
+            DocumentNumber = _model.Number;
+            DocumentSeries = _model.Series;
+            FileKey = _model.FileKey;
+            SetDocumentType(_model.DocumentTypeId.ToString());
+        }
+
+        public void CommitChanges()
+        {
+            _model = _model with
+            {
+                Number = DocumentNumber,
+                Series = DocumentSeries,
+                DocumentTypeId = Guid.Parse(DocumentType?.Id ?? string.Empty),
+                FileKey = FileKey
+            };
+        }
     }
 }

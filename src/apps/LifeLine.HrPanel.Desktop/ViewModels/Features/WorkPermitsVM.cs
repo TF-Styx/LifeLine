@@ -46,6 +46,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _permitTypes = permitTypes;
             _admissionStatuses = admissionStatuses;
 
+            NewWorkPermitDisplay();
+
             WorkPermitsView = CollectionViewSource.GetDefaultView(LocalWorkPermits);
 
             WorkPermitsView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(WorkPermitDisplay.SaveStatus)));
@@ -56,114 +58,44 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             AddWorkPermitCommandAsync = new RelayCommandAsync(Execute_AddWorkPermitCommandAsync, CanExecute_AddWorkPermitCommand);
         }
 
-        private string _workPermitName = null!;
-        public string WorkPermitName
+        private WorkPermitDisplay? _display;
+        public WorkPermitDisplay? Display
         {
-            get => _workPermitName;
+            get => _display;
             set
             {
-                SetProperty(ref _workPermitName, value);
+                SetProperty(ref _display, value);
+
                 AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
-        private string? _documentSeries;
-        public string? DocumentSeries
+        private void NewWorkPermitDisplay()
         {
-            get => _documentSeries;
-            set
-            {
-                SetProperty(ref _documentSeries, value);
-                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
+            Display = new WorkPermitDisplay
+                (
+                    new WorkPermitResponse
+                    (
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        DateTime.Now,
+                        DateTime.Now,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty
+                    ),
+                    _permitTypes,
+                    _admissionStatuses,
+                    SaveStatus.Local
+                );
 
-        private string _workPermitNumber = null!;
-        public string WorkPermitNumber
-        {
-            get => _workPermitNumber;
-            set
-            {
-                SetProperty(ref _workPermitNumber, value);
-                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private string? _protocolNumber;
-        public string? ProtocolNumber
-        {
-            get => _protocolNumber;
-            set
-            {
-                SetProperty(ref _protocolNumber, value);
-                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private string _specialtyName = null!;
-        public string SpecialtyName
-        {
-            get => _specialtyName;
-            set
-            {
-                SetProperty(ref _specialtyName, value);
-                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private string _issuingAuthority = null!;
-        public string IssuingAuthority
-        {
-            get => _issuingAuthority;
-            set
-            {
-                SetProperty(ref _issuingAuthority, value);
-                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private DateTime _issueDate;
-        public DateTime IssueDate
-        {
-            get => _issueDate;
-            set
-            {
-                SetProperty(ref _issueDate, value);
-                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private DateTime _expiryDate;
-        public DateTime ExpiryDate
-        {
-            get => _expiryDate;
-            set
-            {
-                SetProperty(ref _expiryDate, value);
-                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private PermitTypeDisplay _permitType = null!;
-        public PermitTypeDisplay PermitType
-        {
-            get => _permitType;
-            set
-            {
-                SetProperty(ref _permitType, value);
-                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private AdmissionStatusDisplay _admissionStatus = null!;
-        public AdmissionStatusDisplay AdmissionStatus
-        {
-            get => _admissionStatus;
-            set
-            {
-                SetProperty(ref _admissionStatus, value);
-                AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
-            }
+            Display.PropertyChanged += (s, e) => AddWorkPermitCommandAsync?.RaiseCanExecuteChanged();
         }
 
         private WorkPermitDisplay? _selectedLocalWorkPermit = null!;
@@ -185,16 +117,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
         private void SetProp(WorkPermitDisplay value)
         {
-            WorkPermitName = value.WorkPermitName;
-            DocumentSeries = value.DocumentSeries;
-            WorkPermitNumber = value.WorkPermitNumber;
-            ProtocolNumber = value.ProtocolNumber;
-            SpecialtyName = value.SpecialtyName;
-            IssuingAuthority = value.IssuingAuthority;
-            IssueDate = value.IssueDate;
-            ExpiryDate = value.ExpiryDate;
-            PermitType = value.PermitType;
-            AdmissionStatus = value.AdmissionStatus;
+            Display?.WorkPermitName = value.WorkPermitName;
+            Display?.DocumentSeries = value.DocumentSeries;
+            Display?.WorkPermitNumber = value.WorkPermitNumber;
+            Display?.ProtocolNumber = value.ProtocolNumber;
+            Display?.SpecialtyName = value.SpecialtyName;
+            Display?.IssuingAuthority = value.IssuingAuthority;
+            Display?.IssueDate = value.IssueDate;
+            Display?.ExpiryDate = value.ExpiryDate;
+            Display?.PermitType = value.PermitType;
+            Display?.AdmissionStatus = value.AdmissionStatus;
         }
 
         private async Task LoadDocumentToQueueAsync(WorkPermitDisplay document)
@@ -288,6 +220,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         public RelayCommandAsync AddWorkPermitCommandAsync { get; private set; }
         private async Task Execute_AddWorkPermitCommandAsync()
         {
+            if (Display == null)
+            {
+                MessageBox.Show("Поля не заполнены!");
+                return;
+            }
+
             if (!PendingFilePaths.Any())
             {
                 MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
@@ -298,9 +236,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             var processResult = await _documentProcessingService.ProcessFilesToPdfAsync
                 (
                     PendingFilePaths,
-                    PermitType.Name,
+                    Display.PermitType.Name,
                     EmployeeId!,
-                    WorkPermitNumber
+                    Display.WorkPermitNumber
                 );
 
             if (processResult.IsFailure)
@@ -319,17 +257,17 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                 (
                                     string.Empty,
                                     EmployeeId!,
-                                    WorkPermitName,
-                                    DocumentSeries,
-                                    WorkPermitNumber,
-                                    ProtocolNumber,
-                                    SpecialtyName,
-                                    IssuingAuthority,
-                                    IssueDate,
-                                    ExpiryDate,
+                                    Display.WorkPermitName,
+                                    Display.DocumentSeries,
+                                    Display.WorkPermitNumber,
+                                    Display.ProtocolNumber,
+                                    Display.SpecialtyName,
+                                    Display.IssuingAuthority,
+                                    Display.IssueDate,
+                                    Display.ExpiryDate,
                                     null,
-                                    PermitType.Id,
-                                    AdmissionStatus.Id
+                                    Display.PermitType.Id,
+                                    Display.AdmissionStatus.Id
                                 ),
                             _permitTypes, _admissionStatuses, SaveStatus.Local
                         )
@@ -343,28 +281,28 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             ClearProperty();
         }
         private bool CanExecute_AddWorkPermitCommand()
-            => AdmissionStatus != null && PermitType != null &&
-            !string.IsNullOrWhiteSpace(WorkPermitName) &&
-            !string.IsNullOrWhiteSpace(WorkPermitNumber) &&
-            !string.IsNullOrWhiteSpace(SpecialtyName) &&
-            !string.IsNullOrWhiteSpace(IssuingAuthority) &&
-            IssueDate != DateTime.MinValue && 
-            !string.IsNullOrWhiteSpace(IssueDate.ToString()) &&
-            ExpiryDate != DateTime.MinValue &&
-            !string.IsNullOrWhiteSpace(ExpiryDate.ToString());
+            => Display?.AdmissionStatus != null && Display?.PermitType != null &&
+            !string.IsNullOrWhiteSpace(Display?.WorkPermitName) &&
+            !string.IsNullOrWhiteSpace(Display?.WorkPermitNumber) &&
+            !string.IsNullOrWhiteSpace(Display?.SpecialtyName) &&
+            !string.IsNullOrWhiteSpace(Display?.IssuingAuthority) &&
+            Display?.IssueDate != DateTime.MinValue && 
+            !string.IsNullOrWhiteSpace(Display?.IssueDate.ToString()) &&
+            Display?.ExpiryDate != DateTime.MinValue &&
+            !string.IsNullOrWhiteSpace(Display?.ExpiryDate.ToString());
 
         public void ClearProperty()
         {
-            WorkPermitName = string.Empty;
-            DocumentSeries = string.Empty;
-            WorkPermitNumber = string.Empty;
-            ProtocolNumber = string.Empty;
-            SpecialtyName = string.Empty;
-            IssuingAuthority = string.Empty;
-            IssueDate = DateTime.UtcNow;
-            ExpiryDate = DateTime.UtcNow;
-            PermitType = null!;
-            AdmissionStatus = null!;
+            Display?.WorkPermitName = string.Empty;
+            Display?.DocumentSeries = string.Empty;
+            Display?.WorkPermitNumber = string.Empty;
+            Display?.ProtocolNumber = string.Empty;
+            Display?.SpecialtyName = string.Empty;
+            Display?.IssuingAuthority = string.Empty;
+            Display?.IssueDate = DateTime.UtcNow;
+            Display?.ExpiryDate = DateTime.UtcNow;
+            Display?.PermitType = null!;
+            Display?.AdmissionStatus = null!;
 
             PendingFilePaths.Clear();
             SelectedLocalWorkPermit = null;

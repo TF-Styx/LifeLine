@@ -447,16 +447,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             PersonalPhoto.Photo = await _generateImageService.GenerateAsync(details.PersonalPhoto);
 
             ContactInformation.EmployeeId = details.EmployeeId.ToString();
-            ContactInformation.PersonalPhone = details.ContactInformation.PersonalPhone;
-            ContactInformation.CorporatePhone = details.ContactInformation.CorporatePhone;
-            ContactInformation.PersonalEmail = details.ContactInformation.PersonalEmail;
-            ContactInformation.CorporateEmail = details.ContactInformation.CorporateEmail;
-            ContactInformation.PostalCode = details.ContactInformation.PostalCode;
-            ContactInformation.Region = details.ContactInformation.Region;
-            ContactInformation.City = details.ContactInformation.City;
-            ContactInformation.Street = details.ContactInformation.Street;
-            ContactInformation.Building = details.ContactInformation.Building;
-            ContactInformation.Apartment = details.ContactInformation.Apartment;
+            ContactInformation.Display.PersonalPhone = details.ContactInformation.PersonalPhone;
+            ContactInformation.Display.CorporatePhone = details.ContactInformation.CorporatePhone;
+            ContactInformation.Display.PersonalEmail = details.ContactInformation.PersonalEmail;
+            ContactInformation.Display.CorporateEmail = details.ContactInformation.CorporateEmail;
+            ContactInformation.Display.PostalCode = details.ContactInformation.PostalCode;
+            ContactInformation.Display.Region = details.ContactInformation.Region;
+            ContactInformation.Display.City = details.ContactInformation.City;
+            ContactInformation.Display.Street = details.ContactInformation.Street;
+            ContactInformation.Display.Building = details.ContactInformation.Building;
+            ContactInformation.Display.Apartment = details.ContactInformation.Apartment;
 
             ContactInformationDisplay = new
                 (
@@ -827,6 +827,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 MessageBox.Show($"{dbResult.StringMessage}");
                 return;
             }
+
+            var employee = EmployeeHrs.FirstOrDefault(x => x.Id == PersonalInfo.EmployeeId);
+
+            employee!.Surname = PersonalInfo.Surname!;
+            employee!.Name = PersonalInfo.Name!;
+            employee!.Patronymic = PersonalInfo.Patronymic;
         }
         private bool CanExecute_UpdateEmployeePersonalInfoCommand() => true;
 
@@ -944,16 +950,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                             (
                                 ContactInformationDisplay.ContactInformationId,
                                 ContactInformation.EmployeeId,
-                                ContactInformation.PersonalPhone,
-                                ContactInformation.CorporatePhone,
-                                ContactInformation.PersonalEmail,
-                                ContactInformation.CorporateEmail,
-                                ContactInformation.PostalCode,
-                                ContactInformation.Region,
-                                ContactInformation.City,
-                                ContactInformation.Street,
-                                ContactInformation.Building,
-                                ContactInformation.Apartment
+                                ContactInformation.Display.PersonalPhone,
+                                ContactInformation.Display.CorporatePhone,
+                                ContactInformation.Display.PersonalEmail,
+                                ContactInformation.Display.CorporateEmail,
+                                ContactInformation.Display.PostalCode,
+                                ContactInformation.Display.Region,
+                                ContactInformation.Display.City,
+                                ContactInformation.Display.Street,
+                                ContactInformation.Display.Building,
+                                ContactInformation.Display.Apartment
                             )
                     );
 
@@ -1053,9 +1059,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             var processResult = await _documentProcessingService.ProcessFilesToPdfAsync
             (
                 PersonalDocuments.PendingFilePaths,
-                PersonalDocuments.DocumentType.Name,
+                PersonalDocuments.Display.DocumentType.Name,
                 PersonalDocuments.EmployeeId!,
-                PersonalDocuments.Number
+                PersonalDocuments.Display.DocumentNumber
             );
 
             if (processResult.IsFailure)
@@ -1075,7 +1081,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 uploadRequest: (bytes, fName) => new UploadFileRequest
                 (
                     FileConst.BUCKET_NAME,
-                    PersonalDocuments.DocumentType.Name,
+                    PersonalDocuments.Display.DocumentType.Name,
                     FileConst.BuildEmployeeFolder
                     (
                         PersonalDocuments.EmployeeId!,
@@ -1087,9 +1093,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                 dbRequest: s3FileName => new UpdatePersonalDocumentRequest
                 (
-                    PersonalDocuments.DocumentType.Id,
-                    PersonalDocuments.Number,
-                    PersonalDocuments.Series,
+                    PersonalDocuments.Display.DocumentType.Id,
+                    PersonalDocuments.Display.DocumentNumber,
+                    PersonalDocuments.Display.DocumentSeries,
                     FileConst.BUCKET_NAME,
                     s3FileName
                 ),
@@ -1104,7 +1110,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                 return;
             }
 
+            selectedDoc.DocumentNumber = PersonalDocuments.Display.DocumentNumber;
+            selectedDoc.DocumentSeries = PersonalDocuments.Display.DocumentSeries;
+            selectedDoc.DocumentType = PersonalDocuments.Display.DocumentType;
+            selectedDoc.FileBytes = pdfBytes;
+            selectedDoc.FileName = fileName;
+
             PersonalDocuments.ClearProperty();
+            PersonalDocuments.PersonalDocumentsView.Refresh();
         }
         private bool CanExecute_UpdatePersonalDocumentCommand() => true;
             //=> PersonalDocuments!.SelectedLocalPersonalDocument != null && PersonalDocuments!.DocumentType != null && !string.IsNullOrWhiteSpace(PersonalDocuments!.Number);
@@ -1216,6 +1229,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public RelayCommandAsync UpdateEducationdocumentCommand { get; private set; }
         private async Task Execute_UpdateEducationdocumentCommand()
         {
+            if (EducationDocuments!.Display == null)
+            {
+                MessageBox.Show("Полян е заполнены!");
+                return;
+            }
+
             if (!EducationDocuments.PendingFilePaths.Any())
             {
                 MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
@@ -1231,9 +1250,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             var processResult = await _documentProcessingService.ProcessFilesToPdfAsync
                 (
                     EducationDocuments.PendingFilePaths,
-                    EducationDocuments.DocumentType.Name,
+                    EducationDocuments.Display.DocumentType.Name,
                     EducationDocuments.EmployeeId!,
-                    EducationDocuments.DocumentNumber
+                    EducationDocuments.Display.DocumentNumber
                 );
 
             if (processResult.IsFailure)
@@ -1253,7 +1272,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     uploadRequest: (bytes, fName) => new UploadFileRequest
                         (
                             FileConst.BUCKET_NAME,
-                            EducationDocuments.DocumentType.Name,
+                            EducationDocuments.Display.DocumentType.Name,
                             FileConst.BuildEmployeeFolder
                                 (
                                     EducationDocuments.EmployeeId!,
@@ -1265,15 +1284,15 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                     dbRequest: s3FileName => new UpdateEducationDocumentRequest
                         (
-                            EducationDocuments.EducationLevel!.Id,
-                            EducationDocuments.DocumentType!.Id,
-                            EducationDocuments.DocumentNumber,
-                            EducationDocuments.IssuedDate,
-                            EducationDocuments.OrganizationName,
-                            EducationDocuments.QualificationAwardedName,
-                            EducationDocuments.SpecialtyName,
-                            EducationDocuments.ProgramName,
-                            EducationDocuments.TotalHours,
+                            EducationDocuments.Display.EducationLevel!.Id,
+                            EducationDocuments.Display.DocumentType!.Id,
+                            EducationDocuments.Display.DocumentNumber,
+                            EducationDocuments.Display.IssuedDate,
+                            EducationDocuments.Display.OrganizationName,
+                            EducationDocuments.Display.QualificationAwardedName,
+                            EducationDocuments.Display.SpecialtyName,
+                            EducationDocuments.Display.ProgramName,
+                            EducationDocuments.Display.TotalHours,
                             FileConst.BUCKET_NAME,
                             s3FileName
                         ),
@@ -1399,6 +1418,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public RelayCommandAsync UpdateWorkPermitCommand { get; private set; }
         private async Task Execute_UpdateWorkPermitCommand()
         {
+            if (EducationDocuments!.Display == null)
+            {
+                MessageBox.Show("Полян е заполнены!");
+                return;
+            }
+
             if (!WorkPermits.PendingFilePaths.Any())
             {
                 MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
@@ -1414,9 +1439,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             var processResult = await _documentProcessingService.ProcessFilesToPdfAsync
                 (
                     WorkPermits.PendingFilePaths,
-                    WorkPermits.PermitType.Name,
+                    WorkPermits.Display.PermitType.Name,
                     WorkPermits.EmployeeId!,
-                    WorkPermits.WorkPermitNumber
+                    WorkPermits.Display.WorkPermitNumber
                 );
 
             if (processResult.IsFailure)
@@ -1436,7 +1461,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     uploadRequest: (bytes, fName) => new UploadFileRequest
                         (
                             FileConst.BUCKET_NAME,
-                            WorkPermits.PermitType.Name,
+                            WorkPermits.Display.PermitType.Name,
                             FileConst.BuildEmployeeFolder
                                 (
                                     WorkPermits.EmployeeId!,
@@ -1448,18 +1473,18 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                     dbRequest: s3FileName => new UpdateWorkPermitRequest
                         (
-                            WorkPermits.WorkPermitName,
-                            WorkPermits.DocumentSeries,
-                            WorkPermits.WorkPermitNumber,
-                            WorkPermits.ProtocolNumber,
-                            WorkPermits.SpecialtyName,
-                            WorkPermits.IssuingAuthority,
-                            WorkPermits.IssueDate,
-                            WorkPermits.ExpiryDate,
+                            WorkPermits.Display.WorkPermitName,
+                            WorkPermits.Display.DocumentSeries,
+                            WorkPermits.Display.WorkPermitNumber,
+                            WorkPermits.Display.ProtocolNumber,
+                            WorkPermits.Display.SpecialtyName,
+                            WorkPermits.Display.IssuingAuthority,
+                            WorkPermits.Display.IssueDate,
+                            WorkPermits.Display.ExpiryDate,
                             FileConst.BUCKET_NAME,
                             s3FileName,
-                            WorkPermits.PermitType.Id,
-                            WorkPermits.AdmissionStatus.Id
+                            WorkPermits.Display.PermitType.Id,
+                            WorkPermits.Display.AdmissionStatus.Id
                         ),
 
                     dbUpdateAsync: async requests => await _workPermitApiServiceFactory.Create(WorkPermits.EmployeeId!)
@@ -1631,6 +1656,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public RelayCommandAsync UpdateAssignmentContractCommand { get; private set; }
         private async Task Execute_UpdateAssignmentContractCommand()
         {
+            if (AssigmentsContracts!.Display == null)
+            {
+                MessageBox.Show("Поля не заполнены!");
+                return;
+            }
+
             if (!AssigmentsContracts.PendingFilePaths.Any())
             {
                 MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
@@ -1646,9 +1677,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
             var processResult = await _documentProcessingService.ProcessFilesToPdfAsync
                 (
                     AssigmentsContracts.PendingFilePaths,
-                    AssigmentsContracts.Position.Name,
+                    AssigmentsContracts.Display.Position.Name,
                     AssigmentsContracts.EmployeeId!,
-                    AssigmentsContracts.ContractNumber
+                    AssigmentsContracts.Display.ContractNumber
                 );
 
             if (processResult.IsFailure)
@@ -1668,7 +1699,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
                     uploadRequest: (bytes, fName) => new UploadFileRequest
                     (
                         BucketName: FileConst.BUCKET_NAME,
-                        AdditionalName: AssigmentsContracts.Position.Name,
+                        AdditionalName: AssigmentsContracts.Display.Position.Name,
                         SubFolder: FileConst.BuildEmployeeFolder
                             (
                                 AssigmentsContracts.EmployeeId!,
@@ -1680,20 +1711,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                     dbRequest: s3FileName => new UpdateAssignmentRequest
                     (
-                        Guid.Parse(AssigmentsContracts.Position.PositionId),
-                        Guid.Parse(AssigmentsContracts.Department.DepartmentId),
-                        Guid.Parse(AssigmentsContracts.Branch.BranchId),
-                        AssigmentsContracts.Manager != null ? Guid.Parse(AssigmentsContracts.Manager.Id) : null,
-                        AssigmentsContracts.HireDate,
-                        AssigmentsContracts.TerminationDate,
-                        Guid.Parse(AssigmentsContracts.Status.Id),
+                        Guid.Parse(AssigmentsContracts.Display.Position.PositionId),
+                        Guid.Parse(AssigmentsContracts.Display.Department.DepartmentId),
+                        Guid.Parse(AssigmentsContracts.Display.Branch.BranchId),
+                        AssigmentsContracts.Display.Manager != null ? Guid.Parse(AssigmentsContracts.Display.Manager.Id) : null,
+                        AssigmentsContracts.Display.HireDate,
+                        AssigmentsContracts.Display.TerminationDate,
+                        Guid.Parse(AssigmentsContracts.Display.Status.Id),
                         new UpdateAssignmentContractRequest
                         (
-                            Guid.Parse(AssigmentsContracts.EmployeeType.Id),
-                            AssigmentsContracts.ContractNumber,
-                            AssigmentsContracts.StartDate,
-                            AssigmentsContracts.EndDate,
-                            AssigmentsContracts.Salary,
+                            Guid.Parse(AssigmentsContracts.Display.EmployeeType.Id),
+                            AssigmentsContracts.Display.ContractNumber,
+                            AssigmentsContracts.Display.StartDate,
+                            AssigmentsContracts.Display.EndDate,
+                            AssigmentsContracts.Display.Salary,
                             FileConst.BUCKET_NAME,
                             s3FileName
                         )
