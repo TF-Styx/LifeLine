@@ -74,6 +74,13 @@ namespace LifeLine.HrPanel.Desktop.Models
 
         public string AssignmentId => _assignmentModel.AssignmentId;
 
+        private HospitalDisplay _hospital = null!;
+        public HospitalDisplay Hospital
+        {
+            get => _hospital;
+            set => SetProperty(ref _hospital, value);
+        }
+
         public string BranchId => _assignmentModel.BranchId;
         private BranchDisplay _branch = null!;
         public BranchDisplay Branch

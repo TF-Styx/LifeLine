@@ -22,21 +22,45 @@
                     <Button Width="25" 
                             Background="#00DDDDDD" 
                             BorderBrush="#00707070" 
-                            Command="{Binding PersonalPhoto.SelectCommandAsync}">
+                            Command="{Binding PersonalPhoto.SelectCommandAsync}" 
+                            Style="{StaticResource Button.Icon}">
                         <Control Template="{StaticResource AddIcon}"/>
                         <Button.ToolTip>
                             <TextBlock Text="Добавить аватарку"/>
                         </Button.ToolTip>
                     </Button>
-                    <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Margin="15 0 15 0" Command="{Binding ViewImageCommand}">
+                    <Button Width="25" 
+                            Background="#00DDDDDD" 
+                            BorderBrush="#00707070" 
+                            Margin="15 0 15 0" 
+                            Command="{Binding ViewImageCommand}" 
+                            Style="{StaticResource Button.Icon}">
                         <Control Template="{StaticResource Magnifier}"/>
                     </Button>
-                    <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Foreground="#F06870" Command="{Binding PersonalPhoto.ClearImage}"
-                            Visibility="{Binding Action, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource TypeActionConverter}, ConverterParameter={x:Static enum:TypeAction.CreateStep}, UpdateSourceTrigger=PropertyChanged}">
+                    <Button Width="25" 
+                            Background="#00DDDDDD" 
+                            BorderBrush="#00707070" 
+                            Foreground="#F06870" 
+                            Command="{Binding PersonalPhoto.ClearImage}" 
+                            Style="{StaticResource Button.Icon}"
+                            Visibility="{Binding Action, 
+                                                 RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                 Converter={StaticResource TypeActionConverter}, 
+                                                 ConverterParameter={x:Static enum:TypeAction.CreateStep}, 
+                                                 UpdateSourceTrigger=PropertyChanged}">
                         <Control Template="{StaticResource Trash}"/>
                     </Button>
-                    <Button Width="25" Background="#00DDDDDD" BorderBrush="#00707070" Foreground="#F06870" Command="{Binding DeletePersonalPhotoCommand}"
-                            Visibility="{Binding Action, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource TypeActionConverter}, ConverterParameter={x:Static enum:TypeAction.Create}, UpdateSourceTrigger=PropertyChanged}">
+                    <Button Width="25" 
+                            Background="#00DDDDDD" 
+                            BorderBrush="#00707070" 
+                            Foreground="#F06870" 
+                            Command="{Binding DeletePersonalPhotoCommand}" 
+                            Style="{StaticResource Button.Icon}"
+                            Visibility="{Binding Action, 
+                                                 RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                 Converter={StaticResource TypeActionConverter}, 
+                                                 ConverterParameter={x:Static enum:TypeAction.Create}, 
+                                                 UpdateSourceTrigger=PropertyChanged}">
                         <Control Template="{StaticResource Trash}"/>
                     </Button>
                 </WrapPanel>
@@ -45,14 +69,22 @@
                         HorizontalAlignment="Stretch" VerticalAlignment="Center" 
                         Command="{Binding ExecuteStepCommand}" 
                         CommandParameter="{x:Static enum:EmployeeCreationSteps.ContactInformation}"
-                        Visibility="{Binding Action, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource TypeActionConverter}, ConverterParameter={x:Static enum:TypeAction.CreateStep}, UpdateSourceTrigger=PropertyChanged}"
-                        Style="{StaticResource App.Button}" Margin="0 0 0 0"/>
+                        Visibility="{Binding Action, 
+                                             RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                             Converter={StaticResource TypeActionConverter}, 
+                                             ConverterParameter={x:Static enum:TypeAction.CreateStep}, 
+                                             UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource App.Button}" Margin="5"/>
                 
                 <Button Content="Сохранить" Height="40"
                         HorizontalAlignment="Stretch" VerticalAlignment="Center" 
                         Command="{Binding UploadPersonalPhoto}" 
-                        Visibility="{Binding Action, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource TypeActionConverter}, ConverterParameter={x:Static enum:TypeAction.Create}, UpdateSourceTrigger=PropertyChanged}"
-                        Style="{StaticResource App.Button}" Margin="0 0 0 0"/>
+                        Visibility="{Binding Action, 
+                                             RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                             Converter={StaticResource TypeActionConverter}, 
+                                             ConverterParameter={x:Static enum:TypeAction.Create}, 
+                                             UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource App.Button}" Margin="5"/>
             </StackPanel>
         </Border>
     </Border>

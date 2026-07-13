@@ -76,7 +76,8 @@
                           SelectedItem="{Binding Branch}"
                           Style="{StaticResource Custom.ListView}"
                           ItemContainerStyle="{StaticResource Custom.ListViewItem}"
-                          d:ItemsSource="{d:SampleData ItemCount=4}">
+                          d:ItemsSource="{d:SampleData ItemCount=4}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>

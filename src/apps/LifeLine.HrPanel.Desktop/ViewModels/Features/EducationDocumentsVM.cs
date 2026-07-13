@@ -46,6 +46,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _documentTypes = documentTypes;
             _educationLevels = educationLevels;
 
+            NewEducationDocumentDisplay();
+
             EducationDocumentsView = CollectionViewSource.GetDefaultView(LocalEducationDocuments);
 
             EducationDocumentsView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(EducationDocumentDisplay.SaveStatus)));
@@ -56,103 +58,43 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             AddEducationDocumentCommandAsync = new RelayCommandAsync(Execute_AddEducationDocumentCommandAsync, CanExecute_AddEducationDocumentCommand);
         }
 
-        private string _documentNumber = null!;
-        public string DocumentNumber
+        private EducationDocumentDisplay? _display;
+        public EducationDocumentDisplay? Display
         {
-            get => _documentNumber;
+            get => _display;
             set
             {
-                SetProperty(ref _documentNumber, value);
+                SetProperty(ref _display, value);
+
                 AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
             }
         }
 
-        private DateTime _issuedDate;
-        public DateTime IssuedDate
+        private void NewEducationDocumentDisplay()
         {
-            get => _issuedDate;
-            set
-            {
-                SetProperty(ref _issuedDate, value);
-                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
+            Display = new EducationDocumentDisplay
+                (
+                    new EducationDocumentResponse
+                    (
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty
+                    ),
+                    _educationLevels,
+                    _documentTypes,
+                    SaveStatus.Local
+                );
 
-        private string _organizationName = null!;
-        public string OrganizationName
-        {
-            get => _organizationName;
-            set
-            {
-                SetProperty(ref _organizationName, value);
-                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private string? _qualificationAwardedName;
-        public string? QualificationAwardedName
-        {
-            get => _qualificationAwardedName;
-            set
-            {
-                SetProperty(ref _qualificationAwardedName, value);
-                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private string? _specialtyName;
-        public string? SpecialtyName
-        {
-            get => _specialtyName;
-            set
-            {
-                SetProperty(ref _specialtyName, value);
-                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private string? _programName;
-        public string? ProgramName
-        {
-            get => _programName;
-            set
-            {
-                SetProperty(ref _programName, value);
-                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private TimeSpan? _totalHours;
-        public TimeSpan? TotalHours
-        {
-            get => _totalHours;
-            set
-            {
-                SetProperty(ref _totalHours, value);
-                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private EducationLevelDisplay _educationLevel = null!;
-        public EducationLevelDisplay EducationLevel
-        {
-            get => _educationLevel;
-            set
-            {
-                SetProperty(ref _educationLevel, value);
-                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
-            }
-        }
-
-        private DocumentTypeDisplay _documentType = null!;
-        public DocumentTypeDisplay DocumentType
-        {
-            get => _documentType;
-            set
-            {
-                SetProperty(ref _documentType, value);
-                AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
-            }
+            Display.PropertyChanged += (s, e) => AddEducationDocumentCommandAsync?.RaiseCanExecuteChanged();
         }
 
         private EducationDocumentDisplay? _selectedLocalEducationDocument = null!;
@@ -174,16 +116,30 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
 
         private void SetProp(EducationDocumentDisplay value)
         {
-            DocumentNumber = value.DocumentNumber;
-            IssuedDate = value.IssuedDate;
-            OrganizationName = value.OrganizationName;
-            QualificationAwardedName = value.QualificationAwardedName;
-            SpecialtyName = value.SpecialtyName;
-            ProgramName = value.ProgramName;
-            TimeSpan.TryParse(value.TotalHours.ToString(), out var resultTimeSpanParse);
-            TotalHours = resultTimeSpanParse;
-            EducationLevel = value.EducationLevel;
-            DocumentType = value.DocumentType;
+            Display?.DocumentNumber = value.DocumentNumber;
+            Display?.IssuedDate = value.IssuedDate;
+            Display?.OrganizationName = value.OrganizationName;
+            Display?.QualificationAwardedName = value.QualificationAwardedName;
+            Display?.SpecialtyName = value.SpecialtyName;
+            Display?.ProgramName = value.ProgramName;
+            Display?.TotalHours = value.TotalHours;
+            Display?.EducationLevel = value.EducationLevel;
+
+            Display?.DocumentType = value.DocumentType;
+            if (value.DocumentType == null)
+            {
+                MessageBox.Show("value.DocumentType = null");
+                return;
+            }
+            if (Display?.DocumentType == null)
+            {
+                MessageBox.Show("Display?.DocumentType = null");
+                return;
+            }
+            MessageBox.Show($"Display?.DocumentType.Id - {Display?.DocumentType.Id}" +
+                            $"Display?.DocumentType.Name - {Display?.DocumentType.Name}" +
+                            $"value.DocumentType.Id - {value.DocumentType.Id}" +
+                            $"value.DocumentType.Name - {value.DocumentType.Name}");
         }
 
         private async Task LoadDocumentToQueueAsync(EducationDocumentDisplay document)
@@ -277,6 +233,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         public RelayCommandAsync AddEducationDocumentCommandAsync { get; private set; }
         private async Task Execute_AddEducationDocumentCommandAsync()
         {
+            if (Display == null)
+            {
+                MessageBox.Show("Поля не заполнены!");
+                return;
+            }
+
             if (!PendingFilePaths.Any())
             {
                 MessageBox.Show("Выберите хотя бы один файл для добавления", "Внимание",
@@ -287,9 +249,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             var processResult = await _documentProcessingService.ProcessFilesToPdfAsync
                 (
                     PendingFilePaths,
-                    DocumentType.Name,
+                    Display.DocumentType.Name,
                     EmployeeId!,
-                    DocumentNumber
+                    Display.DocumentNumber
                 );
 
             if (processResult.IsFailure)
@@ -308,15 +270,15 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                                 (
                                     string.Empty,
                                     EmployeeId!,
-                                    EducationLevel.Id,
-                                    DocumentType.Id,
-                                    DocumentNumber,
-                                    IssuedDate.ToString(),
-                                    OrganizationName,
-                                    QualificationAwardedName,
-                                    SpecialtyName,
-                                    ProgramName,
-                                    TotalHours.ToString(),
+                                    Display.EducationLevel.Id,
+                                    Display.DocumentType.Id,
+                                    Display.DocumentNumber,
+                                    Display.IssuedDate.ToString(),
+                                    Display.OrganizationName,
+                                    Display.QualificationAwardedName,
+                                    Display.SpecialtyName,
+                                    Display.ProgramName,
+                                    Display.TotalHours.ToString(),
                                     null
                                 ),
                             _educationLevels,
@@ -333,23 +295,23 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             ClearProperty();
         }
         private bool CanExecute_AddEducationDocumentCommand()
-            => EducationLevel != null && DocumentType != null &&
-               !string.IsNullOrWhiteSpace(DocumentNumber) &&
-               !string.IsNullOrWhiteSpace(IssuedDate.ToString()) &&
-               IssuedDate != DateTime.MinValue &&
-               !string.IsNullOrWhiteSpace(OrganizationName);
+            => Display?.EducationLevel != null && Display?.DocumentType != null &&
+               !string.IsNullOrWhiteSpace(Display?.DocumentNumber) &&
+               !string.IsNullOrWhiteSpace(Display?.IssuedDate.ToString()) &&
+               Display?.IssuedDate != DateTime.MinValue &&
+               !string.IsNullOrWhiteSpace(Display?.OrganizationName);
 
         public void ClearProperty()
         {
-            DocumentNumber = string.Empty;
-            IssuedDate = DateTime.UtcNow;
-            OrganizationName = string.Empty;
-            QualificationAwardedName = string.Empty;
-            SpecialtyName = string.Empty;
-            ProgramName = string.Empty;
-            TotalHours = TimeSpan.Zero;
-            EducationLevel = null!;
-            DocumentType = null!;
+            Display?.DocumentNumber = string.Empty;
+            Display?.IssuedDate = DateTime.UtcNow;
+            Display?.OrganizationName = string.Empty;
+            Display?.QualificationAwardedName = string.Empty;
+            Display?.SpecialtyName = string.Empty;
+            Display?.ProgramName = string.Empty;
+            Display?.TotalHours = TimeSpan.Zero;
+            Display?.EducationLevel = null!;
+            Display?.DocumentType = null!;
 
             PendingFilePaths.Clear();
             SelectedLocalEducationDocument = null;

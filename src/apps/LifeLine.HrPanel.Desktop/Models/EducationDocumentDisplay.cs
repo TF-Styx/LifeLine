@@ -25,13 +25,13 @@ namespace LifeLine.HrPanel.Desktop.Models
             _documentTypes = documentTypes;
 
             _documentNumber = model.DocumentNumber;
-            _issuedDate = DateTime.Parse(model.IssuedDate);
+            DateTime.TryParse(model.IssuedDate, out DateTime resultDateTimeParse);
+            _issuedDate = resultDateTimeParse;
             _organizationName = model.OrganizationName;
             _qualificationAwardedName = model.QualificationAwardedName;
             _specialtyName = model.SpecialtyName;
             _programName = model.ProgramName;
-            //_totalHours = TimeSpan.Parse(model.TotalHours!);
-            TimeSpan.TryParse(model.TotalHours, out var resultTimeSpanParse);
+            TimeSpan.TryParse(model.TotalHours, out TimeSpan resultTimeSpanParse);
             _totalHours = resultTimeSpanParse;
             _fileKey = model.FileKey;
             SaveStatus = saveStatus;
@@ -136,9 +136,6 @@ namespace LifeLine.HrPanel.Desktop.Models
         public byte[]? FileBytes { get; set; }
         public string? FileName { get; set; }
         public string? ContentType { get; set; } = "application/pdf";
-
-        [System.ComponentModel.Browsable(false)]
-        //public bool HasFileForUpload => FileBytes != null || (!string.IsNullOrWhiteSpace(FilePath) && System.IO.File.Exists(FilePath));
 
         public EducationDocumentResponse GetUnderLineModel() => _model;
     }
