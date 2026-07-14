@@ -26,6 +26,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
             CloseEditPanelCommand = new RelayCommand(Execute_CloseEditPanelCommand);
         }
 
+        private string? _editingId;
+
         // Property
         private DepartmentDisplay? _departmentProp;
         public DepartmentDisplay? DepartmentProp
@@ -54,6 +56,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
                 )
             );
 
+            _editingId = null;
+
             DepartmentProp.PropertyChanged += (s, e) =>
             {
                 CreateDepartmentCommandAsync?.RaiseCanExecuteChanged();
@@ -70,6 +74,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
                 return;
             }
 
+            _editingId = display.DepartmentId;
+
             DepartmentProp!.Name = display.Name;
             DepartmentProp!.Description = display.Description;
             DepartmentProp!.Building = display.Building;
@@ -80,6 +86,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
             DepartmentProp!.Name = string.Empty;
             DepartmentProp!.Description = string.Empty;
             DepartmentProp!.Building = string.Empty;
+
+            _editingId = null;
         }
 
         public Action<DepartmentDisplay>? DepartmentSaved;
@@ -87,15 +95,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
         public RelayCommandAsync CreateDepartmentCommandAsync { get; private set; }
         private async Task Execute_CreateDepartmentCommandAsync()
         {
-            if (DepartmentProp == null)
+            if (DepartmentProp == null || _stateService.Branch == null)
             {
-                MessageBox.Show("Данные пусты!");
-                return;
-            }
-
-            if (_stateService.Branch == null)
-            {
-                MessageBox.Show("Филиал не выбран!");
+                MessageBox.Show("Данные пусты или филиал не выбран!");
                 return;
             }
 
@@ -143,15 +145,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
         public RelayCommandAsync UpdateDepartmentCommandAsync { get; private set; }
         private async Task Execute_UpdateDepartmentCommandAsync()
         {
-            if (DepartmentProp == null)
+            if (DepartmentProp == null || _stateService.Branch == null || string.IsNullOrWhiteSpace(_editingId))
             {
-                MessageBox.Show("Данные пусты!");
-                return;
-            }
-
-            if (_stateService.Branch == null)
-            {
-                MessageBox.Show("Филиал не выбран!");
+                MessageBox.Show("Данные пусты, или не выбран филиал/отдел!");
                 return;
             }
 
@@ -163,13 +159,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
                 _stateService.Branch.Id
             );
 
-            if (_stateService.Department == null)
-            {
-                MessageBox.Show("Отдел не выбран!");
-                return;
-            }
-
-            var result = await _service.UpdateAsync(_stateService.Department.Id, request);
+            var result = await _service.UpdateAsync(_editingId, request);
 
             if (result.IsFailure)
             {
@@ -181,7 +171,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
             (
                 new DepartmentResponse
                 (
-                    _stateService.Department.Id,
+                    _editingId,
                     DepartmentProp.Name,
                     DepartmentProp.Description,
                     DepartmentProp.Building,
@@ -197,7 +187,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Depart
         }
         private bool CanExecute_UpdateDepartmentCommandAsync()
             => DepartmentProp != null &&
-               !string.IsNullOrWhiteSpace(_stateService.Hospital?.Id) &&
+               !string.IsNullOrWhiteSpace(_editingId) &&
                !string.IsNullOrWhiteSpace(_stateService.Branch?.Id) &&
                !string.IsNullOrWhiteSpace(_stateService.Department?.Id) &&
                !string.IsNullOrWhiteSpace(DepartmentProp?.Name) &&

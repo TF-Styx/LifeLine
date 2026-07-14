@@ -46,9 +46,13 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Configurations
                 addressBuilder.Property(x => x.Region).HasColumnName("Region").IsRequired().HasMaxLength(Address.MAX_REGION_LENGTH);
                 addressBuilder.Property(x => x.City).HasColumnName("City").IsRequired().HasMaxLength(Address.MAX_CITY_LENGTH);
                 addressBuilder.Property(x => x.Street).HasColumnName("Street").IsRequired().HasMaxLength(Address.MAX_STREET_LENGTH);
-                //addressBuilder.Property(x => x.Building).HasColumnName("Building").IsRequired(false).HasMaxLength(Address.MAX_BUILDING_LENGTH);
-                //addressBuilder.Property(x => x.Apartment).HasColumnName("Apartment").IsRequired(false).HasMaxLength(Address.MAX_APARTMENT_LENGTH);
+                addressBuilder.Property(x => x.Building).HasColumnName("Building").IsRequired(false).HasMaxLength(Address.MAX_BUILDING_LENGTH);
+                addressBuilder.Property(x => x.Apartment).HasColumnName("Apartment").IsRequired(false).HasMaxLength(Address.MAX_APARTMENT_LENGTH);
             });
+
+            builder.Property(x => x.IsDeleted)
+                   .HasColumnName("IsDeleted")
+                   .HasDefaultValue(false);
         }
     }
 }

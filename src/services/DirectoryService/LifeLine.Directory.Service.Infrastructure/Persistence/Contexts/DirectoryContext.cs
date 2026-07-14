@@ -32,6 +32,11 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new DocumentTypeConfiguration());
             modelBuilder.ApplyConfiguration(new EducationLevelConfiguration());
             modelBuilder.ApplyConfiguration(new PermitTypeConfiguration());
+
+            modelBuilder.Entity<Hospital>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Branch>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Department>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Position>().HasQueryFilter(x => !x.IsDeleted);
         }
     }
 }

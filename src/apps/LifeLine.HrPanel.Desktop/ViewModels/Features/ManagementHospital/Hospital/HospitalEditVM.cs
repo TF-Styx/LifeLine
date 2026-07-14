@@ -26,6 +26,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
             CloseEditPanelCommand = new RelayCommand(Execute_CloseEditPanelCommand);
         }
 
+        private string _editingId;
+
         // Property
         private HospitalDisplay? _hospitalProp;
         public HospitalDisplay? HospitalProp
@@ -56,10 +58,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
                         string.Empty, 
                         string.Empty, 
                         string.Empty, 
+                        string.Empty, 
+                        string.Empty, 
                         string.Empty
                     )
                 )
             );
+
+            _editingId = string.Empty;
 
             HospitalProp.PropertyChanged += (s, e) =>
             {
@@ -77,6 +83,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
                 return;
             }
 
+            _editingId = display.HospitalId;
+
             HospitalProp!.Name = display.Name;
             HospitalProp!.Description = display.Description;
             HospitalProp!.Phone = display.Phone;
@@ -85,6 +93,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
             HospitalProp!.Region = display.Region;
             HospitalProp!.City = display.City;
             HospitalProp!.Street = display.Street;
+            HospitalProp!.Building = display.Building;
+            HospitalProp!.Apartment = display.Apartment;
         }
 
         public void ClearHospitalForm()
@@ -97,6 +107,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
             HospitalProp!.Region = string.Empty;
             HospitalProp!.City = string.Empty;
             HospitalProp!.Street = string.Empty;
+            HospitalProp!.Building = string.Empty;
+            HospitalProp!.Apartment = string.Empty;
+
+            _editingId = string.Empty;
         }
 
         public Action<HospitalDisplay>? HospitalSaved;
@@ -121,7 +135,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
                     HospitalProp.PostalCode,
                     HospitalProp.Region,
                     HospitalProp.City,
-                    HospitalProp.Street
+                    HospitalProp.Street,
+                    HospitalProp.Building,
+                    HospitalProp.Apartment
                 )
             );
 
@@ -147,7 +163,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
                         HospitalProp.PostalCode,
                         HospitalProp.Region,
                         HospitalProp.City,
-                        HospitalProp.Street
+                        HospitalProp.Street,
+                        HospitalProp.Building,
+                        HospitalProp.Apartment
                     )
                 )
             );
@@ -171,9 +189,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
         public RelayCommandAsync UpdateHospitalCommandAsync { get; private set; }
         private async Task Execute_UpdateHospitalCommandAsync()
         {
-            if (HospitalProp == null)
+            if (HospitalProp == null || string.IsNullOrWhiteSpace(_editingId))
             {
-                MessageBox.Show("Данные пусты!");
+                MessageBox.Show("Данные пусты или больница для редактирования не выбрана!");
                 return;
             }
 
@@ -188,17 +206,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
                     HospitalProp.PostalCode,
                     HospitalProp.Region,
                     HospitalProp.City,
-                    HospitalProp.Street
+                    HospitalProp.Street,
+                    HospitalProp.Building,
+                    HospitalProp.Apartment
                 )
             );
 
-            if (_stateService.Hospital == null)
-            {
-                MessageBox.Show("Больница не выбрана!");
-                return;
-            }
-
-            var result = await _service.UpdateAsync(_stateService.Hospital.Id, request);
+            var result = await _service.UpdateAsync(_editingId, request);
 
             if (result.IsFailure)
             {
@@ -210,17 +224,19 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
             (
                 new HospitalResponse
                 (
-                    _stateService.Hospital.Id,
-                    request.Name,
-                    request.Description,
-                    request.Phone,
-                    request.Email,
+                    _editingId,
+                    HospitalProp.Name,
+                    HospitalProp.Description,
+                    HospitalProp.Phone,
+                    HospitalProp.Email,
                     new HospitalDataAddressResponse
                     (
-                        request.Address.PostalCode,
-                        request.Address.Region,
-                        request.Address.City,
-                        request.Address.Street
+                        HospitalProp.PostalCode,
+                        HospitalProp.Region,
+                        HospitalProp.City,
+                        HospitalProp.Street,
+                        HospitalProp.Building,
+                        HospitalProp.Apartment
                     )
                 )
             );
@@ -233,7 +249,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Hospit
         }
         private bool CanExecute_UpdateHospitalCommandAsync()
             => HospitalProp != null && 
-               !string.IsNullOrWhiteSpace(_stateService.Hospital?.Id) &&
+               !string.IsNullOrWhiteSpace(_editingId) &&
                !string.IsNullOrWhiteSpace(HospitalProp?.Name) &&
                !string.IsNullOrWhiteSpace(HospitalProp?.Phone) &&
                !string.IsNullOrWhiteSpace(HospitalProp?.Email) &&

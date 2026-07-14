@@ -43,6 +43,10 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Configurations
                    .HasColumnName("BranchId")
                    .HasConversion(inDB => inDB.Value, outDB => BranchId.Create(outDB));
 
+            builder.Property(x => x.IsDeleted)
+                   .HasColumnName("IsDeleted")
+                   .HasDefaultValue(false);
+
             builder.HasOne<Branch>().WithMany().HasForeignKey(x => x.BranchId).OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(x => x.Positions).WithOne(x => x.Department).HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.Cascade);

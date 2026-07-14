@@ -10,6 +10,7 @@ namespace LifeLine.Directory.Service.Domain.Models
         public DirectoryName Name { get; private set; } = null!;
         public Description? Description { get; private set; }
         public DepartmentId DepartmentId { get; private set; }
+        public bool IsDeleted { get; private set; } = false;
 
         public Department Department { get; private set; } = null!;
 
@@ -58,5 +59,15 @@ namespace LifeLine.Directory.Service.Domain.Models
             if (description != Description)
                 Description = description;
         }
+
+        /// <summary>
+        /// SoftDelete "Удаление"
+        /// </summary>
+        internal void Delete() => IsDeleted = true;
+
+        /// <summary>
+        /// Восстановление
+        /// </summary>
+        internal void Restore() => IsDeleted = false;
     }
 }

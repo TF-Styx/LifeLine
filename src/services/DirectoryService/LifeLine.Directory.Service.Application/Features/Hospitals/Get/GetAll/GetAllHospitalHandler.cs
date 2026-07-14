@@ -24,7 +24,9 @@ namespace LifeLine.Directory.Service.Application.Features.Hospitals.Get.GetAll
                             x.Address.PostalCode,
                             x.Address.Region,
                             x.Address.City,
-                            x.Address.Street
+                            x.Address.Street,
+                            x.Address.Building,
+                            x.Address.Apartment
                         )
                     )
                 ).ToListAsync(cancellationToken);

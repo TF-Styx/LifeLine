@@ -27,7 +27,9 @@ namespace LifeLine.Directory.Service.Application.Features.Branches.Create
                     request.Address.PostalCode,
                     request.Address.Region,
                     request.Address.City,
-                    request.Address.Street
+                    request.Address.Street,
+                    request.Address.Building,
+                    request.Address.Apartment
                 )
             );
 

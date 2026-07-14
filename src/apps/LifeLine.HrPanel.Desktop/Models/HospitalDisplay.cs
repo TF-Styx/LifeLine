@@ -19,6 +19,8 @@ namespace LifeLine.HrPanel.Desktop.Models
             Region = _model.Address.Region;
             City = _model.Address.City;
             Street = _model.Address.Street;
+            Building = _model.Address.Building;
+            Apartment = _model.Address.Apartment;
         }
 
         public string HospitalId => _model.Id;
@@ -66,6 +68,18 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         public string Street
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
+
+        public string? Building
+        {
+            get => field;
+            set => SetProperty(ref field, value);
+        }
+
+        public string? Apartment
         {
             get => field;
             set => SetProperty(ref field, value);

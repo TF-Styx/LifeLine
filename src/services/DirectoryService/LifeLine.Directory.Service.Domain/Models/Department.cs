@@ -14,6 +14,7 @@ namespace LifeLine.Directory.Service.Domain.Models
         public Description? Description { get; private set; }
         public Building Building { get; private set; } = null!;
         public BranchId BranchId { get; private set; }
+        public bool IsDeleted { get; private set; } = false;
 
         private readonly List<Position> _positions = [];
         public IReadOnlyCollection<Position> Positions => _positions.AsReadOnly();
@@ -77,12 +78,25 @@ namespace LifeLine.Directory.Service.Domain.Models
                 Building = building;
         }
 
-
+        /// <summary>
+        /// Обновление филиала отдела
+        /// </summary>
+        /// <param name="branchId"></param>
         public void UpdateBranchId(BranchId branchId)
         {
             if (branchId != BranchId)
                 BranchId = branchId;
         }
+
+        /// <summary>
+        /// SoftDelete "Удаление"
+        /// </summary>
+        public void Delete() => IsDeleted = true;
+
+        /// <summary>
+        /// Восстановление
+        /// </summary>
+        public void Restore() => IsDeleted = false;
 
         #region Position
 
@@ -148,6 +162,32 @@ namespace LifeLine.Directory.Service.Domain.Models
             GuardException.Against.That(position == null, () => new RecordMissingException("Должность не найдена!"));
 
             _positions.Remove(position!);
+        }
+
+        /// <summary>
+        /// SoftDelete должности
+        /// </summary>
+        /// <param name="positionId"></param>
+        public void DeletePosition(Guid positionId)
+        {
+            var position = _positions.FirstOrDefault(x => x.Id == positionId);
+
+            GuardException.Against.That(position == null, () => new RecordMissingException("Должность не найдена!"));
+
+            position!.Delete();
+        }
+
+        /// <summary>
+        /// Восстановление должности
+        /// </summary>
+        /// <param name="positionId"></param>
+        public void RestorePosition(Guid positionId)
+        {
+            var position = _positions.FirstOrDefault(x => x.Id == positionId);
+
+            GuardException.Against.That(position == null, () => new RecordMissingException("Должность не найдена!"));
+
+            position!.Restore();
         }
 
         #endregion

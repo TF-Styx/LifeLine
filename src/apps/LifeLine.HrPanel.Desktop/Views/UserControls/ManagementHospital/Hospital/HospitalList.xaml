@@ -73,7 +73,7 @@
 
             <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
                 <ListView ItemsSource="{Binding Hospitals}" 
-                          SelectedItem="{Binding Hospital}"
+                          SelectedItem="{Binding Hospital, UpdateSourceTrigger=PropertyChanged}"
                           Style="{StaticResource Custom.ListView}"
                           ItemContainerStyle="{StaticResource Custom.ListViewItem}"
                           d:ItemsSource="{d:SampleData ItemCount=4}"
@@ -106,6 +106,8 @@
                                                     <TextBlock Text="{Binding Region, StringFormat=Регион: {0}}"/>
                                                     <TextBlock Text="{Binding City, StringFormat=Город: {0}}"/>
                                                     <TextBlock Text="{Binding Street, StringFormat=Улица: {0}}"/>
+                                                    <TextBlock Text="{Binding Building, StringFormat=Строение: {0}}"/>
+                                                    <TextBlock Text="{Binding Apartment, StringFormat=Апартаменты: {0}}"/>
                                                 </StackPanel>
                                             </Button.ToolTip>
                                         </Button>
@@ -133,7 +135,7 @@
 
                                     <TextBlock Text="{Binding Name}" 
                                                ToolTip="{Binding Name}"
-                                               TextWrapping="NoWrap" 
+                                               TextWrapping="Wrap" 
                                                TextAlignment="Center"
                                                Margin="0 0 0 5" FontSize="18" 
                                                d:Text="Наименование больбницы"/>
@@ -168,6 +170,14 @@
                                         <DockPanel Margin="0 0 0 0">
                                             <TextBlock Text="{Binding Street}" DockPanel.Dock="Right"/>
                                             <TextBlock Text="Улица"/>
+                                        </DockPanel>
+                                        <DockPanel Margin="0 0 0 0">
+                                            <TextBlock Text="{Binding Building}" DockPanel.Dock="Right"/>
+                                            <TextBlock Text="Строение"/>
+                                        </DockPanel>
+                                        <DockPanel Margin="0 0 0 0">
+                                            <TextBlock Text="{Binding Apartment}" DockPanel.Dock="Right"/>
+                                            <TextBlock Text="Апартаменты"/>
                                         </DockPanel>
                                     </StackPanel>
                                 </StackPanel>

@@ -29,7 +29,9 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
                     request.Address.PostalCode, 
                     request.Address.Region, 
                     request.Address.City, 
-                    request.Address.Street
+                    request.Address.Street,
+                    request.Address.Building,
+                    request.Address.Apartment
                 )
             );
 
@@ -61,7 +63,9 @@ namespace LifeLine.Directory.Service.Api.Controllers.Api
                     request.Address.PostalCode, 
                     request.Address.Region, 
                     request.Address.City, 
-                    request.Address.Street
+                    request.Address.Street,
+                    request.Address.Building,
+                    request.Address.Apartment
                 )
             );
 

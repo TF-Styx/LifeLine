@@ -26,6 +26,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
             CloseEditPanelCommand = new RelayCommand(Execute_CloseEditPanelCommand);
         }
 
+        private string? _editingId;
+
         // Property
         private BranchDisplay? _branchProp;
         public BranchDisplay? BranchProp
@@ -57,10 +59,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
                         string.Empty, 
                         string.Empty, 
                         string.Empty, 
+                        string.Empty, 
+                        string.Empty, 
                         string.Empty
                     )
                 )
             );
+
+            _editingId = null;
 
             BranchProp.PropertyChanged += (s, e) =>
             {
@@ -78,6 +84,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
                 return;
             }
 
+            _editingId = display.BranchId;
+
             BranchProp!.Name = display.Name;
             BranchProp!.Description = display.Description;
             BranchProp!.Phone = display.Phone;
@@ -86,6 +94,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
             BranchProp!.Region = display.Region;
             BranchProp!.City = display.City;
             BranchProp!.Street = display.Street;
+            BranchProp!.Building = display.Building;
+            BranchProp!.Apartment = display.Apartment;
         }
 
         public void ClearBranchForm()
@@ -98,6 +108,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
             BranchProp!.Region = string.Empty;
             BranchProp!.City = string.Empty;
             BranchProp!.Street = string.Empty;
+            BranchProp!.Building = string.Empty;
+            BranchProp!.Apartment = string.Empty;
+
+            _editingId = null;
         }
 
         public Action<BranchDisplay>? BranchSaved;
@@ -105,15 +119,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
         public RelayCommandAsync CreateBranchCommandAsync { get; private set; }
         private async Task Execute_CreateBranchCommandAsync()
         {
-            if (BranchProp == null)
+            if (BranchProp == null || _stateService.Hospital == null)
             {
-                MessageBox.Show("Данные пусты!");
-                return;
-            }
-
-            if (_stateService.Hospital == null)
-            {
-                MessageBox.Show("Больница не выбрана!");
+                MessageBox.Show("Данные пусты или больница не выбрана!");
                 return;
             }
 
@@ -129,7 +137,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
                     BranchProp.PostalCode,
                     BranchProp.Region,
                     BranchProp.City,
-                    BranchProp.Street
+                    BranchProp.Street,
+                    BranchProp.Building,
+                    BranchProp.Apartment
                 )
             );
 
@@ -156,7 +166,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
                         BranchProp.PostalCode,
                         BranchProp.Region,
                         BranchProp.City,
-                        BranchProp.Street
+                        BranchProp.Street,
+                        BranchProp.Building,
+                        BranchProp.Apartment
                     )
                 )
             );
@@ -181,15 +193,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
         public RelayCommandAsync UpdateBranchCommandAsync  { get; private set; }
         private async Task Execute_UpdateBranchCommandAsync()
         {
-            if (BranchProp == null)
+            if (BranchProp == null || _stateService.Hospital == null || string.IsNullOrWhiteSpace(_editingId))
             {
-                MessageBox.Show("Данные пусты!");
-                return;
-            }
-
-            if (_stateService.Hospital == null)
-            {
-                MessageBox.Show("Больница не выбрана!");
+                MessageBox.Show("Данные пусты или филиал/больница не выбраны!");
                 return;
             }
 
@@ -205,17 +211,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
                     BranchProp.PostalCode,
                     BranchProp.Region,
                     BranchProp.City,
-                    BranchProp.Street
+                    BranchProp.Street,
+                    BranchProp.Building,
+                    BranchProp.Apartment
                 )
             );
 
-            if (_stateService.Branch == null)
-            {
-                MessageBox.Show("Филиал не выбран!");
-                return;
-            }
-
-            var result = await _service.UpdateAsync(_stateService.Branch.Id, request);
+            var result = await _service.UpdateAsync(_editingId, request);
 
             if (result.IsFailure)
             {
@@ -227,7 +229,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
             (
                 new BranchResponse
                 (
-                    _stateService.Branch.Id,
+                    _editingId,
                     BranchProp.Name,
                     BranchProp.Description,
                     BranchProp.Phone,
@@ -238,7 +240,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
                         BranchProp.PostalCode,
                         BranchProp.Region,
                         BranchProp.City,
-                        BranchProp.Street
+                        BranchProp.Street,
+                        BranchProp.Building,
+                        BranchProp.Apartment
                     )
                 )
             );
@@ -251,7 +255,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Branch
         }
         private bool CanExecute_UpdateBranchCommandAsync()
             => BranchProp != null &&
-               !string.IsNullOrWhiteSpace(_stateService.Hospital?.Id) &&
+               !string.IsNullOrWhiteSpace(_editingId) &&
                !string.IsNullOrWhiteSpace(_stateService.Branch?.Id) &&
                !string.IsNullOrWhiteSpace(BranchProp?.Name) &&
                !string.IsNullOrWhiteSpace(BranchProp?.Phone) &&

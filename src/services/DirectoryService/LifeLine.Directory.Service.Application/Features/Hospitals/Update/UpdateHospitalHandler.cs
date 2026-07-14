@@ -25,7 +25,18 @@ namespace LifeLine.Directory.Service.Application.Features.Hospitals.Update
             hospital.UpdateDescription(!string.IsNullOrWhiteSpace(request.Description) ? Description.Create(request.Description) : null);
             hospital.UpdatePhone(Phone.Create(request.Phone));
             hospital.UpdateEmail(Email.Create(request.Email));
-            hospital.UpdateAddress(Address.Create(request.Address.PostalCode, request.Address.Region, request.Address.City, request.Address.Street));
+            hospital.UpdateAddress
+            (
+                Address.Create
+                (
+                    request.Address.PostalCode, 
+                    request.Address.Region, 
+                    request.Address.City, 
+                    request.Address.Street, 
+                    request.Address.Building, 
+                    request.Address.Apartment
+                )
+            );
 
             await context.SaveChangesAsync(cancellationToken);
 

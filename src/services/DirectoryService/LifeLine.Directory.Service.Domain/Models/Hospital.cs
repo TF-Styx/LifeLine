@@ -11,6 +11,7 @@ namespace LifeLine.Directory.Service.Domain.Models
         public Phone Phone { get; private set; } = null!;
         public Email Email { get; private set; } = null!;
         public Address Address { get; private set; } = null!;
+        public bool IsDeleted { get; private set; } = false;
 
         private Hospital() { }
         private Hospital(HospitalId id, DirectoryName name, Description? description, Phone phone, Email email, Address address) : base(id)
@@ -62,5 +63,8 @@ namespace LifeLine.Directory.Service.Domain.Models
             if (address != Address)
                 Address = address;
         }
+
+        public void Delete() => IsDeleted = true;
+        public void Restore() => IsDeleted = false;
     }
 }
