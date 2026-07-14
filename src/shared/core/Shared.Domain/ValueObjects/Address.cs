@@ -26,17 +26,7 @@ namespace Shared.Domain.ValueObjects
         public string? Building { get; }
         public string? Apartment { get; }
 
-        private Address(string postalCode, string region, string city, string street)
-        {
-            PostalCode = postalCode;
-            Region = region;
-            City = city;
-            Street = street;
-            Building = null;
-            Apartment = null;
-        }
-
-        // Конструктор делаем приватным, чтобы создание шло только через фабричный метод Create
+        private Address() { }
         private Address(string postalCode, string region, string city, string street, string? building, string? apartment)
         {
             PostalCode = postalCode;
