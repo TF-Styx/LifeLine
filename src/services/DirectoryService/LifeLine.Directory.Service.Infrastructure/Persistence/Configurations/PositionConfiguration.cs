@@ -35,6 +35,10 @@ namespace LifeLine.Directory.Service.Infrastructure.Persistence.Configurations
             builder.Property(x => x.DepartmentId)
                    .HasColumnName("DepartmentId")
                    .HasConversion(inDB => inDB.Value, outDB => DepartmentId.Create(outDB));
+
+            builder.Property(x => x.IsDeleted)
+                   .HasColumnName("IsDeleted")
+                   .HasDefaultValue(false);
         }
     }
 }
