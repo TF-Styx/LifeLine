@@ -98,6 +98,16 @@
                                                Text="{Binding HospitalProp.Street, 
                                                               UpdateSourceTrigger=PropertyChanged}" 
                                                Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <!-- Строение -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Строение" Margin="0 0 0 5"
+                                               Text="{Binding HospitalProp.Building, 
+                                                              UpdateSourceTrigger=PropertyChanged}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
+                        <!-- Апартаменты -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Апартаменты" Margin="0 0 0 0"
+                                               Text="{Binding HospitalProp.Apartment, 
+                                                              UpdateSourceTrigger=PropertyChanged}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
                     </StackPanel>
                 </Grid>
             </ScrollViewer>

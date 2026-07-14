@@ -4,7 +4,7 @@ using Shared.Contracts.Request.DirectoryService.Position;
 using Shared.Contracts.Response.DirectoryService;
 using Shared.WPF.Commands;
 using Shared.WPF.ViewModels.Abstract;
-using System.Windows.Forms;
+using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Position
 {
@@ -26,6 +26,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Positi
             CloseEditPanelCommand = new RelayCommand(Execute_CloseEditPanelCommand);
         }
 
+        private string? _editingId;
+
         // Property
         private PositionDisplay? _positionProp;
         public PositionDisplay? PositionProp
@@ -44,6 +46,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Positi
         {
             PositionProp = new PositionDisplay(new PositionResponse(string.Empty, string.Empty, string.Empty));
 
+            _editingId = null;
+
             PositionProp.PropertyChanged += (s, e) =>
             {
                 CreatePositionCommandAsync?.RaiseCanExecuteChanged();
@@ -60,14 +64,18 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Positi
                 return;
             }
 
-            PositionProp.Name = display.Name;
-            PositionProp.Description = display.Description;
+            _editingId = display.PositionId;
+
+            PositionProp!.Name = display.Name;
+            PositionProp!.Description = display.Description;
         }
 
         public void ClearPositionForm()
         {
             PositionProp!.Name = string.Empty;
             PositionProp!.Description = string.Empty;
+
+            _editingId = null;
         }
 
         public Action<PositionDisplay>? PositionSaved;
@@ -75,17 +83,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Positi
         public RelayCommandAsync CreatePositionCommandAsync { get; private set; }
         private async Task Execute_CreatePositionCommandAsync()
         {
-            if (PositionProp == null)
+            if (PositionProp == null || _stateService.Department == null)
             {
-                MessageBox.Show("Данные пусты!");
+                MessageBox.Show("Данные пусты или отдел не выбран!");
                 return;
             }
 
-            if (_stateService.Department == null)
-            {
-                MessageBox.Show("Отдел не выбран!");
-                return;
-            }
             var request = new CreatePositionRequest(PositionProp.Name, PositionProp.Description);
 
             var result = await _positionApiServiceFactory.Create(_stateService.Department.Id).AddAsync<CreatePositionRequest, string>(request);
@@ -114,27 +117,15 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Positi
         public RelayCommandAsync UpdatePositionCommandAsync { get; private set; }
         private async Task Execute_UpdatePositionCommandAsync()
         {
-            if (PositionProp == null)
+            if (PositionProp == null || _stateService.Department == null || string.IsNullOrWhiteSpace(_editingId))
             {
-                MessageBox.Show("Данные пусты!");
-                return;
-            }
-
-            if (_stateService.Department == null)
-            {
-                MessageBox.Show("Отдел не выбран!");
-                return;
-            }
-
-            if (_stateService.Position == null)
-            {
-                MessageBox.Show("Должность не выбрана!");
+                MessageBox.Show("Данные пусты, или не выбран отдел/должность!");
                 return;
             }
 
             var request = new UpdatePositionRequest(PositionProp.Name, PositionProp.Description);
 
-            var result = await _positionApiServiceFactory.Create(_stateService.Department.Id).UpdateAsync(_stateService.Position.Id, request);
+            var result = await _positionApiServiceFactory.Create(_stateService.Department.Id).UpdateAsync(_editingId, request);
 
             if (result.IsFailure)
             {
@@ -142,7 +133,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Positi
                 return;
             }
 
-            var newDisplay = new PositionDisplay(new PositionResponse(_stateService.Position.Id, PositionProp.Name, PositionProp.Description));
+            var newDisplay = new PositionDisplay(new PositionResponse(_editingId, PositionProp.Name, PositionProp.Description));
 
             PositionSaved?.Invoke(newDisplay);
 
@@ -152,9 +143,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital.Positi
         }
         private bool CanExecute_UpdatePositionCommandAsync()
             => PositionProp != null &&
-               !string.IsNullOrWhiteSpace(_stateService.Hospital?.Id) &&
+               !string.IsNullOrWhiteSpace(_editingId) &&
                !string.IsNullOrWhiteSpace(_stateService.Branch?.Id) &&
                !string.IsNullOrWhiteSpace(_stateService.Department?.Id) &&
+               !string.IsNullOrWhiteSpace(_stateService.Position?.Id) &&
                !string.IsNullOrWhiteSpace(PositionProp?.Name);
 
         public Action? OnCloseRequested;

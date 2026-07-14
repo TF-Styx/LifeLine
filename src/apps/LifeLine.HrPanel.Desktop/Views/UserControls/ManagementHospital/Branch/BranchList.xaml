@@ -106,6 +106,8 @@
                                                     <TextBlock Text="{Binding Region, StringFormat=Регион: {0}}"/>
                                                     <TextBlock Text="{Binding City, StringFormat=Город: {0}}"/>
                                                     <TextBlock Text="{Binding Street, StringFormat=Улица: {0}}"/>
+                                                    <TextBlock Text="{Binding Building, StringFormat=Строение: {0}}"/>
+                                                    <TextBlock Text="{Binding Apartment, StringFormat=Апартаменты: {0}}"/>
                                                 </StackPanel>
                                             </Button.ToolTip>
                                         </Button>
@@ -168,6 +170,14 @@
                                         <DockPanel Margin="0 0 0 0">
                                             <TextBlock Text="{Binding Street}" DockPanel.Dock="Right"/>
                                             <TextBlock Text="Улица"/>
+                                        </DockPanel>
+                                        <DockPanel Margin="0 0 0 0">
+                                            <TextBlock Text="{Binding Building}" DockPanel.Dock="Right"/>
+                                            <TextBlock Text="Строение"/>
+                                        </DockPanel>
+                                        <DockPanel Margin="0 0 0 0">
+                                            <TextBlock Text="{Binding Apartment}" DockPanel.Dock="Right"/>
+                                            <TextBlock Text="Апартаменты"/>
                                         </DockPanel>
                                     </StackPanel>
                                 </StackPanel>

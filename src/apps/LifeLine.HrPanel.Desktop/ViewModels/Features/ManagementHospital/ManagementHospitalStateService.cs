@@ -10,6 +10,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital
         public event Action<string?>? HospitalContextChanged;
         public void SetSelectedHospital(HospitalResponse value)
         {
+            if (Hospital?.Id == value.Id)
+                return;
+
             Hospital = value;
             HospitalContextChanged?.Invoke(value.Id);
 
@@ -19,6 +22,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital
         }
         public void ClearHospital()
         {
+            if (Hospital == null)
+                return;
+
             Hospital = null;
             HospitalContextChanged?.Invoke(null);
 
@@ -31,6 +37,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital
         public event Action<string?>? BranchContextChanged;
         public void SetSelectedBranch(BranchResponse value)
         {
+            if (Branch?.Id == value.Id)
+                return;
+
             Branch = value;
             BranchContextChanged?.Invoke(value.Id);
 
@@ -39,6 +48,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital
         }
         public void ClearBranch()
         {
+            if (Branch == null)
+                return;
+
             Branch = null;
             BranchContextChanged?.Invoke(null);
 
@@ -50,6 +62,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital
         public event Action<string?>? DepartmentContextChanged;
         public void SetSelectedDepartment(DepartmentResponse value)
         {
+            if (Department?.Id == value.Id)
+                return;
+
             Department = value;
             DepartmentContextChanged?.Invoke(value.Id);
 
@@ -57,6 +72,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital
         }
         public void ClearDepartment()
         {
+            if (Department == null)
+                return;
+
             Department = null;
             DepartmentContextChanged?.Invoke(null);
 
@@ -67,12 +85,18 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementHospital
         public event Action<string?>? PositionContextChanged;
         public void SetSelectedPosition(PositionResponse value)
         {
+            if (Position?.Id == value.Id)
+                return;
+
             Position = value;
 
             PositionContextChanged?.Invoke(value.Id);
         }
         public void ClearPosition()
         {
+            if (Position == null)
+                return;
+
             Position = null;
 
             PositionContextChanged?.Invoke(null);

@@ -19,6 +19,8 @@ namespace LifeLine.Directory.Service.Application.Features.Hospitals.Update
         string PostalCode, 
         string Region, 
         string City, 
-        string Street
+        string Street,
+        string? Building,
+        string? Apartment
     );
 }

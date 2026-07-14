@@ -25,14 +25,14 @@ namespace LifeLine.Directory.Service.Application.Features.Departments.Positions.
             var positionExists = department.Positions.Any(x => x.Id == request.PositionId);
 
             if (!positionExists)
-                return new Error(ErrorCode.NotFound, "Должность не найдена в данном департаменте!");
+                return Error.NotFound("Должность не найдена в данном департаменте!");
 
             var hasActiveAssignmentResult = await service.HasActiveAssignmentsToPositionAsync(request.PositionId, cancellationToken);
 
             if (hasActiveAssignmentResult.IsFailure)
                 return new Error(AppErrors.ExistDependentData, "Невозможно удалить должность: существуют активные назначения сотрудников!");
 
-            department.RemovePosition(request.PositionId);
+            department.DeletePosition(request.PositionId);
 
             await context.SaveChangesAsync(cancellationToken);
 

@@ -4,5 +4,5 @@ using Terminex.Common.Primitives;
 
 namespace LifeLine.Directory.Service.Application.Features.Branches.Delete
 {
-    public sealed record DeleteBranchCommand(Guid DepartmentId) : IRequest<Result<Nothing>>;
+    public sealed record DeleteBranchCommand(Guid Id) : IRequest<Result<Nothing>>;
 }
