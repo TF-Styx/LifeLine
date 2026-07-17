@@ -25,6 +25,7 @@ using LifeLine.HrPanel.Desktop.Services.Document.DocumentSave;
 using LifeLine.HrPanel.Desktop.Services.FilePreview;
 using LifeLine.HrPanel.Desktop.Services.GeneratePdf;
 using LifeLine.HrPanel.Desktop.ViewModels.Features;
+using LifeLine.HrPanel.Desktop.Views.UserControls;
 using Shared.Contracts.Request.EmployeeService.Assignment;
 using Shared.Contracts.Request.EmployeeService.ContactInformation;
 using Shared.Contracts.Request.EmployeeService.EducationDocument;
@@ -43,6 +44,7 @@ using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
 using System.Windows;
 using Terminex.Common.Results;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 {
@@ -635,30 +637,27 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public ObservableCollection<DocumentTypeDisplay> DocumentTypes { get; private init; } = [];
         private async Task GetAllDocumentTypeAsync()
         {
-            var listResponse = await _documentTypeReadOnlyService.GetAllAsync();
+            var documentTypes = await _documentTypeReadOnlyService.GetAllAsync();
 
-            foreach (var item in listResponse)
-                DocumentTypes.Add(new DocumentTypeDisplay(item));
+            DocumentTypes.Load([.. documentTypes.Select(documentType => new DocumentTypeDisplay(documentType))]);
         }
 
         // ADMISSION STATUS
         public ObservableCollection<AdmissionStatusDisplay> AdmissionStatuses { get; private init; } = [];
         private async Task GetAllAdmissionStatusAsync()
         {
-            var listResponse = await _admissionStatusReadOnlyService.GetAllAsync();
+            var admissionStatuses = await _admissionStatusReadOnlyService.GetAllAsync();
 
-            foreach (var item in listResponse)
-                AdmissionStatuses.Add(new AdmissionStatusDisplay(item));
+            AdmissionStatuses.Load([.. admissionStatuses.Select(admissionStatus => new AdmissionStatusDisplay(admissionStatus))]);
         }
 
         // PERMIT TYPE
         public ObservableCollection<PermitTypeDisplay> PermitTypes { get; private init; } = [];
         private async Task GetAllPermitTypeAsync()
         {
-            var listResponse = await _permitTypeReadOnlyService.GetAllAsync();
+            var permitTypes = await _permitTypeReadOnlyService.GetAllAsync();
 
-            foreach (var item in listResponse)
-                PermitTypes.Add(new PermitTypeDisplay(item));
+            PermitTypes.Load([.. permitTypes.Select(permitType => new PermitTypeDisplay(permitType))]);
         }
 
         // EDUCATION LEVEL
@@ -675,10 +674,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public ObservableCollection<EmployeeTypeDisplay> EmployeeTypes { get; private init; } = [];
         private async Task GetAllEmployeeTypeAsync()
         {
-            var listResponse = await _employeeTypeReadOnlyService.GetAllAsync();
+            var employeeTypes = await _employeeTypeReadOnlyService.GetAllAsync();
 
-            foreach (var item in listResponse)
-                EmployeeTypes.Add(new EmployeeTypeDisplay(item));
+            EmployeeTypes.Load([.. employeeTypes.Select(employeeType => new EmployeeTypeDisplay(employeeType))]);
         }
 
         // DEPARTMENT
@@ -702,19 +700,18 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         public ObservableCollection<HospitalDisplay> Hospitals { get; private init; } = [];
         private async Task GetAllHospitalAsync()
         {
-            var hpspitals = await _hospitalReadOnlyService.GetAllAsync();
+            var hospitals = await _hospitalReadOnlyService.GetAllAsync();
 
-            Hospitals.Load([.. hpspitals.Select(hospital => new HospitalDisplay(hospital))]);
+            Hospitals.Load([.. hospitals.Select(hospital => new HospitalDisplay(hospital))]);
         }
 
         // STATUS
         public ObservableCollection<StatusDisplay> Statuses { get; private init; } = [];
         private async Task GetAllStatusAsync()
         {
-            var listResponse = await _statusReadOnlyService.GetAllAsync();
+            var statuses = await _statusReadOnlyService.GetAllAsync();
 
-            foreach (var item in listResponse)
-                Statuses.Add(new StatusDisplay(item));
+            Statuses.Load([.. statuses.Select(status => new StatusDisplay(status))]);
         }
 
         // SPECIALTY
@@ -723,18 +720,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
         {
             var specialties = await _specialtyReadOnlyService.GetAllAsync();
 
-            foreach (var item in specialties)
-                SpecialtiesCollection.Add(new SpecialtyDisplay(item));
+            SpecialtiesCollection.Load([.. specialties.Select(specialty => new SpecialtyDisplay(specialty))]);
         }
 
         // MANAGER
         public ObservableCollection<ManagerDisplay> Managers { get; private init; } = [];
         private async Task GetAllManagerAsync()
         {
-            var listResponse = await _employeeService.GetAllAsync();
+            var managers = await _employeeService.GetAllAsync();
 
-            foreach (var item in listResponse)
-                Managers.Add(new ManagerDisplay(item));
+            Managers.Load([.. managers.Select(manager => new ManagerDisplay(manager))]);
         }
 
         #endregion

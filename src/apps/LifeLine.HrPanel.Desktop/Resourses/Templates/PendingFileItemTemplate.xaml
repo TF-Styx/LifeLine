@@ -1,0 +1,86 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:models="clr-namespace:LifeLine.HrPanel.Desktop.Models">
+
+    <!--<ListView ItemsSource="{Binding PersonalDocuments.PendingFilePaths}"
+          ItemTemplate="{StaticResource PendingFileItemTemplate}"/>-->
+
+    <DataTemplate x:Key="PendingFileItemTemplate" DataType="{x:Type models:PendingFileItem}">
+        <Border Background="{StaticResource App.SecondColor}" CornerRadius="6">
+            <Border BorderBrush="#386FD6" 
+                    Background="{StaticResource App.MainColor}" 
+                    BorderThickness="2" 
+                    CornerRadius="10" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" 
+                    Margin="5">
+                <StackPanel>
+                    <Border BorderThickness="0 0 0 2" BorderBrush="#386FD6">
+                        <StackPanel>
+                            <Grid Width="150" Height="150" Margin="5">
+                                <Image Source="{Binding Thumbnail}" 
+                                       Visibility="{Binding Thumbnail, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                                <TextBlock Text="{Binding FileExtension}"
+                                           FontSize="24"
+                                           FontWeight="Bold"
+                                           Foreground="#AAAAAA"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Visibility="{Binding Thumbnail, Converter={StaticResource NotNullToVisibilityConverter}}"/>
+                            </Grid>
+
+                            <TextBlock Text="{Binding Index, StringFormat='#{0}'}"
+                                       HorizontalAlignment="Center" 
+                                       FontSize="18" 
+                                       Margin="0 0 0 2"
+                                       Foreground="White"
+                                       FontWeight="Bold"/>
+                            <TextBlock Text="{Binding FileName}"
+                                       HorizontalAlignment="Center" 
+                                       FontSize="12" 
+                                       Margin="0 0 0 2"
+                                       Foreground="#AAAAAA"
+                                       TextTrimming="CharacterEllipsis"
+                                       MaxWidth="140"/>
+                            <TextBlock Text="{Binding FileSizeFormatted}"
+                                       HorizontalAlignment="Center" 
+                                       FontSize="10" 
+                                       Margin="0 0 0 5"
+                                       Foreground="#666666"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Кнопки управления -->
+                    <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 2 0 2">
+                        <Button Width="25" 
+                                Background="Transparent" 
+                                BorderThickness="0"
+                                Margin="0 0 10 0"
+                                Command="{Binding DataContext.PreviewCommand, 
+                                                  RelativeSource={RelativeSource AncestorType=ListView}}"
+                                CommandParameter="{Binding }"
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource Magnifier}"/>
+                        </Button>
+                        <Button Width="25" 
+                                Background="Transparent" 
+                                BorderThickness="0"
+                                Foreground="#F06870"
+                                Margin="10 0 0 0"
+                                Command="{Binding DataContext.RemovePendingFileCommand, 
+                                                  RelativeSource={RelativeSource AncestorType=ListView}}"
+                                CommandParameter="{Binding }"
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource Trash}"/>
+                            <Button.ToolTip>
+                                <TextBlock Text="Удалить"/>
+                            </Button.ToolTip>
+                        </Button>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+    </DataTemplate>
+    
+</ResourceDictionary>
