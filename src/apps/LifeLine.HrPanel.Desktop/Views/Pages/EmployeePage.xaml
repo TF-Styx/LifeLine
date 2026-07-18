@@ -9,6 +9,8 @@
       xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
       xmlns:hrus="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls" 
       xmlns:enum="clr-namespace:LifeLine.HrPanel.Desktop.Enums"
+      xmlns:personaldocument="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.PersonalDocument"
+      xmlns:personaldocumentVM="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.PersonalDocument"
       d:DataContext="{d:DesignInstance Type=pages:EmployeePageVM}"
       mc:Ignorable="d" 
       d:Height="auto" d:Width="1500"
@@ -23,6 +25,10 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/Button.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate DataType="{x:Type personaldocumentVM:PersonalDocumentManagementVM}">
+                <personaldocument:PersonalDocumentManagement/>
+            </DataTemplate>
 
             <Style TargetType="ListView">
                 <Setter Property="Background" Value="Transparent"/>
@@ -179,7 +185,8 @@
 
                     <Expander Header="Персональные документы" IsExpanded="True"
                               Margin="5" Style="{StaticResource ModernExpanderStyle}">
-                        <hrus:PersonalDocuments Action="{Binding ActionProp}"/>
+                        <!--<hrus:PersonalDocuments Action="{Binding ActionProp}"/>-->
+                        <personaldocument:PersonalDocumentManagement/>
                     </Expander>
 
                     <Expander Header="Документы об образовании" IsExpanded="True"

@@ -4,9 +4,96 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.EducationDocument"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:Height="auto" 
+             d:Width="800">
+
+    <b:Interaction.Behaviors>
+        <behaviors:AsyncInitializeBehavior/>
+    </b:Interaction.Behaviors>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
+        <DockPanel>
+            <Button HorizontalAlignment="Right" 
+                    DockPanel.Dock="Top"
+                    VerticalAlignment="Top" 
+                    Foreground="#F06870" 
+                    Width="25" Height="25" 
+                    Command="{Binding CloseEditPanelCommand}"
+                    Style="{StaticResource Button.Icon}">
+                <Control Template="{StaticResource Close1}"/>
+            </Button>
+
+            <StackPanel DockPanel.Dock="Top" Margin="0 10 0 0">
+                <UniformGrid Columns="2" Margin="0 0 0 10">
+                    <ComboBox ItemsSource="{Binding DocumentTypes}" 
+                              SelectedItem="{Binding EducationDocuments.Display.DocumentType}"
+                              DisplayMemberPath="Name" 
+                              Margin="0 0 5 0"/>
+
+                    <ComboBox ItemsSource="{Binding EducationLevels}" 
+                              SelectedItem="{Binding EducationDocuments.Display.EducationLevel}"
+                              DisplayMemberPath="Name" 
+                              Margin="5 0 0 0"/>
+                </UniformGrid>
+
+                <UniformGrid Columns="2" Margin="0 0 0 10">
+                    <cc:PlaceHolderTextBox PlaceHolder="Номер документа*" Margin="0 0 5 0" 
+                                           Text="{Binding EducationDocuments.Display.DocumentNumber}" 
+                                           Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                    <DatePicker SelectedDate="{Binding EducationDocuments.Display.IssuedDate}" Margin="5 0 0 0"/>
+                </UniformGrid>
+
+                <UniformGrid Columns="2" Margin="0 0 0 10">
+                    <cc:PlaceHolderTextBox PlaceHolder="Наименование организации*" Margin="0 0 5 0"
+                                           Text="{Binding EducationDocuments.Display.OrganizationName}" 
+                                           Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                    <cc:PlaceHolderTextBox PlaceHolder="Наименование квалификации" Margin="5 0 0 0"
+                                           Text="{Binding EducationDocuments.Display.QualificationAwardedName}" 
+                                           Style="{StaticResource TextBox.PlaceHolder}"/>
+                </UniformGrid>
+
+                <UniformGrid Columns="2" Margin="0 0 0 10">
+                    <cc:PlaceHolderTextBox PlaceHolder="Наименование специальности" Margin="0 0 5 0"
+                                           Text="{Binding EducationDocuments.Display.SpecialtyName}" 
+                                           Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                    <cc:PlaceHolderTextBox PlaceHolder="Наименование программы" Margin="5 0 0 0"
+                                           Text="{Binding EducationDocuments.Display.ProgramName}" 
+                                           Style="{StaticResource TextBox.PlaceHolder}"/>
+                </UniformGrid>
+                
+                <cc:PlaceHolderTextBox Grid.Column="1" PlaceHolder="Количество часов"
+                                       Text="{Binding EducationDocuments.Display.TotalHours}" 
+                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+            </StackPanel>
+
+            <StackPanel Margin="0 5 0 0" VerticalAlignment="Bottom">
+                <Button Content="Сохранить" Height="40"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding CreateBranchCommandAsync}"
+                        Style="{StaticResource App.Button}" Margin="0 0 0 0"/>
+
+                <Button Content="Обновить" Height="40"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding UpdateBranchCommandAsync}"
+                        Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+            </StackPanel>
+        </DockPanel>
+    </Border>
 </UserControl>

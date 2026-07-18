@@ -4,9 +4,129 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.AssignmentContract"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:Height="auto" 
+             d:Width="800">
+
+    <b:Interaction.Behaviors>
+        <behaviors:AsyncInitializeBehavior/>
+    </b:Interaction.Behaviors>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
+        <DockPanel>
+            <Button HorizontalAlignment="Right" 
+                    DockPanel.Dock="Top"
+                    VerticalAlignment="Top" 
+                    Foreground="#F06870" 
+                    Width="25" Height="25" 
+                    Command="{Binding CloseEditPanelCommand}"
+                    Style="{StaticResource Button.Icon}">
+                <Control Template="{StaticResource Close1}"/>
+            </Button>
+
+            <UniformGrid Columns="2" DockPanel.Dock="Top">
+                <!-- Назначение -->
+                <DockPanel Margin="0 0 5 0">
+                    <TextBlock Text="Назначение" DockPanel.Dock="Top" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 0 0 10"/>
+
+                    <UniformGrid Rows="4" Margin="0 0 0 5">
+                        <UniformGrid Columns="2" Margin="0 0 0 10" VerticalAlignment="Center">
+                            <ComboBox ItemsSource="{Binding Hospitals}" 
+                                      SelectedItem="{Binding AssigmentsContracts.Display.Hospital}"
+                                      DisplayMemberPath="Name" 
+                                      Margin="0 0 5 0"/>
+
+                            <ComboBox ItemsSource="{Binding AssigmentsContracts.Branches}" 
+                                      SelectedItem="{Binding AssigmentsContracts.Display.Branch}"
+                                      DisplayMemberPath="Name" 
+                                      Margin="5 0 0 0"/>
+                        </UniformGrid>
+
+                        <UniformGrid Columns="2" Margin="0 0 0 10" VerticalAlignment="Center">
+                            <ComboBox ItemsSource="{Binding Hospitals}" 
+                                      SelectedItem="{Binding AssigmentsContracts.Display.Hospital}"
+                                      DisplayMemberPath="Name" 
+                                      Margin="0 0 5 0"/>
+
+                            <ComboBox ItemsSource="{Binding AssigmentsContracts.Branches}" 
+                                      SelectedItem="{Binding AssigmentsContracts.Display.Branch}"
+                                      DisplayMemberPath="Name" 
+                                      Margin="5 0 0 0"/>
+                        </UniformGrid>
+
+                        <UniformGrid Columns="2" Margin="0 0 0 10" VerticalAlignment="Center">
+                            <ComboBox ItemsSource="{Binding Managers}" 
+                                      SelectedItem="{Binding AssigmentsContracts.Display.Manager}"
+                                      DisplayMemberPath="Name" 
+                                      Margin="0 0 5 0"/>
+
+                            <ComboBox ItemsSource="{Binding Statuses}" 
+                                      SelectedItem="{Binding AssigmentsContracts.Display.Status}"
+                                      DisplayMemberPath="Name" 
+                                      Margin="5 0 0 0"/>
+                        </UniformGrid>
+
+                        <UniformGrid Columns="2" Margin="0 0 0 0" VerticalAlignment="Center">
+                            <DatePicker Grid.Column="0" SelectedDate="{Binding AssigmentsContracts.Display.HireDate}" Margin="0 0 5 0"/>
+
+                            <DatePicker Grid.Column="1" SelectedDate="{Binding AssigmentsContracts.Display.TerminationDate}" Margin="5 0 0 0"/>
+                        </UniformGrid>
+                    </UniformGrid>
+                </DockPanel>
+
+                <!-- Контракт -->
+                <DockPanel Margin="5 0 0 0">
+                    <TextBlock Text="Контракт" DockPanel.Dock="Top" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 0 0 10"/>
+
+                    <UniformGrid Rows="4" Margin="0 0 0 5">
+                        <UniformGrid Columns="2" Margin="0 0 0 10" VerticalAlignment="Center">
+                            <ComboBox ItemsSource="{Binding EmployeeTypes}"
+                                      SelectedItem="{Binding AssigmentsContracts.Display.EmployeeType}"
+                                      DisplayMemberPath="Name" 
+                                      Margin="0 0 5 0"/>
+
+                            <cc:PlaceHolderTextBox PlaceHolder="Номер контракта*" Margin="5 0 0 0"
+                                                   Text="{Binding AssigmentsContracts.Display.ContractNumber, UpdateSourceTrigger=PropertyChanged}" 
+                                                   Style="{StaticResource TextBox.PlaceHolder}"/>
+                        </UniformGrid>
+
+                        <UniformGrid Columns="2" Margin="0 0 0 0" VerticalAlignment="Center">
+                            <DatePicker Grid.Column="0" SelectedDate="{Binding AssigmentsContracts.Display.StartDate}" Margin="0 0 5 0"/>
+
+                            <DatePicker Grid.Column="1" SelectedDate="{Binding AssigmentsContracts.Display.EndDate}" Margin="5 0 0 0"/>
+                        </UniformGrid>
+
+                        <cc:PlaceHolderTextBox PlaceHolder="Зарплата*" Margin="0 10 0 0" VerticalAlignment="Center"
+                                               Text="{Binding AssigmentsContracts.Display.Salary}" 
+                                               Style="{StaticResource TextBox.PlaceHolder}"/>
+                    </UniformGrid>
+                </DockPanel>
+            </UniformGrid>
+
+            <StackPanel Margin="0 5 0 0" VerticalAlignment="Bottom">
+                <Button Content="Сохранить" Height="40"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding CreateBranchCommandAsync}"
+                        Style="{StaticResource App.Button}" Margin="0 0 0 0"/>
+
+                <Button Content="Обновить" Height="40"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding UpdateBranchCommandAsync}"
+                        Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+            </StackPanel>
+        </DockPanel>
+    </Border>
 </UserControl>

@@ -4,9 +4,193 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.AssignmentContract"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF"
+             xmlns:helpers="clr-namespace:Shared.WPF.Resources.Attachables;assembly=Shared.WPF"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:Height="450" 
+             d:Width="800">
+
+    <b:Interaction.Behaviors>
+        <behaviors:AsyncInitializeBehavior/>
+    </b:Interaction.Behaviors>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
+        <DockPanel>
+            <DockPanel DockPanel.Dock="Top" Margin="10 0">
+                <DockPanel DockPanel.Dock="Bottom" Margin="0 5 0 0">
+                    <DockPanel DockPanel.Dock="Right">
+                        <!-- Фильтр -->
+                        <Button Height="30" Foreground="White"
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource Filter}"/>
+                        </Button>
+                        <!-- Обновить -->
+                        <Button Height="30" Margin="5 0 0 0" Foreground="White"
+                                Command="{Binding RefreshCommandAsync}" 
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource Refresh}"/>
+                        </Button>
+                        <!-- Добавить -->
+                        <Button Height="30" Margin="5 0 0 0"
+                                Command="{Binding EditAssignmentContractCommand}" 
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource AddIcon}"/>
+                        </Button>
+                    </DockPanel>
+                    <DockPanel HorizontalAlignment="Stretch" Margin="0 0 5 0">
+                        <!-- Сортировка -->
+                        <ComboBox DockPanel.Dock="Right"
+                                  DisplayMemberPath="Name" 
+                                  MinWidth="200"/>
+                        <!-- Поиск -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Поиск документа" Margin="0 0 10 0" 
+                                               Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" 
+                                               helpers:TextBoxHelper.Icon="{StaticResource Search}" 
+                                               Style="{StaticResource TextBox.PlaceHolder.WithIcon}"
+                                               Background="{StaticResource App.MainColor}"/>
+                    </DockPanel>
+                </DockPanel>
+            </DockPanel>
+
+            <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
+                <ListView ItemsSource="{Binding AssignmentsContracts}" 
+                          SelectedItem="{Binding AssignmentContract}"
+                          Style="{StaticResource Custom.ListView}"
+                          ItemContainerStyle="{StaticResource Custom.ListViewItem}"
+                          d:ItemsSource="{d:SampleData ItemCount=4}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="5" Background="{StaticResource App.SecondColor}" CornerRadius="6" BorderBrush="#FF5739B1" BorderThickness="1">
+                                <DockPanel Margin="10">
+                                    <!--Кнопки управления-->
+                                    <UniformGrid Rows="3" DockPanel.Dock="Right" VerticalAlignment="Stretch">
+                                        <!-- Информация -->
+                                        <Button Grid.Row="1" Width="20" Margin="0 0 0 5"
+                                                Foreground="#FF5B8FEF" 
+                                                Style="{StaticResource Button.Icon}">
+                                            <Control Template="{StaticResource Info}"/>
+                                            <Button.ToolTip>
+                                                <StackPanel>
+                                                    <TextBlock Text="Назначение"/>
+                                                    <TextBlock Text="{Binding Branch.Name, StringFormat=Филиал: {0}}"/>
+                                                    <TextBlock Text="{Binding Department.Name, StringFormat=Отдел: {0}}"/>
+                                                    <TextBlock Text="{Binding Position.Name, StringFormat=Должность: {0}}"/>
+                                                    <TextBlock Text="{Binding Manager.Name, StringFormat=Мэнеджер: {0}}"/>
+                                                    <TextBlock Text="{Binding HireDate, StringFormat=Дата найма: {0}}"/>
+                                                    <TextBlock Text="{Binding TerminationDate, StringFormat=Дата расторжения договора: {0}}"/>
+                                                    <TextBlock Text="{Binding Status.Name, StringFormat=Статус: {0}}"/>
+                                                    <TextBlock Text="{Binding FilePath.Name, StringFormat=Файл: {0}}"/>
+
+                                                    <TextBlock Text="Контракт" Margin="0 10 0 0"/>
+                                                    <TextBlock Text="{Binding EmployeeType.Name, StringFormat=Тип трудоустройства: {0}}"/>
+                                                    <TextBlock Text="{Binding ContractNumber, StringFormat=Номер контракта: {0}}"/>
+                                                    <TextBlock Text="{Binding StartDate, StringFormat=Начало: {0}}"/>
+                                                    <TextBlock Text="{Binding EndDate, StringFormat=Конец: {0}}"/>
+                                                    <TextBlock Text="{Binding Salary, StringFormat=Зарплата: {0}}"/>
+                                                </StackPanel>
+                                            </Button.ToolTip>
+                                        </Button>
+
+                                        <!-- Редактирование -->
+                                        <Button Grid.Row="2" Width="20" Margin="0 0 0 5"
+                                                Foreground="#c7d22d" ToolTip="Редактирование"
+                                                Command="{Binding DataContext.EditBranchCommand, 
+                                                                  RelativeSource={RelativeSource AncestorType=ListView}}" 
+                                                CommandParameter="{Binding }"
+                                                Style="{StaticResource Button.Icon}">
+                                            <Control Template="{StaticResource Pencil}"/>
+                                        </Button>
+
+                                        <!-- Удалить -->
+                                        <Button Grid.Row="3" Width="20" Margin="0 0 0 0"
+                                                Foreground="#F06870" ToolTip="Удалить"
+                                                Command="{Binding DataContext.DeleteBranchCommandAsync, 
+                                                                  RelativeSource={RelativeSource AncestorType=ListView}}" 
+                                                CommandParameter="{Binding }" 
+                                                Style="{StaticResource Button.Icon}">
+                                            <Control Template="{StaticResource Trash1}"/>
+                                        </Button>
+                                    </UniformGrid>
+
+                                    <UniformGrid Columns="2" Margin="0 0 5 0">
+                                        <!-- Назначение -->
+                                        <UniformGrid Rows="5" VerticalAlignment="Center" Margin="0 0 5 0">
+                                            <TextBlock Text="Назначение" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Branch.Name, StringFormat=Филиал: {0}}" 
+                                                       ToolTip="{Binding Branch.Name, StringFormat=Филиал: {0}}" 
+                                                       VerticalAlignment="Center" TextAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+
+                                            <TextBlock Margin="0 5 0 5"
+                                                       Text="{Binding Department.Name, StringFormat=Отдел: {0}}" 
+                                                       ToolTip="{Binding Department.Name, StringFormat=Отдел: {0}}" 
+                                                       VerticalAlignment="Center" TextAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+
+                                            <TextBlock Margin="0 5 0 5"
+                                                       Text="{Binding Position.Name, StringFormat=Должность: {0}}" 
+                                                       ToolTip="{Binding Position.Name, StringFormat=Должность: {0}}" 
+                                                       VerticalAlignment="Center" TextAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+
+                                            <TextBlock Text="{Binding Status.Name, StringFormat=Статус: {0}}" 
+                                                       ToolTip="{Binding Status.Name, StringFormat=Статус: {0}}" 
+                                                       VerticalAlignment="Center" TextAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                        </UniformGrid>
+
+                                        <!-- Контракт -->
+                                        <UniformGrid Rows="5" VerticalAlignment="Center" Margin="5 0 0 0">
+                                            <TextBlock Text="Контракт" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                                            
+                                            <TextBlock Text="{Binding ContractNumber, StringFormat=Номер ктонтракта: {0}}" 
+                                                       ToolTip="{Binding ContractNumber, StringFormat=Номер ктонтракта: {0}}" 
+                                                       VerticalAlignment="Center" TextAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+
+                                            <TextBlock Text="{Binding EmployeeType.Name, StringFormat=Тип трудоустройства: {0}}" 
+                                                       ToolTip="{Binding EmployeeType.Name, StringFormat=Тип трудоустройства: {0}}"
+                                                       VerticalAlignment="Center" TextAlignment="Center" Margin="0 5 0 5"
+                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+
+                                            <UniformGrid Columns="2" Margin="0 5 0 5">
+                                                <TextBlock Text="{Binding StartDate, StringFormat=Начало: {0}}" 
+                                                           ToolTip="{Binding StartDate, StringFormat=Начало: {0}}" 
+                                                           VerticalAlignment="Center" TextAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="0 0 5 0"/>
+                                                
+                                                <TextBlock Text="{Binding EndDate, StringFormat=Конец: {0}}" 
+                                                           ToolTip="{Binding EndDate, StringFormat=Конец: {0}}"
+                                                           VerticalAlignment="Center" TextAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5 0 0 0"/>
+                                            </UniformGrid>
+
+                                            <TextBlock Text="{Binding Salary, StringFormat=Зарплата: {0}}" 
+                                                       ToolTip="{Binding Salary, StringFormat=Зарплата: {0}}" 
+                                                       VerticalAlignment="Center" TextAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                        </UniformGrid>
+                                    </UniformGrid>
+                                    
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+        </DockPanel>
+    </Border>
 </UserControl>

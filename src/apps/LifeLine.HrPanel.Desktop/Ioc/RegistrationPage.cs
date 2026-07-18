@@ -22,6 +22,7 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddSingleton<Func<ManagementHospitalPageVM>>(provider => () => provider.GetRequiredService<ManagementHospitalPageVM>());
 
             services.UseHospitalManagement();
+            services.UseEmployeeManagement();
 
             return services;
         }

@@ -5,7 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.Employee" 
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
-             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF"
+             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF"
+             xmlns:helpers="clr-namespace:Shared.WPF.Resources.Attachables;assembly=Shared.WPF"
              mc:Ignorable="d" 
              d:Height="450" 
              d:Width="800">
@@ -27,9 +29,42 @@
     <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
         <DockPanel>
             <DockPanel DockPanel.Dock="Top" Margin="10 0">
-                
+                <DockPanel DockPanel.Dock="Bottom" Margin="0 5 0 0">
+                    <DockPanel DockPanel.Dock="Right">
+                        <!-- Фильтр -->
+                        <Button Height="30" Foreground="White"
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource Filter}"/>
+                        </Button>
+                        <!-- Обновить -->
+                        <Button Height="30" Margin="5 0 0 0" Foreground="White"
+                                Command="{Binding RefreshCommandAsync}" 
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource Refresh}"/>
+                        </Button>
+                        <!-- Добавить -->
+                        <Button Height="30" Margin="5 0 0 0"
+                                Command="{Binding EditEmployeeCommand}" 
+                                Style="{StaticResource Button.Icon}">
+                            <Control Template="{StaticResource AddIcon}"/>
+                        </Button>
+                    </DockPanel>
+                    <DockPanel HorizontalAlignment="Stretch" Margin="0 0 5 0">
+                        <!-- Сортировка -->
+                        <ComboBox DockPanel.Dock="Right"
+                                  DisplayMemberPath="Name" 
+                                  MinWidth="200"/>
+                        <!-- Поиск -->
+                        <cc:PlaceHolderTextBox PlaceHolder="Поиск сотрудника" Margin="0 0 10 0" 
+                                               Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" 
+                                               helpers:TextBoxHelper.Icon="{StaticResource Search}" 
+                                               Style="{StaticResource TextBox.PlaceHolder.WithIcon}"
+                                               Background="{StaticResource App.MainColor}"/>
+                    </DockPanel>
+                </DockPanel>
             </DockPanel>
-            <DockPanel>
+
+            <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
                 <ListView ItemsSource="{Binding Employyes}" 
                           SelectedItem="{Binding Employee}"
                           Style="{StaticResource Custom.ListView}"
@@ -41,9 +76,9 @@
                             <Border Margin="5" Background="{StaticResource App.SecondColor}" CornerRadius="6" BorderBrush="#FF5739B1" BorderThickness="1">
                                 <DockPanel Margin="10">
                                     <!--Кнопки управления-->
-                                    <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center">
+                                    <UniformGrid Rows="3" DockPanel.Dock="Right" VerticalAlignment="Stretch">
                                         <!-- Информация -->
-                                        <Button Width="20" Margin="0 0 0 5" 
+                                        <Button Grid.Row="1" Width="20" Margin="0 0 0 5" 
                                                 Foreground="#FF5B8FEF" 
                                                 Style="{StaticResource Button.Icon}">
                                             <Control Template="{StaticResource Info}"/>
@@ -57,7 +92,7 @@
                                         </Button>
 
                                         <!-- Редактирование -->
-                                        <Button Width="20" Margin="0 0 0 5" 
+                                        <Button Grid.Row="2" Width="20" Margin="0 0 0 5" 
                                                 Foreground="#c7d22d" ToolTip="Редактирование"
                                                 Command="{Binding DataContext.EditBranchCommand, 
                                                                   RelativeSource={RelativeSource AncestorType=ListView}}" 
@@ -67,7 +102,7 @@
                                         </Button>
 
                                         <!-- Удалить -->
-                                        <Button Width="20" Margin="0 0 0 0" 
+                                        <Button Grid.Row="3" Width="20" Margin="0 0 0 0" 
                                                 Foreground="#F06870" ToolTip="Удалить"
                                                 Command="{Binding DataContext.DeleteBranchCommandAsync, 
                                                                   RelativeSource={RelativeSource AncestorType=ListView}}" 
@@ -75,32 +110,63 @@
                                                 Style="{StaticResource Button.Icon}">
                                             <Control Template="{StaticResource Archive}"/>
                                         </Button>
-                                    </StackPanel>
+                                    </UniformGrid>
 
-                                    <DockPanel VerticalAlignment="Center">
+                                    <StackPanel VerticalAlignment="Center" Margin="0 0 5 0">
                                         <DockPanel>
-                                            <Image Width="75" Height="75" DockPanel.Dock="Left" Margin="0 0 10 0" Source="{Binding PersonalPhoto}" 
+                                            <Image Width="120" Height="120" VerticalAlignment="Stretch" DockPanel.Dock="Left" Margin="0 0 10 0" Source="{Binding PersonalPhoto}" 
                                                    d:Source="C:\Users\texno\Documents\Lightshot\Screenshot_4.png"/>
 
                                             <StackPanel>
-                                                <DockPanel DockPanel.Dock="Top" Margin="0 0 0 2.5">
-                                                    <TextBlock Text="{Binding Surname}"/>
-                                                    <TextBlock Text="{Binding Name}" Margin="5 0 5 0"/>
-                                                    <TextBlock Text="{Binding Patronymic}"/>
-                                                </DockPanel>
+                                                <!-- ФИО -->
+                                                <UniformGrid Columns="3" Grid.Row="1" DockPanel.Dock="Top" Margin="0 0 0 2.5">
+                                                    <TextBlock Text="{Binding Surname}" FontSize="18"
+                                                               ToolTip="{Binding Surname, StringFormat=Фамилия: {0}}" Margin="0 0 5 0"
+                                                               VerticalAlignment="Center" TextAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                    
+                                                    <TextBlock Text="{Binding Name}" FontSize="18"
+                                                               ToolTip="{Binding Name, StringFormat=Имя: {0}}" Margin="5 0 5 0"
+                                                               VerticalAlignment="Center" TextAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                    
+                                                    <TextBlock Text="{Binding Patronymic}" FontSize="18"
+                                                               ToolTip="{Binding Patronymic, StringFormat=Отчество: {0}}" Margin="5 0 0 0"
+                                                               VerticalAlignment="Center" TextAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                </UniformGrid>
+                                                
+                                                <!-- Доп информация -->
+                                                <UniformGrid Rows="4" Grid.Row="1" Margin="0 5 0 0">
+                                                    <TextBlock Grid.Row="1" Margin="0 0 0 2.5"
+                                                               Text="{Binding Branch, StringFormat=Филиал: {0}}" 
+                                                               ToolTip="{Binding Branch, StringFormat=Филиал: {0}}"
+                                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                    
+                                                    <TextBlock Grid.Row="2" Margin="0 0 0 2.5"
+                                                               Text="{Binding Department, StringFormat=Отдел: {0}}" 
+                                                               ToolTip="{Binding Department, StringFormat=Отдел: {0}}"
+                                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
 
-                                                <TextBlock Text="{Binding Department}" Margin="0 2.5" d:Text="IT"/>
-                                                <TextBlock Text="{Binding Position}" Margin="0 2.5" d:Text="Разработчик"/>
-                                                <TextBlock Text="{Binding Status}" Margin="0 2.5" d:Text="На работе"/>
+                                                    <TextBlock Grid.Row="3" Margin="0 2.5 0 2.5"
+                                                               Text="{Binding Position, StringFormat=Должность: {0}}" 
+                                                               ToolTip="{Binding Position, StringFormat=Должность: {0}}"
+                                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+
+                                                    <TextBlock Grid.Row="4" Margin="0 2.5 0 0"
+                                                               Text="{Binding Status, StringFormat=Статус: {0}}" 
+                                                               ToolTip="{Binding Status, StringFormat=Статус: {0}}"
+                                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                </UniformGrid>
                                             </StackPanel>
                                         </DockPanel>
-                                    </DockPanel>
+                                    </StackPanel>
                                 </DockPanel>
                             </Border>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-            </DockPanel>
+            </Border>
         </DockPanel>
     </Border>
 

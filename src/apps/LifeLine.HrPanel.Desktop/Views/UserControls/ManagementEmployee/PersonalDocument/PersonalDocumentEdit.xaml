@@ -4,9 +4,90 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.PersonalDocument"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+             xmlns:views="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls"
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF" 
+             xmlns:model="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.PersonalDocument" 
+             xmlns:models="clr-namespace:LifeLine.HrPanel.Desktop.Models"
+             d:DataContext="{d:DesignInstance Type=model:PersonalDocumentEditVM}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:Height="auto" 
+             d:Width="800">
+
+    <b:Interaction.Behaviors>
+        <behaviors:AsyncInitializeBehavior/>
+    </b:Interaction.Behaviors>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
+        <DockPanel>
+            <Button HorizontalAlignment="Right" 
+                    DockPanel.Dock="Top"
+                    VerticalAlignment="Top" 
+                    Foreground="#F06870" 
+                    Width="25" Height="25" 
+                    Command="{Binding CloseEditPanelCommand}"
+                    Style="{StaticResource Button.Icon}">
+                <Control Template="{StaticResource Close1}"/>
+            </Button>
+
+            <StackPanel DockPanel.Dock="Top" Margin="0 10 0 0">
+                <ComboBox ItemsSource="{Binding DocumentTypes}" 
+                          SelectedItem="{Binding Display.DocumentType}" 
+                          DisplayMemberPath="Name"/>
+
+                <UniformGrid Columns="2" Margin="0 10 0 0">
+                    <cc:PlaceHolderTextBox PlaceHolder="Номер*" 
+                                           Margin="0 0 5 0"
+                                           Text="{Binding Display.DocumentNumber}" 
+                                           Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                    <cc:PlaceHolderTextBox PlaceHolder="Серия" 
+                                           Margin="5 0 0 0"
+                                           Text="{Binding Display.DocumentSeries}" 
+                                           Style="{StaticResource TextBox.PlaceHolder}"/>
+                </UniformGrid>
+            </StackPanel>
+
+            <StackPanel DockPanel.Dock="Top">
+                <Button Content="Выбрать скан" 
+                    Width="170" Height="40" 
+                    HorizontalAlignment="Right" Margin="0 10 0 5"
+                    Command="{Binding SelectMultipleCommand}" 
+                    Style="{StaticResource App.Button}"/>
+
+                <!-- Список файлов с DataTemplate -->
+                <ListView ItemsSource="{Binding PendingFilePaths}"
+                          SelectedItem="{Binding PendingFilePath}"
+                          ItemTemplate="{StaticResource PendingFileItemTemplate}"
+                          Style="{StaticResource Custom.ListView}"
+                          ItemContainerStyle="{StaticResource Custom.ListViewItem}"
+                          d:ItemsSource="{d:SampleData ItemCount=4}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                </ListView>
+            </StackPanel>
+
+            <StackPanel Margin="0 10 0 0" VerticalAlignment="Bottom">
+                <Button Content="Сохранить" Height="40"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding CreatePersonalDocumentCommandAsync}"
+                        Style="{StaticResource App.Button}" Margin="0 0 0 0"/>
+
+                <Button Content="Обновить" Height="40"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding UpdatePersonalDocumentCommandAsync}"
+                        Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+            </StackPanel>
+        </DockPanel>
+    </Border>
 </UserControl>
