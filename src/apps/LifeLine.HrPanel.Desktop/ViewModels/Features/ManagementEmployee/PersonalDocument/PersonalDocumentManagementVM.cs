@@ -13,48 +13,44 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
             ListVM = listVM;
             EditVM = editVM;
 
-            //ListVM.RequestEditBranch = OnEditBranchRequested;
-            //ListVM.BranchDeleted += OnBranchDeleted;
+            ListVM.RequestEdit = OnEditRequested;
+            ListVM.ItemDeleted += OnDeleted;
 
-            EditVM.PersonalDocumentSaved+= OnPersonalDocumentSaved;
-            EditVM.OnCloseRequested += CloseEditPanel;
+            EditVM.DocumentSaved += OnDocumentSaved;
+            EditVM.OnClosedRequested += CloseEditPanel;
         }
 
-        private bool _isEditPanelVisiblel;
+        private bool _isEditPanelVisible;
         public bool IsEditPanelVisible
         {
-            get => _isEditPanelVisiblel;
-            set => SetProperty(ref _isEditPanelVisiblel, value);
+            get => _isEditPanelVisible;
+            set => SetProperty(ref _isEditPanelVisible, value);
         }
 
-        private void OnEditPersonalDocumentRequested(PersonalDocumentDisplay? value)
+        private async Task OnEditRequested(PersonalDocumentDisplay? value)
         {
-            EditVM.ClearPersonalDocumentForm();
-
-            if (value != null)
-                EditVM.LoadPersonalDocument(value);
-
+            await EditVM.LoadDocumentAsync(value!);
             IsEditPanelVisible = true;
         }
 
-        private void OnPersonalDocumentSaved(PersonalDocumentDisplay value)
+        private void OnDocumentSaved(PersonalDocumentDisplay value)
         {
             IsEditPanelVisible = false;
-            //ListVM.UpdatePersonalDocumentInList(value);
-            EditVM.ClearPersonalDocumentForm();
+            ListVM.Items.Add(value);
+            EditVM.ClearForm();
         }
 
-        private void OnBranchDeleted(PersonalDocumentDisplay value)
+        private void OnDeleted(PersonalDocumentDisplay value)
         {
-            if (IsEditPanelVisible && EditVM.Display != null)
-                if (EditVM.Display.PersonalDocumentId == value.PersonalDocumentId)
+            if (IsEditPanelVisible && EditVM.Display != null && 
+                EditVM.Display.PersonalDocumentId == value.PersonalDocumentId)
                     CloseEditPanel();
         }
 
         public void CloseEditPanel()
         {
             IsEditPanelVisible = false;
-            EditVM.ClearPersonalDocumentForm();
+            EditVM.ClearForm();
         }
     }
 }

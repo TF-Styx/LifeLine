@@ -15,7 +15,7 @@
             <hrConverters:TypeActionConverter x:Key="TypeActionConverter"/>
 
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resourses/Templates/PendingFileItemTemplate.xaml"/>
+                <ResourceDictionary Source="/Resourсes/Templates/PendingFileItemTemplate.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Brushes/AppBrushes.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/Button.xaml"/>
                 <ResourceDictionary Source="/Shared.WPF;component/Resources/Styles/DataGrid.xaml"/>

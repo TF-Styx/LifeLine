@@ -11,7 +11,7 @@
              d:DataContext="{d:DesignInstance Type=vm:PersonalDocumentManagementVM}"
              mc:Ignorable="d" 
              d:Height="auto" 
-             d:Width="auto">
+             d:Width="800">
 
     <b:Interaction.Behaviors>
         <behaviors:AsyncInitializeBehavior/>
@@ -43,7 +43,6 @@
                       HorizontalAlignment="Center"/>
 
         <Border Grid.Column="2" Visibility="{Binding IsEditPanelVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-            <!-- Форма редактирования филиала -->
             <views:PersonalDocumentEdit DataContext="{Binding EditVM}"/>
         </Border>
     </Grid>

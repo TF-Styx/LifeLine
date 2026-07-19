@@ -59,23 +59,7 @@
                 </UniformGrid>
             </StackPanel>
 
-            <StackPanel DockPanel.Dock="Top">
-                <Button Content="Выбрать скан" 
-                    Width="170" Height="40" 
-                    HorizontalAlignment="Right" Margin="0 10 0 5"
-                    Command="{Binding SelectMultipleCommand}" 
-                    Style="{StaticResource App.Button}"/>
-
-                <!-- Список файлов с DataTemplate -->
-                <ListView ItemsSource="{Binding PendingFilePaths}"
-                          SelectedItem="{Binding PendingFilePath}"
-                          ItemTemplate="{StaticResource PendingFileItemTemplate}"
-                          Style="{StaticResource Custom.ListView}"
-                          ItemContainerStyle="{StaticResource Custom.ListViewItem}"
-                          d:ItemsSource="{d:SampleData ItemCount=4}"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                </ListView>
-            </StackPanel>
+            <views:PendingFileItem DockPanel.Dock="Top" DataContext="{Binding ItemVM}"/>
 
             <StackPanel Margin="0 10 0 0" VerticalAlignment="Bottom">
                 <Button Content="Сохранить" Height="40"

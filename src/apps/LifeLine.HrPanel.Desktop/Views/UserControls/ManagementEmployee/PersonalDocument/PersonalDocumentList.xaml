@@ -8,6 +8,8 @@
              xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
              xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF"
              xmlns:helpers="clr-namespace:Shared.WPF.Resources.Attachables;assembly=Shared.WPF"
+             xmlns:model="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.PersonalDocument" 
+             d:DataContext="{d:DesignInstance Type=model:PersonalDocumentListVM}"
              mc:Ignorable="d" 
              d:Height="450" 
              d:Width="800">
@@ -44,7 +46,7 @@
                         </Button>
                         <!-- Добавить -->
                         <Button Height="30" Margin="5 0 0 0"
-                                Command="{Binding EditPersonalDocumentCommand}" 
+                                Command="{Binding EditCommand}" 
                                 Style="{StaticResource Button.Icon}">
                             <Control Template="{StaticResource AddIcon}"/>
                         </Button>
@@ -94,7 +96,7 @@
                                         <!-- Редактирование -->
                                         <Button Width="20" Margin="0 0 5 0" 
                                                 Foreground="#c7d22d" ToolTip="Редактирование"
-                                                Command="{Binding DataContext.EditBranchCommand, 
+                                                Command="{Binding DataContext.EditCommand, 
                                                                   RelativeSource={RelativeSource AncestorType=ListView}}" 
                                                 CommandParameter="{Binding }"
                                                 Style="{StaticResource Button.Icon}">
@@ -104,7 +106,7 @@
                                         <!-- Удалить -->
                                         <Button Width="20" Margin="0 0 0 0" 
                                                 Foreground="#F06870" ToolTip="Удалить"
-                                                Command="{Binding DataContext.DeletePersonalDocumentCommandAsync, 
+                                                Command="{Binding DataContext.DeleteCommandAsync, 
                                                                   RelativeSource={RelativeSource AncestorType=ListView}}" 
                                                 CommandParameter="{Binding }" 
                                                 Style="{StaticResource Button.Icon}">
