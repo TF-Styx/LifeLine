@@ -3,7 +3,6 @@ using LifeLine.HrPanel.Desktop.Models;
 using LifeLine.HrPanel.Desktop.Services.FilePreview;
 using Shared.Contracts.Request.Files;
 using Shared.WPF.Commands;
-using Shared.WPF.Constants;
 using Shared.WPF.Helpers;
 using Shared.WPF.Services.FileDialog;
 using System.Collections.ObjectModel;
@@ -38,7 +37,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
         public RelayCommand SelectMultipleCommand { get; private set; }
         private void Execute_SelectMultipleCommand()
         {
-            var paths = _fileDialogService.GetFiles($"Выберите файлы: {FileDialogConsts.PERSONAL_DOCUMENT}", FileFilters.ImagesAndPdf);
+            var paths = _fileDialogService.GetFiles($"Выберите файлы", FileFilters.ImagesAndPdf);
 
             if (paths?.Any() == true)
             {

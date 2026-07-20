@@ -1,10 +1,8 @@
 ﻿using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
 using LifeLine.HrPanel.Desktop.Models;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.Common;
-using Shared.WPF.Commands;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
-using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.PersonalDocument
@@ -20,11 +18,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
             ) : base (stateServcie)
         {
             _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
-
-            EditCommand = new RelayCommand<PersonalDocumentDisplay?>(Execute_EditCommand);
         }
 
-        public ObservableCollection<PersonalDocumentDisplay> PersonalDocuments { get; private init; } = [];
         protected override async Task LoadAsync(string employeeId)
         {
             var personalDocuments = await _personalDocumentApiServiceFactory.Create(employeeId)
@@ -36,14 +31,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                 return;
             }
 
-            PersonalDocuments.Load([.. personalDocuments.Value.Select(personalDocument => new PersonalDocumentDisplay(personalDocument, [], SaveStatus.DataBase))], cleaning: true);
-        }
-
-        private PersonalDocumentDisplay? _personalDocument;
-        public PersonalDocumentDisplay? PersonalDocument
-        {
-            get => _personalDocument;
-            set => SetProperty(ref _personalDocument, value);
+            Items.Load([.. personalDocuments.Value.Select(personalDocument => new PersonalDocumentDisplay(personalDocument, [], SaveStatus.DataBase))], cleaning: true);
         }
 
         protected override async Task DeleteAsync(string employeeId, PersonalDocumentDisplay display)
@@ -57,10 +45,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                 throw new Exception(result.StringMessage);
             }
         }
-
-        public Func<PersonalDocumentDisplay?, Task>? RequestEdit;
-        public RelayCommand<PersonalDocumentDisplay?> EditCommand { get; private set; }
-        private void Execute_EditCommand(PersonalDocumentDisplay? display) => RequestEdit?.Invoke(display);
 
     }
 }

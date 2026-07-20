@@ -12,7 +12,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
 {
     public class PersonalDocumentEditVM : BaseDocumentEditVM<PersonalDocumentDisplay, CreatePersonalDocumentRequest, UpdatePersonalDocumentRequest>
     {
-        private readonly PendingFileItemVM _itemVM;
         private readonly IPersonalDocumentApiServiceFactory _personalDocumentApiServiceFactory;
 
         public PersonalDocumentEditVM
@@ -23,7 +22,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                 IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory
             ) : base(itemVM, stateService, fileStorageService)
         {
-            _itemVM = itemVM;
             _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
 
             InitializeNewDisplay();
@@ -52,7 +50,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
 
             base.LoadDocument(display, display.PersonalDocumentId.ToString(), display.FileKey);
 
-            _itemVM.Clear();
+            ItemVM.Clear();
             _editingId = display.PersonalDocumentId.ToString();
 
             Display!.DocumentNumber = display.DocumentNumber;
@@ -60,10 +58,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
             Display!.DocumentType = display.DocumentType;
             Display!.FileKey = display.FileKey;
 
-            if (display.SaveStatus == SaveStatus.DataBase && !string.IsNullOrWhiteSpace(display.FileKey))
-            {
-                await _itemVM.LoadDocumentToQueueAsync(display.FileKey, display.FileName!, display.ContentType!);
-            }
+            if (display.SaveStatus == SaveStatus.DataBase && !string.IsNullOrWhiteSpace(display.FileKey)) 
+                await ItemVM.LoadDocumentToQueueAsync(display.FileKey, display.FileName!, display.ContentType!);
         }
 
         protected override async Task<string> UploadFileAsync(PersonalDocumentDisplay display)
@@ -158,15 +154,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                    SaveStatus.DataBase
                );
 
-        public override void ClearForm()
-        {
-            Display!.DocumentNumber = string.Empty;
-            Display!.DocumentSeries = string.Empty;
-            Display!.DocumentType = null!;
-            Display!.FileKey = string.Empty;
+        //public override void ClearForm()
+        //{
+        //    Display!.DocumentNumber = string.Empty;
+        //    Display!.DocumentSeries = string.Empty;
+        //    Display!.DocumentType = null!;
+        //    Display!.FileKey = string.Empty;
 
-            _itemVM.Clear();
-            base.ClearForm();
-        }
+        //    base.ClearForm();
+        //}
     }
 }
