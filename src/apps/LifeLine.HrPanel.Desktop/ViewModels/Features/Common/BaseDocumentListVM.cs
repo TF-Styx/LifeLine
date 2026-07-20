@@ -1,4 +1,5 @@
-﻿using LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee;
+﻿using LifeLine.HrPanel.Desktop.Models.Interfaces;
+using LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee;
 using Shared.WPF.Commands;
 using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
@@ -7,7 +8,7 @@ using System.Windows;
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
 {
     public abstract class BaseDocumentListVM<TDisplay> : BaseViewModel
-        where TDisplay : class
+        where TDisplay : class, IIdentifiable
     {
         protected readonly ManagementEmployeeStateServcie _stateService;
 
@@ -24,13 +25,26 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
             };
 
             DeleteCommandAsync = new RelayCommandAsync<TDisplay>(Execute_DeleteCommandAsync);
+            EditCommand = new RelayCommand<TDisplay?>(Execute_EditCommand);
         }
 
         public ObservableCollection<TDisplay> Items { get; protected set; } = [];
 
-        protected abstract Task LoadAsync(string employeeId);
+        private TDisplay? _item;
+        public TDisplay? Item
+        {
+            get => _item;
+            set => SetProperty(ref _item, value);
+        }
 
+        protected abstract Task LoadAsync(string employeeId);
         protected abstract Task DeleteAsync(string employeeId, TDisplay display);
+
+        public Func<TDisplay?, Task>? RequestEdit;
+        public Action<TDisplay>? ItemDeleted;
+
+        public RelayCommand<TDisplay?> EditCommand { get; }
+        private void Execute_EditCommand(TDisplay? display) => RequestEdit?.Invoke(display);
 
         public RelayCommandAsync<TDisplay> DeleteCommandAsync { get; private set; }
         private async Task Execute_DeleteCommandAsync(TDisplay display)
@@ -57,8 +71,20 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
             }
         }
 
-        public Action<TDisplay>? ItemDeleted;
+        public void UpdateInList(TDisplay display)
+        {
+            if (display == null)
+                return;
 
-        public void UpdateInList(TDisplay item) => Items.IndexOf(item);
+            var existing = Items.FirstOrDefault(x => x.Id == display.Id);
+
+            if (existing != null)
+            {
+                var index = Items.IndexOf(existing);
+                Items[index] = display;
+            }
+            else
+                Items.Add(display);
+        }
     }
 }
