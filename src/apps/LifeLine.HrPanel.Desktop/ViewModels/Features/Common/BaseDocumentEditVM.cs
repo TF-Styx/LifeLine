@@ -33,8 +33,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
         protected string? _oldFileKey;
 
         public Action<TDisplay>? DocumentSaved;
-        public Action<TDisplay>? DocumentDeleted;
-        public Action? OnClosedRequested;
+        public Action? OnClosed;
 
         public TDisplay? Display
         {
@@ -103,7 +102,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
                 DocumentSaved?.Invoke(newDisplay);
 
                 ClearForm();
-                OnClosedRequested?.Invoke();
+                OnClosed?.Invoke();
             }
             catch (Exception ex)
             {
@@ -131,7 +130,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
                 DocumentSaved?.Invoke(newDisplay);
 
                 ClearForm();
-                OnClosedRequested?.Invoke();
+                OnClosed?.Invoke();
             }
             catch (Exception ex)
             {
@@ -143,7 +142,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
         private void Execute_CloseEditPanelCommand()
         {
             ClearForm();
-            OnClosedRequested?.Invoke();
+            OnClosed?.Invoke();
         }
     }
 }
