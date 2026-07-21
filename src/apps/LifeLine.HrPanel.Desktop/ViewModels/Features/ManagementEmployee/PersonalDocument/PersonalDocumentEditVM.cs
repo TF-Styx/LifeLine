@@ -17,7 +17,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
         public PersonalDocumentEditVM
             (
                 PendingFileItemVM itemVM, 
-                ManagementEmployeeStateServcie stateService,
+                ManagementEmployeeStateService stateService,
                 IFileStorageService fileStorageService,
                 IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory
             ) : base(itemVM, stateService, fileStorageService)

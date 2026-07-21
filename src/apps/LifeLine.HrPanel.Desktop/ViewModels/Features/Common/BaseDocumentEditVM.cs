@@ -11,12 +11,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
         where TCreateRequest : class
         where TUpdateRequest : class
     {
-        protected readonly ManagementEmployeeStateServcie _stateService;
+        protected readonly ManagementEmployeeStateService _stateService;
         protected readonly IFileStorageService _fileStorageService;
 
         public PendingFileItemVM ItemVM { get; }
 
         protected BaseDocumentEditVM(PendingFileItemVM itemVM, ManagementEmployeeStateServcie stateServcie, IFileStorageService fileStorageService)
+                ManagementEmployeeStateService stateServcie, 
         {
             ItemVM = itemVM;
 

@@ -12,7 +12,7 @@ namespace LifeLine.HrPanel.Desktop.Ioc
     {
         public static IServiceCollection UseEmployeeManagement(this IServiceCollection services)
         {
-            services.AddSingleton<ManagementEmployeeStateServcie>();
+            services.AddSingleton<ManagementEmployeeStateService>();
 
             services.AddTransient<EmployeeListVM>();
             services.AddTransient<EmployeeEditVM>();

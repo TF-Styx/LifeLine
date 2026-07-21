@@ -10,9 +10,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
     public abstract class BaseDocumentListVM<TDisplay> : BaseViewModel
         where TDisplay : class, IIdentifiable
     {
-        protected readonly ManagementEmployeeStateServcie _stateService;
+        protected readonly ManagementEmployeeStateService _stateService;
 
-        protected BaseDocumentListVM(ManagementEmployeeStateServcie stateService)
+        protected BaseDocumentListVM(ManagementEmployeeStateService stateService)
         {
             _stateService = stateService;
 

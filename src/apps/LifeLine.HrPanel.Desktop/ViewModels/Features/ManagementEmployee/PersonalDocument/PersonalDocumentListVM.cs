@@ -13,9 +13,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
 
         public PersonalDocumentListVM
             (
-                ManagementEmployeeStateServcie stateServcie, 
+                ManagementEmployeeStateService stateService, 
                 IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory
-            ) : base (stateServcie)
+            ) : base (stateService)
         {
             _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
         }

@@ -2,7 +2,7 @@
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee
 {
-    public class ManagementEmployeeStateServcie
+    public class ManagementEmployeeStateService
     {
         public EmployeeHrItemResponse? EmployeeHr { get; private set; }
         public event Action<string?>? EmployeeContextChanged;
