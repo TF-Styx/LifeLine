@@ -1,6 +1,7 @@
 ﻿using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
 using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Models;
+using LifeLine.HrPanel.Desktop.Services.Document.DocumentProcessing;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.Common;
 using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 using Shared.Contracts.Request.Files;
@@ -19,8 +20,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                 PendingFileItemVM itemVM, 
                 ManagementEmployeeStateService stateService,
                 IFileStorageService fileStorageService,
+                IDocumentProcessingService documentProcessingService,
                 IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory
-            ) : base(itemVM, stateService, fileStorageService)
+            ) : base(itemVM, stateService, fileStorageService, documentProcessingService)
         {
             _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
 
@@ -62,7 +64,26 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                 await ItemVM.LoadDocumentToQueueAsync(display.FileKey, display.FileName!, display.ContentType!);
         }
 
-        protected override async Task<string> UploadFileAsync(PersonalDocumentDisplay display)
+        protected override async Task<(byte[] PdfBytes, string FileName)> ProcessFilesToPdfAsync(PersonalDocumentDisplay display)
+        {
+            var result = await _documentProcessingService.ProcessFilesToPdfAsync
+                (
+                    ItemVM.PendingFilePaths,
+                    display.DocumentType.Name,
+                    _stateService.EmployeeHr!.Id,
+                    display.DocumentNumber
+                );
+
+            if (result.IsFailure)
+            {
+                MessageBox.Show(result.StringMessage);
+                throw new Exception(result.StringMessage);
+            }
+
+            return result.Value;
+        }
+
+        protected override async Task<string> UploadFileAsync(byte[] pdfBytes, string fileName, PersonalDocumentDisplay display)
         {
             var employeeId = _stateService.EmployeeHr!.Id;
 
@@ -75,8 +96,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                     employeeId,
                     EmployeeFolderType.PersonalDocument
                 ),
-                FileBytes: display.FileBytes,
-                FileName: display.FileName,
+                FileBytes: pdfBytes,
+                FileName: fileName,
                 ContentType: display.ContentType ?? "application/pdf"
             );
 
@@ -154,14 +175,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                    SaveStatus.DataBase
                );
 
-        //public override void ClearForm()
-        //{
-        //    Display!.DocumentNumber = string.Empty;
-        //    Display!.DocumentSeries = string.Empty;
-        //    Display!.DocumentType = null!;
-        //    Display!.FileKey = string.Empty;
+        public override void ClearForm()
+        {
+            Display!.DocumentNumber = string.Empty;
+            Display!.DocumentSeries = string.Empty;
+            Display!.DocumentType = null!;
+            Display!.FileKey = string.Empty;
 
-        //    base.ClearForm();
-        //}
+            base.ClearForm();
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using LifeLine.File.Service.Client;
+using LifeLine.HrPanel.Desktop.Services.Document.DocumentProcessing;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee;
 using Shared.WPF.Commands;
 using Shared.WPF.ViewModels.Abstract;
@@ -13,16 +14,23 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
     {
         protected readonly ManagementEmployeeStateService _stateService;
         protected readonly IFileStorageService _fileStorageService;
+        protected readonly IDocumentProcessingService _documentProcessingService;
 
         public PendingFileItemVM ItemVM { get; }
 
-        protected BaseDocumentEditVM(PendingFileItemVM itemVM, ManagementEmployeeStateServcie stateServcie, IFileStorageService fileStorageService)
+        protected BaseDocumentEditVM
+            (
+                PendingFileItemVM itemVM, 
                 ManagementEmployeeStateService stateServcie, 
+                IFileStorageService fileStorageService,
+                IDocumentProcessingService documentProcessingService
+            )
         {
             ItemVM = itemVM;
 
             _stateService = stateServcie;
             _fileStorageService = fileStorageService;
+            _documentProcessingService = documentProcessingService;
 
             CreateCommandAsync = new RelayCommandAsync(Execute_CreateCommandAsync, CanExecute_Command);
             UpdateCommandAsync = new RelayCommandAsync(Execute_UpdateCommandAsync, CanExecute_Command);
@@ -49,20 +57,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
             }
         }
 
-        protected abstract Task<string> UploadFileAsync(TDisplay display);
+        protected abstract Task<(byte[] PdfBytes, string FileName)> ProcessFilesToPdfAsync(TDisplay display);
+        protected abstract Task<string> UploadFileAsync(byte[] pdfBytes, string fileName, TDisplay display);
         protected abstract Task<string> CreateAsync(TDisplay display, string fileKey);
         protected abstract Task UpdateAsync(string id, TDisplay display, string fileKey);
         protected abstract TDisplay CreateDisplayFormResponse(string responseId, TDisplay display, string fileKey);
         protected abstract void InitializeNewDisplay();
-
-        public void LoadDocument(TDisplay display)
-        {
-            if (display == null)
-            {
-                ClearForm();
-                return;
-            }
-        }
 
         public void LoadDocument(TDisplay display, string id, string? fileKey)
         {
@@ -95,7 +95,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
 
             try
             {
-                var fileKey = await UploadFileAsync(Display);
+                var (pdfBytes, fileName) = await ProcessFilesToPdfAsync(Display);
+
+                var fileKey = await UploadFileAsync(pdfBytes, fileName, Display);
+
                 var newId = await CreateAsync(Display, fileKey);
 
                 var newDisplay = CreateDisplayFormResponse(newId, Display, fileKey);
@@ -122,7 +125,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
 
             try
             {
-                var newFileKey = await UploadFileAsync(Display);
+                var (pdfBytes, fileName) = await ProcessFilesToPdfAsync(Display);
+
+                var newFileKey = await UploadFileAsync(pdfBytes, fileName, Display);
 
                 await UpdateAsync(_editingId, Display, newFileKey);
 
