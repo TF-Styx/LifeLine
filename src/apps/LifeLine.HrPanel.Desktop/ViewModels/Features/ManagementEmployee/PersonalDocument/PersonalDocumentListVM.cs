@@ -7,22 +7,15 @@ using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.PersonalDocument
 {
-    public class PersonalDocumentListVM : BaseDocumentListVM<PersonalDocumentDisplay>
+    public class PersonalDocumentListVM
+        (
+            ManagementEmployeeStateService stateService,
+            IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory
+        ) : BaseDocumentListVM<PersonalDocumentDisplay>(stateService)
     {
-        private readonly IPersonalDocumentApiServiceFactory _personalDocumentApiServiceFactory;
-
-        public PersonalDocumentListVM
-            (
-                ManagementEmployeeStateService stateService, 
-                IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory
-            ) : base (stateService)
-        {
-            _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
-        }
-
         protected override async Task LoadAsync(string employeeId)
         {
-            var personalDocuments = await _personalDocumentApiServiceFactory.Create(employeeId)
+            var personalDocuments = await personalDocumentApiServiceFactory.Create(employeeId)
                 .GetAllByEmployeeId(employeeId);
 
             if (personalDocuments.IsFailure)
@@ -36,7 +29,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
 
         protected override async Task DeleteAsync(string employeeId, PersonalDocumentDisplay display)
         {
-            var result = await _personalDocumentApiServiceFactory.Create(employeeId)
+            var result = await personalDocumentApiServiceFactory.Create(employeeId)
                 .DeletePersonalDocumentAsync(display.PersonalDocumentId);
 
             if (result.IsFailure)
