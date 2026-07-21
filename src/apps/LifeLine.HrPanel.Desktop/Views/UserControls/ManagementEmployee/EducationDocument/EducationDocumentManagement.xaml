@@ -11,7 +11,7 @@
              d:DataContext="{d:DesignInstance Type=vm:EducationDocumentManagementVM}"
              mc:Ignorable="d" 
              d:Height="auto" 
-             d:Width="auto">
+             d:Width="800">
 
     <b:Interaction.Behaviors>
         <behaviors:AsyncInitializeBehavior/>
