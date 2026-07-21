@@ -68,7 +68,7 @@
 
             <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
                 <ListView ItemsSource="{Binding Items}" 
-                          SelectedItem="{Binding Item}"
+                          SelectedItem="{Binding SelectedItem}"
                           Style="{StaticResource Custom.ListView}"
                           ItemContainerStyle="{StaticResource Custom.ListViewItem}"
                           d:ItemsSource="{d:SampleData ItemCount=4}"

@@ -30,11 +30,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
 
         public ObservableCollection<TDisplay> Items { get; protected set; } = [];
 
-        private TDisplay? _item;
-        public TDisplay? Item
+        private TDisplay? _selectedItem;
+        public TDisplay? SelectedItem
         {
-            get => _item;
-            set => SetProperty(ref _item, value);
+            get => _selectedItem;
+            set => SetProperty(ref _selectedItem, value);
         }
 
         protected abstract Task LoadAsync(string employeeId);
