@@ -21,14 +21,14 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.Common
         protected BaseDocumentEditVM
             (
                 PendingFileItemVM itemVM, 
-                ManagementEmployeeStateService stateServcie, 
+                ManagementEmployeeStateService stateService, 
                 IFileStorageService fileStorageService,
                 IDocumentProcessingService documentProcessingService
             )
         {
             ItemVM = itemVM;
 
-            _stateService = stateServcie;
+            _stateService = stateService;
             _fileStorageService = fileStorageService;
             _documentProcessingService = documentProcessingService;
 
