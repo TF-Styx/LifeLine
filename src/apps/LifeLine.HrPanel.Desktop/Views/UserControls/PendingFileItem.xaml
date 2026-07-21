@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
              xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+             xmlns:features="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features" 
+             d:DataContext="{d:DesignInstance Type=features:PendingFileItemVM}"
              mc:Ignorable="d" 
              d:Height="auto" 
              d:Width="800">
