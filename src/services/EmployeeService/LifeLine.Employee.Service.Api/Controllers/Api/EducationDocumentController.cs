@@ -32,7 +32,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     request.QualificationAwardedName,
                     request.SpecialtyName,
                     request.ProgramName,
-                    request.TotalHours != null ? TimeSpan.FromHours(request.TotalHours.Value) : TimeSpan.Zero,
+                    request.TotalHours != null ? request.TotalHours : TimeSpan.Zero,
                     request.BucketName,
                     request.FileName
                 );
