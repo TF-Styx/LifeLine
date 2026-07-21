@@ -1,10 +1,11 @@
-﻿using Shared.Contracts.Response.EmployeeService;
+﻿using LifeLine.HrPanel.Desktop.Models.Interfaces;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Enums;
 using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models
 {
-    public sealed class EducationDocumentDisplay : BaseViewModel
+    public sealed class EducationDocumentDisplay : BaseViewModel, IIdentifiable
     {
         private readonly EducationDocumentResponse _model;
 
@@ -47,6 +48,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
         public void SetSaveStatus(SaveStatus saveStatus) => SaveStatus = saveStatus;
 
+        public string Id => EducationDocumentId;
         public string EducationDocumentId => _model.Id;
         public string EmployeeId => _model.EmployeeId;
         public string EducationLevelId => _model.EducationLevelId;
