@@ -1,10 +1,11 @@
-﻿using Shared.Contracts.Response.EmployeeService;
+﻿using LifeLine.HrPanel.Desktop.Models.Interfaces;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Enums;
 using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models
 {
-    public sealed class AssignmentContractDisplay : BaseViewModel
+    public sealed class AssignmentContractDisplay : BaseViewModel, IIdentifiable
     {
         private readonly AssignmentResponse _assignmentModel;
         private readonly ContractResponse _contractModel;
@@ -40,11 +41,11 @@ namespace LifeLine.HrPanel.Desktop.Models
             _statuses = statuses;
             _employeeTypes = employeeTypes;
 
-            SetBranch(_assignmentModel.BranchId.ToString());
-            SetDepartment(_assignmentModel.DepartmentId.ToString());
-            SetPosition(_assignmentModel.PositionId.ToString());
-            SetManager(_assignmentModel.ManagerId?.ToString());
-            SetStatus(_assignmentModel.StatusId.ToString());
+            SetBranch(_assignmentModel.BranchId);
+            SetDepartment(_assignmentModel.DepartmentId);
+            SetPosition(_assignmentModel.PositionId);
+            SetManager(_assignmentModel.ManagerId ?? null);
+            SetStatus(_assignmentModel.StatusId);
 
             _hireDate = assignmentModel.HireDate;
             _terminationDate = assignmentModel.TerminationDate;
@@ -71,6 +72,8 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
 
         #region Assignment
+
+        public string Id => AssignmentId;
 
         public string AssignmentId => _assignmentModel.AssignmentId;
 
