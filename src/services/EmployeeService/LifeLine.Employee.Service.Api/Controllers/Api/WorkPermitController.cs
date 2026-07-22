@@ -34,8 +34,8 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     request.ExpiryDate,
                     request.BucketName,
                     request.FileName,
-                    request.PermitTypeId,
-                    request.AdmissionStatusId
+                    Guid.Parse(request.PermitTypeId),
+                    Guid.Parse(request.AdmissionStatusId)
                 );
 
             var result = await _mediator.Send(command, cancellationToken);
