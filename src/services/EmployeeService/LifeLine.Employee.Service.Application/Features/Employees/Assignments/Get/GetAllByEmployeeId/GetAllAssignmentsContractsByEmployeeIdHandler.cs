@@ -6,45 +6,51 @@ using LifeLine.EmployeeService.Application.Abstraction.Common.Abstraction;
 namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.Get.GetAllByEmployeeId
 {
     public sealed class GetAllAssignmentsContractsByEmployeeIdHandler(IWriteContext context) 
-        : IRequestHandler<GetAllAssignmentsContractsByEmployeeIdQuery, AssignmentContractResponse>
+        : IRequestHandler<GetAllAssignmentsContractsByEmployeeIdQuery, List<AssignmentContractResponse>>
     {
-        public async Task<AssignmentContractResponse> Handle(GetAllAssignmentsContractsByEmployeeIdQuery request, CancellationToken cancellationToken)
+        public async Task<List<AssignmentContractResponse>> Handle(GetAllAssignmentsContractsByEmployeeIdQuery request, CancellationToken cancellationToken)
         {
             var employee = await context.Employees.Include(x => x.Assignments).Include(x => x.Contracts)
                 .FirstOrDefaultAsync(x => x.Id == request.EmployeeId, cancellationToken: cancellationToken);
 
-            var assignments = employee!.Assignments.Select
-            (
-                a => new AssignmentDataResponse
-                (
-                    a.Id.ToString(),
-                    request.EmployeeId.ToString(),
-                    a.PositionId.ToString(),
-                    a.DepartmentId.ToString(),
-                    a.BranchId.ToString(),
-                    a.ManagerId.ToString(),
-                    a.HireDate,
-                    a.TerminationDate,
-                    a.StatusId.ToString()
-                )
-            ).ToList();
+            if (employee == null)
+                return null!;
 
-            var contracts = employee.Contracts.Select
-            (
-                c => new ContractDataResponse
-                (
-                    request.EmployeeId.ToString(),
-                    c.Id.ToString(),
-                    c.ContractNumber,
-                    c.EmployeeTypeId.ToString(),
-                    c.StartDate,
-                    c.EndDate,
-                    c.Salary,
-                    c.FileKey
-                )
-            ).ToList();
+            var items = employee!.Assignments.Select(
+                a =>
+                {
+                    var contract = employee.Contracts.FirstOrDefault(c => c.Id == a.ContractId);
 
-            return new AssignmentContractResponse(new AssignmentContractDataResponse(assignments, contracts));
+                    var assignments = new AssignmentResponse
+                    (
+                        a.Id.ToString(),
+                        request.EmployeeId.ToString(),
+                        a.PositionId.ToString(),
+                        a.DepartmentId.ToString(),
+                        a.BranchId.ToString(),
+                        a.ManagerId.ToString(),
+                        a.HireDate,
+                        a.TerminationDate,
+                        a.StatusId.ToString(),
+                        contract!.Id.ToString()
+                    );
+
+                    var contracts = new ContractResponse
+                    (
+                        request.EmployeeId.ToString(),
+                        contract!.Id.ToString(),
+                        contract!.ContractNumber,
+                        contract!.EmployeeTypeId.ToString(),
+                        contract!.StartDate,
+                        contract!.EndDate,
+                        contract!.Salary,
+                        contract!.FileKey
+                    );
+
+                    return new AssignmentContractResponse(assignments, contracts);
+                }).ToList();
+
+            return items;
         }
     }
 }
