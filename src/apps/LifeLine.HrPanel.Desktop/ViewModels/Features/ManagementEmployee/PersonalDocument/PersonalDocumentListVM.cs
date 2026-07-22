@@ -38,6 +38,5 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                 throw new Exception(result.StringMessage);
             }
         }
-
     }
 }

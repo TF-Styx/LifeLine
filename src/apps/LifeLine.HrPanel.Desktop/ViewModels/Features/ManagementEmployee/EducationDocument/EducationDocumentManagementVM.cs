@@ -14,8 +14,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
                     listVM,
                     editVM,
                     loadDocument: async display => await editVM.LoadDocumentAsync(display!),
-                    clearEditForm: () => editVM.ClearForm(),
-                    updateList: display => listVM.UpdateInList(display!)
+                    updateList: display => listVM.UpdateInList(display!),
+                    clearEditForm: () => editVM.ClearForm()
                 )
         {
             ListVM.RequestEdit = OnEditAsync;

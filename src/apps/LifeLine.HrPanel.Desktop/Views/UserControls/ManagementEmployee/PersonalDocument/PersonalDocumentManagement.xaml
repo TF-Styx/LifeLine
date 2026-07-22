@@ -31,7 +31,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto" d:Width="*"/>
         </Grid.ColumnDefinitions>
 
         <views:PersonalDocumentList DataContext="{Binding ListVM}" VerticalAlignment="Stretch"/>

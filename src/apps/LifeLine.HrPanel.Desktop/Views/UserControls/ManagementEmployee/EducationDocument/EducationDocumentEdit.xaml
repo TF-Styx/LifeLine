@@ -85,7 +85,7 @@
                                        Text="{Binding Display.TotalHours}" 
                                        Style="{StaticResource TextBox.PlaceHolder}"/>
 
-                <views:PendingFileItem/>
+                <views:PendingFileItem DataContext="{Binding ItemVM}"/>
             </StackPanel>
 
             <StackPanel Margin="0 5 0 0" VerticalAlignment="Bottom">

@@ -77,7 +77,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                throw new Exception(result.StringMessage);
+                return (null, null)!;
             }
 
             return result.Value;
@@ -106,7 +106,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                throw new Exception(result.StringMessage);
+                return null!;
             }
 
             return result.Value!.FileName;
@@ -131,7 +131,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                throw new Exception(result.StringMessage);
+                return null!;
             }
 
             return result.Value;
@@ -156,7 +156,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                throw new Exception(result.StringMessage);
+                return;
             }
         }
 
