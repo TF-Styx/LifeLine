@@ -1711,16 +1711,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Pages
 
                     dbRequest: s3FileName => new UpdateAssignmentRequest
                     (
-                        Guid.Parse(AssigmentsContracts.Display.Position.PositionId),
-                        Guid.Parse(AssigmentsContracts.Display.Department.DepartmentId),
-                        Guid.Parse(AssigmentsContracts.Display.Branch.BranchId),
-                        AssigmentsContracts.Display.Manager != null ? Guid.Parse(AssigmentsContracts.Display.Manager.Id) : null,
+                        AssigmentsContracts.Display.Position.PositionId,
+                        AssigmentsContracts.Display.Department.DepartmentId,
+                        AssigmentsContracts.Display.Branch.BranchId,
+                        AssigmentsContracts.Display.Manager != null ? AssigmentsContracts.Display.Manager.Id : null,
                         AssigmentsContracts.Display.HireDate,
                         AssigmentsContracts.Display.TerminationDate,
-                        Guid.Parse(AssigmentsContracts.Display.Status.Id),
+                        AssigmentsContracts.Display.Status.Id,
                         new UpdateAssignmentContractRequest
                         (
-                            Guid.Parse(AssigmentsContracts.Display.EmployeeType.Id),
+                            AssigmentsContracts.Display.EmployeeType.Id,
                             AssigmentsContracts.Display.ContractNumber,
                             AssigmentsContracts.Display.StartDate,
                             AssigmentsContracts.Display.EndDate,
