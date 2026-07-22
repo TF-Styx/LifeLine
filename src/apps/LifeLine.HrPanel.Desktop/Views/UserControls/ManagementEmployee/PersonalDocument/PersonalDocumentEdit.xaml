@@ -9,7 +9,6 @@
              xmlns:views="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls"
              xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF" 
              xmlns:model="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.PersonalDocument" 
-             xmlns:models="clr-namespace:LifeLine.HrPanel.Desktop.Models"
              d:DataContext="{d:DesignInstance Type=model:PersonalDocumentEditVM}"
              mc:Ignorable="d" 
              d:Height="auto" 
