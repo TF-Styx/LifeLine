@@ -11,7 +11,7 @@
              d:DataContext="{d:DesignInstance Type=vm:WorkPermitManagementVM}"
              mc:Ignorable="d" 
              d:Height="auto" 
-             d:Width="auto">
+             d:Width="1100">
 
     <b:Interaction.Behaviors>
         <behaviors:AsyncInitializeBehavior/>
@@ -31,7 +31,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto" d:Width="1*"/>
         </Grid.ColumnDefinitions>
 
         <views:WorkPermitList DataContext="{Binding ListVM}" VerticalAlignment="Stretch"/>

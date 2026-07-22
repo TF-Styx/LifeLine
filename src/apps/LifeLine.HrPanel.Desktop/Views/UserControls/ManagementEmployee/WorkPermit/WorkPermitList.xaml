@@ -8,6 +8,8 @@
              xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
              xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF"
              xmlns:helpers="clr-namespace:Shared.WPF.Resources.Attachables;assembly=Shared.WPF"
+             xmlns:model="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPermit"
+             d:DataContext="{d:DesignInstance Type=model:WorkPermitListVM}"
              mc:Ignorable="d" 
              d:Height="450" 
              d:Width="800">
@@ -44,7 +46,7 @@
                         </Button>
                         <!-- Добавить -->
                         <Button Height="30" Margin="5 0 0 0"
-                                Command="{Binding EditWorkPermitCommand}" 
+                                Command="{Binding EditCommand}" 
                                 Style="{StaticResource Button.Icon}">
                             <Control Template="{StaticResource AddIcon}"/>
                         </Button>
@@ -65,8 +67,8 @@
             </DockPanel>
 
             <Border Margin="10" Background="{StaticResource App.MainColor}" CornerRadius="6" BorderBrush="#386FD6" BorderThickness="2">
-                <ListView ItemsSource="{Binding WorkPermits}" 
-                          SelectedItem="{Binding WorkPermit}"
+                <ListView ItemsSource="{Binding Items}" 
+                          SelectedItem="{Binding SelectedItem}"
                           Style="{StaticResource Custom.ListView}"
                           ItemContainerStyle="{StaticResource Custom.ListViewItem}"
                           d:ItemsSource="{d:SampleData ItemCount=4}"
@@ -101,7 +103,7 @@
                                         <!-- Редактирование -->
                                         <Button Width="20" Margin="0 0 5 0" 
                                                 Foreground="#c7d22d" ToolTip="Редактирование"
-                                                Command="{Binding DataContext.EditBranchCommand, 
+                                                Command="{Binding DataContext.EditCommand, 
                                                                   RelativeSource={RelativeSource AncestorType=ListView}}" 
                                                 CommandParameter="{Binding }"
                                                 Style="{StaticResource Button.Icon}">
@@ -111,7 +113,7 @@
                                         <!-- Удалить -->
                                         <Button Width="20" Margin="0 0 0 0" 
                                                 Foreground="#F06870" ToolTip="Удалить"
-                                                Command="{Binding DataContext.DeleteBranchCommandAsync, 
+                                                Command="{Binding DataContext.DeleteCommandAsync, 
                                                                   RelativeSource={RelativeSource AncestorType=ListView}}" 
                                                 CommandParameter="{Binding }" 
                                                 Style="{StaticResource Button.Icon}">
