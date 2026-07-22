@@ -10,6 +10,7 @@
             string? ManagerId,
             DateTime HireDate,
             DateTime? TerminationDate,
-            string StatusId
+            string StatusId,
+            string ContractId
         );
 }
