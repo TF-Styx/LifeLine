@@ -11,7 +11,7 @@
              d:DataContext="{d:DesignInstance Type=vm:AssignmentContractManagementVM}"
              mc:Ignorable="d" 
              d:Height="auto" 
-             d:Width="800">
+             d:Width="1600">
 
     <b:Interaction.Behaviors>
         <behaviors:AsyncInitializeBehavior/>
