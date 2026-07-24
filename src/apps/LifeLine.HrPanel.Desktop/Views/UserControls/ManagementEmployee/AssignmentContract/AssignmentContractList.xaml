@@ -44,7 +44,7 @@
                         </Button>
                         <!-- Добавить -->
                         <Button Height="30" Margin="5 0 0 0"
-                                Command="{Binding EditAssignmentContractCommand}" 
+                                Command="{Binding EditCommand}" 
                                 Style="{StaticResource Button.Icon}">
                             <Control Template="{StaticResource AddIcon}"/>
                         </Button>

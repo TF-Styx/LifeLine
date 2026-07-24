@@ -35,21 +35,21 @@
                 <DockPanel Margin="0 10 0 0">
                     <UniformGrid Columns="3" DockPanel.Dock="Top">
                         <cc:PlaceHolderTextBox PlaceHolder="Фамилия*" Margin="0 0 5 0" 
-                                               Text="{Binding PersonalInfo.Surname}" 
+                                               Text="{Binding Surname}" 
                                                Style="{StaticResource TextBox.PlaceHolder}"/>
 
                         <cc:PlaceHolderTextBox PlaceHolder="Имя*" Margin="5 0" 
-                                               Text="{Binding PersonalInfo.Name}" 
+                                               Text="{Binding Name}" 
                                                Style="{StaticResource TextBox.PlaceHolder}"/>
 
                         <cc:PlaceHolderTextBox PlaceHolder="Отчество" Margin="5 0 0 0"
-                                               Text="{Binding PersonalInfo.Patronymic}" 
+                                               Text="{Binding Patronymic}" 
                                                Style="{StaticResource TextBox.PlaceHolder}"/>
                     </UniformGrid>
 
                     <ComboBox ItemsSource="{Binding Genders}" 
-                              SelectedItem="{Binding PersonalInfo.Gender}"
-                              DisplayMemberPath="Name" 
+                              SelectedItem="{Binding Gender}"
+                              DisplayMemberPath="GenderName" 
                               Margin="0 10 0 0"/>
                 </DockPanel>
             </StackPanel>

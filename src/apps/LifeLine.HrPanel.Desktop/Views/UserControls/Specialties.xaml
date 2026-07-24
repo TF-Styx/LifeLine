@@ -94,8 +94,8 @@
                               HorizontalAlignment="Center" DockPanel.Dock="Right" Margin="0 0 0 10" 
                               Style="{StaticResource BaseChechBox}"/>-->
 
-                <ComboBox ItemsSource="{Binding SpecialtiesCollection}" 
-                          SelectedItem="{Binding Specialties.SelectedSpecialty}"
+                <ComboBox ItemsSource="{Binding Specialties}" 
+                          SelectedItem="{Binding SelectedSpecialty}"
                           DisplayMemberPath="SpecialtyName"/>
 
                 <Button Content="Добавить локально" Height="40"
