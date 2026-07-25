@@ -10,6 +10,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
         Task<Result> AddPersonalPhoto(string employeeId, AddPersonalPhotoRequest request);
         Task<Result> DeletePersonalPhoto(string employeeId);
         Task<List<EmployeeHrItemResponse>> GetAllForHrAsync();
+        Task<EmployeeBioResponse?> GetBioEmployeeAsync(string id);
         Task<EmployeeFullDetailsResponse?> GetDetailsAsync(string id);
         Task<Result> UpdateEmployeeAsync(string employeeId, UpdateEmployeeRequest request);
         Task<Result> SoftDeleteAsync(string employeeId);
