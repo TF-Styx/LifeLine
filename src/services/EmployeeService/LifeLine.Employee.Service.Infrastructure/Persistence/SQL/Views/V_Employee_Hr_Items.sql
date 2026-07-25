@@ -10,6 +10,7 @@
         COALESCE(
             jsonb_agg(
                 jsonb_build_object(
+                    'BranchId',     a."BranchId",
                     'DepartmentId', a."DepartmentId",
                     'PositionId',   a."PositionId",
                     'StatusId',     a."StatusId"

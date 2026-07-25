@@ -26,6 +26,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Get.GetAllFor
                                 (
                                     x => new AssignmentResponseInfo
                                         (
+                                            x.BranchId.ToString(),
                                             x.DepartmentId.ToString(), 
                                             x.PositionId.ToString(), 
                                             x.StatusId.ToString()

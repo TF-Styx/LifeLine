@@ -14,6 +14,7 @@
 
     public sealed class AssignmentInfo
     {
+        public Guid BranchId { get; set; }
         public Guid DepartmentId { get; set; }
         public Guid PositionId { get; set; }
         public Guid StatusId { get; set; }

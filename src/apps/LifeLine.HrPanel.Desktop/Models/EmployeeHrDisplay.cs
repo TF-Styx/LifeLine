@@ -1,14 +1,16 @@
-﻿using Shared.Contracts.Response.EmployeeService;
+﻿using LifeLine.HrPanel.Desktop.Models.Interfaces;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.ViewModels.Abstract;
 using System.Windows.Media;
 
 namespace LifeLine.HrPanel.Desktop.Models
 {
-    public sealed class EmployeeHrDisplay : BaseViewModel
+    public sealed class EmployeeHrDisplay : BaseViewModel, IIdentifiable
     {
         public EmployeeHrDisplay
             (
                 EmployeeHrItemResponse model,
+                IReadOnlyCollection<BranchDisplay> branches,
                 IReadOnlyCollection<DepartmentDisplay> departments,
                 IReadOnlyCollection<PositionDisplay> positions,
                 IReadOnlyCollection<StatusDisplay> statuses
@@ -20,11 +22,13 @@ namespace LifeLine.HrPanel.Desktop.Models
             Name = _model.Name;
             Patronymic = _model.Patronymic;
 
+            _branches = branches;
             _departments = departments;
             _positions = positions;
             _statuses = statuses;
         }
 
+        private readonly IReadOnlyCollection<BranchDisplay> _branches;
         private readonly IReadOnlyCollection<DepartmentDisplay> _departments;
         private readonly IReadOnlyCollection<PositionDisplay> _positions;
         private readonly IReadOnlyCollection<StatusDisplay> _statuses;
@@ -32,6 +36,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         private EmployeeHrItemResponse _model;
 
         public string Id => _model.Id;
+        public string BranchId => _model.Assignments.FirstOrDefault()!.BranchId;
         public string DepartmentId => _model.Assignments.FirstOrDefault()!.DepartmentId;
         public string PositionId => _model.Assignments.FirstOrDefault()!.PositionId;
         public string StatusId => _model.Assignments.FirstOrDefault()!.StatusId;
