@@ -32,7 +32,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
         {
             try
             {
-                var response = await HttpClient.GetAsync($"{Url}/{employeeId}");
+                var response = await HttpClient.GetAsync($"{Url}");
                 response.EnsureSuccessStatusCode();
 
                 var assignmentsContracts = await response.Content.ReadFromJsonAsync<List<AssignmentContractResponse>>(JsonSerializerOptions);
