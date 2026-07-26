@@ -49,11 +49,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             }
         }
 
-        public async Task LoadDocumentToQueueAsync(string fileKey, string fileName, string contentType)
+        public async Task LoadDocumentToQueueAsync(string fileKey)
         {
             PendingFilePaths.Clear();
 
-            if (string.IsNullOrWhiteSpace(fileKey) || string.IsNullOrWhiteSpace(fileName))
+            if (string.IsNullOrWhiteSpace(fileKey))
                 return;
 
             var parsResult = S3UrlParser.Parse(fileKey);
