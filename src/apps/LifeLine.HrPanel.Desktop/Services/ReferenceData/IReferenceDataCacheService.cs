@@ -17,5 +17,8 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
         ReadOnlyObservableCollection<SpecialtyDisplay> Specialties { get; }
         ReadOnlyObservableCollection<ManagerDisplay> Managers { get; }
         ReadOnlyObservableCollection<HospitalDisplay> Hospitals { get; }
+        ReadOnlyObservableCollection<BranchDisplay> Branches { get; }
+        ReadOnlyObservableCollection<DepartmentDisplay> Departments { get; }
+        ReadOnlyObservableCollection<PositionDisplay> Positions { get; }
     }
 }

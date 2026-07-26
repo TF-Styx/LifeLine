@@ -1,8 +1,11 @@
 ﻿using LifeLine.Directory.Service.Client.Services.AdmissionStatus;
+using LifeLine.Directory.Service.Client.Services.Branch;
+using LifeLine.Directory.Service.Client.Services.Department;
 using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
 using LifeLine.Directory.Service.Client.Services.Hospital;
 using LifeLine.Directory.Service.Client.Services.PermitType;
+using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
@@ -26,6 +29,9 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
         private readonly ISpecialtyReadOnlyService _specialtyService;
         private readonly IEmployeeService _employeeService;
         private readonly IHospitalReadOnlyService _hospitalService;
+        private readonly IBranchReadOnlyService _branchService;
+        private readonly IDepartmentReadOnlyService _departmentService;
+        private readonly IPositionReadOnlyApiServiceFactory _positionService;
 
         private readonly ObservableCollection<GenderDisplay> _genders = [];
         private readonly ObservableCollection<StatusDisplay> _statuses = [];
@@ -37,6 +43,9 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
         private readonly ObservableCollection<SpecialtyDisplay> _specialties = [];
         private readonly ObservableCollection<ManagerDisplay> _managers = [];
         private readonly ObservableCollection<HospitalDisplay> _hospitals = [];
+        private readonly ObservableCollection<BranchDisplay> _branches = [];
+        private readonly ObservableCollection<DepartmentDisplay> _departments = [];
+        private readonly ObservableCollection<PositionDisplay> _positions = [];
 
         public ReferenceDataCacheService
             (
@@ -49,7 +58,10 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
                 IEmployeeTypeReadOnlyService employeeTypeService,
                 ISpecialtyReadOnlyService specialtyService,
                 IEmployeeService employeeService,
-                IHospitalReadOnlyService hospitalService
+                IHospitalReadOnlyService hospitalService,
+                IBranchReadOnlyService branchService,
+                IDepartmentReadOnlyService departmentService,
+                IPositionReadOnlyApiServiceFactory positionService
             )
         {
             _genderService = genderService;
@@ -62,6 +74,9 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
             _specialtyService = specialtyService;
             _employeeService = employeeService;
             _hospitalService = hospitalService;
+            _branchService = branchService;
+            _departmentService = departmentService;
+            _positionService = positionService;
 
             Genders = new(_genders);
             Statuses = new(_statuses);
@@ -73,6 +88,9 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
             Specialties = new(_specialties);
             Managers = new(_managers);
             Hospitals = new(_hospitals);
+            Branches = new(_branches);
+            Departments = new(_departments);
+            Positions = new(_positions);
         }
 
         public async Task InitializeAsync()
@@ -87,6 +105,9 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
             var specialtiesTask = GetAllSpecialties();
             var managersTask = GetAllManagers();
             var hospitalsTask = GetAllHospitals();
+            var branchesTask = GetAllBranches();
+            var departmentsTask = GetAllDepartments();
+            var positionsTask = GetAllPositions();
 
             await Task.WhenAll
                 (
@@ -99,7 +120,10 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
                     employeeTypesTask, 
                     specialtiesTask, 
                     managersTask, 
-                    hospitalsTask
+                    hospitalsTask,
+                    branchesTask,
+                    departmentsTask,
+                    positionsTask
                 );
         }
 
@@ -180,8 +204,31 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
         {
             var hospitals = await _hospitalService.GetAllAsync();
 
-            _hospitals.Load([.. hospitals.Select(hospitals => new HospitalDisplay(hospitals))], cleaning: true);
+            _hospitals.Load([.. hospitals.Select(hospital => new HospitalDisplay(hospital))], cleaning: true);
         }
 
+        public ReadOnlyObservableCollection<BranchDisplay> Branches { get; }
+        private async Task GetAllBranches()
+        {
+            var branches = await _branchService.GetAllAsync();
+
+            _branches.Load([.. branches.Select(branch => new BranchDisplay(branch))], cleaning: true);
+        }
+
+        public ReadOnlyObservableCollection<DepartmentDisplay> Departments { get; }
+        private async Task GetAllDepartments()
+        {
+            var departments = await _departmentService.GetAllAsync();
+
+            _departments.Load([.. departments.Select(department => new DepartmentDisplay(department))], cleaning: true);
+        }
+
+        public ReadOnlyObservableCollection<PositionDisplay> Positions { get; }
+        private async Task GetAllPositions()
+        {
+            var positions = await _positionService.Create(Guid.NewGuid().ToString()).GetAllAsync();
+
+            _positions.Load([.. positions.Select(position => new PositionDisplay(position))], cleaning: true);
+        }
     }
 }
