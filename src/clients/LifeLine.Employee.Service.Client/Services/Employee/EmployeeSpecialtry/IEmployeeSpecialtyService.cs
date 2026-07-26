@@ -8,6 +8,6 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
     {
         Task<Result> CreateManyAsync(CreateManyEmployeeSpecialtiesRequest request);
         Task<Result> UpdateEmployeeSpecialtyAsync(UpdateEmployeeSpecialtyRequest request);
-        Task<Result> DeleteEmployeeSpecialtyAsync(Guid specialtyId);
+        Task<Result> DeleteEmployeeSpecialtyAsync(string specialtyId);
     }
 }

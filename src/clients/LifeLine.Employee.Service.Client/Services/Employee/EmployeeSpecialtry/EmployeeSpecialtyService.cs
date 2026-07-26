@@ -45,7 +45,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EmployeeSpecialtry
             }
         }
 
-        public async Task<Result> DeleteEmployeeSpecialtyAsync(Guid specialtyId)
+        public async Task<Result> DeleteEmployeeSpecialtyAsync(string specialtyId)
         {
             try
             {
