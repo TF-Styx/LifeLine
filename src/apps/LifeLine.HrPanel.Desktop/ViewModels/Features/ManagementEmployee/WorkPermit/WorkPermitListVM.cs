@@ -1,5 +1,6 @@
 ﻿using LifeLine.Employee.Service.Client.Services.Employee.WorkPermit;
 using LifeLine.HrPanel.Desktop.Models;
+using LifeLine.HrPanel.Desktop.Services.ReferenceData;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.Common;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
@@ -11,7 +12,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
     public sealed class WorkPermitListVM
         (
             ManagementEmployeeStateService stateService,
-            IWorkPermitApiServiceFactory workPermitApiServiceFactory
+            IWorkPermitApiServiceFactory workPermitApiServiceFactory,
+            IReferenceDataCacheService cacheService
         ): BaseDocumentListVM<WorkPermitDisplay>(stateService)
     {
         protected override async Task LoadAsync(string employeeId)
@@ -25,7 +27,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
                 return;
             }
 
-            Items.Load([.. workPermits.Value.Select(workPermit => new WorkPermitDisplay(workPermit, [], [], SaveStatus.DataBase))], cleaning: true);
+            Items.Load([.. workPermits.Value.Select(workPermit => new WorkPermitDisplay(workPermit, cacheService.PermitTypes, cacheService.AdmissionStatuses, SaveStatus.DataBase))], cleaning: true);
         }
 
         protected override async Task DeleteAsync(string employeeId, WorkPermitDisplay display)

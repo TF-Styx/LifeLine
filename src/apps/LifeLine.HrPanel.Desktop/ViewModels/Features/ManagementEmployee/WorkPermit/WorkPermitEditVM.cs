@@ -2,11 +2,13 @@
 using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Models;
 using LifeLine.HrPanel.Desktop.Services.Document.DocumentProcessing;
+using LifeLine.HrPanel.Desktop.Services.ReferenceData;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.Common;
 using Shared.Contracts.Request.EmployeeService.WorkPermit;
 using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Enums;
+using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPermit
@@ -14,6 +16,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
     public sealed class WorkPermitEditVM : BaseDocumentEditVM<WorkPermitDisplay, CreateWorkPermitRequest, UpdateWorkPermitRequest>
     {
         private readonly IWorkPermitApiServiceFactory _workPermitApiServiceFactory;
+        private readonly IReferenceDataCacheService _cacheService;
 
         public WorkPermitEditVM
             (
@@ -21,13 +24,18 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
                 ManagementEmployeeStateService stateService,
                 IFileStorageService fileStorageService,
                 IDocumentProcessingService documentProcessingService,
-                IWorkPermitApiServiceFactory workPermitApiServiceFactory
+                IWorkPermitApiServiceFactory workPermitApiServiceFactory,
+                IReferenceDataCacheService cacheService
             ) : base(itemVM, stateService, fileStorageService, documentProcessingService)
         {
             _workPermitApiServiceFactory = workPermitApiServiceFactory;
+            _cacheService = cacheService;
 
             InitializeNewDisplay();
         }
+
+        public ReadOnlyObservableCollection<PermitTypeDisplay> PermitTypes => _cacheService.PermitTypes;
+        public ReadOnlyObservableCollection<AdmissionStatusDisplay> AdmissionStatuses => _cacheService.AdmissionStatuses;
 
         protected override void InitializeNewDisplay()
             => Display = new WorkPermitDisplay
@@ -63,20 +71,31 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
             ItemVM.Clear();
             _editingId = display.WorkPermitId;
 
-            Display!.WorkPermitName = display.WorkPermitName;
-            Display!.DocumentSeries = display.DocumentSeries;
-            Display!.WorkPermitNumber = display.WorkPermitNumber;
-            Display!.ProtocolNumber = display.ProtocolNumber;
-            Display!.SpecialtyName = display.SpecialtyName;
-            Display!.IssuingAuthority = display.IssuingAuthority;
-            Display!.IssueDate = display.IssueDate;
-            Display!.ExpiryDate = display.ExpiryDate;
-            Display!.FileKey = display.FileKey;
-            Display!.PermitType = display.PermitType;
-            Display!.AdmissionStatus = display.AdmissionStatus;
+            Display = new WorkPermitDisplay
+                (
+                    new WorkPermitResponse
+                    (
+                        display.Id,
+                        _stateService.EmployeeHr!.Id,
+                        display.WorkPermitName,
+                        display.DocumentSeries,
+                        display.WorkPermitNumber,
+                        display.ProtocolNumber,
+                        display.SpecialtyName,
+                        display.IssuingAuthority,
+                        display.IssueDate,
+                        display.ExpiryDate,
+                        display.FileKey,
+                        display.PermitType.Id,
+                        display.AdmissionStatus.Id
+                    ),
+                    _cacheService.PermitTypes,
+                    _cacheService.AdmissionStatuses,
+                    SaveStatus.DataBase
+                );
 
             if (display.SaveStatus == SaveStatus.DataBase && !string.IsNullOrWhiteSpace(display.FileKey))
-                await ItemVM.LoadDocumentToQueueAsync(display.FileKey, display.FileName!, display.ContentType!);
+                await ItemVM.LoadDocumentToQueueAsync(display.FileKey);
         }
 
         protected override async Task<(byte[] PdfBytes, string FileName)> ProcessFilesToPdfAsync(WorkPermitDisplay display)
@@ -201,7 +220,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
                         fileKey,
                         display.PermitType.Id,
                         display.AdmissionStatus.Id
-                    ), [], [], SaveStatus.DataBase
+                    ), 
+                    _cacheService.PermitTypes, 
+                    _cacheService.AdmissionStatuses, 
+                    SaveStatus.DataBase
                 );
 
         public override void ClearForm()

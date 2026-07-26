@@ -1,5 +1,6 @@
 ﻿using LifeLine.Employee.Service.Client.Services.Employee.PersonalDocument;
 using LifeLine.HrPanel.Desktop.Models;
+using LifeLine.HrPanel.Desktop.Services.ReferenceData;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.Common;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
@@ -10,7 +11,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
     public class PersonalDocumentListVM
         (
             ManagementEmployeeStateService stateService,
-            IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory
+            IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory,
+            IReferenceDataCacheService cacheService
         ) : BaseDocumentListVM<PersonalDocumentDisplay>(stateService)
     {
         protected override async Task LoadAsync(string employeeId)
@@ -24,7 +26,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                 return;
             }
 
-            Items.Load([.. personalDocuments.Value.Select(personalDocument => new PersonalDocumentDisplay(personalDocument, [], SaveStatus.DataBase))], cleaning: true);
+            Items.Load([.. personalDocuments.Value.Select(personalDocument => new PersonalDocumentDisplay(personalDocument, cacheService.DocumentTypes, SaveStatus.DataBase))], cleaning: true);
         }
 
         protected override async Task DeleteAsync(string employeeId, PersonalDocumentDisplay display)

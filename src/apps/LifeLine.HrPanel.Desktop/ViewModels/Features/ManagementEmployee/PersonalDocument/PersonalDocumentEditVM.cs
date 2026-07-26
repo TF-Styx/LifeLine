@@ -2,11 +2,14 @@
 using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Models;
 using LifeLine.HrPanel.Desktop.Services.Document.DocumentProcessing;
+using LifeLine.HrPanel.Desktop.Services.ReferenceData;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.Common;
 using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Enums;
+using Shared.WPF.ViewModels.Abstract;
+using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.PersonalDocument
@@ -60,13 +63,22 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
             ItemVM.Clear();
             _editingId = display.PersonalDocumentId.ToString();
 
-            Display!.DocumentNumber = display.DocumentNumber;
-            Display!.DocumentSeries = display.DocumentSeries;
-            Display!.DocumentType = display.DocumentType;
-            Display!.FileKey = display.FileKey;
+            Display = new PersonalDocumentDisplay
+            (
+                new PersonalDocumentResponse
+                (
+                    display.PersonalDocumentId,
+                    display.DocumentType?.Id != null ? Guid.Parse(display.DocumentType.Id) : Guid.Empty,
+                    display.DocumentNumber,
+                    display.DocumentSeries,
+                    display.FileKey
+                ),
+                _cacheService.DocumentTypes,
+                display.SaveStatus
+            );
 
-            if (display.SaveStatus == SaveStatus.DataBase && !string.IsNullOrWhiteSpace(display.FileKey)) 
-                await ItemVM.LoadDocumentToQueueAsync(display.FileKey, display.FileName!, display.ContentType!);
+            if (display.SaveStatus == SaveStatus.DataBase && !string.IsNullOrWhiteSpace(display.FileKey))
+                await ItemVM.LoadDocumentToQueueAsync(display.FileKey);
         }
 
         protected override async Task<(byte[] PdfBytes, string FileName)> ProcessFilesToPdfAsync(PersonalDocumentDisplay display)
@@ -176,7 +188,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                        display.DocumentSeries,
                        fileKey
                    ),
-                   [],
+                   _cacheService.DocumentTypes,
                    SaveStatus.DataBase
                );
 

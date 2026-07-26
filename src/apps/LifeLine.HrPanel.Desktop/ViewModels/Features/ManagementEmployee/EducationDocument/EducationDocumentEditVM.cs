@@ -2,11 +2,13 @@
 using LifeLine.File.Service.Client;
 using LifeLine.HrPanel.Desktop.Models;
 using LifeLine.HrPanel.Desktop.Services.Document.DocumentProcessing;
+using LifeLine.HrPanel.Desktop.Services.ReferenceData;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.Common;
 using Shared.Contracts.Request.EmployeeService.EducationDocument;
 using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Enums;
+using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.EducationDocument
@@ -14,6 +16,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
     public sealed class EducationDocumentEditVM : BaseDocumentEditVM<EducationDocumentDisplay, CreateEducationDocumentRequest, UpdateEducationDocumentRequest>
     {
         private readonly IEducationDocumentApiServiceFactory _educationDocumentApiServiceFactory;
+        private readonly IReferenceDataCacheService _cacheService;
 
         public EducationDocumentEditVM
             (
@@ -21,13 +24,18 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
                 ManagementEmployeeStateService stateService,
                 IFileStorageService fileStorageService,
                 IDocumentProcessingService documentProcessingService,
-                IEducationDocumentApiServiceFactory educationDocumentApiServiceFactory
+                IEducationDocumentApiServiceFactory educationDocumentApiServiceFactory,
+                IReferenceDataCacheService cacheService
             ) : base(itemVM, stateService, fileStorageService, documentProcessingService)
         {
             _educationDocumentApiServiceFactory = educationDocumentApiServiceFactory;
+            _cacheService = cacheService;
 
             InitializeNewDisplay();
         }
+
+        public ReadOnlyObservableCollection<DocumentTypeDisplay> DocumentTypes => _cacheService.DocumentTypes;
+        public ReadOnlyObservableCollection<EducationLevelDisplay> EducationLevels => _cacheService.EducationLevels;
 
         protected override void InitializeNewDisplay()
             => Display = new EducationDocumentDisplay
@@ -62,19 +70,30 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
             ItemVM.Clear();
             _editingId = display.EducationDocumentId;
 
-            Display!.EducationLevel = display.EducationLevel;
-            Display!.DocumentType = display.DocumentType;
-            Display!.DocumentNumber = display.DocumentNumber;
-            Display!.IssuedDate = display.IssuedDate;
-            Display!.OrganizationName = display.OrganizationName;
-            Display!.QualificationAwardedName = display.QualificationAwardedName;
-            Display!.SpecialtyName = display.SpecialtyName;
-            Display!.ProgramName = display.ProgramName;
-            Display!.TotalHours = display.TotalHours;
-            Display!.FileKey = display.FileKey;
+            Display = new EducationDocumentDisplay
+               (
+                   new EducationDocumentResponse
+                   (
+                       display.Id,
+                       _stateService.EmployeeHr!.Id,
+                       display.EducationLevel.Id,
+                       display.DocumentType.Id,
+                       display.DocumentNumber,
+                       display.IssuedDate.ToString(),
+                       display.OrganizationName,
+                       display.QualificationAwardedName,
+                       display.SpecialtyName,
+                       display.ProgramName,
+                       display.TotalHours.ToString(),
+                       display.FileKey
+                   ),
+                   _cacheService.EducationLevels,
+                   _cacheService.DocumentTypes,
+                   SaveStatus.Local
+               );
 
             if (display.SaveStatus == SaveStatus.DataBase && !string.IsNullOrWhiteSpace(display.FileKey))
-                await ItemVM.LoadDocumentToQueueAsync(display.FileKey, display.FileName!, display.ContentType!);
+                await ItemVM.LoadDocumentToQueueAsync(display.FileKey);
         }
 
         protected override async Task<(byte[] PdfBytes, string FileName)> ProcessFilesToPdfAsync(EducationDocumentDisplay display)
@@ -196,7 +215,10 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
                        display.ProgramName,
                        display.TotalHours.ToString(),
                        fileKey
-                   ), [], [], SaveStatus.Local
+                   ), 
+                   _cacheService.EducationLevels, 
+                   _cacheService.DocumentTypes, 
+                   SaveStatus.Local
                );
 
         public override void ClearForm()

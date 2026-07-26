@@ -1,5 +1,6 @@
 ﻿using LifeLine.Employee.Service.Client.Services.Employee.EducationDocument;
 using LifeLine.HrPanel.Desktop.Models;
+using LifeLine.HrPanel.Desktop.Services.ReferenceData;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.Common;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
@@ -10,8 +11,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
     public sealed class EducationDocumentListVM
         (
             ManagementEmployeeStateService stateService,
-            IEducationDocumentApiServiceFactory educationDocumentApiServiceFactory
-        ): BaseDocumentListVM<EducationDocumentDisplay>(stateService)
+            IEducationDocumentApiServiceFactory educationDocumentApiServiceFactory,
+            IReferenceDataCacheService cacheService
+        ) : BaseDocumentListVM<EducationDocumentDisplay>(stateService)
     {
         protected override async Task LoadAsync(string employeeId)
         {
@@ -24,7 +26,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
                 return;
             }
 
-            Items.Load([.. educationDocuments.Value.Select(educationDocument => new EducationDocumentDisplay(educationDocument, [], [], SaveStatus.DataBase))], cleaning: true);
+            Items.Load([.. educationDocuments.Value.Select(educationDocument => new EducationDocumentDisplay(educationDocument, cacheService.EducationLevels, cacheService.DocumentTypes, SaveStatus.DataBase))], cleaning: true);
         }
 
         protected override async Task DeleteAsync(string employeeId, EducationDocumentDisplay display)

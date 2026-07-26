@@ -1,5 +1,6 @@
 ﻿using LifeLine.Employee.Service.Client.Services.Employee.Assignment;
 using LifeLine.HrPanel.Desktop.Models;
+using LifeLine.HrPanel.Desktop.Services.ReferenceData;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.Common;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
@@ -10,7 +11,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Assign
     public sealed class AssignmentContractListVM
         (
             ManagementEmployeeStateService stateService,
-            IAssignmentApiServiceFactory assignmentApiServiceFactory
+            IAssignmentApiServiceFactory assignmentApiServiceFactory,
+            IReferenceDataCacheService cacheService
         ) : BaseDocumentListVM<AssignmentContractDisplay>(stateService)
     {
         protected override async Task LoadAsync(string employeeId)
@@ -23,8 +25,19 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Assign
                 MessageBox.Show(result.StringMessage);
                 return;
             }
-
-            Items.Load([.. result.Value.Select(x => new AssignmentContractDisplay(x.Assignment, x.Contract, [], [], [], [], [], [], SaveStatus.DataBase))], cleaning: true);
+            
+            Items.Load([.. result.Value.Select(x => new AssignmentContractDisplay
+            (
+                x.Assignment, 
+                x.Contract, 
+                cacheService.Branches, 
+                cacheService.Departments, 
+                cacheService.Positions, 
+                cacheService.Managers, 
+                cacheService.Statuses, 
+                cacheService.EmployeeTypes, 
+                SaveStatus.DataBase
+            ))], cleaning: true);
         }
 
         protected override async Task DeleteAsync(string employeeId, AssignmentContractDisplay display)
