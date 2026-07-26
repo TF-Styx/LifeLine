@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using Shared.Contracts.Request.EmployeeService.Assignment;
-using Shared.Contracts.Response.DirectoryService;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
 using Shared.Kernel.Errors;
