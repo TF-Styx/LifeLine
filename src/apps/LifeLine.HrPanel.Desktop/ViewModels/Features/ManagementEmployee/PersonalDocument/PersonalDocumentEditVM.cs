@@ -14,6 +14,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
     public class PersonalDocumentEditVM : BaseDocumentEditVM<PersonalDocumentDisplay, CreatePersonalDocumentRequest, UpdatePersonalDocumentRequest>
     {
         private readonly IPersonalDocumentApiServiceFactory _personalDocumentApiServiceFactory;
+        private readonly IReferenceDataCacheService _cacheService;
 
         public PersonalDocumentEditVM
             (
@@ -21,13 +22,17 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
                 ManagementEmployeeStateService stateService,
                 IFileStorageService fileStorageService,
                 IDocumentProcessingService documentProcessingService,
-                IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory
+                IPersonalDocumentApiServiceFactory personalDocumentApiServiceFactory,
+                IReferenceDataCacheService cacheService
             ) : base(itemVM, stateService, fileStorageService, documentProcessingService)
         {
             _personalDocumentApiServiceFactory = personalDocumentApiServiceFactory;
+            _cacheService = cacheService;
 
             InitializeNewDisplay();
         }
+
+        public ReadOnlyObservableCollection<DocumentTypeDisplay> DocumentTypes => _cacheService.DocumentTypes;
 
         protected override void InitializeNewDisplay()
             => Display = new PersonalDocumentDisplay
