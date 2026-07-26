@@ -82,6 +82,14 @@ namespace LifeLine.HrPanel.Desktop.Models
             set => SetProperty(ref _patronymic, value);
         }
 
+        private string? _branch;
+        public string? Branch
+        {
+            get => _branch;
+            set => SetProperty(ref _branch, value);
+        }
+        public void SetBranch(string id) => Branch = _branches?.FirstOrDefault(x => x.BranchId == id)?.Name ?? "Неизвестный филиал";
+
         private string? _department;
         public string? Department
         {
