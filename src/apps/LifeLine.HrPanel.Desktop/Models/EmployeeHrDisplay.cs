@@ -36,10 +36,11 @@ namespace LifeLine.HrPanel.Desktop.Models
         private EmployeeHrItemResponse _model;
 
         public string Id => _model.Id;
-        public string BranchId => _model.Assignments.FirstOrDefault()!.BranchId;
-        public string DepartmentId => _model.Assignments.FirstOrDefault()!.DepartmentId;
-        public string PositionId => _model.Assignments.FirstOrDefault()!.PositionId;
-        public string StatusId => _model.Assignments.FirstOrDefault()!.StatusId;
+
+        public string? BranchId => _model.Assignments?.FirstOrDefault()?.BranchId;
+        public string? DepartmentId => _model.Assignments?.FirstOrDefault()?.DepartmentId;
+        public string? PositionId => _model.Assignments?.FirstOrDefault()?.PositionId;
+        public string? StatusId => _model.Assignments?.FirstOrDefault()?.StatusId;
 
         public ImageSource? PersonalPhoto
         {
@@ -96,7 +97,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             get => _department;
             set => SetProperty(ref _department, value);
         }
-        public void SetDepartment(string id) => Department = _departments.FirstOrDefault(x => x.DepartmentId == id)!.Name;
+        public void SetDepartment(string id) => Department = _departments?.FirstOrDefault(x => x.DepartmentId == id)?.Name ?? "Неизвестный отдел";
 
         private string? _position;
         public string? Position
@@ -104,7 +105,7 @@ namespace LifeLine.HrPanel.Desktop.Models
             get => _position;
             set => SetProperty(ref _position, value);
         }
-        public void SetPosition(string id) => Position = _positions.FirstOrDefault(x => x.PositionId == id)!.Name;
+        public void SetPosition(string id) => Position = _positions?.FirstOrDefault(x => x.PositionId == id)?.Name ?? "Неизвестная должность";
 
         private string? _status;
         public string? Status
@@ -112,6 +113,8 @@ namespace LifeLine.HrPanel.Desktop.Models
             get => _status;
             set => SetProperty(ref _status, value);
         }
-        public void SetStatus(string id) => Status = _statuses.FirstOrDefault(x => x.Id == id)!.Name;
+        public void SetStatus(string id) => Status = _statuses?.FirstOrDefault(x => x.Id == id)?.Name ?? "Нет статуса";
+
+        public EmployeeHrItemResponse GetUnderlineModel() => _model;
     }
 }
