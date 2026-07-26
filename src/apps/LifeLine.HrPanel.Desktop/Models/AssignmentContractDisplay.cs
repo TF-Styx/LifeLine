@@ -66,11 +66,6 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
         public void SetSaveStatus(SaveStatus saveStatus) => SaveStatus = saveStatus;
 
-        public override string ToString()
-        {
-            return $"{Branch.BranchId} - {Department.DepartmentId} - {Position.PositionId} - {Manager?.Id} - {HireDate} - {TerminationDate} - {Status.Id} - {EmployeeType.Id} - {ContractNumber} - {StartDate} - {EndDate} - {Salary} - {FileKey}";
-        }
-
         #region Assignment
 
         public string Id => AssignmentId;
