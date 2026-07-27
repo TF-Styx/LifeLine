@@ -7,7 +7,11 @@ namespace LifeLine.HrPanel.Desktop.Models
     {
         private ContactInformationResponse _model = model;
 
-        public string ContactInformationId => _model.Id;
+        public string ContactInformationId
+        {
+            get => _model.Id;
+            set => _model = _model with { Id = value };
+        }
 
         private string _personalPhone = model.PersonalPhone;
         public string PersonalPhone
@@ -97,6 +101,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         {
             _model = _model with
             {
+                Id = _model.Id,
                 PersonalPhone = PersonalPhone,
                 CorporatePhone = CorporatePhone,
                 PersonalEmail = PersonalEmail,
