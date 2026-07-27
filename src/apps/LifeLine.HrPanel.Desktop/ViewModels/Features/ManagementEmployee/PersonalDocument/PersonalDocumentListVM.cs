@@ -20,6 +20,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
             var personalDocuments = await personalDocumentApiServiceFactory.Create(employeeId)
                 .GetAllByEmployeeId(employeeId);
 
+            if (_stateService.EmployeeHr?.Id != employeeId)
+                return;
+
             if (personalDocuments.IsFailure)
             {
                 MessageBox.Show(personalDocuments.StringMessage);
