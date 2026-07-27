@@ -69,9 +69,6 @@ namespace LifeLine.HrPanel.Desktop.Models
         public string? FileName { get; set; }
         public string? ContentType { get; set; } = "application/pdf";
 
-        [System.ComponentModel.Browsable(false)]
-        //public bool HasFileForUpload => FileBytes != null || (!string.IsNullOrWhiteSpace(FileKey) && System.IO.File.Exists(FileKey));
-
         public PersonalDocumentResponse GetUnderLineModel() => _model;
 
         public void RevertChanges()
