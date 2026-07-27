@@ -1,7 +1,7 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Delete;
-using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Get.GetAllWorkPermitByEmployeeId;
+using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Get.GetAllByEmployeeId;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Update;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
