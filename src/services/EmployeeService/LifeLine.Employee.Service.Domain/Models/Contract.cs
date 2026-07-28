@@ -59,7 +59,7 @@ namespace LifeLine.Employee.Service.Domain.Models
                     startDate.ToUniversalTime(), 
                     endDate.ToUniversalTime(), 
                     Salary.FromRubles(salary),
-                    bucketName != null && fileName != null ? FileUrl.Create(bucketName, fileName).Value : null
+                    !string.IsNullOrWhiteSpace(bucketName) && !string.IsNullOrWhiteSpace(fileName) ? FileUrl.Create(bucketName, fileName).Value : null
                 );
 
         internal void UpdateEmployeeType(EmployeeTypeId employeeTypeId)

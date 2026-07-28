@@ -21,15 +21,9 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.ContactInform
                 return Error.NotFound("Пользователь не найден!");
 
             employee.UpdatePersonalPhone(request.PersonalPhone);
-
-            if (!string.IsNullOrWhiteSpace(request.CorporatePhone))
-                employee.UpdateCorporatePhone(request.CorporatePhone);
-
+            employee.UpdateCorporatePhone(request.CorporatePhone);
             employee.UpdatePersonalEmail(request.PersonalEmail);
-
-            if (!string.IsNullOrWhiteSpace(request.CorporateEmail))
-                employee.UpdateCorporateEmail(request.CorporateEmail);
-
+            employee.UpdateCorporateEmail(request.CorporateEmail);
             employee.UpdateAddress(Address.Create(request.PostalCode, request.Region, request.City, request.Street, request.Building, request.Apartment));
 
             await context.SaveChangesAsync(cancellationToken);

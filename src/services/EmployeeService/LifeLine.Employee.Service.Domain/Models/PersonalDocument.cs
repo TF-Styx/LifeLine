@@ -40,9 +40,9 @@ namespace LifeLine.Employee.Service.Domain.Models
                     PersonalDocumentId.New(), 
                     EmployeeId.Create(employeeId),
                     DocumentTypeId.Create(documentTypeId), 
-                    DocumentNumber.Create(documentNumber), 
-                    documentSeries != null ? DocumentSeries.Create(documentSeries) : null,
-                    bucketName != null && fileName != null ? FileUrl.Create(bucketName, fileName).Value : null
+                    DocumentNumber.Create(documentNumber),
+                    !string.IsNullOrWhiteSpace(documentSeries) ? DocumentSeries.Create(documentSeries) : null,
+                    !string.IsNullOrWhiteSpace(bucketName) && !string.IsNullOrWhiteSpace(fileName) ? FileUrl.Create(bucketName, fileName).Value : null
                 );
 
         internal void UpdateDocumentType(DocumentTypeId documentTypeId)
