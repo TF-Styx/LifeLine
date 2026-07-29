@@ -49,6 +49,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             _stateService = stateService;
 
             SelectCommandAsync = new RelayCommandAsync(Execute_SelectCommandAsync);
+            PreviewCommandAsync = new RelayCommandAsync(Execute_PreviewCommandAsync);
             UploadPersonalPhotoAsync = new RelayCommandAsync(Execute_UploadPersonalPhotoAsync);
             DeleteImageCommandAsync = new RelayCommandAsync(Execute_DeleteImageCommandAsync);
         }
@@ -95,6 +96,51 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при обработке изображения: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public RelayCommandAsync? PreviewCommandAsync { get; private set; }
+        private async Task Execute_PreviewCommandAsync()
+        {
+            if (string.IsNullOrWhiteSpace(PhotoUrl) && Photo == null)
+            {
+                MessageBox.Show("Фотография отсутствует", "Предпросмотр",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
+                string? tempPath = null;
+                bool isSaved = !string.IsNullOrWhiteSpace(PhotoUrl)
+                               && PhotoUrl.Contains(":")
+                               && !Path.IsPathFullyQualified(PhotoUrl);
+
+                if (isSaved)
+                {
+                    var fileName = Path.GetFileName(PhotoUrl);
+                    tempPath = await _filePreviewService.DownloadRemoteFileToTempAsync(PhotoUrl, fileName);
+                }
+                else if (!string.IsNullOrWhiteSpace(PhotoUrl) && System.IO.File.Exists(PhotoUrl))
+                {
+                    var fileName = _fileName ?? Path.GetFileName(PhotoUrl);
+                    tempPath = _filePreviewService.CopyLocalFileToTempAsync(PhotoUrl, fileName);
+                }
+
+                if (string.IsNullOrWhiteSpace(tempPath))
+                {
+                    MessageBox.Show("Не удалось подготовить файл для просмотра", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                _filePreviewService.OpenInDefaultApplication(tempPath);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[PersonalPhotoVM] [PreviewCommand] Ошибка: {ex.Message}");
+                MessageBox.Show($"Ошибка при открытии фотографии: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -156,7 +202,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                 return;
             }
 
-            PhotoUrl = fileResult.Value.FileName;
+            PhotoUrl = $"{FileConst.BUCKET_NAME}:{fileResult.Value.FileName}";
 
             var employeeHrResponse = _stateService.EmployeeHr with { PersonalPhoto = $"{FileConst.BUCKET_NAME}:{fileResult.Value.FileName}" };
 
@@ -175,7 +221,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features
                 return;
             }
 
-            bool isSaved = !string.IsNullOrWhiteSpace(PhotoUrl) && PhotoUrl.Contains(":");
+            bool isSaved = !string.IsNullOrWhiteSpace(PhotoUrl)
+                           && PhotoUrl.Contains(":")
+                           && !Path.IsPathFullyQualified(PhotoUrl);
 
             if (!isSaved)
             {
