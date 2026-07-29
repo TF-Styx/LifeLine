@@ -43,7 +43,7 @@
                       HorizontalAlignment="Center"/>
 
         <Border Grid.Column="2" Visibility="{Binding IsEditPanelVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-            <!-- Форма редактирования филиала -->
+            <!-- Форма редактирования аккредитации/сертификаты -->
             <views:WorkPermitEdit DataContext="{Binding EditVM}"/>
         </Border>
     </Grid>

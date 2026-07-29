@@ -5,7 +5,6 @@ using LifeLine.HrPanel.Desktop.ViewModels.Features.Common;
 using Shared.WPF.Enums;
 using Shared.WPF.Extensions;
 using System.Windows;
-using Terminex.Common.Results;
 
 namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPermit
 {
@@ -20,6 +19,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
         {
             var workPermits = await workPermitApiServiceFactory.Create(employeeId)
                 .GetAllByEmployeeId(employeeId);
+
+            if (_stateService.EmployeeHr?.Id != employeeId)
+                return;
 
             if (workPermits.IsFailure)
             {
@@ -38,7 +40,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                throw new Exception(result.StringMessage);
+                return;
             }
         }
     }

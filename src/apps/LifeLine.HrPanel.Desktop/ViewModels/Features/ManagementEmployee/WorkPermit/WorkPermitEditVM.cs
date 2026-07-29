@@ -72,27 +72,27 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
             _editingId = display.WorkPermitId;
 
             Display = new WorkPermitDisplay
+            (
+                new WorkPermitResponse
                 (
-                    new WorkPermitResponse
-                    (
-                        display.Id,
-                        _stateService.EmployeeHr!.Id,
-                        display.WorkPermitName,
-                        display.DocumentSeries,
-                        display.WorkPermitNumber,
-                        display.ProtocolNumber,
-                        display.SpecialtyName,
-                        display.IssuingAuthority,
-                        display.IssueDate,
-                        display.ExpiryDate,
-                        display.FileKey,
-                        display.PermitType.Id,
-                        display.AdmissionStatus.Id
-                    ),
-                    _cacheService.PermitTypes,
-                    _cacheService.AdmissionStatuses,
-                    SaveStatus.DataBase
-                );
+                    display.Id,
+                    _stateService.EmployeeHr!.Id,
+                    display.WorkPermitName,
+                    display.DocumentSeries,
+                    display.WorkPermitNumber,
+                    display.ProtocolNumber,
+                    display.SpecialtyName,
+                    display.IssuingAuthority,
+                    display.IssueDate,
+                    display.ExpiryDate,
+                    display.FileKey,
+                    display.PermitType.Id,
+                    display.AdmissionStatus.Id
+                ),
+                _cacheService.PermitTypes,
+                _cacheService.AdmissionStatuses,
+                SaveStatus.DataBase
+            );
 
             if (display.SaveStatus == SaveStatus.DataBase && !string.IsNullOrWhiteSpace(display.FileKey))
                 await ItemVM.LoadDocumentToQueueAsync(display.FileKey);
@@ -101,12 +101,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
         protected override async Task<(byte[] PdfBytes, string FileName)> ProcessFilesToPdfAsync(WorkPermitDisplay display)
         {
             var result = await _documentProcessingService.ProcessFilesToPdfAsync
-                (
-                    ItemVM.PendingFilePaths,
-                    display.PermitType.Name,
-                    _stateService.EmployeeHr!.Id,
-                    display.WorkPermitName
-                );
+            (
+                ItemVM.PendingFilePaths,
+                display.PermitType.Name,
+                _stateService.EmployeeHr!.Id,
+                display.WorkPermitName
+            );
 
             if (result.IsFailure)
             {
@@ -119,13 +119,16 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
 
         protected override async Task<string> UploadFileAsync(byte[] pdfBytes, string fileName, WorkPermitDisplay display)
         {
+            var employeeId = _stateService.EmployeeHr!.Id;
+
+
             var request = new UploadFileRequest
             (
                 BucketName: FileConst.BUCKET_NAME,
                 AdditionalName: display.PermitType.Name,
                 SubFolder: FileConst.BuildEmployeeFolder
                 (
-                    _stateService.EmployeeHr!.Id,
+                    employeeId,
                     EmployeeFolderType.WorkPermit
                 ),
                 FileBytes: pdfBytes,
@@ -138,7 +141,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                throw new Exception(result.StringMessage);
+                return null!;
             }
 
             return result.Value!.FileName;
@@ -146,23 +149,25 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
 
         protected override async Task<string> CreateAsync(WorkPermitDisplay display, string fileKey)
         {
-            var request = new CreateWorkPermitRequest
-                (
-                    display.WorkPermitName,
-                    display.DocumentSeries,
-                    display.WorkPermitNumber,
-                    display.ProtocolNumber,
-                    display.SpecialtyName,
-                    display.IssuingAuthority,
-                    display.IssueDate,
-                    display.ExpiryDate,
-                    FileConst.BUCKET_NAME,
-                    fileKey,
-                    display.PermitType.Id,
-                    display.AdmissionStatus.Id
-                );
+            var employeeId = _stateService.EmployeeHr!.Id;
 
-            var result = await _workPermitApiServiceFactory.Create(_stateService.EmployeeHr!.Id)
+            var request = new CreateWorkPermitRequest
+            (
+                display.WorkPermitName,
+                display.DocumentSeries,
+                display.WorkPermitNumber,
+                display.ProtocolNumber,
+                display.SpecialtyName,
+                display.IssuingAuthority,
+                display.IssueDate,
+                display.ExpiryDate,
+                FileConst.BUCKET_NAME,
+                fileKey,
+                display.PermitType.Id,
+                display.AdmissionStatus.Id
+            );
+
+            var result = await _workPermitApiServiceFactory.Create(employeeId)
                 .AddAsync<CreateWorkPermitRequest, string>(request);
 
             if (result.IsFailure)
@@ -176,6 +181,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
 
         protected override async Task UpdateAsync(string id, WorkPermitDisplay display, string fileKey)
         {
+            var employeeId = _stateService.EmployeeHr!.Id;
+
             var request = new UpdateWorkPermitRequest
                 (
                     display.WorkPermitName,
@@ -192,7 +199,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
                     display.AdmissionStatus.Id
                 );
 
-            var result = await _workPermitApiServiceFactory.Create(_stateService.EmployeeHr!.Id)
+            var result = await _workPermitApiServiceFactory.Create(employeeId)
                 .UpdateWorkPermitAsync(Guid.Parse(id), request);
 
             if (result.IsFailure)
@@ -204,27 +211,27 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPe
 
         protected override WorkPermitDisplay CreateDisplayFormResponse(string responseId, WorkPermitDisplay display, string fileKey)
             => new WorkPermitDisplay
-                (
-                    new WorkPermitResponse
-                    (
-                        responseId,
-                        _stateService.EmployeeHr!.Id,
-                        display.WorkPermitName,
-                        display.DocumentSeries,
-                        display.WorkPermitNumber,
-                        display.ProtocolNumber,
-                        display.SpecialtyName,
-                        display.IssuingAuthority,
-                        display.IssueDate,
-                        display.ExpiryDate,
-                        fileKey,
-                        display.PermitType.Id,
-                        display.AdmissionStatus.Id
-                    ), 
-                    _cacheService.PermitTypes, 
-                    _cacheService.AdmissionStatuses, 
-                    SaveStatus.DataBase
-                );
+               (
+                   new WorkPermitResponse
+                   (
+                       responseId,
+                       _stateService.EmployeeHr!.Id,
+                       display.WorkPermitName,
+                       display.DocumentSeries,
+                       display.WorkPermitNumber,
+                       display.ProtocolNumber,
+                       display.SpecialtyName,
+                       display.IssuingAuthority,
+                       display.IssueDate,
+                       display.ExpiryDate,
+                       fileKey,
+                       display.PermitType.Id,
+                       display.AdmissionStatus.Id
+                   ), 
+                   _cacheService.PermitTypes, 
+                   _cacheService.AdmissionStatuses, 
+                   SaveStatus.DataBase
+               );
 
         public override void ClearForm()
         {
