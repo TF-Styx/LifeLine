@@ -102,7 +102,7 @@
                                         <!-- Редактирование -->
                                         <Button Width="20" Margin="0 0 5 0" 
                                                 Foreground="#c7d22d" ToolTip="Редактирование"
-                                                Command="{Binding DataContext.EditBranchCommand, 
+                                                Command="{Binding DataContext.EditCommand, 
                                                                   RelativeSource={RelativeSource AncestorType=ListView}}" 
                                                 CommandParameter="{Binding }"
                                                 Style="{StaticResource Button.Icon}">
@@ -112,7 +112,7 @@
                                         <!-- Удалить -->
                                         <Button Width="20" Margin="0 0 0 0" 
                                                 Foreground="#F06870" ToolTip="Удалить"
-                                                Command="{Binding DataContext.DeleteBranchCommandAsync, 
+                                                Command="{Binding DataContext.DeleteCommandAsync, 
                                                                   RelativeSource={RelativeSource AncestorType=ListView}}" 
                                                 CommandParameter="{Binding }" 
                                                 Style="{StaticResource Button.Icon}">

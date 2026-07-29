@@ -71,26 +71,26 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
             _editingId = display.EducationDocumentId;
 
             Display = new EducationDocumentDisplay
-               (
-                   new EducationDocumentResponse
-                   (
-                       display.Id,
-                       _stateService.EmployeeHr!.Id,
-                       display.EducationLevel.Id,
-                       display.DocumentType.Id,
-                       display.DocumentNumber,
-                       display.IssuedDate.ToString(),
-                       display.OrganizationName,
-                       display.QualificationAwardedName,
-                       display.SpecialtyName,
-                       display.ProgramName,
-                       display.TotalHours.ToString(),
-                       display.FileKey
-                   ),
-                   _cacheService.EducationLevels,
-                   _cacheService.DocumentTypes,
-                   SaveStatus.Local
-               );
+            (
+                new EducationDocumentResponse
+                (
+                    display.Id,
+                    _stateService.EmployeeHr!.Id,
+                    display.EducationLevel.Id,
+                    display.DocumentType.Id,
+                    display.DocumentNumber,
+                    display.IssuedDate.ToString(),
+                    display.OrganizationName,
+                    display.QualificationAwardedName,
+                    display.SpecialtyName,
+                    display.ProgramName,
+                    display.TotalHours.ToString(),
+                    display.FileKey
+                ),
+                _cacheService.EducationLevels,
+                _cacheService.DocumentTypes,
+                SaveStatus.Local
+            );
 
             if (display.SaveStatus == SaveStatus.DataBase && !string.IsNullOrWhiteSpace(display.FileKey))
                 await ItemVM.LoadDocumentToQueueAsync(display.FileKey);
@@ -109,7 +109,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                throw new Exception(result.StringMessage);
+                return (null, null)!;
             }
 
             return result.Value;
@@ -117,13 +117,15 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
 
         protected override async Task<string> UploadFileAsync(byte[] pdfBytes, string fileName, EducationDocumentDisplay display)
         {
+            var employeeId = _stateService.EmployeeHr!.Id;
+
             var request = new UploadFileRequest
             (
                 BucketName: FileConst.BUCKET_NAME,
                 AdditionalName: display.DocumentType.Name,
                 SubFolder: FileConst.BuildEmployeeFolder
                 (
-                    _stateService.EmployeeHr!.Id,
+                    employeeId,
                     EmployeeFolderType.EducationDocument
                 ),
                 FileBytes: pdfBytes,
@@ -136,7 +138,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                throw new Exception(result.StringMessage);
+                return null!;
             }
 
             return result.Value!.FileName;
@@ -144,6 +146,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
 
         protected override async Task<string> CreateAsync(EducationDocumentDisplay display, string fileKey)
         {
+            var employeeId = _stateService.EmployeeHr!.Id;
+
             var request = new CreateEducationDocumentRequest
             (
                 Guid.Parse(display.EducationLevel.Id),
@@ -159,13 +163,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
                 fileKey
             );
 
-            var result = await _educationDocumentApiServiceFactory.Create(_stateService.EmployeeHr!.Id)
+            var result = await _educationDocumentApiServiceFactory.Create(employeeId)
                 .AddAsync<CreateEducationDocumentRequest, string>(request);
 
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                throw new Exception(result.StringMessage);
+                return null!;
             }
 
             return result.Value;
@@ -173,6 +177,8 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
 
         protected override async Task UpdateAsync(string id, EducationDocumentDisplay display, string fileKey)
         {
+            var employeeId = _stateService.EmployeeHr!.Id;
+
             var request = new UpdateEducationDocumentRequest
             (
                 display.EducationLevel.Id,
@@ -188,13 +194,13 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
                 fileKey
             );
 
-            var result = await _educationDocumentApiServiceFactory.Create(_stateService.EmployeeHr!.Id)
+            var result = await _educationDocumentApiServiceFactory.Create(employeeId)
                 .UpdateEducationDocumentAsync(Guid.Parse(id), request);
 
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                throw new Exception(result.StringMessage);
+                return;
             }
         }
 

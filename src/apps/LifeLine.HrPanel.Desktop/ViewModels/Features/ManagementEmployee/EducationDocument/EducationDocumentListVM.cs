@@ -20,6 +20,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
             var educationDocuments = await educationDocumentApiServiceFactory.Create(employeeId)
                 .GetAllByEmployeeId(employeeId);
 
+            if (_stateService.EmployeeHr?.Id != employeeId)
+                return;
+
             if (educationDocuments.IsFailure)
             {
                 MessageBox.Show(educationDocuments.StringMessage);
@@ -37,7 +40,6 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
             if (result.IsFailure)
             {
                 MessageBox.Show(result.StringMessage);
-                //throw new Exception(result.StringMessage);
                 return;
             }
         }
