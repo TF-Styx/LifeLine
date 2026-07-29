@@ -20,7 +20,7 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> Create([FromRoute] Guid employeeId, [FromBody] CreateEmployeeSpecialtyRequest request, CancellationToken cancellationToken = default)
         {
-            var command = new CreateEmployeeSpecialtyCommand(employeeId, request.SpecialtyId);
+            var command = new CreateEmployeeSpecialtyCommand(employeeId, Guid.Parse(request.SpecialtyId));
 
             var result = await _mediator.Send(command, cancellationToken);
 
