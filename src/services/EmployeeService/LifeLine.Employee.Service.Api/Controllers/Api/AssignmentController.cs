@@ -23,20 +23,21 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         {
             var command = new CreateAssignmentCommand
                 (
-                    employeeId, 
-                    Guid.Parse(request.PositionId), 
+                    employeeId,
+                    Guid.Parse(request.PositionId),
                     Guid.Parse(request.DepartmentId),
-                    request.ManagerId != null ? Guid.Parse(request.ManagerId) : null, 
-                    request.HireDate, 
-                    request.TerminationDate, 
-                    Guid.Parse(request.StatusId), 
+                    Guid.Parse(request.BranchId),
+                    request.ManagerId != null ? Guid.Parse(request.ManagerId) : null,
+                    request.HireDate,
+                    request.TerminationDate,
+                    Guid.Parse(request.StatusId),
                     new CreateAssignmentContractCommand
                     (
-                        Guid.Parse(request.Contract.EmployeeTypeId), 
-                        request.Contract.ContractNumber, 
-                        request.Contract.StartDate, 
-                        request.Contract.EndDate, 
-                        request.Contract.Salary, 
+                        Guid.Parse(request.Contract.EmployeeTypeId),
+                        request.Contract.ContractNumber,
+                        request.Contract.StartDate,
+                        request.Contract.EndDate,
+                        request.Contract.Salary,
                         request.Contract.BucketName,
                         request.Contract.FileName
                     )
