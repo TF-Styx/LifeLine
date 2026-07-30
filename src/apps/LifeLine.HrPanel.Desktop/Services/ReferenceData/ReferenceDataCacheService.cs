@@ -5,7 +5,7 @@ using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
 using LifeLine.Directory.Service.Client.Services.Hospital;
 using LifeLine.Directory.Service.Client.Services.PermitType;
-using LifeLine.Directory.Service.Client.Services.Position.Factories;
+using LifeLine.Directory.Service.Client.Services.Position;
 using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
 using LifeLine.Employee.Service.Client.Services.EmployeeType;
@@ -31,7 +31,7 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
         private readonly IHospitalReadOnlyService _hospitalService;
         private readonly IBranchReadOnlyService _branchService;
         private readonly IDepartmentReadOnlyService _departmentService;
-        private readonly IPositionReadOnlyApiServiceFactory _positionService;
+        private readonly IGetAllPositionService _positionService;
 
         private readonly ObservableCollection<GenderDisplay> _genders = [];
         private readonly ObservableCollection<StatusDisplay> _statuses = [];
@@ -61,7 +61,7 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
                 IHospitalReadOnlyService hospitalService,
                 IBranchReadOnlyService branchService,
                 IDepartmentReadOnlyService departmentService,
-                IPositionReadOnlyApiServiceFactory positionService
+                IGetAllPositionService positionService
             )
         {
             _genderService = genderService;
@@ -110,21 +110,21 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
             var positionsTask = GetAllPositions();
 
             await Task.WhenAll
-                (
-                    gendersTask, 
-                    statusesTask, 
-                    documentTypesTask, 
-                    permitTypesTask, 
-                    admissionStatusesTask, 
-                    educationLevelsTask, 
-                    employeeTypesTask, 
-                    specialtiesTask, 
-                    managersTask, 
-                    hospitalsTask,
-                    branchesTask,
-                    departmentsTask,
-                    positionsTask
-                );
+            (
+                gendersTask, 
+                statusesTask, 
+                documentTypesTask, 
+                permitTypesTask, 
+                admissionStatusesTask, 
+                educationLevelsTask, 
+                employeeTypesTask, 
+                specialtiesTask, 
+                managersTask, 
+                hospitalsTask,
+                branchesTask,
+                departmentsTask,
+                positionsTask
+            );
         }
 
         public ReadOnlyObservableCollection<GenderDisplay> Genders { get; }
@@ -226,9 +226,9 @@ namespace LifeLine.HrPanel.Desktop.Services.ReferenceData
         public ReadOnlyObservableCollection<PositionDisplay> Positions { get; }
         private async Task GetAllPositions()
         {
-            var positions = await _positionService.Create(Guid.NewGuid().ToString()).GetAllAsync();
+            var positions = await _positionService.GetAllAsync();
 
-            _positions.Load([.. positions.Select(position => new PositionDisplay(position))], cleaning: true);
+            _positions.Load([.. positions.Select(p => new PositionDisplay(p))], cleaning: true);
         }
     }
 }
