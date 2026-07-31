@@ -16,6 +16,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee
             EmployeeContextChanged?.Invoke(value.Id);
         }
 
+        public void UpdateEmployeeData(EmployeeHrItemResponse response)
+        {
+            EmployeeHr = response;
+            EmployeeContextChanged?.Invoke(response.Id);
+        }
+
         public void ClearEmployee()
         {
             if (EmployeeHr == null)
