@@ -1,4 +1,6 @@
-﻿using LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee;
+﻿using LifeLine.HrPanel.Desktop.Services.ReferenceData;
+using LifeLine.HrPanel.Desktop.ViewModels.Features;
+using LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.AssignmentContract;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.EducationDocument;
 using LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Employee;
@@ -13,6 +15,16 @@ namespace LifeLine.HrPanel.Desktop.Ioc
         public static IServiceCollection UseEmployeeManagement(this IServiceCollection services)
         {
             services.AddSingleton<ManagementEmployeeStateService>();
+
+            services.AddSingleton<IReferenceDataCacheService, ReferenceDataCacheService>();
+            services.AddTransient<IAssignmentCascadeService, AssignmentCascadeService>();
+
+            services.AddTransient<PendingFileItemVM>();
+
+            services.AddTransient<PersonalInfoVM>();
+            services.AddTransient<PersonalPhotoVM>();
+            services.AddTransient<ContactInformationVM>();
+            services.AddTransient<SpecialtiesVM>();
 
             services.AddTransient<EmployeeListVM>();
             services.AddTransient<EmployeeEditVM>();
