@@ -8,7 +8,6 @@ using Shared.Contracts.Request.EmployeeService.PersonalDocument;
 using Shared.Contracts.Request.Files;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Enums;
-using Shared.WPF.ViewModels.Abstract;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -84,12 +83,12 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Person
         protected override async Task<(byte[] PdfBytes, string FileName)> ProcessFilesToPdfAsync(PersonalDocumentDisplay display)
         {
             var result = await _documentProcessingService.ProcessFilesToPdfAsync
-                (
-                    ItemVM.PendingFilePaths,
-                    display.DocumentType.Name,
-                    _stateService.EmployeeHr!.Id,
-                    display.DocumentNumber
-                );
+            (
+                ItemVM.PendingFilePaths,
+                display.DocumentType.Name,
+                _stateService.EmployeeHr!.Id,
+                display.DocumentNumber
+            );
 
             if (result.IsFailure)
             {
