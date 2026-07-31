@@ -47,7 +47,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Educat
                        string.Empty,
                        string.Empty,
                        string.Empty,
-                       string.Empty,
+                       DateTime.Now.ToString(),
                        string.Empty,
                        string.Empty,
                        string.Empty,
