@@ -13,10 +13,6 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddTransient<EmployeePageVM>();
             services.AddSingleton<Func<EmployeePageVM>>(provider => () => provider.GetRequiredService<EmployeePageVM>());
 
-            services.AddTransient<IPageFactory, EmployeeCreatePageFactory>();
-            services.AddTransient<EmployeeCreatePageVM>();
-            services.AddSingleton<Func<EmployeeCreatePageVM>>(provider => () => provider.GetRequiredService<EmployeeCreatePageVM>());
-
             services.AddTransient<IPageFactory, ManagementHospitalPageFactory>();
             services.AddTransient<ManagementHospitalPageVM>();
             services.AddSingleton<Func<ManagementHospitalPageVM>>(provider => () => provider.GetRequiredService<ManagementHospitalPageVM>());
