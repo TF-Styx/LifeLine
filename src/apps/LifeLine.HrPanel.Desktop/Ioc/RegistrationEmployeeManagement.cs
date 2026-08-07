@@ -17,7 +17,7 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddSingleton<ManagementEmployeeStateService>();
 
             services.AddSingleton<IReferenceDataCacheService, ReferenceDataCacheService>();
-            services.AddTransient<IAssignmentCascadeService, AssignmentCascadeService>();
+            services.AddSingleton<IAssignmentCascadeService, AssignmentCascadeService>();
 
             services.AddTransient<PendingFileItemVM>();
 
