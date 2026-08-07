@@ -42,8 +42,36 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Assign
         public async Task InitializeAsync()
         {
             await _cascadeService.InitializeAsync();
+        }
 
-            await SubscribeToCascadeChanges();
+        private void SetDisplay(AssignmentContractDisplay? value)
+        {
+            if (_display is AssignmentContractDisplay oldDisplay)
+                oldDisplay.PropertyChanged -= OnDisplayPropertyChanged;
+
+            base.Display = value;
+
+            if (value is AssignmentContractDisplay newDisplay)
+                newDisplay.PropertyChanged += OnDisplayPropertyChanged;
+        }
+
+        private async void OnDisplayPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            try
+            {
+                if (_isLoading) return;
+
+                if (e.PropertyName == nameof(AssignmentContractDisplay.Hospital))
+                    await OnHospitalChangedAsync();
+                else if (e.PropertyName == nameof(AssignmentContractDisplay.Branch))
+                    await OnBranchChangedAsync();
+                else if (e.PropertyName == nameof(AssignmentContractDisplay.Department))
+                    await OnDepartmentChangedAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка каскадной загрузки: {ex.Message}");
+            }
         }
 
         #region Списки
@@ -61,24 +89,11 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Assign
 
         #region Заполнение списков
 
-        private async Task SubscribeToCascadeChanges()
-        {
-            if (Display is INotifyPropertyChanged npc)
-            {
-                npc.PropertyChanged += async (s, e) =>
-                {
-                    if (e.PropertyName == nameof(AssignmentContractDisplay.Hospital))
-                        await OnHospitalChangedAsync();
-                    else if (e.PropertyName == nameof(AssignmentContractDisplay.Branch))
-                        await OnBranchChangedAsync();
-                    else if (e.PropertyName == nameof(AssignmentContractDisplay.Department))
-                        await OnDepartmentChangedAsync();
-                };
-            }
-        }
-
         private async Task OnHospitalChangedAsync()
         {
+            if (_isLoading)
+                return;
+
             Display!.Branch = null!;
             Display!.Department = null!;
             Display!.Position = null!;
@@ -94,6 +109,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Assign
 
         private async Task OnBranchChangedAsync()
         {
+            if (_isLoading)
+                return;
+
             Display!.Department = null!;
             Display!.Position = null!;
 
@@ -108,6 +126,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Assign
 
         private async Task OnDepartmentChangedAsync()
         {
+            if (_isLoading)
+                return;
+
             Display!.Position = null!;
 
             if (Display!.Department is null)
@@ -122,104 +143,85 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Assign
         #endregion
 
         protected override void InitializeNewDisplay()
-            => Display = new AssignmentContractDisplay
+        {
+            var newDisplay = new AssignmentContractDisplay
             (
-                 new AssignmentResponse
-                 (
-                     string.Empty,
-                     string.Empty,
-                     string.Empty,
-                     string.Empty,
-                     string.Empty,
-                     string.Empty,
-                     DateTime.Now,
-                     DateTime.Now,
-                     string.Empty,
-                     string.Empty
-                 ),
-                 new ContractResponse
-                 (
-                     string.Empty,
-                     string.Empty,
-                     string.Empty,
-                     string.Empty,
-                     DateTime.Now,
-                     DateTime.Now,
-                     decimal.Zero,
-                     string.Empty
-                 ),
-                 [], [], [], [], [], [], SaveStatus.Local
+                new AssignmentResponse
+                (
+                    string.Empty, string.Empty, string.Empty, string.Empty,
+                    string.Empty, string.Empty, DateTime.Now, DateTime.Now,
+                    string.Empty, string.Empty
+                ),
+                new ContractResponse
+                (
+                    string.Empty, string.Empty, string.Empty, string.Empty,
+                    DateTime.Now, DateTime.Now, decimal.Zero, string.Empty
+                ),
+                _cascadeService.Branches,
+                _cascadeService.Departments,
+                _cascadeService.Positions,
+                _cacheService.Managers,
+                _cacheService.Statuses,
+                _cacheService.EmployeeTypes,
+                SaveStatus.Local
             );
+
+            SetDisplay(newDisplay);
+        }
 
         private bool _isLoading;
 
         public async Task LoadDocumentAsync(AssignmentContractDisplay display)
         {
+            if (display == null)
+            {
+                ClearForm();
+                return;
+            }
+
             _isLoading = true;
 
             try
             {
-                if (display == null)
-                {
-                    ClearForm();
-                    return;
-                }
-
-                base.LoadDocument(display, display.AssignmentId.ToString(), display.FileKey);
-
-                ItemVM.Clear();
                 _editingId = display.AssignmentId.ToString();
-
-                Display = new AssignmentContractDisplay
-                (
-                     new AssignmentResponse
-                     (
-                         display.Id,
-                         _stateService.EmployeeHr!.Id,
-                         display.Position.PositionId,
-                         display.Department.DepartmentId,
-                         display.Branch.BranchId,
-                         display.Manager != null ? display.Manager.Id : null,
-                         display.HireDate,
-                         display.TerminationDate,
-                         display.Status.Id,
-                         display.ContractId
-                     ),
-                     new ContractResponse
-                     (
-                         _stateService.EmployeeHr!.Id,
-                         display.ContractId,
-                         display.ContractNumber,
-                         display.EmployeeType.Id,
-                         display.StartDate,
-                         display.EndDate,
-                         display.Salary,
-                         display.FileKey
-                     ),
-                     _cacheService.Branches,
-                     _cacheService.Departments,
-                     _cacheService.Positions,
-                     _cacheService.Managers,
-                     _cacheService.Statuses,
-                     _cacheService.EmployeeTypes,
-                     SaveStatus.Local
-                );
 
                 if (display.SaveStatus == SaveStatus.DataBase && !string.IsNullOrWhiteSpace(display.FileKey))
                     await ItemVM.LoadDocumentToQueueAsync(display.FileKey);
 
-                if (display.Hospital is not null)
+                var hospitalId = display.Hospital?.HospitalId ?? display.Branch?.HospitalId;
+
+                if (!string.IsNullOrEmpty(hospitalId))
                 {
-                    await _cascadeService.LoadBranchesByHospitalIdAsync(display.Hospital.HospitalId);
+                    await _cascadeService.LoadBranchesByHospitalIdAsync(hospitalId);
 
-                    if (display.Branch is not null)
+                    var branch = _cascadeService.Branches.FirstOrDefault(x => x.BranchId == display.BranchId);
+                    if (branch != null)
                     {
-                        await _cascadeService.LoadDepartmentsByBranchIdAsync(display.Branch.BranchId);
+                        await _cascadeService.LoadDepartmentsByBranchIdAsync(branch.BranchId);
 
-                        if (display.Department is not null)
-                            await _cascadeService.LoadPositionsByDepartmentIdAsync(display.Department.DepartmentId);
+                        var dept = _cascadeService.Departments.FirstOrDefault(x => x.DepartmentId == display.DepartmentId);
+
+                        if (dept != null)
+                            await _cascadeService.LoadPositionsByDepartmentIdAsync(dept.DepartmentId);
                     }
                 }
+
+                var newDisplay = new AssignmentContractDisplay(
+                     display.GetUnderLineModelAssignment(),
+                     display.GetUnderLineModelContract(),
+                     _cascadeService.Branches, 
+                     _cascadeService.Departments,
+                     _cascadeService.Positions,
+                     _cacheService.Managers,
+                     _cacheService.Statuses,
+                     _cacheService.EmployeeTypes,
+                     SaveStatus.DataBase
+                );
+
+                if (!string.IsNullOrEmpty(hospitalId))
+                    newDisplay.Hospital = _cascadeService.Hospitals.FirstOrDefault(h => h.HospitalId == hospitalId)!;
+
+                SetDisplay(newDisplay);
             }
             finally
             {
@@ -279,6 +281,7 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Assign
                 (
                     display.Position.PositionId,
                     display.Department.DepartmentId,
+                    display.Branch.BranchId,
                     display.Manager != null ? display.Manager.Id : null,
                     display.HireDate,
                     display.TerminationDate,
@@ -367,9 +370,9 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Assign
                      display.Salary,
                      display.FileKey
                  ),
-                 _cacheService.Branches, 
-                 _cacheService.Departments, 
-                 _cacheService.Positions, 
+                 _cascadeService.Branches, 
+                 _cascadeService.Departments,
+                 _cascadeService.Positions, 
                  _cacheService.Managers, 
                  _cacheService.Statuses, 
                  _cacheService.EmployeeTypes, 
@@ -378,22 +381,34 @@ namespace LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Assign
 
         public override void ClearForm()
         {
-            Display!.Position = null!;
-            Display!.Department = null!;
-            Display!.Branch = null!;
-            Display!.Manager = null!;
-            Display!.HireDate = DateTime.Now;
-            Display!.TerminationDate = DateTime.Now;
-            Display!.Status = null!;
+            _isLoading = true;
 
-            Display!.EmployeeType = null!;
-            Display!.ContractNumber = string.Empty;
-            Display!.StartDate = DateTime.Now;
-            Display!.EndDate = DateTime.Now;
-            Display!.Salary = decimal.Zero;
-            Display!.FileKey = string.Empty;
+            try
+            {
+                if (Display != null)
+                {
+                    Display.Position = null!;
+                    Display.Department = null!;
+                    Display.Branch = null!;
+                    Display.Hospital = null!;
+                    Display.Manager = null!;
+                    Display.HireDate = DateTime.Now;
+                    Display.TerminationDate = DateTime.Now;
+                    Display.Status = null!;
+                    Display.EmployeeType = null!;
+                    Display.ContractNumber = string.Empty;
+                    Display.StartDate = DateTime.Now;
+                    Display.EndDate = DateTime.Now;
+                    Display.Salary = decimal.Zero;
+                    Display.FileKey = string.Empty;
+                }
 
-            base.ClearForm();
+                base.ClearForm();
+            }
+            finally
+            {
+                _isLoading = false;
+            }
         }
     }
 }
