@@ -1,7 +1,7 @@
 ﻿using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Create;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.CreateMany;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Delete;
-using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Get.GetAllWorkPermitByEmployeeId;
+using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Get.GetAllByEmployeeId;
 using LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Update;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -34,8 +34,8 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                     request.ExpiryDate,
                     request.BucketName,
                     request.FileName,
-                    request.PermitTypeId,
-                    request.AdmissionStatusId
+                    Guid.Parse(request.PermitTypeId),
+                    Guid.Parse(request.AdmissionStatusId)
                 );
 
             var result = await _mediator.Send(command, cancellationToken);

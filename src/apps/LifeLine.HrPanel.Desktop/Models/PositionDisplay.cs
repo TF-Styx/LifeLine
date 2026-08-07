@@ -16,8 +16,8 @@ namespace LifeLine.HrPanel.Desktop.Models
             set => SetProperty(ref _name, value);
         }
 
-        private string _description = model.Description;
-        public string Description
+        private string? _description = model.Description;
+        public string? Description
         {
             get => _description;
             set => SetProperty(ref _description, value);

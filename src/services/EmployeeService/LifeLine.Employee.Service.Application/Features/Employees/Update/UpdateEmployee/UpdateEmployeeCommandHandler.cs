@@ -23,7 +23,10 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Update.Update
 
             entity.UpdateSurname(Surname.Create(request.Surname));
             entity.UpdateName(Name.Create(request.Name));
-            entity.UpdatePatronymic(Patronymic.Create(request.Patronymic));
+
+            if (!string.IsNullOrWhiteSpace(request.Patronymic))
+                entity.UpdatePatronymic(Patronymic.Create(request.Patronymic!));
+
             entity.UpdateGenderId(GenderId.Create(request.GenderId));
 
             await context.SaveChangesAsync(cancellationToken);

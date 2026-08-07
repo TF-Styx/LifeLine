@@ -2,6 +2,7 @@
 using LifeLine.Employee.Service.Application.Features.Employees.Delete;
 using LifeLine.Employee.Service.Application.Features.Employees.Get.GetAll;
 using LifeLine.Employee.Service.Application.Features.Employees.Get.GetAllForHr;
+using LifeLine.Employee.Service.Application.Features.Employees.Get.GetBio;
 using LifeLine.Employee.Service.Application.Features.Employees.Get.GetFullDetailsForEmployee;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalPhoto.Add;
 using LifeLine.Employee.Service.Application.Features.Employees.PersonalPhoto.Delete;
@@ -47,6 +48,10 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         [HttpGet("hr")]
         public async Task<IActionResult> GetAllForHr(CancellationToken cancellationToken = default)
             => Ok(await _mediator.Send(new GetAllEmployeeForHrQuery(), cancellationToken));
+
+        [HttpGet("bio/{id}")]
+        public async Task<IActionResult> GetBio([FromRoute] Guid id, CancellationToken cancellationToken = default)
+            => Ok(await _mediator.Send(new GetBioEmployeeQuery(id), cancellationToken));
 
         [HttpGet("details/{id}")]
         public async Task<IActionResult> GetFullDetailsForEmployee([FromRoute] Guid id, CancellationToken cancellationToken = default)

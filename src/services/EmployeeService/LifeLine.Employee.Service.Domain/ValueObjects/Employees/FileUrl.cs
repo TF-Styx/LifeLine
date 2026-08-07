@@ -10,7 +10,7 @@ namespace LifeLine.Employee.Service.Domain.ValueObjects.Employees
 
         public static Result<FileUrl> Create(string bucketName, string fileName)
         {
-            if (string.IsNullOrWhiteSpace(bucketName) || string.IsNullOrWhiteSpace(bucketName))
+            if (string.IsNullOrWhiteSpace(bucketName) || string.IsNullOrWhiteSpace(fileName))
                 return Result<FileUrl>.Failure(Error.Validation("Поля были пустые!"));
 
             var fullName = $"{bucketName}:{fileName}";

@@ -5,6 +5,7 @@ using LifeLine.Directory.Service.Client.Services.DocumentType;
 using LifeLine.Directory.Service.Client.Services.EducationLevel;
 using LifeLine.Directory.Service.Client.Services.Hospital;
 using LifeLine.Directory.Service.Client.Services.PermitType;
+using LifeLine.Directory.Service.Client.Services.Position;
 using LifeLine.Directory.Service.Client.Services.Position.Factories;
 using LifeLine.Directory.Service.Client.Services.Status;
 using LifeLine.Employee.Service.Client.Services.Employee;
@@ -118,6 +119,7 @@ namespace LifeLine.HrPanel.Desktop.Ioc
             services.AddHttpClient<IStatusReadOnlyService, StatusService>(directoryHttp);
             services.AddHttpClient<IDepartmentReadOnlyService, DepartmentService>(directoryHttp);
             services.AddHttpClient<IDepartmentService, DepartmentService>(directoryHttp);
+            services.AddHttpClient<IGetAllPositionService, GetAllPositionService>(directoryHttp);
             services.AddSingleton<IPositionReadOnlyApiServiceFactory, PositionReadOnlyApiServiceFactory>();
             services.AddSingleton<IPositionApiServiceFactory, PositionApiServiceFactory>();
 

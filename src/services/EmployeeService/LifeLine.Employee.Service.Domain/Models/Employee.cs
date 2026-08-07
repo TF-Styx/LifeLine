@@ -172,7 +172,7 @@ namespace LifeLine.Employee.Service.Domain.Models
         {
             GuardException.Against.That(this.ContactInformation == null, () => new EmptyContactInformationException($"Контактной информации у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
 
-            this.ContactInformation!.UpdateCorporatePhone(corporatePhone != null ? Phone.Create(corporatePhone) : Phone.Null);
+            this.ContactInformation!.UpdateCorporatePhone(!string.IsNullOrWhiteSpace(corporatePhone) ? Phone.Create(corporatePhone) : Phone.Null);
         }
 
         /// <exception cref="EmptyContactInformationException"></exception>
@@ -188,7 +188,7 @@ namespace LifeLine.Employee.Service.Domain.Models
         {
             GuardException.Against.That(this.ContactInformation == null, () => new EmptyContactInformationException($"Контактной информации у пользователя: '{Surname} {Name} {Patronymic}' не существует!"));
 
-            this.ContactInformation!.UpdateCorporateEmail(corporateEmail != null ? Email.Create(corporateEmail) : Email.Null);
+            this.ContactInformation!.UpdateCorporateEmail(!string.IsNullOrWhiteSpace(corporateEmail) ? Email.Create(corporateEmail) : Email.Null);
         }
 
         public void UpdateAddress(Address address)
@@ -258,7 +258,7 @@ namespace LifeLine.Employee.Service.Domain.Models
 
             GuardException.Against.That(workPermit == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
 
-            workPermit!.UpdateSeries(documentSeries != null ? DocumentSeries.Create(documentSeries) : DocumentSeries.Null);
+            workPermit!.UpdateSeries(!string.IsNullOrWhiteSpace(documentSeries) ? DocumentSeries.Create(documentSeries) : DocumentSeries.Null);
         }
 
         public void UpdateDocumentNumberWP(Guid id, string workPermitNumber)
@@ -280,7 +280,7 @@ namespace LifeLine.Employee.Service.Domain.Models
 
             GuardException.Against.That(workPermit == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
 
-            workPermit!.UpdateProtocolNumber(protocolNumber != null ? ProtocolNumber.Create(protocolNumber) : ProtocolNumber.Null);
+            workPermit!.UpdateProtocolNumber(!string.IsNullOrWhiteSpace(protocolNumber) ? ProtocolNumber.Create(protocolNumber) : ProtocolNumber.Null);
         }
 
         public void UpdateSpecialtyNameWP(Guid id, string specialtyName)
@@ -335,7 +335,7 @@ namespace LifeLine.Employee.Service.Domain.Models
 
             GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Разрешение на работу не найдено!"));
 
-            document!.UpdateFileKey(bucketName != null && fileName != null ? FileUrl.Create(bucketName, fileName).Value : null);
+            document!.UpdateFileKey(!string.IsNullOrWhiteSpace(bucketName) && !string.IsNullOrWhiteSpace(fileName) ? FileUrl.Create(bucketName, fileName).Value : null);
         }
 
         public void UpdatePermitTypeIdWP(Guid id, Guid permitTypeId)
@@ -474,7 +474,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             
             GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
             
-            document!.UpdateQualificationAwardedName(qualificationAwardedName != null ? QualificationAwardedName.Create(qualificationAwardedName) : QualificationAwardedName.Null);
+            document!.UpdateQualificationAwardedName(!string.IsNullOrWhiteSpace(qualificationAwardedName) ? QualificationAwardedName.Create(qualificationAwardedName) : QualificationAwardedName.Null);
         }
 
         public void UpdateSpecialtyName(Guid id, string? specialtyName)
@@ -485,7 +485,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             
             GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
             
-            document!.UpdateSpecialtyName(specialtyName != null ? SpecialtyName.Create(specialtyName) : SpecialtyName.Null);
+            document!.UpdateSpecialtyName(!string.IsNullOrWhiteSpace(specialtyName) ? SpecialtyName.Create(specialtyName) : SpecialtyName.Null);
         }
 
         public void UpdateProgramName(Guid id, string? programName)
@@ -496,7 +496,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             
             GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Документ об образовании не найден!"));
             
-            document!.UpdateProgramName(programName != null ? ProgramEducationName.Create(programName) : ProgramEducationName.Null);
+            document!.UpdateProgramName(!string.IsNullOrWhiteSpace(programName) ? ProgramEducationName.Create(programName) : ProgramEducationName.Null);
         }
 
         public void UpdateTotalHours(Guid id, TimeSpan? totalHours)
@@ -518,7 +518,7 @@ namespace LifeLine.Employee.Service.Domain.Models
 
             GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Персональный документ не найден!"));
 
-            document!.UpdateFileKey(bucketName != null && fileName != null ? FileUrl.Create(bucketName, fileName).Value : null);
+            document!.UpdateFileKey(!string.IsNullOrWhiteSpace(bucketName) && !string.IsNullOrWhiteSpace(fileName) ? FileUrl.Create(bucketName, fileName).Value : null);
         }
 
         public void DeleteEducationDocument(Guid educationDocumentId)
@@ -601,7 +601,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             
             GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Персональный документ не найден!"));
             
-            document!.UpdateDocumentSeries(documentSeries != null ? DocumentSeries.Create(documentSeries) : DocumentSeries.Null);
+            document!.UpdateDocumentSeries(!string.IsNullOrWhiteSpace(documentSeries) ? DocumentSeries.Create(documentSeries) : DocumentSeries.Null);
         }
 
         public void UpdateFileKeyPersonalDocument(Guid id, string? bucketName, string? fileName)
@@ -612,7 +612,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             
             GuardException.Against.That(document == null, () => new NotFoundDocumentException($"Персональный документ не найден!"));
             
-            document!.UpdateFileKey(bucketName != null && fileName != null ? FileUrl.Create(bucketName, fileName).Value : null);
+            document!.UpdateFileKey(!string.IsNullOrWhiteSpace(bucketName) && string.IsNullOrWhiteSpace(fileName) ? FileUrl.Create(bucketName, fileName).Value : null);
         }
 
         public void DeletePersonalDocument(Guid personalDocumentId)
@@ -747,7 +747,7 @@ namespace LifeLine.Employee.Service.Domain.Models
             var contract = this.Contracts.FirstOrDefault(c => c.Id == assignment!.ContractId);
             GuardException.Against.That(contract == null, () => new NotFoundContractException($"Контракт не найден!"));
 
-            contract!.UpdateFileKey(bucketName != null && fileName != null ? FileUrl.Create(bucketName, fileName).Value : null);
+            contract!.UpdateFileKey(!string.IsNullOrWhiteSpace(bucketName) && !string.IsNullOrWhiteSpace(fileName) ? FileUrl.Create(bucketName, fileName).Value : null);
         }
 
         #endregion

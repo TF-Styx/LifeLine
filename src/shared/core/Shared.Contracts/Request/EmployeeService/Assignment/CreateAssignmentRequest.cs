@@ -1,6 +1,6 @@
 ﻿namespace Shared.Contracts.Request.EmployeeService.Assignment
 {
-    public sealed record CreateAssignmentRequest(Guid PositionId, Guid DepartmentId, Guid? ManagerId, DateTime HireDate, DateTime? TerminationDate, Guid StatusId, CreateAssignmentContractRequest Contract);
+    public sealed record CreateAssignmentRequest(string PositionId, string DepartmentId, string BranchId, string? ManagerId, DateTime HireDate, DateTime? TerminationDate, string StatusId, CreateAssignmentContractRequest Contract);
 
-    public sealed record CreateAssignmentContractRequest(Guid EmployeeTypeId, string ContractNumber, DateTime StartDate, DateTime EndDate, decimal Salary, string BucketName, string FileName);
+    public sealed record CreateAssignmentContractRequest(string EmployeeTypeId, string ContractNumber, DateTime StartDate, DateTime EndDate, decimal Salary, string BucketName, string FileName);
 }

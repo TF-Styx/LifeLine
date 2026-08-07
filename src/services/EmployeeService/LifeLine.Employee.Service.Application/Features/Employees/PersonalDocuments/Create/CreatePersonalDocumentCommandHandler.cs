@@ -18,7 +18,14 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.PersonalDocum
             if (employee == null)
                 return Error.NotFound("Пользователь не найден!");
 
-            var personalDocumentId = employee.AddPersonalDocument(request.DocumentTypeId, request.DocumentNumber, request.DocumentSeries, null, null);
+            var personalDocumentId = employee.AddPersonalDocument
+            (
+                request.DocumentTypeId, 
+                request.DocumentNumber, 
+                request.DocumentSeries, 
+                request.BucketName, 
+                request.FileName
+            );
 
             await context.SaveChangesAsync(cancellationToken);
 

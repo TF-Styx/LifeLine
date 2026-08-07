@@ -457,6 +457,58 @@
         </Viewbox>
     </ControlTemplate>
     
+    <!-- Иконка "Мусорка1" -->
+    <ControlTemplate x:Key="Trash1">
+        <Border x:Name="border" 
+                Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="4"
+                Padding="0">
+            <Viewbox Stretch="Uniform">
+                <Canvas Width="24" Height="24">
+                    <!-- Вертикальная линия слева внутри корзины -->
+                    <Path Data="M10 11 L10 17"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Fill="Transparent"/>
+                    <!-- Вертикальная линия справа внутри корзины -->
+                    <Path Data="M14 11 L14 17"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Fill="Transparent"/>
+                    <!-- Основной корпус корзины -->
+                    <Path Data="M19 6 L19 20 A2 2 0 0 1 17 22 L7 22 A2 2 0 0 1 5 20 L5 6"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          StrokeLineJoin="Round"
+                          Fill="Transparent"/>
+                    <!-- Верхняя горизонтальная линия (крышка) -->
+                    <Path Data="M3 6 L21 6"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Fill="Transparent"/>
+                    <!-- Верхняя часть с ручкой -->
+                    <Path Data="M8 6 L8 4 A2 2 0 0 1 10 2 L14 2 A2 2 0 0 1 16 4 L16 6"
+                          Stroke="{TemplateBinding Foreground}"
+                          StrokeThickness="2"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          StrokeLineJoin="Round"
+                          Fill="Transparent"/>
+                </Canvas>
+            </Viewbox>
+        </Border>
+    </ControlTemplate>
+
     <!-- Иконка "Фильр" -->
     <ControlTemplate x:Key="Filter">
         <Border x:Name="border" 

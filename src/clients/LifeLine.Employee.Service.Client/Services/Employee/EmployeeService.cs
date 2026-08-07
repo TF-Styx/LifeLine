@@ -59,6 +59,21 @@ namespace LifeLine.Employee.Service.Client.Services.Employee
 			}
         }
 
+		public async Task<EmployeeBioResponse?> GetBioEmployeeAsync(string id)
+        {
+			try
+			{
+				var response = await HttpClient.GetAsync($"{Url}/bio/{id}");
+				response.EnsureSuccessStatusCode();
+
+				return await response.Content.ReadFromJsonAsync<EmployeeBioResponse>();
+			}
+			catch (Exception)
+			{
+				return null;
+			}
+        }
+
 		public async Task<EmployeeFullDetailsResponse?> GetDetailsAsync(string id)
 		{
 			try

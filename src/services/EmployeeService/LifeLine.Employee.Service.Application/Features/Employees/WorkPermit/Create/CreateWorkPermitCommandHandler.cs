@@ -29,8 +29,8 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.WorkPermit.Cr
                 request.IssuingAuthority,
                 request.IssueDate,
                 request.ExpiryDate,
-                null,
-                null,
+                request.BucketName,
+                request.FileName,
                 request.PermitTypeId,
                 request.AdmissionStatusId
             );

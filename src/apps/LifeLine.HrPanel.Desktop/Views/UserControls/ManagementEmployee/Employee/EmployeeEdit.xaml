@@ -1,0 +1,103 @@
+﻿<UserControl x:Class="LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.Employee.EmployeeEdit"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.Employee"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF"
+             
+             xmlns:usercontrols="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls"
+             
+             xmlns:personaldocument="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.PersonalDocument"
+             xmlns:education="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.EducationDocument"
+             xmlns:workpermit="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.WorkPermit"
+             xmlns:assignmentcontract="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.AssignmentContract" 
+             
+             xmlns:employee="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.Employee" 
+             d:DataContext="{d:DesignInstance Type=employee:EmployeeEditVM}"
+             
+             mc:Ignorable="d" 
+             d:Height="auto" 
+             d:Width="800">
+
+    <b:Interaction.Behaviors>
+        <behaviors:AsyncInitializeBehavior/>
+    </b:Interaction.Behaviors>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <DockPanel>
+        <Button HorizontalAlignment="Right" 
+                DockPanel.Dock="Top"
+                VerticalAlignment="Top" 
+                Foreground="#F06870" 
+                Width="25" Height="25" 
+                Command="{Binding CloseEditPanelCommand}"
+                Style="{StaticResource Button.Icon}">
+            <Control Template="{StaticResource Close1}"/>
+        </Button>
+
+        <ScrollViewer>
+            <StackPanel Grid.Row="0" Visibility="Visible">
+                <Expander Header="Базовая информация"  IsExpanded="True"
+                      Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <usercontrols:PersonalInfo Action="Update" DataContext="{Binding PersonalInfo}"/>
+                </Expander>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Expander Grid.Column="0" Header="Фотография" IsExpanded="True"
+                          Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                        <usercontrols:PersonalPhoto HorizontalAlignment="Center" DataContext="{Binding PersonalPhoto}"/>
+                    </Expander>
+
+                    <Expander Grid.Column="1"  IsExpanded="True"
+                          Header="Контактная информация" 
+                          HorizontalAlignment="Stretch"
+                          Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                        <usercontrols:ContactInformation DataContext="{Binding ContactInformation}"/>
+                    </Expander>
+                </Grid>
+
+                <Expander Header="Персональные документы" IsExpanded="True"
+                      Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <personaldocument:PersonalDocumentManagement DataContext="{Binding PersonalDocuments}"/>
+                </Expander>
+
+                <Expander Header="Документы об образовании" IsExpanded="True"
+                      Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <education:EducationDocumentManagement DataContext="{Binding EducationDocuments}"/>
+                </Expander>
+
+                <Expander Header="Аккредитация / Сертификаты" IsExpanded="True"
+                      Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <workpermit:WorkPermitManagement DataContext="{Binding WorkPermits}"/>
+                </Expander>
+
+                <Expander Header="Специальности" IsExpanded="True"
+                      Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <usercontrols:Specialties DataContext="{Binding Specialties}"/>
+                </Expander>
+
+                <Expander Header="Назначение / Контракт" IsExpanded="True"
+                      Margin="5" Style="{StaticResource ModernExpanderStyle}">
+                    <assignmentcontract:AssignmentContractManagement DataContext="{Binding Assignments}"/>
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

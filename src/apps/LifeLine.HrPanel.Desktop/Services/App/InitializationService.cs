@@ -6,6 +6,7 @@ using Shared.WPF.Enums;
 using Shared.Contracts.Request.UserService;
 using LifeLine.HrPanel.Desktop.ViewModels.Windows;
 using System.Windows;
+using LifeLine.HrPanel.Desktop.Services.ReferenceData;
 
 namespace LifeLine.HrPanel.Desktop.Services.App
 {
@@ -15,7 +16,9 @@ namespace LifeLine.HrPanel.Desktop.Services.App
                 IKeyManager keyManager,
                 IUserApiService authService,
                 INavigationPage navigationPage,
-                INavigationWindow navigationWindow
+                INavigationWindow navigationWindow,
+                IReferenceDataCacheService cacheService,
+                IAssignmentCascadeService cascadeService
             ) : IInitializationService
     {
         public async Task Initialization()
@@ -48,6 +51,11 @@ namespace LifeLine.HrPanel.Desktop.Services.App
             }
 
             await tokenStorage.SaveAsync(result.Value.AccessToken, result.Value.RefreshToken);
+            await Task.WhenAll
+            (
+                cacheService.InitializeAsync(),
+                cascadeService.InitializeAsync()
+            );
 
             mainWindowVM.AuthController.AuthVisibility = Visibility.Collapsed;
             mainWindowVM.AuthController.ExecuteResizeWindowAfterLogin();

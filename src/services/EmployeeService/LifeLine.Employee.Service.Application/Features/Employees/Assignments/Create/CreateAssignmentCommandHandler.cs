@@ -33,7 +33,7 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.Assignments.C
                 (
                     request.PositionId,
                     request.DepartmentId,
-                    Guid.NewGuid(),
+                    request.BranchId,
                     request.ManagerId,
                     request.HireDate,
                     request.TerminationDate,

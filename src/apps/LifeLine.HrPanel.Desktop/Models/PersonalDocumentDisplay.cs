@@ -1,10 +1,11 @@
-﻿using Shared.Contracts.Response.EmployeeService;
+﻿using LifeLine.HrPanel.Desktop.Models.Interfaces;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Enums;
 using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models
 {
-    public sealed class PersonalDocumentDisplay: BaseViewModel
+    public sealed class PersonalDocumentDisplay: BaseViewModel, IIdentifiable
     {
         private PersonalDocumentResponse _model;
 
@@ -30,6 +31,7 @@ namespace LifeLine.HrPanel.Desktop.Models
         }
         public void SetSaveStatus(SaveStatus saveStatus) => SaveStatus = saveStatus;
 
+        public string Id => PersonalDocumentId.ToString();
         public Guid PersonalDocumentId => _model.Id;
         public Guid DocumentTypeId => _model.DocumentTypeId;
 
@@ -65,10 +67,7 @@ namespace LifeLine.HrPanel.Desktop.Models
 
         public byte[]? FileBytes { get; set; }
         public string? FileName { get; set; }
-        public string? ContentType { get; set; } = "application/pdf"; 
-        
-        [System.ComponentModel.Browsable(false)]
-        //public bool HasFileForUpload => FileBytes != null || (!string.IsNullOrWhiteSpace(FileKey) && System.IO.File.Exists(FileKey));
+        public string? ContentType { get; set; } = "application/pdf";
 
         public PersonalDocumentResponse GetUnderLineModel() => _model;
 

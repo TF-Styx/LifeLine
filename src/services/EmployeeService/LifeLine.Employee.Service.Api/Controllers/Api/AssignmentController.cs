@@ -23,20 +23,21 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
         {
             var command = new CreateAssignmentCommand
                 (
-                    employeeId, 
-                    request.PositionId, 
-                    request.DepartmentId, 
-                    request.ManagerId, 
-                    request.HireDate, 
-                    request.TerminationDate, 
-                    request.StatusId, 
+                    employeeId,
+                    Guid.Parse(request.PositionId),
+                    Guid.Parse(request.DepartmentId),
+                    Guid.Parse(request.BranchId),
+                    request.ManagerId != null ? Guid.Parse(request.ManagerId) : null,
+                    request.HireDate,
+                    request.TerminationDate,
+                    Guid.Parse(request.StatusId),
                     new CreateAssignmentContractCommand
                     (
-                        request.Contract.EmployeeTypeId, 
-                        request.Contract.ContractNumber, 
-                        request.Contract.StartDate, 
-                        request.Contract.EndDate, 
-                        request.Contract.Salary, 
+                        Guid.Parse(request.Contract.EmployeeTypeId),
+                        request.Contract.ContractNumber,
+                        request.Contract.StartDate,
+                        request.Contract.EndDate,
+                        request.Contract.Salary,
                         request.Contract.BucketName,
                         request.Contract.FileName
                     )
@@ -103,18 +104,18 @@ namespace LifeLine.Employee.Service.Api.Controllers.Api
                 (
                     assignmentId,
                     employeeId,
-                    request.PositionId,
-                    request.DepartmentId,
-                    request.BranchId,
-                    request.ManagerId,
+                    Guid.Parse(request.PositionId),
+                    Guid.Parse(request.DepartmentId),
+                    Guid.Parse(request.BranchId),
+                    request.ManagerId != null ? Guid.Parse(request.ManagerId) : null,
                     request.HireDate,
                     request.TerminationDate,
-                    request.StatusId,
+                    Guid.Parse(request.StatusId),
                     new UpdateAssignmentContractCommand
                     (
                         contractId,
                         employeeId,
-                        request.Contract.EmployeeTypeId,
+                        Guid.Parse(request.Contract.EmployeeTypeId),
                         request.Contract.ContractNumber,
                         request.Contract.StartDate,
                         request.Contract.EndDate,

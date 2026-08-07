@@ -1,10 +1,11 @@
-﻿using Shared.Contracts.Response.EmployeeService;
+﻿using LifeLine.HrPanel.Desktop.Models.Interfaces;
+using Shared.Contracts.Response.EmployeeService;
 using Shared.WPF.Enums;
 using Shared.WPF.ViewModels.Abstract;
 
 namespace LifeLine.HrPanel.Desktop.Models
 {
-    public sealed class WorkPermitDisplay : BaseViewModel
+    public sealed class WorkPermitDisplay : BaseViewModel, IIdentifiable
     {
         private readonly WorkPermitResponse _model;
 
@@ -43,8 +44,9 @@ namespace LifeLine.HrPanel.Desktop.Models
             get => field;
             set => SetProperty(ref field, value);
         }
-        public void SetSaveStatus(SaveStatus saveStatus) => SaveStatus = saveStatus; 
+        public void SetSaveStatus(SaveStatus saveStatus) => SaveStatus = saveStatus;
 
+        public string Id => WorkPermitId;
         public string WorkPermitId => _model.Id;
         public string EmployeeId => _model.EmployeeId;
         public string PermitTypeId => _model.PermitTypeId;

@@ -80,13 +80,13 @@ namespace LifeLine.Employee.Service.Domain.Models
                     WorkPermitId.New(),
                     EmployeeId.Create(employeeId),
                     ProgramEducationName.Create(workPermitName),
-                    documentSeries != null ? DocumentSeries.Create(documentSeries) : null,
+                    !string.IsNullOrWhiteSpace(documentSeries) ? DocumentSeries.Create(documentSeries) : null,
                     DocumentNumber.Create(workPermitNumber),
-                    protocolNumber != null ? ProtocolNumber.Create(protocolNumber) : null,
+                    !string.IsNullOrWhiteSpace(protocolNumber) ? ProtocolNumber.Create(protocolNumber) : null,
                     SpecialtyName.Create(specialtyName),
                     IssuingAuthority.Create(issuingAuthority),
                     issueDate.ToUniversalTime(), expiryDate.ToUniversalTime(),
-                    bucketName != null && fileName != null ? FileUrl.Create(bucketName, fileName).Value : null,
+                    !string.IsNullOrWhiteSpace(bucketName) && !string.IsNullOrWhiteSpace(fileName) ? FileUrl.Create(bucketName, fileName).Value : null,
                     PermitTypeId.Create(permitTypeId),
                     AdmissionStatusId.Create(admissionStatusId)
                 );

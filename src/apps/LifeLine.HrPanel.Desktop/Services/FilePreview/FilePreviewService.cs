@@ -27,7 +27,7 @@ namespace LifeLine.HrPanel.Desktop.Services.FilePreview
 
             if (string.IsNullOrWhiteSpace(bucketName) || string.IsNullOrWhiteSpace(objectPath))
             {
-                Debug.WriteLine($"[GenerateImageService] [GenerateAsync] BucketName и FileName пусты!");
+                Debug.WriteLine($"[FilePreviewService] [DownloadRemoteFileToTempAsync] BucketName и FileName пусты!");
                 return null;
             }
 
@@ -35,7 +35,7 @@ namespace LifeLine.HrPanel.Desktop.Services.FilePreview
 
             if (s3Result.IsFailure && s3Result.Value == null || string.IsNullOrWhiteSpace(s3Result.Value?.PresignedUrl))
             {
-                Debug.WriteLine($"[GenerateImageService] [GenerateAsync] S3Result пуст!");
+                Debug.WriteLine($"[FilePreviewService] [DownloadRemoteFileToTempAsync] S3Result пуст!");
                 return null;
             }
 
@@ -45,7 +45,7 @@ namespace LifeLine.HrPanel.Desktop.Services.FilePreview
 
             if (fileBytes == null || fileBytes?.Length == 0)
             {
-                Debug.WriteLine($"[GenerateImageService] [GenerateAsync] FileBytes пуст!");
+                Debug.WriteLine($"[FilePreviewService] [DownloadRemoteFileToTempAsync] FileBytes пуст!");
                 return null;
             }
 
@@ -62,7 +62,7 @@ namespace LifeLine.HrPanel.Desktop.Services.FilePreview
         /// <returns></returns>
         public string? CopyLocalFileToTempAsync(string sourcePath, string fileName)
         {
-            if (string.IsNullOrWhiteSpace(sourcePath) && string.IsNullOrWhiteSpace(fileName))
+            if (string.IsNullOrWhiteSpace(sourcePath) || string.IsNullOrWhiteSpace(fileName))
             {
                 Debug.WriteLine($"[FilePreviewService] [CopyLocalFileToTempAsync] SourcePath и FileName пусты!");
                 return null;

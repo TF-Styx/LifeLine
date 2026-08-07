@@ -53,9 +53,9 @@ namespace LifeLine.Employee.Service.Domain.Models
                     ContactInformationId.New(),
                     EmployeeId.Create(employeeId),
                     Phone.Create(personalPhone),
-                    corporatePhone != null ? Phone.Create(corporatePhone) : Phone.Null,
+                    !string.IsNullOrWhiteSpace(corporatePhone) ? Phone.Create(corporatePhone!) : Phone.Null,
                     Email.Create(personalEmail),
-                    corporateEmail != null ? Email.Create(corporateEmail) : Email.Null,
+                    !string.IsNullOrWhiteSpace(corporateEmail) ? Email.Create(corporateEmail!) : Email.Null,
                     homeAddress
                 );
 

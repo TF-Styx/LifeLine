@@ -33,7 +33,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.EducationDocument
         {
             try
             {
-                var response = await HttpClient.GetAsync($"{Url}/{employeeId}");
+                var response = await HttpClient.GetAsync($"{Url}");
                 response.EnsureSuccessStatusCode();
 
                 var assignmentsContracts = await response.Content.ReadFromJsonAsync<List<EducationDocumentResponse>>(JsonSerializerOptions);

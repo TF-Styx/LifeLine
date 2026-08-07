@@ -2,19 +2,19 @@
 {
     public sealed record UpdateAssignmentRequest
         (
-            Guid PositionId,
-            Guid DepartmentId,
-            Guid BranchId,
-            Guid? ManagerId,
+            string PositionId,
+            string DepartmentId,
+            string BranchId,
+            string? ManagerId,
             DateTime HireDate,
             DateTime? TerminationDate,
-            Guid StatusId,
+            string StatusId,
             UpdateAssignmentContractRequest Contract
         );
 
     public sealed record UpdateAssignmentContractRequest
         (
-            Guid EmployeeTypeId,
+            string EmployeeTypeId,
             string ContractNumber,
             DateTime StartDate,
             DateTime EndDate,

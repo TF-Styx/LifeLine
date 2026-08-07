@@ -1,0 +1,104 @@
+﻿<UserControl x:Class="LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.WorkPermit.WorkPermitEdit"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls.ManagementEmployee.WorkPermit"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:behaviors="clr-namespace:Shared.WPF.Resources.Behaviors;assembly=Shared.WPF" 
+             xmlns:cc="clr-namespace:Shared.WPF.Resources.Controls;assembly=Shared.WPF"
+             xmlns:views="clr-namespace:LifeLine.HrPanel.Desktop.Views.UserControls"
+             xmlns:model="clr-namespace:LifeLine.HrPanel.Desktop.ViewModels.Features.ManagementEmployee.WorkPermit"
+             d:DataContext="{d:DesignInstance Type=model:WorkPermitEditVM}"
+             mc:Ignorable="d" 
+             d:Height="auto" 
+             d:Width="800">
+
+    <b:Interaction.Behaviors>
+        <behaviors:AsyncInitializeBehavior/>
+    </b:Interaction.Behaviors>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource App.SecondColor}" CornerRadius="6" Margin="5">
+        <DockPanel>
+            <Button HorizontalAlignment="Right" 
+                    DockPanel.Dock="Top"
+                    VerticalAlignment="Top" 
+                    Foreground="#F06870" 
+                    Width="25" Height="25" 
+                    Command="{Binding CloseEditPanelCommand}"
+                    Style="{StaticResource Button.Icon}">
+                <Control Template="{StaticResource Close1}"/>
+            </Button>
+
+            <StackPanel DockPanel.Dock="Top" Margin="0 10 0 0">
+                <!-- Тип документа / Статус -->
+                <ComboBox ItemsSource="{Binding PermitTypes}" 
+                          SelectedItem="{Binding Display.PermitType}"
+                          DisplayMemberPath="Name" 
+                          Margin="0 0 0 5"/>
+
+                <ComboBox 
+                          ItemsSource="{Binding AdmissionStatuses}" 
+                          SelectedItem="{Binding Display.AdmissionStatus}"
+                          DisplayMemberPath="Name" 
+                          Margin="0 5 0 10"/>
+
+                <!-- Наименование документа / Наименование специальности -->
+                <cc:PlaceHolderTextBox PlaceHolder="Наименование документа*" Margin="0 0 0 5"
+                                       Text="{Binding Display.WorkPermitName}" 
+                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                <cc:PlaceHolderTextBox PlaceHolder="Наименование специальности*" Margin="0 0 0 5"
+                                       Text="{Binding Display.SpecialtyName}" 
+                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                <!-- Серия / Номер -->
+                <cc:PlaceHolderTextBox PlaceHolder="Серия" Margin="0 0 0 5"
+                                       Text="{Binding Display.DocumentSeries}" 
+                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                <cc:PlaceHolderTextBox PlaceHolder="Номер*" Margin="0 0 0 5"
+                                       Text="{Binding Display.WorkPermitNumber}" 
+                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                <!-- Номер протокола / Орган выдающий документы -->
+                <cc:PlaceHolderTextBox PlaceHolder="Номер протокола" Margin="0 0 0 5"
+                                       Text="{Binding Display.ProtocolNumber}" 
+                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                <cc:PlaceHolderTextBox PlaceHolder="Орган выдающий документы*" Margin="0 0 0 10"
+                                       Text="{Binding Display.IssuingAuthority}" 
+                                       Style="{StaticResource TextBox.PlaceHolder}"/>
+
+                <!-- Дата выдачи / Дата окончания -->
+                <DatePicker SelectedDate="{Binding Display.IssueDate}" Margin="0 0 0 10"/>
+
+                <DatePicker SelectedDate="{Binding Display.ExpiryDate}" Margin="0 0 0 10"/>
+                
+                <views:PendingFileItem DataContext="{Binding ItemVM}"/>
+            </StackPanel>
+
+            <StackPanel Margin="0 5 0 0" VerticalAlignment="Bottom">
+                <Button Content="Сохранить" Height="40"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding CreateCommandAsync}"
+                        Style="{StaticResource App.Button}" Margin="0 0 0 0"/>
+
+                <Button Content="Обновить" Height="40"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding UpdateCommandAsync}"
+                        Style="{StaticResource App.Button}" Margin="0 10 0 0"/>
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</UserControl>

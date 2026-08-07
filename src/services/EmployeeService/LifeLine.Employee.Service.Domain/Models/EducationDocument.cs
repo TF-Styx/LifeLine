@@ -75,11 +75,11 @@ namespace LifeLine.Employee.Service.Domain.Models
                     DocumentNumber.Create(documentNumber),
                     issuedDate.ToUniversalTime(),
                     IssuingAuthority.Create(organizationName),
-                    qualificationAwardedName != null ? QualificationAwardedName.Create(qualificationAwardedName) : null,
-                    specialtyName != null ? SpecialtyName.Create(specialtyName) : null,
-                    programName != null ? ProgramEducationName.Create(programName) : null,
+                    !string.IsNullOrWhiteSpace(qualificationAwardedName) ? QualificationAwardedName.Create(qualificationAwardedName) : null,
+                    !string.IsNullOrWhiteSpace(specialtyName) ? SpecialtyName.Create(specialtyName) : null,
+                    !string.IsNullOrWhiteSpace(programName) ? ProgramEducationName.Create(programName) : null,
                     totalHours != null ? Hours.Create(totalHours.Value.TotalHours) : null,
-                    bucketName != null && fileName != null ? FileUrl.Create(bucketName, fileName).Value : null
+                    !string.IsNullOrWhiteSpace(bucketName) && !string.IsNullOrWhiteSpace(fileName) ? FileUrl.Create(bucketName, fileName).Value : null
                 );
 
         internal void UpdateEducationLevel(EducationLevelId educationLevelId)

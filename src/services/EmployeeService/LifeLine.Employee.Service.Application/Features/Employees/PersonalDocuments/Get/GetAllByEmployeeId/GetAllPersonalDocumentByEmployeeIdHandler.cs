@@ -9,20 +9,18 @@ namespace LifeLine.Employee.Service.Application.Features.Employees.PersonalDocum
         : IRequestHandler<GetAllPersonalDocumentByEmployeeIdQuery, List<PersonalDocumentResponse>>
     {
         public async Task<List<PersonalDocumentResponse>> Handle(GetAllPersonalDocumentByEmployeeIdQuery request, CancellationToken cancellationToken)
-        {
-            var employee = await context.Employees.Include(x => x.PersonalDocuments).FirstOrDefaultAsync(cancellationToken);
-
-            return employee!.PersonalDocuments.Select
-            (
-                x => new PersonalDocumentResponse
-                (
-                    x.Id,
-                    x.DocumentTypeId,
-                    x.DocumentNumber,
-                    x.DocumentSeries,
-                    x.ImageKey
-                )
-            ).ToList();
-        }
+            => await context.PersonalDocuments
+               .Where(x => x.EmployeeId == request.EmployeeId)
+               .Select
+               (
+                   x => new PersonalDocumentResponse
+                   (
+                       x.Id,
+                       x.DocumentTypeId,
+                       x.DocumentNumber,
+                       x.DocumentSeries,
+                       x.ImageKey
+                   )
+               ).ToListAsync(cancellationToken);
     }
 }

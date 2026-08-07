@@ -17,7 +17,7 @@ namespace Shared.Serialization.JsonConverters
             if (ctor == null)
                 return null;
 
-            var param1 = Expression.Parameter(typeof(TArg2), "arg1");
+            var param1 = Expression.Parameter(typeof(TArg1), "arg1");
             var param2 = Expression.Parameter(typeof(TArg2), "arg2");
             var newExpr = Expression.New(ctor, param1, param2);
             var lambda = Expression.Lambda<Func<TArg1, TArg2, TResult>>(newExpr, param1, param2);

@@ -3,7 +3,6 @@
     public sealed record UpdateContactInformationRequest
         (   
             string Id,
-            string EmployeeId,
             string PersonalPhone,
             string? CorporatePhone,
             string PersonalEmail,

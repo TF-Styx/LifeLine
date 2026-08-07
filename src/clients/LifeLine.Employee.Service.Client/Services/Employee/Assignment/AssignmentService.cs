@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using Shared.Contracts.Request.EmployeeService.Assignment;
-using Shared.Contracts.Response.DirectoryService;
 using Shared.Contracts.Response.EmployeeService;
 using Shared.Http.Base;
 using Shared.Kernel.Errors;
@@ -32,7 +31,7 @@ namespace LifeLine.Employee.Service.Client.Services.Employee.Assignment
         {
             try
             {
-                var response = await HttpClient.GetAsync($"{Url}/{employeeId}");
+                var response = await HttpClient.GetAsync($"{Url}");
                 response.EnsureSuccessStatusCode();
 
                 var assignmentsContracts = await response.Content.ReadFromJsonAsync<List<AssignmentContractResponse>>(JsonSerializerOptions);

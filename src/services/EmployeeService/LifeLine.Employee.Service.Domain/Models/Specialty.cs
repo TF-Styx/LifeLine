@@ -18,6 +18,11 @@ namespace LifeLine.Employee.Service.Domain.Models
         }
 
         public static Specialty Create(string specialtyName, string? description)
-            => new Specialty(SpecialtyId.New(), SpecialtyName.Create(specialtyName), description != null ? Description.Create(description) : Description.Null);
+            => new Specialty
+                (
+                    SpecialtyId.New(), 
+                    SpecialtyName.Create(specialtyName), 
+                    !string.IsNullOrWhiteSpace(description) ? Description.Create(description) : Description.Null
+                );
     }
 }
